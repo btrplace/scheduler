@@ -25,7 +25,7 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Gather;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
@@ -52,16 +52,21 @@ public class CGather implements ChocoConstraint {
         cstr = g;
     }
 
-    @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    private List<Slice> getDSlices(ReconfigurationProblem rp) {
         List<Slice> dSlices = new ArrayList<>();
         for (VM vm : cstr.getInvolvedVMs()) {
-            VMActionModel a = rp.getVMAction(vm);
+            VMTransition a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             if (dSlice != null) {
                 dSlices.add(dSlice);
             }
         }
+        return dSlices;
+    }
+
+    @Override
+    public boolean inject(ReconfigurationProblem rp) {
+        List<Slice> dSlices = getDSlices(rp);
         if (cstr.isContinuous()) {
             //Check for the already running VMs
             Mapping map = rp.getSourceModel().getMapping();
@@ -106,29 +111,23 @@ public class CGather implements ChocoConstraint {
                 Slice s2 = dSlices.get(j);
                 IntVar i1 = s1.getHoster();
                 IntVar i2 = s2.getHoster();
-                if (i1.instantiated() && i2.instantiated() && i1.getValue() != i2.getValue()) {
-                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+                if (i1.instantiated() && !instantiateTo(rp, i2, i1.getLB(), s1, s2)) {
                     return false;
-                } else {
-                    if (i1.instantiated()) {
-                        try {
-                            i2.instantiateTo(i1.getValue(), Cause.Null);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
-                            return false;
-                        }
-                    } else if (i2.instantiated()) {
-                        try {
-                            i1.instantiateTo(i2.getValue(), Cause.Null);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
-                            return false;
-                        }
-                    } else {
-                        s.post(IntConstraintFactory.arithm(i1, "=", i2));
-                    }
+                } else if (i2.instantiated() && !instantiateTo(rp, i1, i2.getLB(), s1, s2)) {
+                    return false;
                 }
+                s.post(IntConstraintFactory.arithm(i1, "=", i2));
             }
+        }
+        return true;
+    }
+
+    private static boolean instantiateTo(ReconfigurationProblem rp, IntVar i, int v, Slice s1, Slice s2) {
+        try {
+            i.instantiateTo(v, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+            return false;
         }
         return true;
     }

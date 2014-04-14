@@ -19,8 +19,6 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.GatherChecker;
-import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,15 +58,7 @@ public class Gather extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("gather(")
-                .append("vms=").append(getInvolvedVMs());
-
-        if (!isContinuous()) {
-            sb.append(", discrete");
-        } else {
-            sb.append(", continuous");
-        }
-        return sb.append(')').toString();
+        return "gather(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
     }
 
     @Override

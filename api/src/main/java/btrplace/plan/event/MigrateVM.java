@@ -93,19 +93,13 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            MigrateVM that = (MigrateVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
         }
-        return false;
+        MigrateVM that = (MigrateVM) o;
+        return this.vm.equals(that.vm) &&
+                this.src.equals(that.src) &&
+                this.dst.equals(that.dst);
     }
 
     @Override

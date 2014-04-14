@@ -22,12 +22,9 @@ import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.*;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.view.CShareableResource;
-import btrplace.solver.choco.view.ChocoModelView;
-import btrplace.solver.choco.view.ChocoModelViewBuilder;
-import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.transition.*;
+import btrplace.solver.choco.view.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
@@ -50,7 +47,7 @@ import java.util.Set;
  */
 public class DefaultReconfigurationProblemTest {
 
-    public class MockCViewModel implements ChocoModelView {
+    public class MockCView implements ChocoView {
         @Override
         public String getIdentifier() {
             return "cmock";
@@ -154,13 +151,14 @@ public class DefaultReconfigurationProblemTest {
         toRun.add(vm4);
         toRun.add(vm1);
         mo.getAttributes().put(vm7, "template", "small");
-        DurationEvaluators dEval = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dEval = ps.getDurationEvaluators();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
-                .setDurationEvaluators(dEval).build();
+                .setParams(ps)
+                .build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
-        Assert.assertNotNull(rp.getViewMapper());
         Assert.assertNotNull(rp.getObjectiveAlterer());
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
@@ -168,7 +166,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
-        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length);
+        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length, rp.getManageableVMs().toString());
         Assert.assertTrue(rp.getStart().instantiated() && rp.getStart().getValue() == 0);
 
         //Test the index values of the nodes and the VMs.
@@ -216,21 +214,24 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), runnings, map.getSleepingVMs(), Collections.<VM>emptySet())
                 .setManageableVMs(map.getRunningVMs(n1)).build();
+        /*
+          vm1: running -> running
+          vm2: running-> running
+          vm3: running -> running
+          vm4: sleeping -> sleeping
+          vm5: ready -> running
+          vm6: ready -> running
+
+         * manageable_runnings: vm1, vm2
+         * manageable: vm1, vm2, vm5, vm6 (with ids: vm#0, vm#1, vm#4, vm#5)
+         */
         Set<VM> manageable = rp.getManageableVMs();
 
-        Assert.assertEquals(manageable.size(), 4);
+        Assert.assertEquals(manageable.size(), 4, manageable.toString());
         Assert.assertTrue(manageable.containsAll(Arrays.asList(vm6, vm5, vm1, vm2)));
         //Check the action model that has been used for each of the VM.
         for (VM vm : map.getAllVMs()) {
-            if (map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm)) {
-                if (!manageable.contains(vm)) {
-                    Assert.assertEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
-                } else {
-                    Assert.assertEquals(rp.getVMAction(vm).getClass(), RelocatableVMModel.class);
-                }
-            } else {
-                Assert.assertNotEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
-            }
+            Assert.assertEquals(manageable.contains(vm), rp.getVMAction(vm).isManaged());
         }
     }
 
@@ -267,9 +268,9 @@ public class DefaultReconfigurationProblemTest {
                                 new HashSet<VM>(),
                                 new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[rp.getVM(vm1)];
+        Transition a = rp.getVMActions()[rp.getVM(vm1)];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ForgeVMModel.class, a.getClass());
+        Assert.assertEquals(ForgeVM.class, a.getClass());
     }
 
     @Test
@@ -304,9 +305,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(BootVMModel.class, a.getClass());
+        Assert.assertEquals(BootVM.class, a.getClass());
     }
 
     @Test
@@ -342,9 +343,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(RelocatableVMModel.class, a.getClass());
+        Assert.assertEquals(RelocatableVM.class, a.getClass());
     }
 
     @Test
@@ -380,9 +381,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(SuspendVMModel.class, a.getClass());
+        Assert.assertEquals(SuspendVM.class, a.getClass());
     }
 
     @Test
@@ -420,8 +421,8 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         m.getAllVMs()).build();
 
-        for (ActionModel a : rp.getVMActions()) {
-            Assert.assertEquals(a.getClass(), KillVMActionModel.class);
+        for (Transition a : rp.getVMActions()) {
+            Assert.assertEquals(a.getClass(), KillVM.class);
         }
     }
 
@@ -457,9 +458,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ShutdownVMModel.class, a.getClass());
+        Assert.assertEquals(ShutdownVM.class, a.getClass());
 
     }
 
@@ -468,38 +469,19 @@ public class DefaultReconfigurationProblemTest {
     public void testVMStaySleeping() throws SolverException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
         Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
 
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addSleepingVM(vm1, n1);
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addSleepingVM(vm1, n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(new HashSet<VM>(),
                         new HashSet<VM>(),
                         Collections.singleton(vm1),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(StayAwayVMModel.class, a.getClass());
+        Assert.assertEquals(StayAwayVM.class, a.getClass());
     }
 
     @Test
@@ -534,9 +516,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ResumeVMModel.class, a.getClass());
+        Assert.assertEquals(ResumeVM.class, a.getClass());
     }
 
     @Test
@@ -551,9 +533,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getNodeActions()[0];
+        Transition a = rp.getNodeActions()[0];
         Assert.assertEquals(a, rp.getNodeAction(n1));
-        Assert.assertEquals(ShutdownableNodeModel.class, a.getClass());
+        Assert.assertEquals(ShutdownableNode.class, a.getClass());
     }
 
 
@@ -590,9 +572,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getNodeActions()[rp.getNode(n3)];
+        Transition a = rp.getNodeActions()[rp.getNode(n3)];
         Assert.assertEquals(a, rp.getNodeAction(n3));
-        Assert.assertEquals(BootableNodeModel.class, a.getClass());
+        Assert.assertEquals(BootableNode.class, a.getClass());
     }
 
     @Test
@@ -661,7 +643,9 @@ public class DefaultReconfigurationProblemTest {
         map.addReadyVM(vm5);
         map.addReadyVM(vm6);
 
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
         ModelViewMapper mapper = new ModelViewMapper();
+        ps.setViewMapper(mapper);
         mapper.register(new ChocoModelViewBuilder() {
             @Override
             public Class<? extends ModelView> getKey() {
@@ -669,8 +653,13 @@ public class DefaultReconfigurationProblemTest {
             }
 
             @Override
-            public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-                return new MockCViewModel();
+            public SolverViewBuilder build(ModelView v) throws SolverException {
+                return new DelegatedBuilder("cmock", Collections.<String>emptyList()) {
+                    @Override
+                    public ChocoView build(ReconfigurationProblem rp) throws SolverException {
+                        return new ModelViewMapperTest.CMockView();
+                    }
+                };
             }
         });
 
@@ -678,38 +667,16 @@ public class DefaultReconfigurationProblemTest {
         mo.attach(v);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setViewMapper(mapper)
+                .setParams(ps)
                 .build();
 
-        Assert.assertEquals(rp.getViews().size(), 1);
-        Assert.assertNotNull(rp.getView("cmock"));
-        Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
+        Assert.assertNotNull(rp.getView("mock"));
+        Assert.assertTrue(rp.getView("mock") instanceof ModelViewMapperTest.CMockView);
     }
 
     @Test
     public void testNoViewImplementation() throws SolverException {
         Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
 
         MockView v = new MockView();
         mo.attach(v);
@@ -743,7 +710,6 @@ public class DefaultReconfigurationProblemTest {
                         , map.getAllVMs()
                         , new HashSet<VM>()
                         , new HashSet<VM>())
-                .labelVariables()
                 .build();
 
         //Restrict the capacity to 5 at most
@@ -759,7 +725,7 @@ public class DefaultReconfigurationProblemTest {
             counts[nIdx] = rp.getNbRunningVMs()[nIdx].getValue();
         }
         for (VM vm : rp.getFutureRunningVMs()) {
-            VMActionModel vmo = rp.getVMActions()[rp.getVM(vm)];
+            VMTransition vmo = rp.getVMActions()[rp.getVM(vm)];
             int on = vmo.getDSlice().getHoster().getValue();
             counts[on]--;
         }
@@ -791,13 +757,13 @@ public class DefaultReconfigurationProblemTest {
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo,
+                new DefaultChocoReconfigurationAlgorithmParams(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
                 Collections.<VM>emptySet(),
-                map.getAllVMs(),
-                false);
+                map.getAllVMs());
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(vm2));
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm3));
@@ -820,10 +786,10 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
 
         rp.setObjective(true, nbNodes);
@@ -851,10 +817,10 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
         rp.setObjective(false, nbNodes);
         ReconfigurationPlan plan = rp.solve(0, true);
@@ -882,10 +848,10 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
 
         rp.setObjective(false, nbNodes);
@@ -921,10 +887,10 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = new ObjectiveAlterer() {
@@ -943,8 +909,8 @@ public class DefaultReconfigurationProblemTest {
     @Test
     public void testViewAddition() throws SolverException {
         Model mo = new DefaultModel();
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        MockCViewModel view = new MockCViewModel();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        MockCView view = new MockCView();
         Assert.assertTrue(rp.addView(view));
         Assert.assertEquals(rp.getView(view.getIdentifier()), view);
         Assert.assertFalse(rp.addView(view));

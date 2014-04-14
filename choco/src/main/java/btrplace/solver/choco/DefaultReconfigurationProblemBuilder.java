@@ -22,8 +22,6 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,10 +32,8 @@ import java.util.Set;
  * Builder to help at the creation of a reconfiguration algorithm.
  * By default:
  * <ul>
- * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
- * <li>The default {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators} is used</li>
- * <li>The default {@link btrplace.solver.choco.view.ModelViewMapper} is used</li>
+ * <li>Default ChocoReconfigurationAlgorithmParams: {@link btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams}</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *
@@ -47,15 +43,11 @@ public class DefaultReconfigurationProblemBuilder {
 
     private Model model;
 
-    private boolean labelVars = false;
-
-    private DurationEvaluators dEval;
-
-    private ModelViewMapper viewMapper;
-
     private Set<VM> runs, waits, over, sleep;
 
     private Set<VM> manageable;
+
+    private ChocoReconfigurationAlgorithmParams ps;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -67,45 +59,13 @@ public class DefaultReconfigurationProblemBuilder {
     }
 
     /**
-     * Label the variables created by the problem.
+     * Set the parameters to use.
      *
+     * @param p the parameters
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder labelVariables() {
-        return labelVariables(true);
-    }
-
-    /**
-     * Label the variables created by the problem.
-     *
-     * @param b {@code true} to label the variables
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder labelVariables(boolean b) {
-        labelVars = b;
-        return this;
-    }
-
-
-    /**
-     * Provide a dedicated {@link DurationEvaluators}.
-     *
-     * @param d the evaluator to use
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder setDurationEvaluators(DurationEvaluators d) {
-        dEval = d;
-        return this;
-    }
-
-    /**
-     * Provide a dedicated {@link ModelViewMapper}.
-     *
-     * @param m the mapper to use
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder setViewMapper(ModelViewMapper m) {
-        viewMapper = m;
+    public DefaultReconfigurationProblemBuilder setParams(ChocoReconfigurationAlgorithmParams p) {
+        this.ps = p;
         return this;
     }
 
@@ -161,19 +121,18 @@ public class DefaultReconfigurationProblemBuilder {
             waits = map.getReadyVMs();
             over = Collections.emptySet();
         }
-        if (dEval == null) {
-            dEval = DurationEvaluators.newBundle();
-        }
-        if (viewMapper == null) {
-            viewMapper = ModelViewMapper.newBundle();
-        }
+
         if (manageable == null) {
             manageable = new HashSet<>();
             manageable.addAll(model.getMapping().getSleepingVMs());
             manageable.addAll(model.getMapping().getRunningVMs());
             manageable.addAll(model.getMapping().getReadyVMs());
         }
-        return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
+
+        if (ps == null) {
+            ps = new DefaultChocoReconfigurationAlgorithmParams();
+        }
+        return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable);
     }
 
 }

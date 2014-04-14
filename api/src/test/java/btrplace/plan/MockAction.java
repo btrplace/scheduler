@@ -45,6 +45,24 @@ public class MockAction extends Action {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) {
+            return false;
+        }
+        MockAction that = (MockAction) o;
+
+        return count == that.count && u.equals(that.u);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + count;
+        result = 31 * result + u.hashCode();
+        return result;
+    }
+
+    @Override
     public String pretty() {
         return "pretty(" + u + ", start= " + getStart() + ", end=" + getEnd() + ")";
     }

@@ -69,6 +69,11 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private List<SolutionStatistics> measures;
 
     /**
+     * Choco version of the constraints.
+     */
+    private List<ChocoConstraint> cConstraints;
+
+    /**
      * Make a new runner.
      *
      * @param ps the parameters for the solving process
@@ -85,74 +90,11 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     public InstanceResult call() throws SolverException {
         rp = null;
         start = System.currentTimeMillis();
-        coreRPDuration = -System.currentTimeMillis();
         measures = new ArrayList<>();
-        //Build the RP. As VM state management is not possible
-        //We extract VM-state related constraints first.
-        //For other constraint, we just create the right choco constraint
-        Set<VM> toRun = new HashSet<>();
-        Set<VM> toForge = new HashSet<>();
-        Set<VM> toKill = new HashSet<>();
-        Set<VM> toSleep = new HashSet<>();
 
-        List<ChocoConstraint> cConstraints = new ArrayList<>();
-        for (SatConstraint cstr : cstrs) {
-            checkNodesExistence(origin, cstr.getInvolvedNodes());
-
-            //We cannot check for VMs that are going to the ready state
-            //as they are not forced to be a part of the initial model
-            //(when they will be forged)
-            if (!(cstrs instanceof Ready)) {
-                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
-            }
-
-            if (cstr instanceof Running) {
-                toRun.addAll(cstr.getInvolvedVMs());
-            } else if (cstr instanceof Sleeping) {
-                toSleep.addAll(cstr.getInvolvedVMs());
-            } else if (cstr instanceof Ready) {
-                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
-                toForge.addAll(cstr.getInvolvedVMs());
-            } else if (cstr instanceof Killed) {
-                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
-                toKill.addAll(cstr.getInvolvedVMs());
-            }
-
-            ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(cstr.getClass());
-            if (ccBuilder == null) {
-                throw new SolverException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
-            }
-            ChocoConstraint cc = ccBuilder.build(cstr);
-            if (cc == null) {
-                throw new SolverException(origin, "Error while mapping the constraint '"
-                        + cstr.getClass().getSimpleName() + "'");
-            }
-
-            cConstraints.add(cc);
-        }
-
-        //Make the optimization constraint
-        ChocoConstraint cObj = buildOptConstraint();
-
-        //Make the core-RP
-
-
-        DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
-                .setNextVMsStates(toForge, toRun, toSleep, toKill)
-                .setViewMapper(params.getViewMapper())
-                .setDurationEvaluators(params.getDurationEvaluators());
-        if (params.doRepair()) {
-            Set<VM> toManage = new HashSet<>();
-            for (ChocoConstraint cstr : cConstraints) {
-                toManage.addAll(cstr.getMisPlacedVMs(origin));
-            }
-            toManage.addAll(cObj.getMisPlacedVMs(origin));
-            rpb.setManageableVMs(toManage);
-        }
-        rpb.labelVariables(params.getVerbosity() > 0);
-
-        rp = rpb.build();
-
+        //Build the core problem
+        coreRPDuration = -System.currentTimeMillis();
+        rp = buildRP();
         //Set the maximum duration
         try {
             rp.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
@@ -162,24 +104,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
         coreRPDuration += System.currentTimeMillis();
 
-        //Customize with the constraints
+        //Customize the core problem
         speRPDuration = -System.currentTimeMillis();
-        try {
-            for (ChocoConstraint ccstr : cConstraints) {
-                if (!ccstr.inject(rp)) {
-                    return new InstanceResult(null, makeStatistics());
-                }
-            }
-        } catch (UnsupportedOperationException ex) {
-            //TODO: fix that ugly hack: no solution
+        if (!injectConstraints()) {
             return new InstanceResult(null, makeStatistics());
         }
-
-        //The objective
-        cObj.inject(rp);
         speRPDuration += System.currentTimeMillis();
-        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speRPDuration);
 
+        //statistics
+        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speRPDuration);
         rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
 
@@ -208,12 +141,95 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
-
-        //No solutions, but still some statistics
-        if (p == null) {
-            return new InstanceResult(null, makeStatistics());
-        }
         return new InstanceResult(p, makeStatistics());
+    }
+
+    private ReconfigurationProblem buildRP() throws SolverException {
+        //Build the RP. As VM state management is not possible
+        //We extract VM-state related constraints first.
+        //For other constraint, we just create the right choco constraint
+        Set<VM> toRun = new HashSet<>();
+        Set<VM> toForge = new HashSet<>();
+        Set<VM> toKill = new HashSet<>();
+        Set<VM> toSleep = new HashSet<>();
+
+        cConstraints = new ArrayList<>();
+        for (SatConstraint cstr : cstrs) {
+            checkNodesExistence(origin, cstr.getInvolvedNodes());
+
+            //We cannot check for VMs that are going to the ready state
+            //as they are not forced to be a part of the initial model
+            //(when they will be forged)
+            if (!(cstrs instanceof Ready)) {
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+            }
+
+            if (cstr instanceof Running) {
+                toRun.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Sleeping) {
+                toSleep.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Ready) {
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                toForge.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Killed) {
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                toKill.addAll(cstr.getInvolvedVMs());
+            }
+
+            cConstraints.add(buildSatConstraint(cstr));
+        }
+
+        cConstraints.add(buildOptConstraint());
+
+        DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
+                .setNextVMsStates(toForge, toRun, toSleep, toKill)
+                .setParams(params);
+
+        if (params.doRepair()) {
+            Set<VM> toManage = new HashSet<>();
+            for (ChocoConstraint cstr : cConstraints) {
+                toManage.addAll(cstr.getMisPlacedVMs(origin));
+            }
+            rpb.setManageableVMs(toManage);
+        }
+
+        return rpb.build();
+    }
+
+    /**
+     * Inject the constraints inside the problem.
+     */
+    private boolean injectConstraints() throws SolverException {
+        try {
+            for (ChocoConstraint cc : cConstraints) {
+                if (!cc.inject(rp)) {
+                    return false;
+                }
+            }
+        } catch (UnsupportedOperationException ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Build a sat constraint
+     *
+     * @param cstr the model-side constraint
+     * @return the solver-side constraint
+     * @throws SolverException if the process failed
+     */
+    private ChocoConstraint buildSatConstraint(SatConstraint cstr) throws SolverException {
+        ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(cstr.getClass());
+        if (ccBuilder == null) {
+            throw new SolverException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
+        }
+        ChocoConstraint cc = ccBuilder.build(cstr);
+        if (cc == null) {
+            throw new SolverException(origin, "Error while mapping the constraint '"
+                    + cstr.getClass().getSimpleName() + "'");
+        }
+        return cc;
     }
 
     /**
@@ -285,7 +301,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 (long) m2.getTimeCount(),
                 m2.getNodeCount(),
                 m2.getBackTrackCount(),
-                false,//huh
+                params.getTimeLimit() <= (m2.getTimeCount() / 1000),
                 coreRPDuration,
                 speRPDuration);
 

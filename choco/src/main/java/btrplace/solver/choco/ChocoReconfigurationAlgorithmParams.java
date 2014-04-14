@@ -18,8 +18,12 @@
 package btrplace.solver.choco;
 
 import btrplace.solver.choco.constraint.ConstraintMapper;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.SolverViewBuilder;
+
+import java.util.Collection;
 
 /**
  * Parameters for a {@link ChocoReconfigurationAlgorithm}.
@@ -61,7 +65,7 @@ public interface ChocoReconfigurationAlgorithmParams {
 
     /**
      * Get the mapper that is used to associate the {@link btrplace.model.view.ModelView}
-     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
+     * to the {@link btrplace.solver.choco.view.ChocoView}.
      *
      * @return the mapper
      */
@@ -69,7 +73,7 @@ public interface ChocoReconfigurationAlgorithmParams {
 
     /**
      * Set the mapper to use to associate the {@link btrplace.model.view.ModelView}
-     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
+     * to the {@link btrplace.solver.choco.view.ChocoView}.
      *
      * @param m the mapper to use
      * @return the current instance
@@ -159,4 +163,38 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @see #setVerbosity(int)
      */
     int getVerbosity();
+
+    /**
+     * Set the factory that is used to model the transitions.
+     *
+     * @param amf the factory to rely on
+     */
+    void setTransitionFactory(TransitionFactory amf);
+
+    /**
+     * Get the current factory that is used to model the transitions.
+     *
+     * @return the factory
+     */
+    TransitionFactory getTransitionFactory();
+
+    /**
+     * Declare a builder that create solve-only views.
+     *
+     * @param b the builder to add
+     */
+    void addSolverViewBuilder(SolverViewBuilder b);
+
+    /**
+     * Remove a builder dedicated to solver-only views.
+     * @param b the builder to remove
+     * @return {@code true} iff the builder has been removed
+     */
+    boolean removeSolverViewBuilder(SolverViewBuilder b);
+
+    /**
+     * Get the solver-only view builders.
+     * @return a collection that may be empty
+     */
+    Collection<SolverViewBuilder> getSolverViews();
 }

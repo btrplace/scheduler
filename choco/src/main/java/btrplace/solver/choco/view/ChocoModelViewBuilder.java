@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,11 +19,10 @@ package btrplace.solver.choco.view;
 
 import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ReconfigurationProblem;
 
 /**
- * The builder that is used by {@link ChocoModelViewBuilder} to create
- * the solver-side views.
+ * The builder that is used by {@link btrplace.solver.choco.view.ModelViewMapper} to create
+ * the solver-side builder from from an api-side model.
  *
  * @author Fabien Hermenier
  */
@@ -38,13 +36,11 @@ public interface ChocoModelViewBuilder {
     Class<? extends ModelView> getKey();
 
     /**
-     * Build the {@link ChocoModelView} associated to the {@link ModelView}
+     * Build the {@link ChocoView} associated to the {@link ModelView}
      * identified as key.
      *
-     * @param rp the problem to add
-     * @param v  the model constraint
+     * @param v the model constraint
      * @throws SolverException if an error occurred while building the view
      */
-    ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException;
-
+    SolverViewBuilder build(ModelView v) throws SolverException;
 }

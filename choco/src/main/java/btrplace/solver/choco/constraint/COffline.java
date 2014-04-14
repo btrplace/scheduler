@@ -26,8 +26,8 @@ import btrplace.model.constraint.Offline;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.ActionModel;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.Transition;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Cause;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -57,14 +57,14 @@ public class COffline implements ChocoConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         Node nId = cstr.getInvolvedNodes().iterator().next();
         int id = rp.getNode(nId);
-        ActionModel m = rp.getNodeAction(nId);
+        Transition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(0, Cause.Null);
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
             return false;
         }
-        for (VMActionModel am : rp.getVMActions()) {
+        for (VMTransition am : rp.getVMActions()) {
             Slice s = am.getDSlice();
             if (s != null) {
                 rp.getSolver().post(IntConstraintFactory.arithm(s.getHoster(), "!=", id));

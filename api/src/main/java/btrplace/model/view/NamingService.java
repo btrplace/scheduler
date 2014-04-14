@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class NamingService<E extends Element> implements ModelView {
+public final class NamingService<E extends Element> implements ModelView {
 
     private Map<String, E> resolve;
     private Map<E, String> rev;
@@ -47,6 +47,7 @@ public class NamingService<E extends Element> implements ModelView {
 
     /**
      * Make a naming service dedicated to nodes.
+     *
      * @return a new naming service
      */
     public static NamingService<Node> newNodeNS() {
@@ -55,6 +56,7 @@ public class NamingService<E extends Element> implements ModelView {
 
     /**
      * Make a naming service dedicated to VMs.
+     *
      * @return a new naming service
      */
     public static NamingService<VM> newVMNS() {
@@ -63,6 +65,7 @@ public class NamingService<E extends Element> implements ModelView {
 
     /**
      * Make a new service.
+     *
      * @param eId "vm" or "node"
      */
     private NamingService(String eId) {
@@ -78,6 +81,7 @@ public class NamingService<E extends Element> implements ModelView {
 
     /**
      * Get the element identifier of this naming service
+     *
      * @return "vm" or "node" for a naming service dedicated to the VMs or the nodes respectively
      */
     public String getElementIdentifier() {
@@ -158,8 +162,12 @@ public class NamingService<E extends Element> implements ModelView {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         NamingService that = (NamingService) o;
 

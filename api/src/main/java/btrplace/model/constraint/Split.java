@@ -19,8 +19,6 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.constraint.checker.SplitChecker;
 
 import java.util.*;
 
@@ -124,20 +122,7 @@ public class Split extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("split(vms=[");
-        for (Iterator<Collection<VM>> ite = sets.iterator(); ite.hasNext(); ) {
-            b.append(ite.next());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
-        }
-        b.append(']');
-        if (isContinuous()) {
-            b.append(", continuous");
-        } else {
-            b.append(", discrete");
-        }
-        return b.append(')').toString();
+        return "split(vms=" + sets + ", " + restrictionToString() + ')';
     }
 
     @Override

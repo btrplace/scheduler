@@ -274,4 +274,20 @@ public interface Mapping extends Cloneable {
      * @return a positive integer
      */
     int getNbVMs();
+
+    /**
+     * Get the state of a VM
+     *
+     * @param v the VM
+     * @return a state if the VM is known. {@code null} otherwise
+     */
+    VMState getState(VM v);
+
+    /**
+     * Get the state of a node
+     *
+     * @param n the node
+     * @return a state if the node is known. {@code null} otherwise
+     */
+    NodeState getState(Node n);
 }

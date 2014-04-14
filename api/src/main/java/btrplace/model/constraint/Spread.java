@@ -19,8 +19,6 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.constraint.checker.SpreadChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -60,13 +58,7 @@ public class Spread extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("spread(vms=").append(getInvolvedVMs());
-        if (!isContinuous()) {
-            b.append(", discrete");
-        } else {
-            b.append(", continuous");
-        }
-        return b.append(')').toString();
+        return "spread(vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
     }
 
     @Override

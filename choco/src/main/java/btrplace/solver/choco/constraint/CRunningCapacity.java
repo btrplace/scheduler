@@ -25,6 +25,9 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.RunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.view.AliasedCumulatives;
+import btrplace.solver.choco.view.ChocoView;
+import btrplace.solver.choco.view.Cumulatives;
 import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
@@ -58,27 +61,8 @@ public class CRunningCapacity implements ChocoConstraint {
         if (cstr.getInvolvedVMs().size() == 1) {
             return filterWithSingleNode(rp);
         }
-        if (cstr.isContinuous()) {
-            //The constraint must be already satisfied
-            if (!cstr.isSatisfied(rp.getSourceModel())) {
-                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
-                return false;
-            } else {
-                int[] alias = new int[cstr.getInvolvedNodes().size()];
-                int i = 0;
-                for (Node n : cstr.getInvolvedNodes()) {
-                    alias[i++] = rp.getNode(n);
-                }
-                int nbRunning = 0;
-                for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
-                    nbRunning += rp.getSourceModel().getMapping().getRunningVMs(n).size();
-                }
-                int[] cUse = new int[nbRunning];
-                IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
-                Arrays.fill(cUse, 1);
-                Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
-                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
-            }
+        if (cstr.isContinuous() && !injectContinuous(rp)) {
+            return false;
         }
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
@@ -91,10 +75,37 @@ public class CRunningCapacity implements ChocoConstraint {
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
 
-
         if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
             s.post(IntConstraintFactory.arithm(mySum, "=", rp.getFutureRunningVMs().size()));
         }
+        return true;
+    }
+
+    private boolean injectContinuous(ReconfigurationProblem rp) throws SolverException {
+        //The constraint must be already satisfied
+        if (!cstr.isSatisfied(rp.getSourceModel())) {
+            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            return false;
+        }
+        int[] alias = new int[cstr.getInvolvedNodes().size()];
+        int i = 0;
+        for (Node n : cstr.getInvolvedNodes()) {
+            alias[i++] = rp.getNode(n);
+        }
+        int nbRunning = 0;
+        for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
+            nbRunning += rp.getSourceModel().getMapping().getRunningVMs(n).size();
+        }
+        int[] cUse = new int[nbRunning];
+        IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
+        Arrays.fill(cUse, 1);
+        Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
+
+        ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+        }
+        ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse, dUse, alias);
         return true;
     }
 

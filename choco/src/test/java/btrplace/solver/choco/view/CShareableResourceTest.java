@@ -26,7 +26,7 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
@@ -117,9 +117,9 @@ public class CShareableResourceTest {
         rc.setCapacity(n2, 3);
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
+        VMTransition avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
         avm2.getDSlice().getHoster().instantiateTo(1, Cause.Null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
@@ -151,11 +151,11 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        ModelViewMapper vMapper = new ModelViewMapper();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        ModelViewMapper vMapper = ps.getViewMapper();
         vMapper.register(new CShareableResource.Builder());
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setViewMapper(vMapper)
-                .labelVariables()
+                .setParams(ps)
                 .build();
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -190,8 +190,8 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
         avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D

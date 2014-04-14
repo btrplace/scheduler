@@ -18,10 +18,7 @@
 package btrplace.plan.event;
 
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 
 import java.util.Objects;
 
@@ -77,18 +74,12 @@ public class ShutdownVM extends Action implements VMStateTransition {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            ShutdownVM that = (ShutdownVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.node.equals(that.node) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
         }
-        return false;
+        ShutdownVM that = (ShutdownVM) o;
+        return this.vm.equals(that.vm) &&
+                this.node.equals(that.node);
     }
 
     @Override

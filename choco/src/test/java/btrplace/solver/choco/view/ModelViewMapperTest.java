@@ -26,6 +26,8 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
+
 
 /**
  * Unit tests for {@link btrplace.solver.choco.view.ModelViewMapper}.
@@ -56,19 +58,7 @@ public class ModelViewMapperTest {
         Assert.assertFalse(map.unRegister(MockModelView.class));
     }
 
-    @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
-    public void testMap() throws SolverException {
-        ModelViewMapper map = new ModelViewMapper();
-        map.register(new Builder());
-        MockModelView v = new MockModelView();
-        ChocoModelView cv = map.map(null, v);
-        Assert.assertTrue(cv.getClass().equals(CMockModelView.class));
-
-        map.unRegister(MockModelView.class);
-        Assert.assertNull(map.map(null, v));
-    }
-
-    public static class CMockModelView implements ChocoModelView {
+    public static class CMockView implements ChocoView {
         @Override
         public String getIdentifier() {
             return "mock";
@@ -97,9 +87,15 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-            return new CMockModelView();
+        public SolverViewBuilder build(ModelView v) throws SolverException {
+            return new DelegatedBuilder("mock", Collections.<String>emptyList()) {
+                @Override
+                public ChocoView build(ReconfigurationProblem rp) throws SolverException {
+                    return new CMockView();
+                }
+            };
         }
+
     }
 
     public static class MockModelView implements ModelView {

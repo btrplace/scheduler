@@ -27,9 +27,9 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
+import btrplace.solver.choco.duration.ConstantActionDuration;
+import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.duration.LinearToAResourceActionDuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,7 +61,8 @@ public class ModelCustomization implements Example {
         map.addOnlineNode(ns.get(0));
         map.addOnlineNode(ns.get(1));
 
-        ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
+        //32GB by default for the nodes, 1 for the VMs
+        ShareableResource rcMem = new ShareableResource("mem", 32, 1);
 
         for (int i = 0; i < 10; i++) {
             rcMem.setConsumption(vms.get(i), i % 3 + 1);

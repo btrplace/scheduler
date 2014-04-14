@@ -57,7 +57,7 @@ public class Disjoint extends IntConstraint<IntVar> {
      * candidates[g][v] = number of variables in group 'g' which can be assigned to the value 'v',
      * with g = 0 || 1 and 0 <= v < nbValues
      */
-    protected IStateInt[][] candidates;
+    private IStateInt[][] candidates;
     /**
      * required[g].get(v) iff at least one variable in the group 'g' is assigned to the value 'v',
      * with g = 0 || 1 and 0 <= v < nbValues

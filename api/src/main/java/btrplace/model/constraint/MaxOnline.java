@@ -19,8 +19,6 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.MaxOnlineChecker;
-import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -90,18 +88,8 @@ public class MaxOnline extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("maxOnline(").append("nodes=").append(getInvolvedNodes()).append(", amount=")
-                .append(qty);
-
-        if (isContinuous()) {
-            b.append(", continuous");
-        } else {
-            b.append(", discrete");
-        }
-        b.append(')');
-
-        return b.toString();
+        return "maxOnline(" + "nodes=" + getInvolvedNodes() +
+                ", amount=" + qty + ", " + restrictionToString() + ')';
     }
 
     @Override

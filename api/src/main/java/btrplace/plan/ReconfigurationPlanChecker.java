@@ -19,7 +19,7 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.SatConstraintChecker;
 import btrplace.plan.event.*;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.PriorityQueue;
 
 /**
  * Checker to verify if a reconfiguration plan satisfies a set of
- * {@link btrplace.model.constraint.checker.SatConstraintChecker}.
+ * {@link btrplace.model.constraint.SatConstraintChecker}.
  * <p/>
  * In practice, the origin model is send to each of the checkers.
  * Then it notifies all the checkers for the beginning and the end moment of each of the actions and events.
@@ -276,8 +276,15 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                     visitAndThrowOnViolation(a);
                     a = starts.peek();
                 }
-                int nextEnd = ends.isEmpty() ? Integer.MAX_VALUE : ends.peek().getEnd();
-                int nextStart = starts.isEmpty() ? Integer.MAX_VALUE : starts.peek().getStart();
+                int nextEnd = Integer.MAX_VALUE;
+                if (!ends.isEmpty()) {
+                    nextEnd = ends.peek().getEnd();
+                }
+                int nextStart = Integer.MAX_VALUE;
+                if (!starts.isEmpty()) {
+                    nextStart = starts.peek().getStart();
+                }
+
                 curMoment = Math.min(nextEnd, nextStart);
             }
         }

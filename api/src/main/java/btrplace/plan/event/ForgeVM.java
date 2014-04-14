@@ -20,6 +20,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 
 import java.util.Objects;
 
@@ -69,17 +70,11 @@ public class ForgeVM extends Action implements VMStateTransition {
      */
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            ForgeVM that = (ForgeVM) o;
-            return this.id.equals(that.id)
-                    && this.getStart() == that.getStart()
-                    && this.getEnd() == that.getEnd();
         }
-        return false;
+        ForgeVM that = (ForgeVM) o;
+        return this.id.equals(that.id);
     }
 
     @Override

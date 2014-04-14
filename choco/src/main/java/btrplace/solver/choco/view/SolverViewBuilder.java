@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package btrplace.solver.choco.view;
+
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ReconfigurationProblem;
+
+import java.util.List;
+
+/**
+ * To build solver-side views.
+ *
+ * @author Fabien Hermenier
+ */
+public abstract class SolverViewBuilder {
+
+    /**
+     * Get the identifier of the view that is handled by this builder.
+     *
+     * @return a string
+     */
+    public abstract String getKey();
+
+    /**
+     * Build the {@link ChocoView}
+     *
+     * @param rp the problem to add
+     * @throws btrplace.solver.SolverException if an error occurred while building the view
+     */
+    public abstract ChocoView build(ReconfigurationProblem rp) throws SolverException;
+
+    /**
+     * Get the view dependencies.
+     * The dependencies will be build in prior.
+     *
+     * @return a list of view identifier that may be empty
+     */
+    public abstract List<String> getDependencies();
+
+    @Override
+    public String toString() {
+        return getKey() + " requires " + getDependencies();
+    }
+}

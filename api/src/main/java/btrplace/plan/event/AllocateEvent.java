@@ -96,7 +96,7 @@ public class AllocateEvent implements VMEvent {
             return true;
         } else if (o.getClass() == this.getClass()) {
             AllocateEvent that = (AllocateEvent) o;
-            return this.vm == that.vm
+            return this.vm.equals(that.vm)
                     && this.rc.equals(that.rc)
                     && this.qty == that.qty;
         }

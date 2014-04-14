@@ -21,9 +21,9 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.actionModel.BootableNodeModel;
-import btrplace.solver.choco.actionModel.NodeActionModel;
-import btrplace.solver.choco.actionModel.ShutdownableNodeModel;
+import btrplace.solver.choco.transition.BootableNode;
+import btrplace.solver.choco.transition.NodeTransition;
+import btrplace.solver.choco.transition.ShutdownableNode;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -38,10 +38,10 @@ import java.util.Map;
  * Date: 6/4/13
  * Time: 9:17 PM
  */
-public class CPowerView implements ChocoModelView {
+public class CPowerView implements ChocoView {
 
     /**
-     * The view identifier .
+     * The view identifier.
      */
     public static final String VIEW_ID = "PowerTime";
 
@@ -58,13 +58,13 @@ public class CPowerView implements ChocoModelView {
         powerEnds = new HashMap<>(rp.getNodes().length);
 
         for (Node n : rp.getNodes()) {
-            NodeActionModel na = rp.getNodeAction(n);
-            if (na instanceof ShutdownableNodeModel) {
+            NodeTransition na = rp.getNodeAction(n);
+            if (na instanceof ShutdownableNode) {
                 powerStarts.put(rp.getNode(n), rp.getStart());
-                IntVar powerEnd = rp.makeUnboundedDuration("NodeAction(", n, ").Pe");
+                IntVar powerEnd = rp.makeUnboundedDuration("NodeActionType(", n, ").Pe");
                 VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
-            } else if (na instanceof BootableNodeModel) {
+            } else if (na instanceof BootableNode) {
                 powerStarts.put(rp.getNode(n), na.getStart());
                 powerEnds.put(rp.getNode(n), na.getHostingEnd());
             }

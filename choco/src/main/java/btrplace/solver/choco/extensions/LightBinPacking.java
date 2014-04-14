@@ -18,10 +18,6 @@
 package btrplace.solver.choco.extensions;
 
 
-import memory.IEnvironment;
-import memory.IStateBitSet;
-import memory.IStateBool;
-import memory.IStateInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import solver.constraints.IntConstraint;
@@ -37,10 +33,6 @@ import util.tools.ArrayUtils;
 public class LightBinPacking extends IntConstraint<IntVar> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("solver");
-    /**
-     * The solver environment.
-     */
-    private IEnvironment env;
 
     /**
      * The number of bins.
@@ -61,65 +53,20 @@ public class LightBinPacking extends IntConstraint<IntVar> {
     private final int[][] iSizes;
 
     /**
-     * The sum of the item sizes per dimension. [nbItems]
-     */
-    private long[] sumISizes;
-
-    /**
-     * The load of each bin per dimension. [nbDims][nbBins]
-     */
-    private final IntVar[][] loads;
-
-    /**
-     * The total size of the required + candidate items for each bin. [nbDims][nbBins]
-     */
-    private IStateInt[][] bTLoads;
-
-    /**
-     * The total size of the required items for each bin. [nbDims][nbBins]
-     */
-    private IStateInt[][] bRLoads;
-
-    /**
-     * The sum of the bin load LBs. [nbDims]
-     */
-    private IStateInt[] sumLoadInf;
-
-    /**
-     * The sum of the bin load UBs. [nbDims]
-     */
-    private IStateInt[] sumLoadSup;
-
-    /**
-     * Has some bin load variable changed since the last propagation ?
-     */
-    private IStateBool loadsHaveChanged;
-
-    private String[] name;
-
-    private IStateBitSet notEntailedDims;
-
-    /**
      * constructor of the FastBinPacking global constraint
      *
      * @param labels      the label describing each dimension
-     * @param environment the solver environment
      * @param l           array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
      * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPacking(String[] labels, IEnvironment environment, IntVar[][] l, int[][] s, IntVar[] b) {
+    public LightBinPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), l[0][0].getSolver());
-        this.name = labels;
-        this.env = environment;
-        this.loads = l;
         this.nbBins = l[0].length;
         this.nbDims = l.length;
         this.bins = b;
         this.iSizes = s;
-        this.bTLoads = new IStateInt[nbDims][nbBins];
-        this.bRLoads = new IStateInt[nbDims][nbBins];
-        setPropagators(new LightBinPackingPropagator(labels, env, l, s, b));
+        setPropagators(new LightBinPackingPropagator(labels, l, s, b));
     }
 
     @Override
@@ -134,7 +81,6 @@ public class LightBinPacking extends IntConstraint<IntVar> {
             }
         }
         for (int b = 0; b < nbBins; b++) {
-            //for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             for (int d = 0; d <= nbDims; d++) {
                 int loadPos = iSizes[0].length + d * nbBins + b;
                 if (tuple[loadPos] != l[d][b]) {

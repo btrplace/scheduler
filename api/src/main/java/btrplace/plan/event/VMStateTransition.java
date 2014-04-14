@@ -17,6 +17,8 @@
 
 package btrplace.plan.event;
 
+import btrplace.model.VMState;
+
 /**
  * A interface to indicate an event realize a transition
  * on a VM state.
@@ -24,13 +26,6 @@ package btrplace.plan.event;
  * @author Fabien Hermenier
  */
 public interface VMStateTransition extends VMEvent {
-
-    /**
-     * The possible state for a VM.
-     */
-    public static enum VMState {
-        INIT, READY, RUNNING, SLEEPING, KILLED
-    }
 
     /**
      * Get the current state of the VM.

@@ -20,13 +20,13 @@ package btrplace.solver.choco;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.NodeActionModel;
-import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.view.ChocoModelView;
-import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.transition.NodeTransition;
+import btrplace.solver.choco.transition.VMTransition;
+import btrplace.solver.choco.view.ChocoView;
 import org.slf4j.Logger;
 import solver.ResolutionPolicy;
 import solver.Solver;
@@ -107,6 +107,14 @@ public interface ReconfigurationProblem {
     Set<VM> getFutureKilledVMs();
 
     /**
+     * Get the next state for a given VM.
+     *
+     * @param v the VM
+     * @return the state if the VM is known, {@code null} otherwise
+     */
+    VMState getNextState(VM v);
+
+    /**
      * Get the starting moment of the reconfiguration.
      *
      * @return a variable equals to 0
@@ -153,43 +161,43 @@ public interface ReconfigurationProblem {
     Node getNode(int idx);
 
     /**
-     * Get all the actions related to VMs.
+     * Get the VMs transition.
      *
-     * @return a list of actions.
+     * @return a list of transitions.
      */
-    VMActionModel[] getVMActions();
+    VMTransition[] getVMActions();
 
     /**
-     * Get the action associated to a given VM.
+     * Get the transition associated to a given VM.
      *
      * @param id the VM identifier
-     * @return the associated action if exists, {@code null} otherwise
+     * @return the associated transition if exists, {@code null} otherwise
      */
-    VMActionModel getVMAction(VM id);
+    VMTransition getVMAction(VM id);
 
     /**
-     * Get all the actions associated to a list of VMs.
+     * Get the transitions associated to a set of VMs.
      *
      * @param id the VMs
-     * @return a list of actions. The order is the same than the order of the VMs.
+     * @return an array of transition. The order is provided by the collection iterator.
      */
-    VMActionModel[] getVMActions(Set<VM> id);
+    VMTransition[] getVMActions(Set<VM> id);
 
 
     /**
-     * Get all the actions related to nodes.
+     * Get all the nodes transition.
      *
-     * @return a list of actions.
+     * @return a list of transitions.
      */
-    NodeActionModel[] getNodeActions();
+    NodeTransition[] getNodeActions();
 
     /**
-     * Get the action associated to a given node.
+     * Get the transition associated to a given node.
      *
      * @param id the node identifier
-     * @return the associated action if exists, {@code null} otherwise
+     * @return the associated transition if exists, {@code null} otherwise
      */
-    NodeActionModel getNodeAction(Node id);
+    NodeTransition getNodeAction(Node id);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
@@ -226,23 +234,23 @@ public interface ReconfigurationProblem {
      * Create a variable that indicate the current placement of a VM.
      * The variable is then already instantiated
      *
-     * @param n    the variable label
      * @param vmId the VM identifier
+     * @param n    the variable label
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntVar makeCurrentHost(String n, VM vmId) throws SolverException;
+    IntVar makeCurrentHost(VM vmId, Object... n) throws SolverException;
 
     /**
      * Create a variable that indicate a given node.
      * The variable is then already instantiated
      *
-     * @param n   the variable label
      * @param nId the node identifier
+     * @param n   the variable label
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntVar makeCurrentNode(String n, Node nId) throws SolverException;
+    IntVar makeCurrentNode(Node nId, Object... n) throws SolverException;
 
     /**
      * Create a variable denoting a duration.
@@ -269,22 +277,14 @@ public interface ReconfigurationProblem {
      * @param id the view identifier
      * @return the view if exists, {@code null} otherwise
      */
-    ChocoModelView getView(String id);
+    ChocoView getView(String id);
 
     /**
-     * Get the view mapper that is used to associate
-     * {@link btrplace.model.view.ModelView} to {@link ChocoModelView}.
+     * Get all the declared view keys.
      *
-     * @return the mapper
+     * @return a collection of keys, may be empty
      */
-    ModelViewMapper getViewMapper();
-
-    /**
-     * Get all the declared views.
-     *
-     * @return a collection of views, may be empty
-     */
-    Collection<ChocoModelView> getViews();
+    Collection<String> getViews();
 
     /**
      * Add a view.
@@ -293,7 +293,7 @@ public interface ReconfigurationProblem {
      * @param v the view to add
      * @return {@code true} iff the view has been added.
      */
-    boolean addView(ChocoModelView v);
+    boolean addView(ChocoView v);
 
 
     /**
@@ -313,13 +313,6 @@ public interface ReconfigurationProblem {
     String makeVarLabel(Object... lbl);
 
     /**
-     * Check if variables labelling is enabled.
-     *
-     * @return {@code true} iff enabled
-     */
-    boolean isVarLabelling();
-
-    /**
      * Get the VMs managed by the solver.
      * This set contains all the VMs that will have their state changed
      * plus the set of manageable running VMs that was passed to the constructor.
@@ -327,27 +320,6 @@ public interface ReconfigurationProblem {
      * @return a set of VMs identifier
      */
     Set<VM> getManageableVMs();
-
-    /**
-     * Get the builder that handle the scheduling part of the problem.
-     *
-     * @return the builder
-     */
-    SliceSchedulerBuilder getTaskSchedulerBuilder();
-
-    /**
-     * Get the builder that handle the management of capacities over the time.
-     *
-     * @return the builder
-     */
-    AliasedCumulativesBuilder getAliasedCumulativesBuilder();
-
-    /**
-     * Get the builder that handle the VM placement at the end of the reconfiguration process.
-     *
-     * @return the builder
-     */
-    BinPackingBuilder getBinPackingBuilder();
 
     /**
      * Get the logger.

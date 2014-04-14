@@ -26,7 +26,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
-import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
+import btrplace.solver.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

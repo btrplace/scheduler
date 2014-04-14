@@ -18,19 +18,14 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.*;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.extensions.AliasedCumulatives;
-import btrplace.solver.choco.view.ChocoModelView;
-import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.transition.*;
+import btrplace.solver.choco.view.*;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
@@ -38,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
 import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.search.solution.AllSolutionsRecorder;
@@ -66,16 +60,13 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
-
-    private boolean useLabels = false;
-
-    private IntVar objective;
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
     public static final int DEFAULT_MAX_TIME = 3600;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
+    private boolean useLabels = false;
+    private IntVar objective;
     private Model model;
 
     private Solver solver;
@@ -96,85 +87,84 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private IntVar start;
     private IntVar end;
 
-    private VMActionModel[] vmActions;
-    private NodeActionModel[] nodeActions;
+    private VMTransition[] vmActions;
+    private NodeTransition[] nodeActions;
 
     private DurationEvaluators durEval;
 
-    private Map<String, ChocoModelView> views;
-
     private IntVar[] vmsCountOnNodes;
-
-    private SliceSchedulerBuilder taskSchedBuilder;
-
-    private AliasedCumulativesBuilder cumulativeBuilder;
-
-    private BinPackingBuilder bpBuilder;
 
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
-    private ModelViewMapper viewMapper;
-
     private ResolutionPolicy solvingPolicy;
 
+    private TransitionFactory amFactory;
+
+    private SolverViewsManager viewsManager;
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
      *
-     * @param m                 the initial model
-     * @param dEval             to evaluate the duration of every action
-     * @param ready             the VMs that must be in the ready state
-     * @param running           the VMs that must be in the running state
-     * @param sleeping          the VMs that must be in the sleeping state
-     * @param label             {@code true} to label the variables (for debugging purpose)
-     * @param killed            the VMs that must be killed
-     * @param runningToConsider the VMs that can be managed by the solver when they are already running and they must keep running
+     * @param m         the initial model
+     * @param ps        parameters to customize the problem
+     * @param ready     the VMs that must be in the ready state
+     * @param running   the VMs that must be in the running state
+     * @param sleeping  the VMs that must be in the sleeping state
+     * @param killed    the VMs that must be killed
+     * @param preRooted the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
-                                         DurationEvaluators dEval,
-                                         ModelViewMapper vMapper,
+                                         ChocoReconfigurationAlgorithmParams ps,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
                                          Set<VM> killed,
-                                         Set<VM> runningToConsider,
-                                         boolean label
-    ) throws SolverException {
+                                         Set<VM> preRooted) throws SolverException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
         this.killed = new HashSet<>(killed);
-        this.manageable = new HashSet<>(runningToConsider);
-        this.useLabels = label;
+        this.manageable = new HashSet<>(preRooted);
+        this.useLabels = ps.getVerbosity() > 0;
+        this.amFactory = ps.getTransitionFactory();
         model = m;
-        durEval = dEval;
-        this.viewMapper = vMapper;
+        durEval = ps.getDurationEvaluators();
+
         solver = new Solver();
         solver.getSearchLoop().plugSearchMonitor(new AllSolutionsRecorder(solver));
-        start = VariableFactory.fixed("RP.start", 0, solver);
-        end = VariableFactory.bounded("RP.end", 0, DEFAULT_MAX_TIME, solver);
+        start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
+        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, DEFAULT_MAX_TIME, solver);
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
-        this.views = new HashMap<>();
+
 
         fillElements();
 
         makeCardinalityVariables();
 
-        makeNodeActionModels();
-        makeVMActionModels();
+        makeNodeTransitions();
+        makeVMTransitions();
 
-        bpBuilder = new BinPackingBuilder(this);
-        taskSchedBuilder = new SliceSchedulerBuilder(this);
-        cumulativeBuilder = new AliasedCumulativesBuilder(this);
-
-        makeViews();
-
+        makeViews(ps);
         linkCardinalityWithSlices();
 
+    }
+
+    private void makeViews(ChocoReconfigurationAlgorithmParams ps) throws SolverException {
+        List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
+        ModelViewMapper vm = ps.getViewMapper();
+        for (ModelView v : model.getViews()) {
+            ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
+            if (modelViewBuilder != null) {
+                SolverViewBuilder sb = modelViewBuilder.build(v);
+                viewBuilders.add(sb);
+            }
+        }
+        viewsManager = new SolverViewsManager(this);
+        viewsManager.build(viewBuilders);
     }
 
     @Override
@@ -183,28 +173,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }
-
-        for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
-            if (!cv.getValue().beforeSolve(this)) {
-                return null;
-            }
-        }
-
-        try {
-            bpBuilder.inject();
-        } catch (ContradictionException ex) {
-            throw new SolverException(model, ex.getMessage(), ex);
-        }
-
         addContinuousResourceCapacities();
 
-
-        if (nodeActions.length > 0) {
-            solver.post(taskSchedBuilder.build());
-        }
-
-        for (AliasedCumulatives cstr : cumulativeBuilder.getConstraints()) {
-            solver.post(cstr);
+        if (!viewsManager.beforeSolve()) {
+            return null;
         }
 
         //Set the timeout
@@ -216,9 +188,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         int nbIntVars = solver.retrieveIntVars().length;
         int nbCstrs = solver.getNbCstrs();
-
-
         getLogger().debug("{} constraints; {} integers", nbCstrs, nbIntVars);
+
+
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
@@ -248,17 +220,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
-        for (ActionModel action : nodeActions) {
+        for (Transition action : nodeActions) {
             action.insertActions(plan);
         }
 
-        for (ActionModel action : vmActions) {
+        for (Transition action : vmActions) {
             action.insertActions(plan);
         }
 
-        for (ChocoModelView view : views.values()) {
-            view.insertActions(this, plan);
-        }
+        viewsManager.insertActions(plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(plan);
@@ -270,8 +240,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
-
-
         StrategiesSequencer seq;
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(
@@ -293,11 +261,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.set(seq);
     }
 
-    private void addContinuousResourceCapacities() {
+    private void addContinuousResourceCapacities() throws SolverException {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().length; j++) {
-            VMActionModel a = vmActions[j];
+            VMTransition a = vmActions[j];
             if (a.getDSlice() != null) {
                 iUse.add(VariableFactory.one(solver));
             }
@@ -306,31 +274,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        taskSchedBuilder.add(getNbRunningVMs(),
-                cUse.toArray(),
-                iUse.toArray(new IntVar[iUse.size()]));
-    }
-
-    /**
-     * Create the {@link ChocoModelView} for each of the {@link ModelView}.
-     *
-     * @throws SolverException if an error occurred
-     */
-    private void makeViews() throws SolverException {
-        views = new HashMap<>(model.getViews().size());
-        for (ModelView rc : model.getViews()) {
-            ChocoModelView vv = viewMapper.map(this, rc);
-            if (vv != null) {
-                ChocoModelView in = views.put(vv.getIdentifier(), vv);
-                if (in != null) {
-                    throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
-                            "' implementation for '" + rc.getIdentifier() + "'."
-                            + "The '" + in.getIdentifier() + "' implementation is already used");
-                }
-            } else {
-                LOGGER.debug("No implementation available for the view '{}'", rc.getIdentifier());
-            }
+        ChocoView v = getView(Cumulatives.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
+        ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
     /**
@@ -344,17 +292,34 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void linkCardinalityWithSlices() {
-        IntVar[] ds = SliceUtils.extractHoster(ActionModelUtils.getDSlices(vmActions));
+    private void linkCardinalityWithSlices() throws SolverException {
+        IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
         }
-        bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
+        ChocoView v = getView(Packing.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
+        }
+        ((Packing) v).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
+    }
+
+    @Override
+    public final VMState getNextState(VM v) {
+        if (running.contains(v)) {
+            return VMState.RUNNING;
+        } else if (ready.contains(v)) {
+            return VMState.READY;
+        } else if (sleeping.contains(v)) {
+            return VMState.SLEEPING;
+        } else if (killed.contains(v)) {
+            return VMState.KILLED;
+        }
+        return null;
     }
 
     private void fillElements() {
-
         Set<VM> allVMs = new HashSet<>();
         allVMs.addAll(model.getMapping().getSleepingVMs());
         allVMs.addAll(model.getMapping().getRunningVMs());
@@ -385,103 +350,60 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void makeVMActionModels() throws SolverException {
+    private void makeVMTransitions() throws SolverException {
         Mapping map = model.getMapping();
-        vmActions = new VMActionModel[vms.length];
+        vmActions = new VMTransition[vms.length];
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
-            if (running.contains(vmId)) {
-                if (map.isSleeping(vmId)) {
-                    vmActions[i] = new ResumeVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else if (map.isRunning(vmId)) {
-                    if (manageable.contains(vmId)) {
-                        vmActions[i] = new RelocatableVMModel(this, vmId);
-                    } else {
-                        vmActions[i] = new StayRunningVMModel(this, vmId);
-                    }
-                } else if (map.isReady(vmId)) {
-                    vmActions[i] = new BootVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not ready");
-                }
+            VMState nextState = getNextState(vmId);
+            VMState curState = map.getState(vmId);
+            if (curState == null) {
+                //It's a new VM
+                curState = VMState.INIT;
             }
-            if (ready.contains(vmId)) {
-                if (vmActions[i] != null) {
-                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (!map.contains(vmId)) {
-                    vmActions[i] = new ForgeVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else if (map.isReady(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.isRunning(vmId)) {
-                    vmActions[i] = new ShutdownVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' ready: not in the 'running' state or already forged");
-                }
-            }
-            if (sleeping.contains(vmId)) {
-                if (vmActions[i] != null) {
-                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.isRunning(vmId)) {
-                    vmActions[i] = new SuspendVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else if (map.isSleeping(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
-                }
-            }
-            if (killed.contains(vmId)) {
-                if (vmActions[i] != null) {
-                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.contains(vmId)) {
-                    vmActions[i] = new KillVMActionModel(this, vmId);
-                    manageable.add(vmId);
-                } else {
-                    throw new SolverException(model, "Unable to kill VM '" + vmId + "': unknown");
-                }
-            }
-            if (vmActions[i] == null) {
+            if (nextState == null) {
                 //Next state is undefined, keep the current state
                 //Need to update running, sleeping and waiting accordingly
-                if (map.isRunning(vmId)) {
-                    running.add(vmId);
-                    if (manageable.contains(vmId)) {
-                        vmActions[i] = new RelocatableVMModel(this, vmId);
-                    } else {
-                        vmActions[i] = new StayRunningVMModel(this, vmId);
-                    }
-                } else if (map.isReady(vmId)) {
-                    ready.add(vmId);
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.isSleeping(vmId)) {
-                    sleeping.add(vmId);
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else {
-                    throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
+                nextState = curState;
+                switch (nextState) {
+                    case RUNNING:
+                        running.add(vmId);
+                        break;
+                    case SLEEPING:
+                        sleeping.add(vmId);
+                        break;
+                    case READY:
+                        ready.add(vmId);
+                        break;
                 }
+            }
+
+            List<VMTransitionBuilder> am = amFactory.getBuilder(curState, nextState);
+            if (am.isEmpty()) {
+                throw new SolverException(model, "No model available for VM transition " + curState + " -> " + nextState);
+            }
+            if (am.size() > 1) {
+                throw new SolverException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
+            }
+            vmActions[i] = am.get(0).build(this, vmId);
+            if (vmActions[i].isManaged()) {
+                manageable.add(vmId);
             }
         }
     }
 
-    private void makeNodeActionModels() throws SolverException {
+    private void makeNodeTransitions() throws SolverException {
 
         Mapping m = model.getMapping();
-        nodeActions = new NodeActionModel[nodes.length];
+        nodeActions = new NodeTransition[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
             Node nId = nodes[i];
-            if (m.getOfflineNodes().contains(nId)) {
-                nodeActions[i] = new BootableNodeModel(this, nId);
+            NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
+            NodeTransitionBuilder b = amFactory.getBuilder(state);
+            if (b == null) {
+                throw new SolverException(model, "No model available for a node transition " + state + " -> (offline|online)");
             }
-            if (m.isOnline(nId)) {
-                if (nodeActions[i] != null) {
-                    throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
-                }
-                nodeActions[i] = new ShutdownableNodeModel(this, nId);
-            }
+            nodeActions[i] = b.build(this, nId);
         }
     }
 
@@ -509,22 +431,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ChocoModelView getView(String id) {
-        return views.get(id);
+    public final ChocoView getView(String id) {
+        return viewsManager.get(id);
     }
 
     @Override
-    public Collection<ChocoModelView> getViews() {
-        return views.values();
+    public Collection<String> getViews() {
+        return viewsManager.getKeys();
     }
 
     @Override
-    public boolean addView(ChocoModelView v) {
-        if (views.containsKey(v.getIdentifier())) {
-            return false;
-        }
-        views.put(v.getIdentifier(), v);
-        return true;
+    public boolean addView(ChocoView v) {
+        return viewsManager.add(v);
     }
 
     @Override
@@ -533,62 +451,31 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public SliceSchedulerBuilder getTaskSchedulerBuilder() {
-        return taskSchedBuilder;
-    }
-
-    @Override
-    public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
-        return cumulativeBuilder;
-    }
-
-    @Override
-    public BinPackingBuilder getBinPackingBuilder() {
-        return bpBuilder;
-    }
-
-    @Override
     public IntVar makeHostVariable(Object... n) {
-        String str = "";
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object o : n) {
-                b.append(o);
-            }
-            str = b.toString();
-        }
-        return VariableFactory.enumerated(str, 0, nodes.length - 1, solver);
+        return VariableFactory.enumerated(useLabels ? makeVarLabel(n) : "", 0, nodes.length - 1, solver);
     }
 
     @Override
-    public IntVar makeCurrentHost(String n, VM vmId) throws SolverException {
+    public IntVar makeCurrentHost(VM vmId, Object... n) throws SolverException {
         int idx = getVM(vmId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
         }
-        return makeCurrentNode(useLabels ? n : "", model.getMapping().getVMLocation(vmId));
+        return makeCurrentNode(model.getMapping().getVMLocation(vmId), useLabels ? n : "");
     }
 
     @Override
-    public IntVar makeCurrentNode(String n, Node nId) throws SolverException {
+    public IntVar makeCurrentNode(Node nId, Object... n) throws SolverException {
         int idx = getNode(nId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return VariableFactory.fixed(useLabels ? n : "", idx, solver);
+        return VariableFactory.fixed(useLabels ? makeVarLabel(n) : "", idx, solver);
     }
 
     @Override
     public IntVar makeUnboundedDuration(Object... n) {
-        String str = "";
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object s : n) {
-                b.append(s);
-            }
-            str = b.toString();
-        }
-        return VariableFactory.bounded(str, 0, end.getUB(), solver);
+        return VariableFactory.bounded(useLabels ? makeVarLabel(n) : "", 0, end.getUB(), solver);
     }
 
     @Override
@@ -596,19 +483,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (lb < 0 || ub < lb) {
             throw new SolverException(model, "Unable to create duration variable '" + Arrays.toString(n) + "': invalid bounds");
         }
-        String s = "";
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object o : n) {
-                b.append(o);
-            }
-            s = b.toString();
-        }
-        return VariableFactory.bounded(s, lb, ub < end.getUB() ? ub : end.getUB(), solver);
+        return VariableFactory.bounded(useLabels ? makeVarLabel(n) : "", lb, ub < end.getUB() ? ub : end.getUB(), solver);
     }
 
     @Override
-    public String makeVarLabel(Object... lbl) {
+    public final String makeVarLabel(Object... lbl) {
         if (useLabels) {
             StringBuilder b = new StringBuilder();
             for (Object s : lbl) {
@@ -617,11 +496,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             return b.toString();
         }
         return "";
-    }
-
-    @Override
-    public boolean isVarLabelling() {
-        return useLabels;
     }
 
     @Override
@@ -645,7 +519,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public NodeActionModel[] getNodeActions() {
+    public NodeTransition[] getNodeActions() {
         return nodeActions;
     }
 
@@ -720,41 +594,34 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public VMActionModel[] getVMActions() {
+    public VMTransition[] getVMActions() {
         return vmActions;
     }
 
     @Override
-    public VMActionModel[] getVMActions(Set<VM> id) {
+    public VMTransition[] getVMActions(Set<VM> id) {
         return vmActions;
     }
 
     @Override
-    public VMActionModel getVMAction(VM id) {
+    public VMTransition getVMAction(VM id) {
         int idx = getVM(id);
         return idx < 0 ? null : vmActions[idx];
     }
 
     @Override
-    public NodeActionModel getNodeAction(Node id) {
+    public NodeTransition getNodeAction(Node id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
-    }
-
-    @Override
-    public ModelViewMapper getViewMapper() {
-        return viewMapper;
     }
 
     @Override
     public VM cloneVM(VM vm) {
         VM newVM = model.newVM();
         if (newVM == null) {
-            return newVM;
+            return null;
         }
-        for (ChocoModelView v : views.values()) {
-            v.cloneVM(vm, newVM);
-        }
+        viewsManager.cloneVM(vm, newVM);
         return newVM;
     }
 

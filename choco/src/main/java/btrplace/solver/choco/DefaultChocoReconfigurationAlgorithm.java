@@ -25,12 +25,14 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.ConstraintMapper;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.runner.single.SingleRunner;
+import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.SolverViewBuilder;
 
 import java.util.Collection;
 
@@ -52,6 +54,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     /**
      * Make a new algorithm.
+     *
      * @param ps the parameters to use to configure the algorithm
      */
     public DefaultChocoReconfigurationAlgorithm(DefaultChocoReconfigurationAlgorithmParams ps) {
@@ -177,5 +180,30 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public void setInstanceSolver(InstanceSolver p) {
         runner = p;
+    }
+
+    @Override
+    public void setTransitionFactory(TransitionFactory amf) {
+        params.setTransitionFactory(amf);
+    }
+
+    @Override
+    public TransitionFactory getTransitionFactory() {
+        return params.getTransitionFactory();
+    }
+
+    @Override
+    public void addSolverViewBuilder(SolverViewBuilder b) {
+        params.addSolverViewBuilder(b);
+    }
+
+    @Override
+    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
+        return params.removeSolverViewBuilder(b);
+    }
+
+    @Override
+    public Collection<SolverViewBuilder> getSolverViews() {
+        return params.getSolverViews();
     }
 }

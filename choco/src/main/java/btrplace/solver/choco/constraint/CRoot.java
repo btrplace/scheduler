@@ -24,7 +24,7 @@ import btrplace.model.constraint.Root;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 
@@ -54,7 +54,7 @@ public class CRoot implements ChocoConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         Solver s = rp.getSolver();
         VM vm = cstr.getInvolvedVMs().iterator().next();
-        VMActionModel m = rp.getVMAction(vm);
+        VMTransition m = rp.getVMAction(vm);
         Slice cSlice = m.getCSlice();
         Slice dSlice = m.getDSlice();
         if (cSlice != null && dSlice != null) {

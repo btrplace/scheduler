@@ -18,7 +18,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.constraint.Constraint;
-import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
+import btrplace.solver.choco.constraint.mttr.CMinMTTR;
 
 import java.util.HashMap;
 import java.util.Map;

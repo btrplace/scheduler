@@ -18,11 +18,27 @@
 package btrplace.solver.choco;
 
 import btrplace.solver.choco.constraint.ConstraintMapper;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.transition.TransitionFactory;
+import btrplace.solver.choco.view.*;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Default implementation of {@link ChocoReconfigurationAlgorithmParams}.
+ * <ul>
+ *     <li>repair mode is disabled</li>
+ *     <li>no time limit</li>
+ *     <li>the transition factory comes from {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
+ *     <li>the view mapper comes from {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
+ *     <li>the duration evaluator is {@link btrplace.solver.choco.duration.DurationEvaluators#newBundle()}</li>
+ *     <li>the constraint mapper is {@link btrplace.solver.choco.constraint.ConstraintMapper#newBundle()}</li>
+ *     <li>the {@link btrplace.solver.choco.view.Packing} constraint is {@link btrplace.solver.choco.view.DefaultPacking}</li>
+ *     <li>the {@link btrplace.solver.choco.view.Cumulatives} view is {@link btrplace.solver.choco.view.DefaultCumulatives}</li>
+ *     <li>the {@link btrplace.solver.choco.view.AliasedCumulatives} view is {@link btrplace.solver.choco.view.DefaultAliasedCumulatives}</li>
+ * </ul>
  *
  * @author Fabien Hermenier
  */
@@ -31,6 +47,8 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     private ModelViewMapper viewMapper;
 
     private ConstraintMapper cstrMapper;
+
+    private TransitionFactory amf;
 
     private boolean optimize = false;
 
@@ -47,6 +65,8 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
 
     private int verbosityLevel;
 
+    private Map<String, SolverViewBuilder> solverViewsBuilder;
+
     /**
      * New set of parameters.
      */
@@ -54,6 +74,13 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
         cstrMapper = ConstraintMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
         viewMapper = ModelViewMapper.newBundle();
+        amf = TransitionFactory.newBundle();
+        solverViewsBuilder = new HashMap<>();
+        //Default solver views
+        solverViewsBuilder.put(Packing.VIEW_ID, new DefaultPacking.Builder());
+        solverViewsBuilder.put(Cumulatives.VIEW_ID, new DefaultCumulatives.Builder());
+        solverViewsBuilder.put(AliasedCumulatives.VIEW_ID, new DefaultAliasedCumulatives.Builder());
+
     }
 
     @Override
@@ -142,5 +169,30 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     @Override
     public int getVerbosity() {
         return verbosityLevel;
+    }
+
+    @Override
+    public void setTransitionFactory(TransitionFactory f) {
+        this.amf = f;
+    }
+
+    @Override
+    public TransitionFactory getTransitionFactory() {
+        return this.amf;
+    }
+
+    @Override
+    public void addSolverViewBuilder(SolverViewBuilder b) {
+        solverViewsBuilder.put(b.getKey(), b);
+    }
+
+    @Override
+    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
+        return solverViewsBuilder.remove(b.getKey()) != null;
+    }
+
+    @Override
+    public Collection<SolverViewBuilder> getSolverViews() {
+        return solverViewsBuilder.values();
     }
 }

@@ -22,10 +22,12 @@ import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.SolvingStatistics;
+import btrplace.solver.choco.transition.TransitionFactory;
+import btrplace.solver.choco.transition.TransitionUtils;
+import btrplace.solver.choco.transition.VMTransitionBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -34,10 +36,7 @@ import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -111,8 +110,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                         Mapping map = rp.getSourceModel().getMapping();
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-                        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
-                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
+                        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
+                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
                         rp.setObjective(false, nbNodes);
                         return true;
                     }
@@ -276,7 +275,21 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 new Running(vm2),
                 new Ready(vm3)));
         Assert.assertNotNull(p);
-        //System.out.println(p);
     }
 
+    /**
+     * Remove the ready->running transition so the solving process will fail
+     * @throws SolverException
+     */
+    @Test(expectedExceptions = {SolverException.class})
+    public void testTransitionFactoryCustomisation() throws SolverException {
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        TransitionFactory tf = cra.getTransitionFactory();
+        List<VMTransitionBuilder> b = tf.getBuilder(VMState.READY, VMState.RUNNING);
+        Assert.assertTrue(tf.remove(b.get(0)));
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        mo.getMapping().addReadyVM(v);
+        cra.solve(mo, Collections.<SatConstraint>singletonList(new Running(v)));
+    }
 }

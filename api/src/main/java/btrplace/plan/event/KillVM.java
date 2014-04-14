@@ -20,6 +20,7 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 
 import java.util.Objects;
 
@@ -69,18 +70,12 @@ public class KillVM extends Action implements VMStateTransition {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            KillVM that = (KillVM) o;
-            return this.id.equals(that.id) &&
-                    ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
         }
-        return false;
+        KillVM that = (KillVM) o;
+        return this.id.equals(that.id) &&
+                ((host == null && that.host == null) || (host != null && host.equals(that.host)));
     }
 
     @Override

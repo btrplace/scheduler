@@ -61,10 +61,8 @@ public class PrecedencesTest {
            If host == 2, consume = 5
            => 6 solutions
          */
-        Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
+        Precedences p = new Precedences(host, start, others, ends);
         s.post(p);
-        //Boolean ret = s.solveAll();
-        //Assert.assertEquals(ret, Boolean.TRUE);
         Assert.assertEquals(6, s.findAllSolutions());
     }
 
@@ -95,10 +93,8 @@ public class PrecedencesTest {
 
         IntVar host = VF.enumerated("host", 0, 0, s);
         IntVar start = VF.bounded("start", 0, 5, s);
-        Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
+        Precedences p = new Precedences(host, start, others, ends);
         s.post(p);
-        //Boolean ret = s.solveAll();
-        //Assert.assertEquals(ret, Boolean.TRUE);
-        Assert.assertEquals(s.findAllSolutions(), 75); //TODO: A way to check if it is correct ?
+        Assert.assertEquals(s.findAllSolutions(), 75); //TODO: A way to check if it is correct ? :D
     }
 }

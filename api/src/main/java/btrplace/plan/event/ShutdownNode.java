@@ -59,18 +59,11 @@ public class ShutdownNode extends Action implements NodeEvent {
      */
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            ShutdownNode that = (ShutdownNode) o;
-            return this.node.equals(that.node) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
-
         }
-        return false;
+        ShutdownNode that = (ShutdownNode) o;
+        return this.node.equals(that.node);
     }
 
     @Override

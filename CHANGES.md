@@ -1,6 +1,22 @@
 Release notes
 ======================
 
+0.37 - 14 Apr 2014
+----------------------
+- minor bug fixes
+- refactor choco.actionModel to choco.transition. Now xActionModel classes are xTransition classes.
+  The TransitionFactory allows to plug your own classes to model transitions (issue #37)
+- some package where renamed to fit conventions:
+    - btrplace.solver.choco.runner.staticPartitioning is now btrplace.solver.choco.runner.disjoint
+    - btrplace.solver.choco.constraint.minMTTR is now btrplace.solver.choco.constraint.mttr
+    - btrplace.solver.choco.durationEvaluation is now btrplace.solver.choco.duration
+- package model.constraint.checker merged into model.constraint
+- views have been refactored
+  - basic global constraints are now views too (issue #39)
+  - it is possible to express dependencies between views. These dependencies are
+    considered at building time in the solver
+- improve the overall code quality a bit when possible and needed
+
 0.36 - 28 Mar 2014
 ----------------------
 - Homogenize constraints signature in API
