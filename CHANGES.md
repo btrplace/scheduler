@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-??????????????
+0.37 - 14 Apr 2014
 ----------------------
 - minor bug fixes
 - refactor choco.actionModel to choco.transition. Now xActionModel classes are xTransition classes.
