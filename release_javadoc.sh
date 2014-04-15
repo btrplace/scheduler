@@ -40,3 +40,5 @@ mv target/site/apidocs ${WWW}/solver/${VERSION}
 mv target/solver-${VERSION}-javadoc.jar ${WWW}/solver/
 rm -rf ${WWW}/apidocs
 ln -s ${WWW}/solver/${VERSION} ${WWW}/apidocs
+rm -rf ${WWW}/solver/apidocs
+ln -s ${WWW}/solver/${VERSION} ${WWW}/solver/apidocs
