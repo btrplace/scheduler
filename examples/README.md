@@ -10,10 +10,10 @@ The following describe how to compile and how to use the application.
 ## Download the application ##
 
 The last version of the standalone application is available on the following URL.
-The archive contains the solver bundle and the tutorial sources. `README.txt` details
+The `tar.gz` archive contains the solver bundle and the tutorial sources. `README.txt` details
 how to use the application.
 
-* http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-examples/0.38-SNAPSHOT/
+* http://btrp.inria.fr/repos/releases/btrplace/solver-examples
 
 ## Building from sources ##
 

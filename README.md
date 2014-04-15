@@ -49,13 +49,31 @@ solver Choco
 For each version of Btrplace, a bundle that contains the three basics artifacts and their dependencies is made available.
 The jar can be downloaded from this URL:
 
-* http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-bundle/0.38-SNAPSHOT/
-
-
+* for releases: http://btrp.inria.fr/repos/releases/btrplace/solver-bundle
+* for snapshot-releases: http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-bundle
 
 ## Documentation ##
 
-* apidoc: http://btrp.inria.fr/apidocs/snapshots/btrplace/solver/
+### API documentation for released version
+
+The Javadoc for the released versions is always available there:
+
+* aggregated Javadoc: http://btrp.inria.fr/solver
+* for sub-modules only:
+    * http://btrp.inria.fr/solver-api/
+    * http://btrp.inria.fr/solver-json/
+    * http://btrp.inria.fr/solver-choco/
+
+`apidocs` always refers to the last release.
+
+### API documentation for the current snapshot version
+
+* aggregated Javadoc: http://btrp.inria.fr/apidocs-snapshot
+* for sub-modules only:
+    * http://btrp.inria.fr/solver-api/apidocs-snapshot
+    * http://btrp.inria.fr/solver-json/apidocs-snapshot
+    * http://btrp.inria.fr/solver-choco/apidocs-snapshot
+
 
 ## Building from sources ##
 

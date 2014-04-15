@@ -12,7 +12,7 @@ fi
 WWW=$1
 VERSION=$(getVersion)
 
-echo "Publishing javadoc for version $VERSION into $WWW"
+echo "Publishing javadoc for version $VERSION into ${WWW}"
 mkdir -p ${WWW}
 
 #sub-modules apidoc
@@ -34,9 +34,9 @@ done
 echo "Generate the aggregated javadoc"
 mvn javadoc:aggregate > /dev/null
 mvn javadoc:aggregate-jar > /dev/null
-mkdir -p ${WWW}/bundle
-rm -rf ${WWW}/bundle/${VERSION}
-mv target/site/apidocs ${WWW}/bundle/${VERSION}
-mv target/solver-${VERSION}-javadoc.jar ${WWW}/bundle/
+mkdir -p ${WWW}/solver
+rm -rf ${WWW}/solver/${VERSION}
+mv target/site/apidocs ${WWW}/solver/${VERSION}
+mv target/solver-${VERSION}-javadoc.jar ${WWW}/solver/
 rm -rf ${WWW}/apidocs
-ln -s ${WWW}/bundle/${VERSION} ${WWW}/apidocs
+ln -s ${WWW}/solver/${VERSION} ${WWW}/apidocs
