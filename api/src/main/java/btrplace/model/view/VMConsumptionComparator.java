@@ -19,6 +19,7 @@ package btrplace.model.view;
 
 import btrplace.model.VM;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class VMConsumptionComparator implements Comparator<VM> {
+public class VMConsumptionComparator implements Comparator<VM>, Serializable {
 
     /**
      * The resources to use to make the comparison.

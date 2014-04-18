@@ -23,6 +23,7 @@ import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import net.minidev.json.JSONObject;
 
+import java.util.Map;
 import java.util.Set;
 
 
@@ -111,9 +112,10 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
-                for (String k : values.keySet()) {
+                for (Map.Entry<String, Object> e : values.entrySet()) {
+                    String k = e.getKey();
                     VM u = getOrMakeVM(Integer.parseInt(k));
-                    int v = Integer.parseInt(values.get(k).toString());
+                    int v = Integer.parseInt(e.getValue().toString());
                     rc.setConsumption(u, v);
                 }
             } catch (ClassCastException cc) {
@@ -126,9 +128,10 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
-                for (String k : values.keySet()) {
+                for (Map.Entry<String, Object> e : values.entrySet()) {
+                    String k = e.getKey();
                     Node u = getOrMakeNode(Integer.parseInt(k));
-                    int v = Integer.parseInt(values.get(k).toString());
+                    int v = Integer.parseInt(e.getValue().toString());
                     rc.setCapacity(u, v);
                 }
             } catch (ClassCastException cc) {

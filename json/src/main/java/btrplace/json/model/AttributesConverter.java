@@ -22,6 +22,8 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.*;
 import net.minidev.json.JSONObject;
 
+import java.util.Map;
+
 
 /**
  * Serialize/un-serialize attributes.
@@ -57,18 +59,20 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
 
             JSONObject vms = (JSONObject) o.get("vms");
             if (vms != null) {
-                for (String el : vms.keySet()) {
+                for (Map.Entry<String, Object> e : vms.entrySet()) {
+                    String el = e.getKey();
                     VM vm = getOrMakeVM(Integer.parseInt(el));
-                    JSONObject entries = (JSONObject) vms.get(el);
+                    JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, vm, entries);
                 }
             }
 
             JSONObject nodes = (JSONObject) o.get("nodes");
             if (nodes != null) {
-                for (String el : nodes.keySet()) {
+                for (Map.Entry<String, Object> e : nodes.entrySet()) {
+                    String el = e.getKey();
                     Node n = getOrMakeNode(Integer.parseInt(el));
-                    JSONObject entries = (JSONObject) nodes.get(el);
+                    JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, n, entries);
                 }
             }

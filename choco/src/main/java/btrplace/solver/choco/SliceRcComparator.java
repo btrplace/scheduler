@@ -19,6 +19,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.view.ShareableResource;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Comparator;
  *
  * @author Fabien Hermenier
  */
-public class SliceRcComparator implements Comparator<Slice> {
+public class SliceRcComparator implements Comparator<Slice>, Serializable {
 
     private ShareableResource rc;
 

@@ -24,6 +24,8 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import net.minidev.json.JSONObject;
 
+import java.util.Map;
+
 
 /**
  * Class to serialize and un-serialize {@link Mapping}.
@@ -62,9 +64,10 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
             c.addReadyVM(u);
         }
         JSONObject ons = (JSONObject) o.get("onlineNodes");
-        for (String nId : ons.keySet()) {
+        for (Map.Entry<String, Object> e : ons.entrySet()) {
+            String nId = e.getKey();
             Node u = getOrMakeNode(Integer.parseInt(nId));
-            JSONObject on = (JSONObject) ons.get(nId);
+            JSONObject on = (JSONObject) e.getValue();
             c.addOnlineNode(u);
             for (VM vm : requiredVMs(on, "runningVMs")) {
                 c.addRunningVM(vm, u);

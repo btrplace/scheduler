@@ -30,6 +30,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSON converter for {@link Action}.
@@ -136,10 +137,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     private void attachEvents(Action a, JSONObject in) throws JSONConverterException {
         if (in.containsKey("hooks")) {
             JSONObject hooks = (JSONObject) in.get("hooks");
-            for (String k : hooks.keySet()) {
+            for (Map.Entry<String, Object> e : hooks.entrySet()) {
+                String k = e.getKey();
                 try {
                     Action.Hook h = Action.Hook.valueOf(k.toUpperCase());
-                    for (Object o : (JSONArray) hooks.get(k)) {
+                    for (Object o : (JSONArray) e.getValue()) {
                         a.addEvent(h, eventFromJSON((JSONObject) o));
                     }
                 } catch (IllegalArgumentException ex) {

@@ -45,6 +45,7 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
 
     /**
      * Make a new constraint.
+     *
      * @param a the variable to divide
      * @param b the resulting ratio
      * @param d the divider
@@ -65,7 +66,7 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
         return vars[0].toString() + " = " + vars[1].toString() + '/' + qq;
     }
 
-    class RoundedUpDivisionPropagator extends Propagator<IntVar> {
+    static class RoundedUpDivisionPropagator extends Propagator<IntVar> {
 
         private double divider;
 
