@@ -35,7 +35,7 @@ import java.util.BitSet;
  */
 public class AliasedCumulativesFiltering {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -198,7 +198,7 @@ public class AliasedCumulativesFiltering {
 
             if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
                 if (DEBUG) {
-                    LOGGER.debug(cEnds[j].toString() + " increasing");
+                    LOGGER.debug("{} increasing", cEnds[j].toString());
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
@@ -275,8 +275,8 @@ public class AliasedCumulativesFiltering {
 
 
             for (int i = 0; i < nbDims; i++) {
-                LOGGER.debug("profileMin(dim " + i + ")= " + prettyProfile(sortedMinProfile, profilesMin[i]));
-                LOGGER.debug("profileMax(dim " + i + ")= " + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
         }
     }

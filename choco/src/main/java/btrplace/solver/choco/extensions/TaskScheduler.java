@@ -47,7 +47,7 @@ import java.util.BitSet;
  */
 public class TaskScheduler extends IntConstraint<IntVar> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     private LocalTaskScheduler[] scheds;
 
@@ -174,10 +174,10 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         boolean ok = true;
         for (int j = 0; j < nbResources; j++) {
             TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
-            LOGGER.debug("--- Resource " + j + " isSatisfied() ? ---");
-            LOGGER.debug(" before: " + prettyUsages(currentFree, j)
-                    + "/" + prettyUsages(capacities, j)
-                    + " changes: " + prettyChanges(myChanges));
+            LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
+            LOGGER.debug(" before: {} / {} changes: {}", prettyUsages(currentFree, j),
+                    prettyUsages(capacities, j),
+                    prettyChanges(myChanges));
 
 
             int[] moments = myChanges.keys(new int[myChanges.size()]);
@@ -191,7 +191,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                     }
                 }
                 if (!bad) {
-                    LOGGER.info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
+                    LOGGER.info("/!\\ at {}: free={}", j, prettyUsages(currentFree, j));
                     ok = false;
                     break;
                 }
@@ -337,7 +337,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 dHostersVals[i] = dHosters[i].getValue();
                 dStartsVals[i] = dStarts[i].getValue();
                 if (dStartsVals[i] < earlyStarts[dHostersVals[i]].getValue()) {
-                    LOGGER.error("D-slice " + dHosters[i] + " arrives too early: " + dStartsVals[i] + ". Min expected: " + earlyStarts[dHosters[i].getValue()]);
+                    LOGGER.error("D-slice {} arrives too early: {}. Min expected: {}", dHosters[i], dStartsVals[i], earlyStarts[dHosters[i].getValue()]);
                     return ESat.FALSE;
                 }
             }
@@ -346,7 +346,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 cHostersVals[i] = cHosters[i].getValue();
                 cEndsVals[i] = cEnds[i].getValue();
                 if (cEndsVals[i] > lastEnds[cHostersVals[i]].getValue()) {
-                    LOGGER.error("C-slice " + cHosters[i] + " leaves too late: " + cEndsVals[i] + ". Max expected: " + lastEnds[cHosters[i].getValue()]);
+                    LOGGER.error("C-slice {} leaves too late: {}. Max expected: {}", cHosters[i], cEndsVals[i], lastEnds[cHosters[i].getValue()]);
                     return ESat.FALSE;
                 }
 
@@ -389,11 +389,11 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             boolean ok = true;
             for (int j = 0; j < nbResources; j++) {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
-                LOGGER.debug("--- Resource " + j + " isSatisfied() ? ---");
-                LOGGER.debug(" before: " + prettyUsages(currentFree, j)
-                        + "/" + prettyUsages(capacities, j)
-                        + " changes: " + prettyChanges(myChanges));
-
+                LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
+                LOGGER.debug(" before: {}/{} {}changes: "
+                        , prettyUsages(currentFree, j)
+                        , prettyUsages(capacities, j)
+                        , prettyChanges(myChanges));
 
                 int[] moments = myChanges.keys(new int[myChanges.size()]);
                 Arrays.sort(moments);
@@ -406,7 +406,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                         }
                     }
                     if (!bad) {
-                        LOGGER.info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
+                        LOGGER.info("/!\\ at {}: free={}", t, prettyUsages(currentFree, j));
                         ok = false;
                         break;
                     }

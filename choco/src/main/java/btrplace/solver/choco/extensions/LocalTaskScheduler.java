@@ -40,7 +40,7 @@ public class LocalTaskScheduler {
     public static final int DEBUG = -3;
     public static final int DEBUG_ALL = -2;
     public static final int NO_ASSOCIATIONS = -1;
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final Logger LOGGER = LoggerFactory.getLogger("solver");
     private int me;
     /**
      * out[i] = true <=> the consuming slice i will leave me.

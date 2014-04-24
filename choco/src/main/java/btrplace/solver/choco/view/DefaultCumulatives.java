@@ -92,9 +92,10 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      */
     @Override
     public boolean beforeSolve(ReconfigurationProblem p) {
-        if (capacities.isEmpty()) {
+        if (p.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {
             return true;
         }
+
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[capacities.size()][];
         int i = 0;

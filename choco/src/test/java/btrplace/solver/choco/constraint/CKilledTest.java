@@ -49,4 +49,35 @@ public class CKilledTest {
         Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
         Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
     }
+/*
+    @Test
+    public void testFromReady() throws Exception {
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        mo.getMapping().addReadyVM(v);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
+    }
+
+    @Test
+    public void testFromRunning() throws Exception {
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        Node n = mo.newNode();
+        mo.getMapping().addOnlineNode(n);
+        mo.getMapping().addRunningVM(v, n);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
+    }
+
+    @Test
+    public void testFromSleeping() throws Exception {
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        Node n = mo.newNode();
+        mo.getMapping().addOnlineNode(n);
+        mo.getMapping().addSleepingVM(v, n);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
+    }     */
 }

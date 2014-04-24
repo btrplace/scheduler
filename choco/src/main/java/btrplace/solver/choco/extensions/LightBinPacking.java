@@ -32,7 +32,7 @@ import util.tools.ArrayUtils;
  */
 public class LightBinPacking extends IntConstraint<IntVar> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * The number of bins.
@@ -55,10 +55,10 @@ public class LightBinPacking extends IntConstraint<IntVar> {
     /**
      * constructor of the FastBinPacking global constraint
      *
-     * @param labels      the label describing each dimension
-     * @param l           array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
-     * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param labels the label describing each dimension
+     * @param l      array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+     * @param s      array of nbItems variables, each figuring the item size. Only the LB will be considered!
+     * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
     public LightBinPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), l[0][0].getSolver());

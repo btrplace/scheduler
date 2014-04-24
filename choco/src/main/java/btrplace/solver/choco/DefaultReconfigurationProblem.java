@@ -452,7 +452,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeHostVariable(Object... n) {
-        return VariableFactory.enumerated(useLabels ? makeVarLabel(n) : "", 0, nodes.length - 1, solver);
+        return VariableFactory.enumerated(makeVarLabel(n), 0, nodes.length - 1, solver);
     }
 
     @Override
@@ -470,20 +470,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return VariableFactory.fixed(useLabels ? makeVarLabel(n) : "", idx, solver);
+        return VariableFactory.fixed(makeVarLabel(n), idx, solver);
     }
 
     @Override
     public IntVar makeUnboundedDuration(Object... n) {
-        return VariableFactory.bounded(useLabels ? makeVarLabel(n) : "", 0, end.getUB(), solver);
+        return VariableFactory.bounded(makeVarLabel(n), 0, end.getUB(), solver);
     }
 
     @Override
     public IntVar makeDuration(int ub, int lb, Object... n) throws SolverException {
-        if (lb < 0 || ub < lb) {
-            throw new SolverException(model, "Unable to create duration variable '" + Arrays.toString(n) + "': invalid bounds");
-        }
-        return VariableFactory.bounded(useLabels ? makeVarLabel(n) : "", lb, ub < end.getUB() ? ub : end.getUB(), solver);
+        return VariableFactory.bounded(makeVarLabel(n), lb, ub, solver);
     }
 
     @Override
