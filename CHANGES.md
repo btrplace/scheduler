@@ -5,6 +5,7 @@ version ?????????????
 ----------------------
 - fix the release script ? (issue #35)
 - the javadoc is now deployed according to the maven conventions
+- fix copyright headers (Issue #41)
 
 0.37 - 14 Apr 2014
 ----------------------
