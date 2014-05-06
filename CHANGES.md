@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ?????????????
+version 0.38.1 - 06 May 2014
 ----------------------
 - fix the release script ? (issue #35)
 - the javadoc is now deployed according to the maven conventions
