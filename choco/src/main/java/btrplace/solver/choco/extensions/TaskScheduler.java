@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -47,7 +48,7 @@ import java.util.BitSet;
  */
 public class TaskScheduler extends IntConstraint<IntVar> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     private LocalTaskScheduler[] scheds;
 
@@ -174,10 +175,10 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         boolean ok = true;
         for (int j = 0; j < nbResources; j++) {
             TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
-            LOGGER.debug("--- Resource " + j + " isSatisfied() ? ---");
-            LOGGER.debug(" before: " + prettyUsages(currentFree, j)
-                    + "/" + prettyUsages(capacities, j)
-                    + " changes: " + prettyChanges(myChanges));
+            LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
+            LOGGER.debug(" before: {} / {} changes: {}", prettyUsages(currentFree, j),
+                    prettyUsages(capacities, j),
+                    prettyChanges(myChanges));
 
 
             int[] moments = myChanges.keys(new int[myChanges.size()]);
@@ -191,7 +192,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                     }
                 }
                 if (!bad) {
-                    LOGGER.info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
+                    LOGGER.info("/!\\ at {}: free={}", j, prettyUsages(currentFree, j));
                     ok = false;
                     break;
                 }
@@ -337,7 +338,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 dHostersVals[i] = dHosters[i].getValue();
                 dStartsVals[i] = dStarts[i].getValue();
                 if (dStartsVals[i] < earlyStarts[dHostersVals[i]].getValue()) {
-                    LOGGER.error("D-slice " + dHosters[i] + " arrives too early: " + dStartsVals[i] + ". Min expected: " + earlyStarts[dHosters[i].getValue()]);
+                    LOGGER.error("D-slice {} arrives too early: {}. Min expected: {}", dHosters[i], dStartsVals[i], earlyStarts[dHosters[i].getValue()]);
                     return ESat.FALSE;
                 }
             }
@@ -346,7 +347,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 cHostersVals[i] = cHosters[i].getValue();
                 cEndsVals[i] = cEnds[i].getValue();
                 if (cEndsVals[i] > lastEnds[cHostersVals[i]].getValue()) {
-                    LOGGER.error("C-slice " + cHosters[i] + " leaves too late: " + cEndsVals[i] + ". Max expected: " + lastEnds[cHosters[i].getValue()]);
+                    LOGGER.error("C-slice {} leaves too late: {}. Max expected: {}", cHosters[i], cEndsVals[i], lastEnds[cHosters[i].getValue()]);
                     return ESat.FALSE;
                 }
 
@@ -389,11 +390,11 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             boolean ok = true;
             for (int j = 0; j < nbResources; j++) {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
-                LOGGER.debug("--- Resource " + j + " isSatisfied() ? ---");
-                LOGGER.debug(" before: " + prettyUsages(currentFree, j)
-                        + "/" + prettyUsages(capacities, j)
-                        + " changes: " + prettyChanges(myChanges));
-
+                LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
+                LOGGER.debug(" before: {}/{} {}changes: "
+                        , prettyUsages(currentFree, j)
+                        , prettyUsages(capacities, j)
+                        , prettyChanges(myChanges));
 
                 int[] moments = myChanges.keys(new int[myChanges.size()]);
                 Arrays.sort(moments);
@@ -406,7 +407,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                         }
                     }
                     if (!bad) {
-                        LOGGER.info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
+                        LOGGER.info("/!\\ at {}: free={}", t, prettyUsages(currentFree, j));
                         ok = false;
                         break;
                     }

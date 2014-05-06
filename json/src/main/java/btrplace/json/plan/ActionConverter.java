@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -30,6 +31,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSON converter for {@link Action}.
@@ -136,10 +138,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     private void attachEvents(Action a, JSONObject in) throws JSONConverterException {
         if (in.containsKey("hooks")) {
             JSONObject hooks = (JSONObject) in.get("hooks");
-            for (String k : hooks.keySet()) {
+            for (Map.Entry<String, Object> e : hooks.entrySet()) {
+                String k = e.getKey();
                 try {
                     Action.Hook h = Action.Hook.valueOf(k.toUpperCase());
-                    for (Object o : (JSONArray) hooks.get(k)) {
+                    for (Object o : (JSONArray) e.getValue()) {
                         a.addEvent(h, eventFromJSON((JSONObject) o));
                     }
                 } catch (IllegalArgumentException ex) {

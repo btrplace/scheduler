@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -76,7 +77,7 @@ public class BootVM implements VMTransition {
         start = p.makeDuration(p.getEnd().getUB() - d, 0, "bootVM(", e, ").start");
         end = VariableFactory.offset(start, d);
         duration = p.makeDuration(d, d, "bootVM.duration(", e, ')');
-        dSlice = new SliceBuilder(p, e, "bootVM(" + e + ").dSlice").setStart(start)
+        dSlice = new SliceBuilder(p, e, "bootVM(", e, ").dSlice").setStart(start)
                 .setDuration(p.makeDuration(p.getEnd().getUB(), d, "bootVM(", e, ").dSlice_duration"))
                 .build();
         Solver s = p.getSolver();
