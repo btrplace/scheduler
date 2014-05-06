@@ -32,7 +32,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-bundle</artifactId>
-   <version>0.37</version>
+   <version>0.38.1</version>
 </dependency>
 ```
 
@@ -49,13 +49,31 @@ solver Choco
 For each version of Btrplace, a bundle that contains the three basics artifacts and their dependencies is made available.
 The jar can be downloaded from this URL:
 
-* http://btrp.inria.fr/repos/releases/btrplace/solver-bundle/0.37/solver-bundle-0.37.jar
-
-
+* for releases: http://btrp.inria.fr/repos/releases/btrplace/solver-bundle
+* for snapshot-releases: http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-bundle
 
 ## Documentation ##
 
-* apidoc: http://btrp.inria.fr/apidocs/releases/btrplace/solver/0.37/
+### API documentation for released version
+
+The Javadoc for the released versions is always available there:
+
+* aggregated Javadoc: http://btrp.inria.fr/solver
+* for sub-modules only:
+    * http://btrp.inria.fr/solver-api/
+    * http://btrp.inria.fr/solver-json/
+    * http://btrp.inria.fr/solver-choco/
+
+`apidocs` always refers to the last release.
+
+### API documentation for the current snapshot version
+
+* aggregated Javadoc: http://btrp.inria.fr/apidocs-snapshot
+* for sub-modules only:
+    * http://btrp.inria.fr/solver-api/apidocs-snapshot
+    * http://btrp.inria.fr/solver-json/apidocs-snapshot
+    * http://btrp.inria.fr/solver-choco/apidocs-snapshot
+
 
 ## Building from sources ##
 

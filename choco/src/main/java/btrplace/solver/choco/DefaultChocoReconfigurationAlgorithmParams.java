@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -29,15 +30,15 @@ import java.util.Map;
 /**
  * Default implementation of {@link ChocoReconfigurationAlgorithmParams}.
  * <ul>
- *     <li>repair mode is disabled</li>
- *     <li>no time limit</li>
- *     <li>the transition factory comes from {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
- *     <li>the view mapper comes from {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
- *     <li>the duration evaluator is {@link btrplace.solver.choco.duration.DurationEvaluators#newBundle()}</li>
- *     <li>the constraint mapper is {@link btrplace.solver.choco.constraint.ConstraintMapper#newBundle()}</li>
- *     <li>the {@link btrplace.solver.choco.view.Packing} constraint is {@link btrplace.solver.choco.view.DefaultPacking}</li>
- *     <li>the {@link btrplace.solver.choco.view.Cumulatives} view is {@link btrplace.solver.choco.view.DefaultCumulatives}</li>
- *     <li>the {@link btrplace.solver.choco.view.AliasedCumulatives} view is {@link btrplace.solver.choco.view.DefaultAliasedCumulatives}</li>
+ * <li>repair mode is disabled</li>
+ * <li>no time limit</li>
+ * <li>the transition factory comes from {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
+ * <li>the view mapper comes from {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
+ * <li>the duration evaluator is {@link btrplace.solver.choco.duration.DurationEvaluators#newBundle()}</li>
+ * <li>the constraint mapper is {@link btrplace.solver.choco.constraint.ConstraintMapper#newBundle()}</li>
+ * <li>the {@link btrplace.solver.choco.view.Packing} constraint is {@link btrplace.solver.choco.view.DefaultPacking}</li>
+ * <li>the {@link btrplace.solver.choco.view.Cumulatives} view is {@link btrplace.solver.choco.view.DefaultCumulatives}</li>
+ * <li>the {@link btrplace.solver.choco.view.AliasedCumulatives} view is {@link btrplace.solver.choco.view.DefaultAliasedCumulatives}</li>
  * </ul>
  *
  * @author Fabien Hermenier

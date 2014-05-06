@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -21,6 +22,8 @@ import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.model.*;
 import net.minidev.json.JSONObject;
+
+import java.util.Map;
 
 
 /**
@@ -57,18 +60,20 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
 
             JSONObject vms = (JSONObject) o.get("vms");
             if (vms != null) {
-                for (String el : vms.keySet()) {
+                for (Map.Entry<String, Object> e : vms.entrySet()) {
+                    String el = e.getKey();
                     VM vm = getOrMakeVM(Integer.parseInt(el));
-                    JSONObject entries = (JSONObject) vms.get(el);
+                    JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, vm, entries);
                 }
             }
 
             JSONObject nodes = (JSONObject) o.get("nodes");
             if (nodes != null) {
-                for (String el : nodes.keySet()) {
+                for (Map.Entry<String, Object> e : nodes.entrySet()) {
+                    String el = e.getKey();
                     Node n = getOrMakeNode(Integer.parseInt(el));
-                    JSONObject entries = (JSONObject) nodes.get(el);
+                    JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, n, entries);
                 }
             }

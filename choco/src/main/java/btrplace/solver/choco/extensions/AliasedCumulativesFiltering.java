@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -35,7 +36,7 @@ import java.util.BitSet;
  */
 public class AliasedCumulativesFiltering {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -198,7 +199,7 @@ public class AliasedCumulativesFiltering {
 
             if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
                 if (DEBUG) {
-                    LOGGER.debug(cEnds[j].toString() + " increasing");
+                    LOGGER.debug("{} increasing", cEnds[j].toString());
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
@@ -275,8 +276,8 @@ public class AliasedCumulativesFiltering {
 
 
             for (int i = 0; i < nbDims; i++) {
-                LOGGER.debug("profileMin(dim " + i + ")= " + prettyProfile(sortedMinProfile, profilesMin[i]));
-                LOGGER.debug("profileMax(dim " + i + ")= " + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
         }
     }

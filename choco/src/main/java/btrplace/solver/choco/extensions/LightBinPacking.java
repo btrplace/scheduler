@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -32,7 +33,7 @@ import util.tools.ArrayUtils;
  */
 public class LightBinPacking extends IntConstraint<IntVar> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * The number of bins.
@@ -55,10 +56,10 @@ public class LightBinPacking extends IntConstraint<IntVar> {
     /**
      * constructor of the FastBinPacking global constraint
      *
-     * @param labels      the label describing each dimension
-     * @param l           array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
-     * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param labels the label describing each dimension
+     * @param l      array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+     * @param s      array of nbItems variables, each figuring the item size. Only the LB will be considered!
+     * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
     public LightBinPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), l[0][0].getSolver());
