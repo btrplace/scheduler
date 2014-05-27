@@ -57,7 +57,7 @@ public class DisjointTest {
             s.post(IntConstraintFactory.arithm(groups[g - 1][2], "<=", groups[g][2]));
         }
         SMF.log(s, true, true);
-        SMF.logContradiction(s);
+        //SMF.logContradiction(s);
         s.findAllSolutions();
 
     }

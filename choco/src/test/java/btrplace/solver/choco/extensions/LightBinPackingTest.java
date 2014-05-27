@@ -18,10 +18,12 @@
 package btrplace.solver.choco.extensions;
 
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
+import solver.search.loop.monitors.SMF;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -72,15 +74,19 @@ public class LightBinPackingTest {
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
 
-    public void testPack(int nbSol) {
-        /*s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
-        s.generateSearchStrategy();
-        s.launch();*/
-        /*Assert.assertEquals((boolean) s.isFeasible(), nbSol != 0, "SAT");
-        if (nbSol > 0) {
-            Assert.assertEquals(s.getNbSolutions(), nbSol, "#SOL");
-        } */
-        ///s.clear();
+    public void testPack(int nbExpectedSols) {
+        //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
+        //s.generateSearchStrategy();
+        //s.launch();
+        SMF.log(s, true, true);
+        SMF.logContradiction(s);
+        long nbComputedSols = s.findAllSolutions();
+
+        Assert.assertEquals(s.isFeasible(), nbExpectedSols != 0, "SAT");
+        if (nbExpectedSols > 0) {
+            Assert.assertEquals(nbComputedSols, nbExpectedSols, "#SOL");
+        }
+
     }
 
     @Test
