@@ -302,7 +302,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 	}
 	
     /**
-     * when an item is assigned to a bin: update the candidate list and the required load of the bin // TODO
+     * when an item is assigned to a bin: update the candidate list and the required load of the bin // TODO FOR WIHTNOHEAP
      * possibly update the LB of load[bin] to loadInf[bin] then synchronize sumLoadInf
      * @throws solver.exception.ContradictionException on the load[bin] variable
      */
@@ -376,7 +376,6 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
-        int[] sumFreeSize = new int[nbDims];
         int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, aCause);
@@ -386,9 +385,6 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
                     rLoads[d][bins[i].getValue()] += iSizes[d][i];
                 }
             } else {
-                for (int d = 0; d < nbDims; d++) {
-                    sumFreeSize[d] += iSizes[d][i];
-                }
                 DisposableValueIterator it = bins[i].getValueIterator(true);
                 try {
                     while (it.hasNext()) {
@@ -454,17 +450,6 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         }
     }
     */
-    public void printHeapsAndEmpty() {
-        for (int d = 0; d < nbDims; d++) {
-            System.out.println("heap for dimension " + d);
-            while (!heap.get(d).isEmpty()) {
-                System.out.print(heap.get(d).poll());
-            }
-            System.out.println();
-        }
-    }
-
-
 
     /**
      * Compute the sum of the demand for each dimension.
