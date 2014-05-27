@@ -19,7 +19,6 @@
 package btrplace.solver.choco.extensions;
 
 
-import memory.IStateBitSet;
 import memory.IStateBool;
 import memory.IStateInt;
 import solver.constraints.Propagator;
@@ -33,7 +32,7 @@ import util.iterators.DisposableValueIterator;
 import util.procedure.UnaryIntProcedure;
 import util.tools.ArrayUtils;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Lighter but faster version of a bin packing that does not provide the knapsack filtering
@@ -96,10 +95,14 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
     private String[] name;
 
-    private IStateBitSet notEntailedDims;
+//    private IStateBitSet notEntailedDims;
+
 
 	protected final RemProc remProc;
 	protected final IIntDeltaMonitor[] deltaMonitor;
+
+    private ArrayList<PriorityQueue<Integer>> heap;
+
     /**
      * constructor of the FastBinPacking global constraint
      *
@@ -123,9 +126,30 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         for (int i = 0; i < deltaMonitor.length; i++) {
             deltaMonitor[i] = this.vars[i].monitorDelta(this);
         }
+        this.heap = new ArrayList<>(nbDims);
+        for (int d=0; d<nbDims; d++) {
+            heap.add(new PriorityQueue<>(nbBins, new DeltaLoadComparator(d, this)));
+        }
     }
 
-    public boolean isConsistent() {
+    public int deltaLoad(int dim, int bin) {
+        return loads[dim][bin].getUB() - loads[dim][bin].getLB();
+    }
+
+    static class DeltaLoadComparator implements Comparator<Integer> {
+        private int dimension;
+        private LightBinPackingPropagator p;
+        public DeltaLoadComparator(int dim, LightBinPackingPropagator p) {
+            this.dimension = dim;
+            this.p = p;
+        }
+
+        public int compare(Integer a, Integer b) {
+            return p.deltaLoad(dimension, b) - p.deltaLoad(dimension, a);
+        }
+    }
+
+    public ESat isConsistent() {
         int[][] l = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
             if (bins[i].instantiated()) {
@@ -133,12 +157,12 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
                     int v = bins[i].getValue();
                     l[d][v] += iSizes[d][i];
                     if (l[d][v] > loads[d][v].getUB()) {
-                        return false;
+                        return ESat.FALSE;
                     }
                 }
             }
         }
-        return true;
+        return ESat.TRUE;
     }
 
     //***********************************************************************************************************************//
@@ -156,7 +180,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
     @Override
     public ESat isEntailed() {
-        return ESat.UNDEFINED;
+        return (isCompletelyInstantiated()) ? isConsistent() : ESat.UNDEFINED;
     }
 
 
@@ -169,7 +193,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         }
         boolean noFixPoint = true;
         while (noFixPoint) {
-			for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+            for (int d=0; d<nbDims; d++) {
 				if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
 					contradiction(null, "");
 				}
@@ -177,17 +201,51 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
             noFixPoint = false;
 			
 			//TODO: classer par delta decroissant puis faire successivement sumLoadUP, sumLoadInf
-			for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+			//for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
 				//for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
-                for (int b=0; b<nbBins; b++) {
-					assert(loads[d][b].getLB() >= loadInf[d][b].get() && loads[d][b].getUB() <= loadSup[d][b].get());
-					noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
-					noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
-				}
+            for (int d=0; d<nbDims; d++) {
+//                for (int b=0; b<nbBins; b++) {
+//					assert(loads[d][b].getLB() >= loadInf[d][b].get() && loads[d][b].getUB() <= loadSup[d][b].get());
+//					noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
+//					noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
+//				}
+                int nChanges;
+                long deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
+                long deltaToSup = sumLoadSup[d].get() - sumISizes[d];
+                do {
+                    nChanges = 0;
+                    if (deltaToSup > deltaFromInf) {
+                        nChanges += filterLoads(d, (int)deltaFromInf, true);
+                        deltaToSup = sumLoadSup[d].get() - sumISizes[d];
+                        nChanges += filterLoads(d, (int)deltaToSup, false);
+                        deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
+                    } else {
+                        nChanges += filterLoads(d, (int)deltaToSup, false);
+                        deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
+                        nChanges += filterLoads(d, (int)deltaFromInf, true);
+                        deltaToSup = sumLoadSup[d].get() - sumISizes[d];
+                    }
+                } while (nChanges > 0);
 			}
         }
         assert checkLoadConsistency();
     }
+
+    private int filterLoads(int d, int delta, boolean isSup) throws ContradictionException {
+        int nChanges = 0;
+        if (deltaLoad(d, heap.get(d).peek()) > delta) {
+            do {
+                int b = heap.get(d).poll();
+                if (isSup) filterLoadSup(d, b, delta + loads[d][b].getLB());
+                else filterLoadInf(d, b, loads[d][b].getUB() - delta);
+                assert(deltaLoad(d, b) == delta);
+                heap.get(d).offer(b);
+                nChanges++;
+            } while (!heap.get(d).isEmpty() && deltaLoad(d, heap.get(d).peek()) > delta);
+        }
+        return nChanges;
+    }
+
 
     @Override
 		public void propagate(int idx, int mask) throws ContradictionException {
@@ -210,7 +268,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      * @throws solver.exception.ContradictionException on the load[bin] variable
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
-        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+        for (int d=0; d<nbDims; d++) {
             filterLoadSup(d, bin, loadSup[d][bin].add(-1 * iSizes[d][item]));
 		}
 	}
@@ -221,7 +279,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      * @throws solver.exception.ContradictionException on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
-        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+        for (int d=0; d<nbDims; d++) {
             filterLoadInf(d, bin, loadInf[d][bin].add(iSizes[d][item]));
 		}
     }
@@ -231,7 +289,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         if (delta <= 0) 
 			return false;
 		loads[dim][bin].updateLowerBound(newLoadInf, aCause);
-		if (sumISizes[dim] < sumLoadInf[dim].add(delta)) 
+		if (sumISizes[dim] < sumLoadInf[dim].add(delta))
 			contradiction(null, "");
 		return true;
     }
@@ -282,8 +340,8 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
     public void initialize() throws ContradictionException {
 
         sumISizes = new long[nbDims];
-        notEntailedDims = environment.makeBitSet(nbDims);
-        notEntailedDims.clear(0, 3); // TODO 3 ?????????
+//        notEntailedDims = environment.makeBitSet(nbDims);
+//        notEntailedDims.clear(0, 3);
 
         computeSums();
 
@@ -318,6 +376,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
             }
         }
 
+
         int[] slb = new int[nbDims];
         int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
@@ -328,6 +387,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
                 slb[d] += loads[d][b].getLB();
                 slu[d] += loads[d][b].getUB();
+                heap.get(d).offer(b);
             }
         }
 
@@ -340,10 +400,12 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
         this.loadsHaveChanged = environment.makeBool(false);
 
-        detectEntailedDimensions(sumFreeSize);
+//        detectEntailedDimensions(sumFreeSize);
 
         assert checkLoadConsistency();
-        LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
+ //       LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
+        LOGGER.trace("BinPacking: " + Arrays.toString(name));
+
     }
 
     /**
@@ -351,8 +413,8 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      * A dimension is entailed if for every bin, the free load (diff between the UB and the LB) is
      * >= the un-assigned height for that dimension
      *
-     * @param sumFreeSize the un-assigned height for each dimension.
-     */
+//     * @param sumFreeSize the un-assigned height for each dimension.
+     *
     private void detectEntailedDimensions(int[] sumFreeSize) {
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
@@ -363,6 +425,18 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
             }
         }
     }
+    */
+    public void printHeapsAndEmpty() {
+        for (int d = 0; d < nbDims; d++) {
+            System.out.println("heap for dimension " + d);
+            while (!heap.get(d).isEmpty()) {
+                System.out.print(heap.get(d).poll());
+            }
+            System.out.println();
+        }
+    }
+
+
 
     /**
      * Compute the sum of the demand for each dimension.
@@ -383,12 +457,14 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      */
     private void recomputeLoadSums() {
         loadsHaveChanged.set(false);
-        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+        for (int d=0; d<nbDims; d++) {
+            heap.get(d).clear();
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < nbBins; b++) {
                 sli += loads[d][b].getLB();
                 sls += loads[d][b].getUB();
+                heap.get(d).offer(b);
             }
             this.sumLoadInf[d].set(sli);
             this.sumLoadSup[d].set(sls);

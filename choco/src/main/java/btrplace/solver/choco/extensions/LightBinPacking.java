@@ -82,7 +82,7 @@ public class LightBinPacking extends IntConstraint<IntVar> {
             }
         }
         for (int b = 0; b < nbBins; b++) {
-            for (int d = 0; d <= nbDims; d++) {
+            for (int d = 0; d < nbDims; d++) {
                 int loadPos = iSizes[0].length + d * nbBins + b;
                 if (tuple[loadPos] != l[d][b]) {
                     LOGGER.warn("Invalid load for bin " + b + " on dimension " + d + ". Was " + tuple[loadPos] + ", expected " + l[d][b]);

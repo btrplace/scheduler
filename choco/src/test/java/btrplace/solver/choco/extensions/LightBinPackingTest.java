@@ -24,8 +24,10 @@ import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
 import solver.search.loop.monitors.SMF;
+import solver.search.strategy.IntStrategyFactory;
 import solver.variables.IntVar;
 import solver.variables.VF;
+import util.ESat;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -74,15 +76,22 @@ public class LightBinPackingTest {
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
 
-    public void testPack(int nbExpectedSols) {
+    public void testPack(boolean isFeasible) {
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
         //s.generateSearchStrategy();
         //s.launch();
         SMF.log(s, true, true);
         SMF.logContradiction(s);
+        s.findSolution();
+        Assert.assertEquals(s.isFeasible(), ESat.eval(isFeasible), "SAT");
+    }
+
+    public void testPack(int nbExpectedSols) {
+        SMF.log(s, true, true);
+        SMF.logContradiction(s);
         long nbComputedSols = s.findAllSolutions();
 
-        Assert.assertEquals(s.isFeasible(), nbExpectedSols != 0, "SAT");
+        Assert.assertEquals(s.isFeasible(), ESat.eval(nbExpectedSols != 0), "SAT");
         if (nbExpectedSols > 0) {
             Assert.assertEquals(nbComputedSols, nbExpectedSols, "#SOL");
         }
@@ -91,35 +100,21 @@ public class LightBinPackingTest {
 
     @Test
     public void testWithUnOrderedItems() {
-        int nBins = 5;
         int nItems = 25;
-        s = new Solver();
-        loads = new IntVar[nBins];
         sizes = new int[nItems];
-        bins = new IntVar[nItems];
-        for (int i = 0; i < nBins; i++) {
-            loads[i] = VF.bounded("l" + i, 0, 20, s);
-        }
         Random rnd = new Random();
         for (int i = 0; i < nItems; i++) {
             sizes[i] = rnd.nextInt(4);
-            bins[i] = VF.enumerated("b" + i, 0, nBins, s);
         }
-        Constraint cPack = new LightBinPacking(new String[]{"foo"}, new IntVar[][]{loads}, new int[][]{sizes}, bins);
-        s.post(cPack);
+        modelPack(5, 20, sizes);
+        //s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
+        testPack(true);
 
-        //s.getConfiguration().putTrue(Configuration.STOP_AT_FIRST_SOLUTION);
-        ////s.generateSearchStrategy();
-        //s.launch();
-        //int nbSol = s.getNbSolutions();
-        //Assert.assertEquals((boolean) s.isFeasible(), nbSol != 0, "SAT");
-        //s.clear();
     }
 
     @Test(sequential = true)
     public void testLoadSup() {
         modelPack(3, 5, 3, 2);
-        //s.addGoal(BranchingFactory.minDomMinVal(s, bins));
         testPack(24);
     }
 
@@ -127,15 +122,31 @@ public class LightBinPackingTest {
     public void testGuillaume() {
         modelPack(2, 100, 3, 30);
         IntVar margeLoad = VF.bounded("margeLoad", 0, 50, s);
-        s.post(nth(bins[0], loads, margeLoad));
+        s.post(IntConstraintFactory.element(margeLoad, loads, bins[0], 0));
         testPack(2);
     }
 
-    /**
-     * var = array[index]
-     */
-    public Constraint nth(IntVar index, IntVar[] array, IntVar var) {
-        return IntConstraintFactory.element(var, array, index, 0);
+    @Test(sequential = true)
+    public void testHeap() {
+        modelPack(new int[]{2, 5, 3}, new int[]{5, 3, 1});
+        testPack(1);
     }
+
+    @Test
+    public void testBig() {
+        int nItems = 10;
+        sizes = new int[nItems];
+        for (int i = 0; i < nItems/2; i++) {
+            sizes[i] = 2;
+        }
+        for (int i = nItems/2; i < nItems; i++) {
+            sizes[i] = 1;
+        }
+        modelPack(5, 3, sizes);
+        //s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
+        testPack(true);
+
+    }
+
 
 }
