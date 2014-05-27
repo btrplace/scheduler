@@ -103,15 +103,19 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
     private ArrayList<PriorityQueue<Integer>> heap;
 
-    /**
-     * constructor of the FastBinPacking global constraint
-     *
-     * @param labels the label describing each dimension
-     * @param l      array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param s      array of nbItems, each figuring the item size.
-     * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
-     */
     public LightBinPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
+        this(labels, l, s, b, true);
+    }
+
+        /**
+         * constructor of the FastBinPacking global constraint
+         *
+         * @param labels the label describing each dimension
+         * @param l      array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+         * @param s      array of nbItems, each figuring the item size.
+         * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+         */
+    public LightBinPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
         this.name = labels;
         this.loads = l;
@@ -126,9 +130,12 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         for (int i = 0; i < deltaMonitor.length; i++) {
             deltaMonitor[i] = this.vars[i].monitorDelta(this);
         }
-        this.heap = new ArrayList<>(nbDims);
-        for (int d=0; d<nbDims; d++) {
-            heap.add(new PriorityQueue<>(nbBins, new DeltaLoadComparator(d, this)));
+        this.heap = null;
+        if (withHeap) {
+            this.heap = new ArrayList<>(nbDims);
+            for (int d=0; d<nbDims; d++) {
+                heap.add(new PriorityQueue<>(nbBins, new DeltaLoadComparator(d, this)));
+            }
         }
     }
 
@@ -191,47 +198,68 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         } else if (loadsHaveChanged.get()) {
 			recomputeLoadSums();
         }
-        boolean noFixPoint = true;
-        while (noFixPoint) {
-            for (int d=0; d<nbDims; d++) {
-				if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
-					contradiction(null, "");
-				}
-			}
-            noFixPoint = false;
-			
-			//TODO: classer par delta decroissant puis faire successivement sumLoadUP, sumLoadInf
-			//for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
-				//for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
-            for (int d=0; d<nbDims; d++) {
-//                for (int b=0; b<nbBins; b++) {
-//					assert(loads[d][b].getLB() >= loadInf[d][b].get() && loads[d][b].getUB() <= loadSup[d][b].get());
-//					noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
-//					noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
-//				}
-                int nChanges;
-                long deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
-                long deltaToSup = sumLoadSup[d].get() - sumISizes[d];
-                do {
-                    nChanges = 0;
-                    if (deltaToSup > deltaFromInf) {
-                        nChanges += filterLoads(d, (int)deltaFromInf, true);
-                        deltaToSup = sumLoadSup[d].get() - sumISizes[d];
-                        nChanges += filterLoads(d, (int)deltaToSup, false);
-                        deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
-                    } else {
-                        nChanges += filterLoads(d, (int)deltaToSup, false);
-                        deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
-                        nChanges += filterLoads(d, (int)deltaFromInf, true);
-                        deltaToSup = sumLoadSup[d].get() - sumISizes[d];
-                    }
-                } while (nChanges > 0);
-			}
-        }
+        if (heap != null) fixPointWithHeap();
+        else fixPointWithoutHeap();
         assert checkLoadConsistency();
     }
 
+
+    public void fixPointWithoutHeap() throws ContradictionException {
+        boolean noFixPoint = true;
+        while (noFixPoint) {
+            for (int d=0; d<nbDims; d++) {
+                if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
+                    contradiction(null, "");
+                }
+            }
+            noFixPoint = false;
+
+            for (int d=0; d<nbDims; d++) {
+                for (int b=0; b<nbBins; b++) {
+					assert(loads[d][b].getLB() >= loadInf[d][b].get() && loads[d][b].getUB() <= loadSup[d][b].get());
+					noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
+					noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
+				}
+            }
+        }
+    }
+
+    public void fixPointWithHeap() throws ContradictionException {
+        for (int d=0; d<nbDims; d++) {
+            if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
+                contradiction(null, "");
+            }
+        }
+        for (int d=0; d<nbDims; d++) {
+            int nChanges;
+            long deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
+            long deltaToSup = sumLoadSup[d].get() - sumISizes[d];
+            do {
+                nChanges = 0;
+                if (deltaToSup > deltaFromInf) {
+                    nChanges += filterLoads(d, (int)deltaFromInf, true);
+                    deltaToSup = sumLoadSup[d].get() - sumISizes[d];
+                    if (deltaToSup < 0) contradiction(null, "");
+                    nChanges += filterLoads(d, (int)deltaToSup, false);
+                    deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
+                    if (deltaFromInf < 0) contradiction(null, "");
+
+                } else {
+                    nChanges += filterLoads(d, (int)deltaToSup, false);
+                    deltaFromInf = sumISizes[d] - sumLoadInf[d].get();
+                    if (deltaFromInf < 0) contradiction(null, "");
+                    nChanges += filterLoads(d, (int)deltaFromInf, true);
+                    deltaToSup = sumLoadSup[d].get() - sumISizes[d];
+                    if (deltaToSup < 0) contradiction(null, "");
+
+                }
+            } while (nChanges > 0);
+        }
+    }
+
+
     private int filterLoads(int d, int delta, boolean isSup) throws ContradictionException {
+        assert heap != null;
         int nChanges = 0;
         if (deltaLoad(d, heap.get(d).peek()) > delta) {
             do {
@@ -387,7 +415,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
                 slb[d] += loads[d][b].getLB();
                 slu[d] += loads[d][b].getUB();
-                heap.get(d).offer(b);
+                if (heap != null) heap.get(d).offer(b);
             }
         }
 
@@ -458,13 +486,13 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
     private void recomputeLoadSums() {
         loadsHaveChanged.set(false);
         for (int d=0; d<nbDims; d++) {
-            heap.get(d).clear();
+            if (heap != null) heap.get(d).clear();
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < nbBins; b++) {
                 sli += loads[d][b].getLB();
                 sls += loads[d][b].getUB();
-                heap.get(d).offer(b);
+                if (heap != null) heap.get(d).offer(b);
             }
             this.sumLoadInf[d].set(sli);
             this.sumLoadSup[d].set(sls);
