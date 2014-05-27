@@ -27,15 +27,20 @@ import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
 import solver.variables.EventType;
 import solver.variables.IntVar;
+import solver.variables.delta.IIntDeltaMonitor;
 import util.ESat;
-import util.iterators.DisposableIntIterator;
 import util.iterators.DisposableValueIterator;
+import util.procedure.UnaryIntProcedure;
 import util.tools.ArrayUtils;
 
 import java.util.Arrays;
 
 /**
  * Lighter but faster version of a bin packing that does not provide the knapsack filtering
+ * propagate 1) globally: sumItemSizes == sumBinLoads 2) on each bin: sumAssignedItemSizes == binLoad
+ * rule 1.0: if sumSizes < sumBinLoadInf or sumSizes > sumBinLoadSups then fail
+ * rule 1.1, for each bin: sumItemSizes - sumOtherBinLoadSups <= binLoad <= sumItemSizes - sumOtherBinLoadInf
+ * rule 2.0, for each bin: binRequiredLoad <= binLoad <= binTotalLoad
  *
  * @author Fabien Hermenier
  */
@@ -59,7 +64,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      * The load of each bin per dimension. [nbDims][nbBins]
      */
     private final IntVar[][] loads;
-    private boolean first = true;
+
     /**
      * The sum of the item sizes per dimension. [nbItems]
      */
@@ -67,12 +72,12 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
     /**
      * The total size of the required + candidate items for each bin. [nbDims][nbBins]
      */
-    private IStateInt[][] bTLoads;
+    private IStateInt[][] loadSup;
 
     /**
      * The total size of the required items for each bin. [nbDims][nbBins]
      */
-    private IStateInt[][] bRLoads;
+    private IStateInt[][] loadInf;
 
     /**
      * The sum of the bin load LBs. [nbDims]
@@ -93,12 +98,14 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
     private IStateBitSet notEntailedDims;
 
+	protected final RemProc remProc;
+	protected final IIntDeltaMonitor[] deltaMonitor;
     /**
      * constructor of the FastBinPacking global constraint
      *
      * @param labels the label describing each dimension
      * @param l      array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param s      array of nbItems variables, each figuring the item size. Only the LB will be considered!
+     * @param s      array of nbItems, each figuring the item size.
      * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
     public LightBinPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
@@ -109,8 +116,13 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         this.nbDims = l.length;
         this.bins = b;
         this.iSizes = s;
-        this.bTLoads = new IStateInt[nbDims][nbBins];
-        this.bRLoads = new IStateInt[nbDims][nbBins];
+        this.loadSup = new IStateInt[nbDims][nbBins];
+        this.loadInf = new IStateInt[nbDims][nbBins];
+        this.remProc = new RemProc(this);
+		this.deltaMonitor = new IIntDeltaMonitor[b.length];
+        for (int i = 0; i < deltaMonitor.length; i++) {
+            deltaMonitor[i] = this.vars[i].monitorDelta(this);
+        }
     }
 
     public boolean isConsistent() {
@@ -129,16 +141,17 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         return true;
     }
 
-    //****************************************************************//
-    //********* Events ***********************************************//
-    //****************************************************************//
+    //***********************************************************************************************************************//
+	// EVENTS
+    //***********************************************************************************************************************//
 
+	/**
+	 * react on removal events on bins[] variables
+	 * react on bound events on loads[] variables
+	 */
     @Override
     public int getPropagationConditions(int idx) {
-        if (idx < bins.length) {
-            return EventType.REMOVE.mask;
-        }
-        return EventType.BOUND.mask;
+		return (idx < bins.length ? EventType.INT_ALL_MASK() : EventType.BOUND.mask + EventType.INSTANTIATE.mask);
     }
 
     @Override
@@ -147,27 +160,137 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
     }
 
 
+    @Override
+    public void propagate(int evtmask) throws ContradictionException {
+        if ((evtmask & EventType.FULL_PROPAGATION.mask) != 0) {
+            initialize();
+        } else if (loadsHaveChanged.get()) {
+			recomputeLoadSums();
+        }
+        boolean noFixPoint = true;
+        while (noFixPoint) {
+			for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+				if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
+					contradiction(null, "");
+				}
+			}
+            noFixPoint = false;
+			
+			//TODO: classer par delta decroissant puis faire successivement sumLoadUP, sumLoadInf
+			for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+				//for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
+                for (int b=0; b<nbBins; b++) {
+					assert(loads[d][b].getLB() >= loadInf[d][b].get() && loads[d][b].getUB() <= loadSup[d][b].get());
+					noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
+					noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
+				}
+			}
+        }
+        assert checkLoadConsistency();
+    }
+
+    @Override
+		public void propagate(int idx, int mask) throws ContradictionException {
+        if (idx < bins.length) {
+            deltaMonitor[idx].freeze();
+            deltaMonitor[idx].forEach(remProc.set(idx), EventType.REMOVE);
+            deltaMonitor[idx].unfreeze();
+			if (vars[idx].instantiated()) {
+				assignItem(idx, vars[idx].getValue());
+			}
+        } else {
+			loadsHaveChanged.set(true);
+		}
+        forcePropagate(EventType.CUSTOM_PROPAGATION);
+    }
+	
+    /**
+     * when an item is removed from a bin: update the candidate list and load of the bin
+     * possibly update the UB of load[bin] to loadSup[bin] then synchronize sumLoadSup
+     * @throws solver.exception.ContradictionException on the load[bin] variable
+     */
+    protected void removeItem(int item, int bin) throws ContradictionException {
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+            filterLoadSup(d, bin, loadSup[d][bin].add(-1 * iSizes[d][item]));
+		}
+	}
+	
+    /**
+     * when an item is assigned to a bin: update the candidate list and the required load of the bin // TODO
+     * possibly update the LB of load[bin] to loadInf[bin] then synchronize sumLoadInf
+     * @throws solver.exception.ContradictionException on the load[bin] variable
+     */
+    private void assignItem(int item, int bin) throws ContradictionException {
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+            filterLoadInf(d, bin, loadInf[d][bin].add(iSizes[d][item]));
+		}
+    }
+
+    private boolean filterLoadInf(int dim, int bin, int newLoadInf) throws ContradictionException {
+        int delta = newLoadInf - loads[dim][bin].getLB();
+        if (delta <= 0) 
+			return false;
+		loads[dim][bin].updateLowerBound(newLoadInf, aCause);
+		if (sumISizes[dim] < sumLoadInf[dim].add(delta)) 
+			contradiction(null, "");
+		return true;
+    }
+
+    private boolean filterLoadSup(int dim, int bin, int newLoadSup) throws ContradictionException {
+        int delta = newLoadSup - loads[dim][bin].getUB();
+        if (delta >= 0) 
+			return false;
+		loads[dim][bin].updateUpperBound(newLoadSup, aCause);
+		if (sumISizes[dim] > sumLoadSup[dim].add(delta)) 
+			contradiction(null, "");
+		return true;
+    }
+
+	private static class RemProc implements UnaryIntProcedure<Integer> {
+
+        private final LightBinPackingPropagator p;
+        private int idxVar;
+
+        public RemProc(LightBinPackingPropagator p) {
+            this.p = p;
+        }
+
+        @Override
+        public UnaryIntProcedure set(Integer idxVar) {
+            this.idxVar = idxVar;
+            return this;
+        }
+
+        @Override
+        public void execute(int val) throws ContradictionException {
+			p.removeItem(idxVar, val);
+        }
+    }
+
+
+
+    //***********************************************************************************************************************//
+	// HELPER
+    //***********************************************************************************************************************//
+
+
     /**
      * initialize the internal data: availableBins, candidates, binRequiredLoads, binTotalLoads, sumLoadInf, sumLoadSup
      * shrink the item-to-bins assignment variables: 0 <= bins[i] <= nbBins
      * shrink the bin load variables: binRequiredLoad <= binLoad <= binTotalLoad
      */
-    public void awake() throws ContradictionException {
+    public void initialize() throws ContradictionException {
 
-        if (!first) {
-            return;
-        }
-        first = false;
         sumISizes = new long[nbDims];
         notEntailedDims = environment.makeBitSet(nbDims);
-        notEntailedDims.clear(0, 3);
+        notEntailedDims.clear(0, 3); // TODO 3 ?????????
 
         computeSums();
 
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
-        int[] nbUnassigned = new int[nbDims];
+        int[] sumFreeSize = new int[nbDims];
         int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, aCause);
@@ -178,7 +301,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
                 }
             } else {
                 for (int d = 0; d < nbDims; d++) {
-                    nbUnassigned[d] += iSizes[d][i];
+                    sumFreeSize[d] += iSizes[d][i];
                 }
                 DisposableValueIterator it = bins[i].getValueIterator(true);
                 try {
@@ -199,8 +322,8 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
-                bRLoads[d][b] = environment.makeInt(rLoads[d][b]);
-                bTLoads[d][b] = environment.makeInt(rLoads[d][b] + cLoads[d][b]);
+                loadInf[d][b] = environment.makeInt(rLoads[d][b]);
+                loadSup[d][b] = environment.makeInt(rLoads[d][b] + cLoads[d][b]);
                 loads[d][b].updateLowerBound(rLoads[d][b], aCause);
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
                 slb[d] += loads[d][b].getLB();
@@ -217,11 +340,10 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
         this.loadsHaveChanged = environment.makeBool(false);
 
-        detectEntailedDimensions(nbUnassigned);
+        detectEntailedDimensions(sumFreeSize);
 
         assert checkLoadConsistency();
         LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
-        forcePropagate(EventType.INSTANTIATE);
     }
 
     /**
@@ -229,18 +351,17 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      * A dimension is entailed if for every bin, the free load (diff between the UB and the LB) is
      * >= the un-assigned height for that dimension
      *
-     * @param nbUnassigned the un-assigned height for each dimension.
+     * @param sumFreeSize the un-assigned height for each dimension.
      */
-    private void detectEntailedDimensions(int[] nbUnassigned) {
+    private void detectEntailedDimensions(int[] sumFreeSize) {
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-                if (!loads[d][b].instantiated() && loads[d][b].getUB() - loads[d][b].getLB() < nbUnassigned[d]) {
+                if (!loads[d][b].instantiated() && loads[d][b].getUB() - loads[d][b].getLB() < sumFreeSize[d]) {
                     notEntailedDims.set(d);
                     break;
                 }
             }
         }
-
     }
 
     /**
@@ -257,188 +378,25 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
 
     }
 
-    @Override
-    /**
-     * propagate 1) globally: sumItemSizes == sumBinLoads 2) on each bin: sumAssignedItemSizes == binLoad
-     * rule 1.0: if sumSizes < sumBinLoadInf or sumSizes > sumBinLoadSups then fail
-     * rule 1.1, for each bin: sumItemSizes - sumOtherBinLoadSups <= binLoad <= sumItemSizes - sumOtherBinLoadInf
-     * rule 2.0, for each bin: binRequiredLoad <= binLoad <= binTotalLoad
-     * rule 2.1, for each bin and candidate item: if binRequiredLoad + itemSize > binLoadSup then remove item from bin
-     * rule 2.2, for each bin and candidate item: if binTotalLoad - itemSize < binLoadInf then pack item into bin
-     * with "big items" optimization, the last rule is not valid for big items but can be replaced by:
-     * rule 2.3: if smallItemSizes < binLoadInf then remove big candidates with size < binLoadInf-smallItemSizes
-     * and update binLoadInf as binRequiredLoad + the size of the smallest big remaining candidate
-     */
-    public void propagate(int mask) throws ContradictionException {
-        awake();
-        recomputeLoadSums();
-        for (int d = 0; d < nbDims; d++) {
-            if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
-                contradiction(null, "");
-            }
-        }
-        assert checkLoadConsistency();
-    }
-
-    @Override
-    public void propagate(int idx, int mask) throws ContradictionException {
-        if (EventType.isBound(mask)) {
-            awakeOnRemovals(idx, null);
-        }
-        if (EventType.isInclow(mask)) {
-            awakeOnInf(idx);
-        }
-        if (EventType.isDecupp(mask)) {
-            awakeOnSup(idx);
-        }
-
-    }
-
     /**
      * recompute the sum of the min/max loads only if at least one variable bound has been updated outside the constraint
      */
-    private boolean recomputeLoadSums() {
-        if (!loadsHaveChanged.get()) {
-            return false;
-        }
+    private void recomputeLoadSums() {
         loadsHaveChanged.set(false);
-        for (int d = 0; d < nbDims; d++) {
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < nbBins; b++) {
                 sli += loads[d][b].getLB();
                 sls += loads[d][b].getUB();
             }
-
             this.sumLoadInf[d].set(sli);
             this.sumLoadSup[d].set(sls);
         }
-        return true;
-    }
-
-    /**
-     * on loads variables: delay propagation
-     */
-    //@Override
-    public void awakeOnInf(int varIdx) throws ContradictionException {
-        loadsHaveChanged.set(true);
-        forcePropagate(EventType.INSTANTIATE);
-        //constAwake(false);
-    }
-
-    /**
-     * on loads variables: delay propagation
-     */
-    //@Override
-    public void awakeOnSup(int varIdx) throws ContradictionException {
-        loadsHaveChanged.set(true);
-        forcePropagate(EventType.INSTANTIATE);
-        //constAwake(false);
     }
 
 
-    /**
-     * on bins variables: propagate the removal of item-to-bins assignments.
-     * 1) update the candidate and check to decrease the load UB of each removed bins: binLoad <= binTotalLoad
-     * 2) if item is assigned: update the required and check to increase the load LB of the bin: binLoad >= binRequiredLoad
-     *
-     * @throws solver.exception.ContradictionException on the load variables
-     */
-    //@Override
-    public void awakeOnRemovals(int iIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        try {
-            while (deltaDomain.hasNext()) {
-                int b = deltaDomain.next();
-                removeItem(iIdx, b);
-            }
 
-        } finally {
-            deltaDomain.dispose();
-        }
-        if (vars[iIdx].getLB() == vars[iIdx].getUB()) {
-            assignItem(iIdx, vars[iIdx].getValue());
-        }
-        forcePropagate(EventType.INSTANTIATE);
-        //this.constAwake(false);
-    }
-
-    //****************************************************************//
-    //********* VARIABLE FILTERING ***********************************//
-    //****************************************************************//
-
-    /**
-     * synchronize the internal data when an item is assigned to a bin:
-     * remove the item from the candidate list of the bin and balance its size from the candidate to the required load of the bin
-     * check to update the LB of load[bin]
-     *
-     * @param item item index in the bin
-     * @param bin  bin index
-     * @throws solver.exception.ContradictionException on the load[bin] variable
-     */
-    private void assignItem(int item, int bin) throws ContradictionException {
-        for (int d = 0; d < nbDims; d++) {
-            int r = bRLoads[d][bin].add(iSizes[d][item]);
-            filterLoadInf(d, bin, r);
-        }
-    }
-
-    /**
-     * synchronize the internal data when an item is removed from a bin:
-     * remove the item from the candidate list of the bin and reduce the candidate load of the bin
-     * check to update the UB of load[bin]
-     *
-     * @param item item index in its bin
-     * @param bin  bin index
-     * @throws solver.exception.ContradictionException on the load[bin] variable
-     */
-    private void removeItem(int item, int bin) throws ContradictionException {
-        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
-            int r = bTLoads[d][bin].add(-1 * iSizes[d][item]);
-            filterLoadSup(d, bin, r);
-        }
-    }
-
-    /**
-     * increase the LB of the bin load and the sum of the bin load LBs
-     *
-     * @param bin        bin index
-     * @param newLoadInf new LB of the bin load
-     * @return {@code true} if LB is increased.
-     * @throws solver.exception.ContradictionException on the load[bin] variable
-     */
-    private boolean filterLoadInf(int dim, int bin, int newLoadInf) throws ContradictionException {
-        int inc = newLoadInf - loads[dim][bin].getLB();
-        if (inc > 0) {
-            loads[dim][bin].updateLowerBound(newLoadInf, aCause);
-            int r = sumLoadInf[dim].add(inc);
-            if (sumISizes[dim] < r) {
-                contradiction(null, "");
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * decrease the UB of the bin load and the sum of the bin load UBs
-     *
-     * @param bin        bin index
-     * @param newLoadSup new UB of the bin load
-     * @return {@code true} if UB is decreased.
-     * @throws solver.exception.ContradictionException on the load[bin] variable
-     */
-    private boolean filterLoadSup(int dim, int bin, int newLoadSup) throws ContradictionException {
-        int dec = newLoadSup - loads[dim][bin].getUB();
-        if (dec < 0) {
-            loads[dim][bin].updateUpperBound(newLoadSup, aCause);
-            int r = sumLoadSup[dim].add(dec);
-            if (sumISizes[dim] > r) {
-                contradiction(null, "");
-            }
-            return true;
-        }
-        return false;
-    }
 
     //****************************************************************//
     //********* Checkers *********************************************//
@@ -475,16 +433,16 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
             }
         }
 
-        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+        for (int d = 0; d < nbDims; d++) {
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < rs[d].length; b++) {
-                if (rs[d][b] != bRLoads[d][b].get()) {
-                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " required=" + bRLoads[d][b].get() + " expected=" + Arrays.toString(rs[b]));
+                if (rs[d][b] != loadInf[d][b].get()) {
+                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " required=" + loadInf[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                     check = false;
                 }
-                if (rs[d][b] + cs[d][b] != bTLoads[d][b].get()) {
-                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " total=" + bTLoads[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
+                if (rs[d][b] + cs[d][b] != loadSup[d][b].get()) {
+                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " total=" + loadSup[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
                 if (loads[d][b].getLB() < rs[d][b]) {
@@ -508,7 +466,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
             }
             if (!check) {
                 for (int b = 0; b < rs[d].length; b++) {
-                    LOGGER.error(name[d] + ": " + loads[d][b].toString() + " required=" + bRLoads[d][b].get() + " (" + rs[d][b] + ") total=" + bTLoads[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
+                    LOGGER.error(name[d] + ": " + loads[d][b].toString() + " required=" + loadInf[d][b].get() + " (" + rs[d][b] + ") total=" + loadSup[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
                 }
                 LOGGER.error(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
                 LOGGER.error(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
