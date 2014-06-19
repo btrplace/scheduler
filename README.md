@@ -32,7 +32,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-bundle</artifactId>
-   <version>0.38.1</version>
+   <version>0.38.2</version>
 </dependency>
 ```
 

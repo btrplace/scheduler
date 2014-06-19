@@ -1,6 +1,10 @@
 Release notes
 ======================
 
+version 0.38.2 - 19 Jun 2014
+----------------------
+- Minor release to fix copyrights
+
 version 0.38.1 - 06 May 2014
 ----------------------
 - fix the release script ? (issue #35)
