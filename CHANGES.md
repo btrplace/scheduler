@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ???
+version 0.38.2 - 19 Jun 2014
 ----------------------
 - Minor release to fix copyrights
 
