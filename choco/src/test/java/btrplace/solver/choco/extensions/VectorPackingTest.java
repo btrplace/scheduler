@@ -19,6 +19,7 @@
 package btrplace.solver.choco.extensions;
 
 
+import btrplace.solver.choco.extensions.pack.VectorPacking;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Solver;
@@ -34,55 +35,76 @@ import java.util.Arrays;
 import java.util.Random;
 
 /**
- * Unit tests for {@link LightBinPacking}.
+ * Unit tests for {@link btrplace.solver.choco.extensions.pack.VectorPacking}.
  *
  * @author Sophie Demassey
  */
-public class LightBinPackingTest {
+public class VectorPackingTest {
 
     Solver s;
-    IntVar[] loads;
-    int[] sizes;
+    IntVar[][] loads;
+    int[][] sizes;
     IntVar[] bins;
 
 
-    public void modelPack(int nBins, int capa, int nItems, int height) {
+    public void modelPack2D(int nBins, int capa, int nItems, int height) {
         int[] heights = new int[nItems];
         Arrays.fill(heights, height);
-        modelPack(nBins, capa, heights);
+        modelPack2D(nBins, capa, heights);
     }
 
-    public void modelPack(int nBins, int capa, int[] height) {
+    public void modelPack2D(int nBins, int capa, int[] height) {
         int[] capas = new int[nBins];
         Arrays.fill(capas, capa);
-        modelPack(capas, height);
+        modelPack2D(capas, height);
     }
 
-    public void modelPack(int[] capa, int[] height) {
-        int nBins = capa.length;
-        int nItems = height.length;
+    public void modelPack2D(int[] capa, int[] height) {
+        modelPack(new int[][]{capa}, new int[][]{height});
+    }
+
+    public void modelPack(int nBins, int[] capa, int nItems, int[] height) {
+        int nRes = capa.length;
+        assert nRes == height.length;
+        int[][] heights = new int[nRes][nItems];
+        int[][] capas = new int[nRes][nBins];
+        for (int d=0; d < nRes; d++) {
+            Arrays.fill(heights[d], height[d]);
+            Arrays.fill(capas[d], capa[d]);
+        }
+        modelPack(capas, heights);
+    }
+
+
+    public void modelPack(int[][] capa, int[][] height) {
+        int nRes = capa.length;
+        assert nRes == height.length;
+        int nBins = capa[0].length;
+        int nItems = height[0].length;
         s = new Solver();
-        loads = new IntVar[nBins];
-        sizes = new int[nItems];
+        loads = new IntVar[nRes][nBins];
         bins = new IntVar[nItems];
-        for (int i = 0; i < nBins; i++) {
-            loads[i] = VF.bounded("l" + i, 0, capa[i], s);
+        String[] name = new String[nRes];
+        for (int d=0; d < nRes; d++) {
+            name[d] = "d" + d;
+            for (int i = 0; i < nBins; i++) {
+                loads[d][i] = VF.bounded("l" + d + "." + i, 0, capa[d][i], s);
+            }
         }
-        for (int i = 0; i < nItems; i++) {
-            sizes[i] = height[i];
-            bins[i] = VF.enumerated("b" + i, 0, nBins, s);
-        }
-        Constraint cPack = new LightBinPacking(new String[]{"foo"}, new IntVar[][]{loads}, new int[][]{sizes}, bins);
+        sizes = height;
+        bins = VF.enumeratedArray("b", nItems, 0, nBins, s);
+        Constraint cPack = new VectorPacking(name, loads, sizes, bins);
         s.post(cPack);
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
+
 
     public void testPack(boolean isFeasible) {
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
         //s.generateSearchStrategy();
         //s.launch();
-        SMF.log(s, true, true);
-        SMF.logContradiction(s);
+        SMF.log(s, true, false);
+        //SMF.logContradiction(s);
         s.findSolution();
         Assert.assertEquals(s.isFeasible(), ESat.eval(isFeasible), "SAT");
     }
@@ -100,54 +122,66 @@ public class LightBinPackingTest {
     }
 
     @Test
-    public void testWithUnOrderedItems() {
+    public void test2DWithUnOrderedItems() {
         int nItems = 25;
-        sizes = new int[nItems];
+        int[] height = new int[nItems];
         Random rnd = new Random();
         for (int i = 0; i < nItems; i++) {
-            sizes[i] = rnd.nextInt(4);
+            height[i] = rnd.nextInt(4);
         }
-        modelPack(5, 20, sizes);
+        modelPack2D(5, 20, height);
         //s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
         testPack(true);
 
     }
 
     @Test(sequential = true)
-    public void testLoadSup() {
-        modelPack(3, 5, 3, 2);
+    public void test2DLoadSup() {
+        modelPack2D(3, 5, 3, 2);
         testPack(24);
     }
 
     @Test(sequential = true)
-    public void testGuillaume() {
-        modelPack(2, 100, 3, 30);
+    public void test2DGuillaume() {
+        modelPack2D(2, 100, 3, 30);
         IntVar margeLoad = VF.bounded("margeLoad", 0, 50, s);
-        s.post(IntConstraintFactory.element(margeLoad, loads, bins[0], 0));
+        s.post(IntConstraintFactory.element(margeLoad, loads[0], bins[0], 0));
         testPack(2);
     }
 
     @Test(sequential = true)
-    public void testHeap() {
-        modelPack(new int[]{2, 5, 3}, new int[]{5, 3, 1});
+    public void test2DHeap() {
+        modelPack2D(new int[]{2, 5, 3}, new int[]{5, 3, 1});
         testPack(1);
     }
 
     @Test
-    public void testBig() {
+    public void test2DBig() {
         int nItems = 10;
-        sizes = new int[nItems];
+        int[] height = new int[nItems];
         for (int i = 0; i < nItems/2; i++) {
-            sizes[i] = 2;
+            height[i] = 2;
         }
         for (int i = nItems/2; i < nItems; i++) {
-            sizes[i] = 1;
+            height[i] = 1;
         }
-        modelPack(5, 3, sizes);
+        modelPack2D(5, 3, height);
         //s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
         testPack(true);
-
     }
+
+    @Test
+    public void testBig() {
+        int nBins = 100;
+        int nItems = nBins*10;
+        int[] capa = new int[]{16,32};
+        int[]height = new int[]{1,1};
+        modelPack(nBins, capa, nItems, height);
+        s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
+        testPack(true);
+        Assert.fail();
+    }
+
 
 
 }
