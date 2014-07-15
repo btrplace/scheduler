@@ -64,12 +64,17 @@ public class CheckerVerifier implements Verifier {
                     chk.check(p);
                     return CheckerResult.newSuccess();
                 } catch (ReconfigurationPlanCheckerException ex) {
+                    //     ex.printStackTrace();
+                    if (ex.getAction() == null) {
+                        return CheckerResult.newFailure(ex.getMessage());
+                    }
                     return CheckerResult.newFailure(ex.getAction());
                 }
             } else {
                 throw new UnsupportedOperationException(sat + " cannot be continuous");
             }
         } catch (Exception ex) {
+            //ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }

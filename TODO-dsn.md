@@ -2,11 +2,16 @@
 - fuzzer for the delay OK
 - check for the assertions pb in continuous OK
 
+0- Limits avec parallels OK
 
-1- Un fuzzer pour les core constraints
+1- Un fuzzer continuous pour les core constraints OK
  -> open bar, no restrictions sur les transitions (par table de proba) et l'ordo (ofc)
-2- Un fuzzer pour les side constraints
- -> table de transition safe
+
+
+2- fuzzer core-compliant OK
+  -> filter sur les core constraints (noVMsOnOfflineNode && hostForVMs):   
+  => genère plan & src/dst models
+
 
 -> Run, results for placement only constraints OK
 

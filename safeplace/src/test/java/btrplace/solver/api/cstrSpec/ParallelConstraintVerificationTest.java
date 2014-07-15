@@ -4,12 +4,12 @@ import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
 import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
-import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
 import btrplace.solver.api.cstrSpec.guard.TimeGuard;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerification;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -53,16 +53,16 @@ public class ParallelConstraintVerificationTest {
         String root = "src/main/bin/";
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
-                new TransitionTable(new FileReader(root + "vm_transitions")), 1, 1);
-        Constraint c = s.get("ready");
+                new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
+        Constraint c = s.get("gather");
         System.out.println(c.pretty());
-        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, Collections.<VerifDomain>emptyList(), new ImplVerifier(), c);
+        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, Collections.<VerifDomain>emptyList(), new CheckerVerifier(), c);
         InMemoryBackend b = new InMemoryBackend();
         pc.setBackend(b);
-        pc.limit(new ErrorGuard(1));
-        pc.limit(new TimeGuard(30));
+        //pc.limit(new ErrorGuard(20));
+        pc.limit(new TimeGuard(10));
         pc.setNbWorkers(1);
-        pc.setContinuous(false);
+        pc.setContinuous(true);
         for (Constraint x : s.getConstraints()) {
             if (x.isCore()) {
                 pc.precondition(x);
