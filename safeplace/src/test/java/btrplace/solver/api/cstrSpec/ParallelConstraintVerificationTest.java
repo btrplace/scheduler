@@ -54,20 +54,23 @@ public class ParallelConstraintVerificationTest {
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
                 new TransitionTable(new FileReader(root + "vm_transitions")), 1, 1);
-        Constraint c = s.get("toRunning");
+        Constraint c = s.get("ready");
         System.out.println(c.pretty());
         ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, Collections.<VerifDomain>emptyList(), new ImplVerifier(), c);
         InMemoryBackend b = new InMemoryBackend();
         pc.setBackend(b);
-        pc.limit(new ErrorGuard(10));
+        pc.limit(new ErrorGuard(1));
         pc.limit(new TimeGuard(30));
-        pc.setNbWorkers(3);
-        pc.setContinuous(true);
-        pc.precondition(s.get("noVMsOnOfflineNodes"));
+        pc.setNbWorkers(1);
+        pc.setContinuous(false);
+        for (Constraint x : s.getConstraints()) {
+            if (x.isCore()) {
+                pc.precondition(x);
+            }
+        }
         long st = System.currentTimeMillis();
         pc.verify();
         long ed = System.currentTimeMillis();
-        System.err.println("Computed in " + (ed - st) + " ms");
         int nb = b.getDefiant().size() + b.getCompliant().size();
         System.out.println(b.getDefiant().size() + "/" + nb);
         for (TestCase tc : b.getDefiant()) {
