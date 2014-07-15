@@ -207,16 +207,11 @@ public class VerifyFuzz {
 
         paraVerif.setBackend(b);
 
-        long startTime = System.currentTimeMillis();
-
         List<Constraint> pre = makePreconditions(c, spec);
         for (Constraint x : pre) {
             paraVerif.precondition(x);
         }
-        System.out.println("Preconditions: " + pre);
         paraVerif.verify();
-        long endTime = System.currentTimeMillis();
-
 
         int nbD = -1, nbC = -1;
 
@@ -231,7 +226,7 @@ public class VerifyFuzz {
 
         }
         if (verbosityLvl > 0) {
-            System.out.println(nbD + "/" + (nbD + nbC) + " failure(s); in " + (endTime - startTime) + " ms");
+            System.out.println(nbD + "/" + (nbD + nbC) + " failure(s)");
         }
 
         if (verbosityLvl > 1) {
