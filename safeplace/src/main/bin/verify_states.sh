@@ -1,12 +1,12 @@
 #!/bin/sh
-
 VERIFIERS="impl impl_repair checker"
+SPEC="v1.cspec"
 
 CSTRS="online offline running sleeping ready killed"
+echo "constraint verif failures tests"
 for CSTR in ${CSTRS}; do
-    echo "--- constraint ${CSTR} ---"
     for VERIFIER in ${VERIFIERS}; do
-        echo "\tVerifying ${VERIFIER}"
-        ./verify_fuzz.sh --size 1x1 -v --discrete -t 5 -p 3 --verifier ${VERIFIER} $* ${CSTR}
+        f=`./verify_fuzz.sh ${SPEC} ${CSTR} 1x1 ${VERIFIER} --discrete -v $* |tr "/" " "|cut -d' ' -f1,2`
+        echo "${CSTR} ${VERIFIER} ${f}"
     done
 done
