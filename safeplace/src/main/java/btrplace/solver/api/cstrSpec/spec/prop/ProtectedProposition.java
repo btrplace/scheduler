@@ -27,4 +27,9 @@ public class ProtectedProposition implements Proposition {
     public String toString() {
         return "(" + p + ")";
     }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return new ProtectedProposition(p.simplify(m));
+    }
 }

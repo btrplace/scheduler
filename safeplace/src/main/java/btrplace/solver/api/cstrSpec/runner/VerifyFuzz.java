@@ -1,6 +1,15 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.runner;
 
-import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.Specification;
+import btrplace.solver.api.cstrSpec.backend.Counting;
+import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
+import btrplace.solver.api.cstrSpec.backend.VerificationBackend;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
+import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
+import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
+import btrplace.solver.api.cstrSpec.guard.TimeGuard;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
@@ -14,21 +23,20 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * @author Fabien Hermenier
  */
-public class Verify {
+public class VerifyFuzz {
 
-    private static int nbVMs = 1;
-    private static int nbNodes = 1;
-    private static String verifier = "impl";
     private static String json = null;
     private static int verbosityLvl = 0;
-    private static boolean continuous = true;
     private static int nbWorkers = Runtime.getRuntime().availableProcessors() - 1;
 
     private static List<VerifDomain> vDoms = new ArrayList<>();
@@ -38,26 +46,18 @@ public class Verify {
         System.exit(1);
     }
 
-    private static Constraint makeConstraint(String specFile, String cstrId) {
+    private static Specification getSpec(String specFile) {
         if (specFile == null) {
             exit("Missing specFile");
         }
-        if (cstrId == null) {
-            exit("Missing constraint id");
-        }
-
         SpecReader r = new SpecReader();
         Specification spec = null;
         try {
-            spec = r.getSpecification(new File(specFile));
+            return r.getSpecification(new File(specFile));
         } catch (Exception e) {
             exit("Unable to parse '" + specFile + "': " + e.getMessage());
         }
-        Constraint c = spec.get(cstrId);
-        if (c == null) {
-            exit("No specification for constraint '" + cstrId + "'");
-        }
-        return c;
+        return null;
     }
 
     private static Verifier makeVerifier(String verifier) {
@@ -73,7 +73,7 @@ public class Verify {
         return null;
     }
 
-    private static void serialize(List<TestCase> defiant, List<TestCase> compliant, String output) {
+    private static void serialize(Collection<TestCase> defiant, Collection<TestCase> compliant, String output) {
         TestCaseConverter tcc = new TestCaseConverter();
         if (output == null) {
             return;
@@ -113,10 +113,10 @@ public class Verify {
         System.out.println("Verify [options] specFile cstr_id");
         System.out.println("\tVerify the constraint 'cstr_id' using its specification available in 'specFile'");
         System.out.println("\nOptions:");
-        System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to. Default is '" + verifier + "'");
+        System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to");
         System.out.println("--continuous perform a verification wrt. a continuous restriction (default)");
         System.out.println("--discrete perform a verification wrt. a discrete restriction");
-        System.out.println("--size VxN\tmake a model of V vms and N nodes. Default is " + nbVMs + "x" + nbNodes);
+        System.out.println("--size VxN\tmake a model of V vms and N nodes");
         System.out.println("--dom key=lb..ub. Search space for the given type");
         System.out.println("--durations min..sup\taction duration vary from min to sup (incl). Default is 1..3");
         System.out.println("--json out\tthe JSON file where failures are stored. Default is no output");
@@ -126,32 +126,45 @@ public class Verify {
         System.exit(1);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //Parse arguments
         int i;
         boolean endOptions = false;
         String specFile;
         String cstrId;
 
-        for (i = 0; i < args.length; i++) {
+        /*
+         spec cstr NxM verif options
+         */
+        specFile = args[0];
+        cstrId = args[1];
+
+        String[] ts = args[2].split("x");
+        int nbVMs = Integer.parseInt(ts[0]);
+        int nbNodes = Integer.parseInt(ts[1]);
+        String verifier = args[3];
+
+        ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader("node_transitions")),
+                new TransitionTable(new FileReader("vm_transitions")),
+                nbNodes, nbVMs);
+
+        final Specification spec = getSpec(specFile);
+        final Constraint c = spec.get(cstrId);
+        final Verifier v = makeVerifier(verifier);
+
+        ParallelConstraintVerificationFuzz paraVerif = new ParallelConstraintVerificationFuzz(fuzz, vDoms, v, c);
+
+        for (i = 4; i < args.length; i++) {
             String k = args[i];
             switch (k) {
-                case "--verifier":
-                    verifier = args[++i];
-                    break;
                 case "--continuous":
-                    continuous = true;
+                    paraVerif.setContinuous(true);
                     break;
                 case "--discrete":
-                    continuous = false;
+                    paraVerif.setContinuous(false);
                     break;
                 case "--dom":
                     makeVerifDomain(args[++i]);
-                    break;
-                case "--size":
-                    String[] ts = args[++i].split("x");
-                    nbVMs = Integer.parseInt(ts[0]);
-                    nbNodes = Integer.parseInt(ts[1]);
                     break;
                 case "--json":
                     json = args[++i];
@@ -161,57 +174,102 @@ public class Verify {
                     usage();
                     break;
                 case "-p":
-                    nbWorkers = Integer.parseInt(args[++i]);
+                    paraVerif.setNbWorkers(Integer.parseInt(args[++i]));
                     break;
                 case "-v":
+                    paraVerif.setVerbose(true);
                     verbosityLvl++;
                     break;
+                case "-t":
+                    paraVerif.limit(new TimeGuard(Integer.parseInt(args[++i])));
+                    break;
+                case "-f":
+                    paraVerif.limit(new ErrorGuard(Integer.parseInt(args[++i])));
+                    break;
+                case "-m":
+                    paraVerif.limit(new MaxTestsGuard(Integer.parseInt(args[++i])));
+                    break;
+
                 default:
-                    endOptions = true;
+                    System.err.println("Unsupported option: " + args[i]);
+                    System.exit(1);
                     break;
             }
-            if (endOptions) {
-                break;
-            }
         }
-        if (args.length - i < 2) {
-            System.err.println("Missing arguments");
-            usage();
-
+        VerificationBackend b = null;
+        if (verbosityLvl == 1) {
+            b = new Counting();
         }
-        specFile = args[i++];
-        cstrId = args[i++];
-        final Constraint c = makeConstraint(specFile, cstrId);
-        final Verifier v = makeVerifier(verifier);
 
-        ParallelConstraintVerification paraVerif =
-                new ParallelConstraintVerification(new ModelsGenerator(nbNodes, nbVMs), vDoms, v, nbWorkers, c, continuous, verbosityLvl > 1);
+        if (verbosityLvl > 1) {
+            b = new InMemoryBackend();
+        }
+
+        paraVerif.setBackend(b);
+
         long startTime = System.currentTimeMillis();
+
+        List<Constraint> pre = makePreconditions(c, spec);
+        for (Constraint x : pre) {
+            paraVerif.precondition(x);
+        }
+        System.out.println("Preconditions: " + pre);
         paraVerif.verify();
         long endTime = System.currentTimeMillis();
 
-        final List<TestCase> defiant = paraVerif.getDefiant();
-        final List<TestCase> compliant = paraVerif.getCompliant();
 
+        int nbD = -1, nbC = -1;
+
+        if (verbosityLvl == 1 && json == null) {
+            nbD = ((Counting) b).getNbDefiant().get();
+            nbC = ((Counting) b).getNbCompliant().get();
+
+        }
+        if (verbosityLvl > 1) {
+            nbD = ((InMemoryBackend) b).getDefiant().size();
+            nbC = ((InMemoryBackend) b).getCompliant().size();
+
+        }
         if (verbosityLvl > 0) {
-            System.out.println(defiant.size() + "/" + (defiant.size() + compliant.size()) + " failure(s); in " + (endTime - startTime) + " ms");
-        }
-        if (verbosityLvl > 2) {
-            System.out.println("---- Defiant TestCases ----");
-            for (TestCase tc : defiant) {
-                System.out.println(tc.pretty(true));
-            }
-        }
-        if (verbosityLvl > 3) {
-            System.out.println("---- Compliant TestCases ----");
-            for (TestCase tc : compliant) {
-                System.out.println(tc.pretty(true));
-            }
+            System.out.println(nbD + "/" + (nbD + nbC) + " failure(s); in " + (endTime - startTime) + " ms");
         }
 
-        serialize(defiant, compliant, json);
-        if (!defiant.isEmpty()) {
+        if (verbosityLvl > 1) {
+            final Queue<TestCase> defiant = ((InMemoryBackend) b).getDefiant();
+            final Queue<TestCase> compliant = ((InMemoryBackend) b).getCompliant();
+
+
+            if (verbosityLvl > 2) {
+                System.out.println("---- Defiant TestCases ----");
+                for (TestCase tc : defiant) {
+                    System.out.println(tc.pretty(true));
+                }
+            }
+            if (verbosityLvl > 3) {
+                System.out.println("---- Compliant TestCases ----");
+                for (TestCase tc : compliant) {
+                    System.out.println(tc.pretty(true));
+                }
+            }
+            serialize(defiant, compliant, json);
+        }
+
+        if (nbD != 0) {
             System.exit(1);
         }
+        System.exit(0);
+    }
+
+    private static List<Constraint> makePreconditions(Constraint c, Specification spec) {
+        List<Constraint> pre = new ArrayList<>();
+        for (Constraint x : spec.getConstraints()) {
+            if (x.isCore()) {
+                pre.add(x);
+            }
+        }
+
+        //In case c is a core one, we still want to be able to verify it
+        pre.remove(c);
+        return pre;
     }
 }

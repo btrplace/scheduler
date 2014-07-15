@@ -6,13 +6,23 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootNode;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.verification.CheckerResult;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Fabien Hermenier
@@ -125,7 +135,43 @@ public class TestSpec {
             Assert.assertNotNull(s, c.pretty());
             System.out.println(s);
             System.out.flush();
-
         }
+    }
+
+    @Test
+    public void test2() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addOfflineNode(n1);
+        VM v = mo.newVM();
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        p.add(new BootNode(n1, 1, 4));
+        p.add(new MigrateVM(v, n2, n1, 2, 5));
+        p.add(new ShutdownNode(n0, 4, 7));
+        SpecVerifier sv = new SpecVerifier();
+
+        Specification spec = getSpecification();
+        Constraint c = spec.get("noVMsOnOfflineNodes");
+        CheckerResult res = sv.verify(c, p, Collections.<Constant>emptyList());
+        Assert.assertFalse(res.getStatus());
+    }
+
+    @Test
+    public void testSimplification() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addOfflineNode(n1);
+        VM v = mo.newVM();
+        Specification spec = getSpecification();
+        Constraint c = spec.get("noVMsOnOfflineNodes");
+        System.out.println(c.getProposition().simplify(new SpecModel(mo)));
     }
 }

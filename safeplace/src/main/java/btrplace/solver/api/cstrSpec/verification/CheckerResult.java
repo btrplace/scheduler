@@ -28,10 +28,6 @@ public class CheckerResult {
         return success;
     }
 
-    public static CheckerResult newFailure() {
-        return new CheckerResult(false, "");
-    }
-
     public static CheckerResult newFailure(String ex) {
         return new CheckerResult(false, ex);
     }
@@ -54,5 +50,25 @@ public class CheckerResult {
             return b.toString();
         }
         return b + " (" + ex + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CheckerResult that = (CheckerResult) o;
+
+        if (!b.equals(that.b)) return false;
+        if (!ex.equals(that.ex)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = b.hashCode();
+        result = 31 * result + ex.hashCode();
+        return result;
     }
 }

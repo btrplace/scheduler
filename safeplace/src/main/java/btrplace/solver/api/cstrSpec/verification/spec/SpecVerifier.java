@@ -31,11 +31,12 @@ public class SpecVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint cstr, Model res, Model dst, List<Constant> values) {
-        SpecModel sRes = new SpecModel(res);
+    public CheckerResult verify(Constraint cstr, Model src, Model dst, List<Constant> values) {
+        SpecModel sRes = new SpecModel(dst);
         setInputs(cstr, sRes, values);
         Proposition ok = cstr.getProposition();
         Boolean bOk = ok.eval(sRes);
+
         return new CheckerResult(bOk, "");
     }
 
@@ -50,11 +51,11 @@ public class SpecVerifier implements Verifier {
             Action a = spc.check(good);
             if (a != null) {
                 return new CheckerResult(false, a);
-                    }
+            }
 
         } catch (Exception e) {
             return new CheckerResult(false, e.getMessage());
-            }
+        }
         return CheckerResult.newSuccess();
     }
 

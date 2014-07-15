@@ -3,7 +3,7 @@ package btrplace.solver.api.cstrSpec.verification.btrplace;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.SatConstraintChecker;
 
 import java.util.Collections;
 

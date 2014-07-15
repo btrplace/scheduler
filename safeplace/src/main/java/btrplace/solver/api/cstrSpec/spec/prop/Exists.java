@@ -71,4 +71,32 @@ public class Exists implements Proposition {
         }
         return b.append(") ").append(prop).toString();
     }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        Or tail = null;
+
+        boolean ret = true;
+        List<List<Object>> values = new ArrayList<>(vars.size());
+        for (int i = 0; i < vars.size(); i++) {
+            Collection<Object> o = from.eval(m);
+            if (o == null) {
+                return null;
+            }
+            values.add(new ArrayList<>(o));
+        }
+        AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, values);
+        for (Object[] tuple : tg) {
+            for (int i = 0; i < tuple.length; i++) {
+                m.setValue(vars.get(i).label(), tuple[i]);
+                //vars.get(i).set(m, tuple[i]);
+            }
+            if (tail == null) {
+                tail = new Or(prop.simplify(m), Proposition.False);
+            } else {
+                tail = new Or(tail, prop.simplify(m));
+            }
+        }
+        return tail;
+    }
 }

@@ -21,7 +21,6 @@ public class ImplVerifier implements Verifier {
 
     private ChocoReconfigurationAlgorithm cra;
 
-
     private boolean repair;
 
     public ImplVerifier() {
@@ -43,6 +42,8 @@ public class ImplVerifier implements Verifier {
         this.repair = repair;
     }
 
+    private static CheckerResult noSolution = CheckerResult.newFailure("No solution");
+
     @Override
     public CheckerResult verify(Constraint c, Model src, Model dst, List<Constant> params) {
 
@@ -59,11 +60,12 @@ public class ImplVerifier implements Verifier {
                 throw new RuntimeException(e);
             }
         }
+        actionsToConstraints(cstrs, dst);
         try {
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(src, cstrs);
             if (res == null) {
-                return CheckerResult.newFailure("No solution");
+                return noSolution;
             } else {
                 return CheckerResult.newSuccess();
             }
@@ -90,14 +92,13 @@ public class ImplVerifier implements Verifier {
                 throw new RuntimeException(e);
             }
         }
-        cstrs.addAll(actionsToConstraints(p, true));
+        actionsToConstraints(cstrs, p);
         setDurationEstimators(p);
-
         try {
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
-                return CheckerResult.newFailure("No solution");
+                return noSolution;
             } else if (!p.equals(res)) {
                 throw new RuntimeException("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p);
             } else {
@@ -114,10 +115,9 @@ public class ImplVerifier implements Verifier {
         return new Fence(v, Collections.singleton(n));
     }
 
-    private Collection<SatConstraint> actionsToConstraints(ReconfigurationPlan p, boolean continuous) {
-        Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
-        List<SatConstraint> cstrs = new ArrayList<>();
-
+    private void actionsToConstraints(Collection<SatConstraint> cstrs, ReconfigurationPlan p) {
+        Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getOnlineNodes());
+        notSwitching.addAll(p.getOrigin().getMapping().getOfflineNodes());
         Set<VM> rooted = new HashSet<>(p.getOrigin().getMapping().getRunningVMs());
         for (Action a : p.getActions()) {
             if (a instanceof MigrateVM) {
@@ -149,17 +149,17 @@ public class ImplVerifier implements Verifier {
                 ShutdownNode s = (ShutdownNode) a;
                 cstrs.add(new Offline(s.getNode()));
                 notSwitching.remove(s.getNode());
+            } else if (a instanceof KillVM) {
+                cstrs.add(new Killed(((KillVM) a).getVM()));
             } else {
                 throw new UnsupportedOperationException(a.toString());
             }
 
-            if (continuous) {
-                //Only force the schedule for continuous constraints
-                if (a instanceof VMEvent) {
-                    cstrs.add(new Schedule(((VMEvent) a).getVM(), a.getStart(), a.getEnd()));
-                } else if (a instanceof NodeEvent) {
-                    cstrs.add(new Schedule(((NodeEvent) a).getNode(), a.getStart(), a.getEnd()));
-                }
+            //Only force the schedule for continuous constraints
+            if (a instanceof VMEvent) {
+                cstrs.add(new Schedule(((VMEvent) a).getVM(), a.getStart(), a.getEnd()));
+            } else if (a instanceof NodeEvent) {
+                cstrs.add(new Schedule(((NodeEvent) a).getNode(), a.getStart(), a.getEnd()));
             }
         }
         if (!rooted.isEmpty()) {
@@ -173,8 +173,30 @@ public class ImplVerifier implements Verifier {
                 cstrs.add(new Offline(n));
             }
         }
+    }
 
-        return cstrs;
+    private void actionsToConstraints(Collection<SatConstraint> cstrs, Model dst) {
+        for (Node n : dst.getMapping().getOnlineNodes()) {
+            cstrs.add(new Online(n));
+        }
+
+        for (Node n : dst.getMapping().getOfflineNodes()) {
+            cstrs.add(new Offline(n));
+        }
+
+        for (VM v : dst.getMapping().getRunningVMs()) {
+            cstrs.add(new Running(v));
+            cstrs.add(on(v, dst.getMapping().getVMLocation(v)));
+        }
+
+        for (VM v : dst.getMapping().getSleepingVMs()) {
+            cstrs.add(new Sleeping(v));
+            cstrs.add(on(v, dst.getMapping().getVMLocation(v)));
+        }
+
+        for (VM v : dst.getMapping().getReadyVMs()) {
+            cstrs.add(new Ready(v));
+        }
     }
 
     private void setDurationEstimators(ReconfigurationPlan rp) {
@@ -196,6 +218,8 @@ public class ImplVerifier implements Verifier {
                 attrs.put(((BootNode) a).getNode(), "boot", d);
             } else if (a instanceof ShutdownNode) {
                 attrs.put(((ShutdownNode) a).getNode(), "shutdown", d);
+            } else if (a instanceof KillVM) {
+                attrs.put(((KillVM) a).getVM(), "kill", d);
             } else {
                 throw new UnsupportedOperationException(a.toString());
             }

@@ -27,4 +27,9 @@ public class Not implements Proposition {
     public String toString() {
         return "~" + p;
     }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return new Not(p.simplify(m));
+    }
 }

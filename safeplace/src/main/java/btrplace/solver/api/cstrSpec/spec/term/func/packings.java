@@ -28,6 +28,7 @@ public class Packings extends Function<Set> {
 
     private Set<Set<Set<Object>>> allPacking(Collection<Object> args) {
         AllPackingsGenerator<Object> pg = new AllPackingsGenerator<>(Object.class, args);
+        //System.out.println(args);
         Set<Set<Set<Object>>> packings = new HashSet<>();
         while (pg.hasNext()) {
             Set<Set<Object>> s = pg.next();
@@ -35,6 +36,7 @@ public class Packings extends Function<Set> {
                 packings.add(s);
             }
         }
+        //System.out.println(packings);
         return packings;
     }
 

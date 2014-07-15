@@ -15,7 +15,7 @@ done
 
 
 ##Pluggable constraints, discrete restriction only, size=2x2
-CSTRS="offline online running ready sleeping killed among ban fence runningCapacity gather lonely maxOnline  spread split splitAmong"
+CSTRS="offline online running ready sleeping killed among ban fence runningCapacity gather lonely maxOnline spread split splitAmong"
 VERIFIERS="impl impl_repair checker"
 for CSTR in ${CSTRS}; do
     echo "--- pluggable constraint ${CSTR} ---"

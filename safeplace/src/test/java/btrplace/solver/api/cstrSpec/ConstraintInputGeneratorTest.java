@@ -2,6 +2,7 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.fuzzer.ConstraintInputGenerator;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;

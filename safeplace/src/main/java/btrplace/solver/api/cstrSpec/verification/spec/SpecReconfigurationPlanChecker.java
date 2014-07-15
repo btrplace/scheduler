@@ -17,7 +17,7 @@
 package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.TimedBasedActionComparator;
 import btrplace.plan.event.*;
@@ -27,7 +27,7 @@ import java.util.PriorityQueue;
 
 /**
  * Checker to verify if a reconfiguration plan satisfies a set of
- * {@link btrplace.model.constraint.checker.SatConstraintChecker}.
+ * {@link btrplace.model.constraint.SatConstraintChecker}.
  * <p/>
  * In practice, the origin model is send to each of the checkers.
  * Then it notifies all the checkers for the beginning and the end moment of each of the actions and events.
@@ -218,6 +218,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     }
 
     private boolean visitAndThrowOnViolation(Action a, Proposition ok) {
+        //System.out.println("Visited " + a + " on " + ok + " " + startingEvent);
         a.visit(this);
         return isConsistent(ok);
     }

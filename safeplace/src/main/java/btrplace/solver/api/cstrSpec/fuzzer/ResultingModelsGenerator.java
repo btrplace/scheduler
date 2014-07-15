@@ -22,6 +22,7 @@ public class ResultingModelsGenerator extends DefaultGenerator<Model> {
 
     public ResultingModelsGenerator(Model src) {
         List<List<Action>> possibles = makePossibleActions(src);
+        System.err.println(possibles);
         tg = new AllTuplesGenerator<>(Action.class, possibles);
         this.src = src;
 
@@ -30,19 +31,6 @@ public class ResultingModelsGenerator extends DefaultGenerator<Model> {
     private List<List<Action>> makePossibleActions(Model src) {
         List<List<Action>> l = new ArrayList<>();
         Mapping m = src.getMapping();
-
-        for (Node n : m.getOnlineNodes()) {
-            List<Action> as = new ArrayList<>(2);
-            as.add(null);
-            as.add(new ShutdownNode(n, 0, 1));
-            l.add(as);
-        }
-        for (Node n : m.getOfflineNodes()) {
-            List<Action> as = new ArrayList<>(2);
-            as.add(null);
-            as.add(new BootNode(n, 0, 1));
-            l.add(as);
-        }
 
         for (VM v : m.getRunningVMs()) {
             List<Action> dom = new ArrayList<>(m.getOnlineNodes().size() + 2);
@@ -74,6 +62,20 @@ public class ResultingModelsGenerator extends DefaultGenerator<Model> {
             dom.add(new ResumeVM(v, loc, loc, 0, 1));
             l.add(dom);
         }
+
+        for (Node n : m.getOnlineNodes()) {
+            List<Action> as = new ArrayList<>(2);
+            as.add(null);
+            as.add(new ShutdownNode(n, 0, 1));
+            l.add(as);
+        }
+        for (Node n : m.getOfflineNodes()) {
+            List<Action> as = new ArrayList<>(2);
+            as.add(null);
+            as.add(new BootNode(n, 0, 1));
+            l.add(as);
+        }
+
         return l;
     }
 
@@ -82,6 +84,7 @@ public class ResultingModelsGenerator extends DefaultGenerator<Model> {
         Model dst = src.clone();
         Mapping m = dst.getMapping();
         for (Action a : (Action[]) tg.next()) {
+            System.err.println("\tPick " + a);
             if (a != null) {
                 if (a instanceof BootNode) {
                     m.addOnlineNode(((BootNode) a).getNode());
@@ -100,6 +103,7 @@ public class ResultingModelsGenerator extends DefaultGenerator<Model> {
                 }
             }
         }
+        System.out.println();
         return dst;
     }
 }

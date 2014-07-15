@@ -36,4 +36,21 @@ public class And extends BinaryProp {
         }
         return r1 && r2;
     }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return new And(p1.simplify(m), p2.simplify(m));
+    }
+
+    @Override
+    public String toString() {
+        if (p1 == Proposition.True) {
+            return p2.toString();
+        }
+        if (p2 == Proposition.True) {
+            return p1.toString();
+        }
+        return super.toString();
+    }
+
 }

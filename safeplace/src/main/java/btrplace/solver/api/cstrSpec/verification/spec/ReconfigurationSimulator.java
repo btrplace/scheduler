@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.verification.spec;
 
+import btrplace.model.Node;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
 import btrplace.solver.api.cstrSpec.spec.type.NodeStateType;
@@ -27,11 +28,17 @@ public class ReconfigurationSimulator {
 
     public void start(MigrateVM a) {
         mo.getMapping().state(a.getVM(), VMStateType.Type.migrating);
+        mo.getMapping().host(a.getVM(), a.getDestinationNode());
+        //Hosted also on distinct node (but running on the old one)
     }
 
 
     public void end(MigrateVM a) {
         mo.getMapping().state(a.getVM(), VMStateType.Type.running);
+        mo.getMapping().activateOn(a.getVM(), a.getDestinationNode());
+        //No longer hosted on the source node
+        //running on the new one.
+        mo.getMapping().unhost(a.getSourceNode(), a.getVM());
     }
 
 
@@ -63,7 +70,8 @@ public class ReconfigurationSimulator {
 
     public void end(ShutdownVM a) {
         mo.getMapping().state(a.getVM(), VMStateType.Type.ready);
-        mo.getMapping().unhost(a.getVM());
+        mo.getMapping().unhost(a.getNode(), a.getVM());
+        mo.getMapping().desactivate(a.getVM());
     }
 
 
@@ -99,12 +107,19 @@ public class ReconfigurationSimulator {
 
 
     public boolean start(KillVM a) {
-        throw new UnsupportedOperationException("Unsupported action " + a);
+        //TODO: terminating ?
+        mo.getMapping().state(a.getVM(), VMStateType.Type.terminated);
+        return true;
     }
 
 
     public void end(KillVM a) {
-        throw new UnsupportedOperationException("Unsupported action " + a);
+        Node n = a.getNode();
+        if (n != null) {
+            mo.getMapping().unhost(n, a.getVM());
+            mo.getMapping().desactivate(a.getVM());
+            mo.getMapping().state(a.getVM(), VMStateType.Type.terminated);
+        }
     }
 
 

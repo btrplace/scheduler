@@ -26,5 +26,4 @@ public class NEq extends AtomicProp {
         }
         return vA != null && !vA.equals(vB);
     }
-
 }

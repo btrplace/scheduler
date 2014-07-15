@@ -28,4 +28,10 @@ public class Implies extends BinaryProp {
     public Boolean eval(SpecModel m) {
         return o.eval(m);
     }
+
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return new Or(p1.not().simplify(m), p2.simplify(m));
+    }
 }

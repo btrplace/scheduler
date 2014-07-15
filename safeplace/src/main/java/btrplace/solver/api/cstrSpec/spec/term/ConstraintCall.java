@@ -66,4 +66,9 @@ public class ConstraintCall implements Proposition {
         }
         return b.append(')').toString();
     }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return this;
+    }
 }

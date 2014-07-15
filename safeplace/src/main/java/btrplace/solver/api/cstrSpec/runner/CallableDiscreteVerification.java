@@ -1,6 +1,8 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.runner;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.fuzzer.ConstraintInputGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ResultingModelsGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
@@ -11,7 +13,9 @@ import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -49,20 +53,35 @@ class CallableDiscreteVerification implements Callable<List<TestCase>[]> {
         for (List<Constant> args : cig) {
             allArgs.add(args);
         }
+        System.err.println(allArgs);
         List<TestCase>[] res = new List[2];
         res[0] = new ArrayList<>();
         res[1] = new ArrayList<>();
         long st = System.currentTimeMillis();
+        Set<Model> s = new HashSet<>();
+
         for (Model dst : grn) {
+            if (!s.add(dst)) {
+                System.err.println("Duplicate !");
+                for (Model x : s) {
+                    System.err.println("already: \n" + x.getMapping());
+                    System.err.println("new: \n" + dst);
+                }
+            }
             nbPlans++;
             for (List<Constant> args : allArgs) {
                 CheckerResult specRes = specVerifier.verify(c, mo, dst, args);
                 CheckerResult againstRes = ve.verify(c, mo, dst, args);
-                TestCase tc = new TestCase(specRes, againstRes, ve, this.c, null, args, true);
+                TestCase tc = new TestCase(specRes, againstRes, ve, this.c, mo, dst, args, true);
                 try {
                     if (tc.succeed()) {
                         res[0].add(tc);
                     } else {
+                        System.err.println(Thread.currentThread().getName() /*+ " - add\n" + tc.pretty(true)*/);
+                           /* if (!s.add(tc.pretty(true))) {
+                                System.err.println("Bug");
+                            }*/
+                        //System.err.println(tc.pretty(true));
                         res[1].add(tc);
                     }
                 } catch (Exception e) {

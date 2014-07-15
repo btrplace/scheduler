@@ -25,6 +25,9 @@ public class RandomTuplesGenerator<T> implements Generator<T[]> {
         for (List l : d) {
             x *= l.size();
         }
+        if (x <= 0) {
+            x = Integer.MAX_VALUE;
+        }
         return x;
     }
 

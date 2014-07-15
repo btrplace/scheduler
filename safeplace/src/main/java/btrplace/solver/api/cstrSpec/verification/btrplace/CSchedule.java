@@ -5,9 +5,9 @@ import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
+import btrplace.solver.choco.transition.Transition;
 import solver.Cause;
 import solver.exception.ContradictionException;
 
@@ -27,7 +27,7 @@ public class CSchedule implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        ActionModel am;
+        Transition am;
 
         if (cstr.getVM() != null) {
             am = rp.getVMAction(cstr.getVM());
@@ -41,7 +41,6 @@ public class CSchedule implements ChocoConstraint {
             am.getStart().instantiateTo(cstr.getStart(), Cause.Null);
             am.getEnd().instantiateTo(cstr.getEnd(), Cause.Null);
         } catch (ContradictionException ex) {
-            //ex.printStackTrace();
             rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr + ": " + ex.getMessage());
             return false;
         }

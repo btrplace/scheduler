@@ -1,6 +1,6 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
-import btrplace.solver.api.cstrSpec.fuzzer.RandomTuplesGenerator;
+import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
@@ -20,7 +20,6 @@ public class ConstraintInputGenerator implements Generator<List<Constant>> {
     private Generator<Constant[]> tg;
 
     private Constraint cstr;
-
 
     public ConstraintInputGenerator(Constraint cstr, SpecModel mo, boolean seq) {
         this.cstr = cstr;

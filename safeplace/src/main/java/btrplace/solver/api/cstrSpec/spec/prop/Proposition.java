@@ -28,6 +28,11 @@ public interface Proposition {
         public String toString() {
             return "false";
         }
+
+        @Override
+        public Proposition simplify(SpecModel m) {
+            return this;
+        }
     };
 
     static final Proposition True = new Proposition() {
@@ -46,5 +51,11 @@ public interface Proposition {
             return "true";
         }
 
+        @Override
+        public Proposition simplify(SpecModel m) {
+            return this;
+        }
     };
+
+    Proposition simplify(SpecModel m);
 }

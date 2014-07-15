@@ -16,28 +16,28 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-maven-plugin</artifactId>
-            <version>4.2</version>
+            <version>4.3</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.2</version>
+            <version>4.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
-            <version>0.36-SNAPSHOT</version>
+            <version>0.38-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-json</artifactId>
-            <version>0.36-SNAPSHOT</version>
+            <version>0.38-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-choco</artifactId>
-            <version>0.36-SNAPSHOT</version>
+            <version>0.38-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
@@ -59,7 +59,7 @@
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.1</version>
+                <version>4.3</version>
                 <configuration>
                     <sourceDirectory>src/main/antlr</sourceDirectory>
                     <visitor>true</visitor>

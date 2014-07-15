@@ -29,6 +29,9 @@ public class Actions {
         } else if (a instanceof ResumeVM) {
             ResumeVM m = (ResumeVM) a;
             return new ResumeVM(m.getVM(), m.getSourceNode(), m.getDestinationNode(), st, ed);
+        } else if (a instanceof KillVM) {
+            KillVM m = (KillVM) a;
+            return new KillVM(m.getVM(), ((KillVM) a).getNode(), st, ed);
         } else {
             throw new UnsupportedOperationException("Unsupported action '" + a + "'");
         }

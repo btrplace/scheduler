@@ -29,4 +29,10 @@ public class Iff extends BinaryProp {
     public Boolean eval(SpecModel m) {
         return o.eval(m);
     }
+
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return new Or(new And(p1.simplify(m), p2.simplify(m)), new And(p1.not().simplify(m), p2.not().simplify(m)));
+    }
 }

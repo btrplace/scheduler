@@ -1,7 +1,9 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.runner;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.fuzzer.ConstraintInputGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.DelaysGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlansGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
@@ -31,12 +33,15 @@ class CallableContinuousVerification implements Callable<List<TestCase>[]> {
 
     private List<VerifDomain> vDoms;
 
-    public CallableContinuousVerification(Verifier ve, List<VerifDomain> vDoms, Model mo, Constraint c, boolean verbose) {
+    private long to;
+
+    public CallableContinuousVerification(Verifier ve, List<VerifDomain> vDoms, Model mo, Constraint c, boolean verbose, long to) {
         this.mo = mo;
         this.c = c;
         this.ve = ve;
         this.vDoms = vDoms;
         this.verbose = verbose;
+        this.to = to;
 
     }
 
@@ -54,15 +59,12 @@ class CallableContinuousVerification implements Callable<List<TestCase>[]> {
         List<TestCase>[] res = new List[2];
         res[0] = new ArrayList<>();
         res[1] = new ArrayList<>();
-        long st = System.currentTimeMillis();
-        for (ReconfigurationPlan skelPlan : grn) {
-            //Every input
-            List<ReconfigurationPlan> delayed = new ArrayList<>();
-            for (ReconfigurationPlan drp : new DelaysGenerator(skelPlan)) {
-                delayed.add(drp);
-            }
 
-            for (ReconfigurationPlan p : delayed) {
+        long st = System.currentTimeMillis();
+        long ed = System.currentTimeMillis() + to * 1000;
+        boolean stop = false;
+        for (ReconfigurationPlan skelPlan : grn) {
+            for (ReconfigurationPlan p : new DelaysGenerator(skelPlan)) {
                 nbPlans++;
                 for (List<Constant> args : allArgs) {
                     CheckerResult specRes = specVerifier.verify(c, p, args);
@@ -76,13 +78,22 @@ class CallableContinuousVerification implements Callable<List<TestCase>[]> {
                             res[1].add(tc);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
                         res[1].add(tc);
                     }
+                    stop = System.currentTimeMillis() >= ed;
+                    if (stop) {
+                        break;
+                    }
+                }
+                if (stop) {
+                    break;
                 }
             }
+            if (stop) {
+                break;
+            }
         }
-        long ed = System.currentTimeMillis();
+        ed = System.currentTimeMillis();
         if (verbose) {
             System.out.println(nbPlans + " plan(s) x " + allArgs.size() + " input(s) = " + (nbPlans * allArgs.size()) + " tests in " + (ed - st) + " ms");
         }

@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
 import btrplace.solver.api.cstrSpec.spec.term.Term;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 /**
  * @author Fabien Hermenier
@@ -20,5 +21,10 @@ public abstract class AtomicProp implements Proposition {
     @Override
     public String toString() {
         return a.toString() + " " + op + " " + b.toString();
+    }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return this;
     }
 }

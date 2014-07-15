@@ -33,4 +33,20 @@ public class Or extends BinaryProp {
         }
         return r1 || r2;
     }
+
+    @Override
+    public Proposition simplify(SpecModel m) {
+        return new Or(p1.simplify(m), p2.simplify(m));
+    }
+
+    @Override
+    public String toString() {
+        if (p1 == Proposition.False) {
+            return p2.toString();
+        }
+        if (p2 == Proposition.False) {
+            return p1.toString();
+        }
+        return super.toString();
+    }
 }
