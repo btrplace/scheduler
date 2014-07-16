@@ -1,37 +1,15 @@
 #!/bin/sh
 
-VERIFIERS="impl impl_repair checker"
-
-##Core constraints are evaluated with a continuous restriction model and a 1x1.
-##No need of more by design
-CSTRS="noVMsOnOfflineNodes hostForVMs"
-for CSTR in ${CSTRS}; do
-    echo "--- core constraint ${CSTR} ---"
-    for VERIFIER in ${VERIFIERS}; do
-        echo "\tVerifying ${VERIFIER}"
-        ./verify.sh --size 1x1 -v --continuous --verifier ${VERIFIER} $* ${CSTR}
-    done
+OUTPUT=$1
+mkdir -p ${OUTPUT}
+shift
+echo "$*" > ${OUTPUT}/guards.txt
+#Verifications
+for c in core states VM2VM VM2PM; do
+	echo "Benching ${c}..."
+    ./verify_${c}.sh $*> ${OUTPUT}/${c}.data
 done
 
-
-##Pluggable constraints, discrete restriction only, size=2x2
-CSTRS="offline online running ready sleeping killed among ban fence runningCapacity gather lonely maxOnline spread split splitAmong"
-VERIFIERS="impl impl_repair checker"
-for CSTR in ${CSTRS}; do
-    echo "--- pluggable constraint ${CSTR} ---"
-    for VERIFIER in ${VERIFIERS}; do
-        echo "\tVerifying ${VERIFIER}"
-        ./verify.sh --size 2x2 -v --discrete --dom int=0..5 --verifier ${VERIFIER} $* ${CSTR}
-    done
-done
-
-##Badly designed continuous pluggable constraints
-#CSTRS="quarantine root"
-#VERIFIERS="impl impl_repair checker"
-#for CSTR in ${CSTRS}; do
-#   echo "--- pluggable constraint ${CSTR} ---"
-#    for VERIFIER in ${VERIFIERS}; do
-#        echo "\tVerifying ${VERIFIER}"
-#        ./verify.sh --size 1x1 -v --restriction continuous --verifier ${VERIFIER} $* ${CSTR}
-#    done
-#   done
+tar cfz ${OUTPUT}.tar.gz ${OUTPUT}
+rm -rf ${OUTPUT}
+echo "Done. Results available in ${OUTPUT}.tar.gz"
