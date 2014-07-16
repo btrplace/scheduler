@@ -16,11 +16,12 @@
 -> Run, results for placement only constraints OK
  1/ Core: noVMsOnOfflineNodes OK, toRunning OK, toReady OK, toSleeping OK
  2/ States running OK, sleeping OK, ready OK, online OK, offline OK, killed OK
- 3/ VM2VM: spread OK, gather OK, among OK, split OK, splitAmong ???
+ 3/ VM2VM: spread OK, gather OK, among OK, split OK, lonely OK, splitAmong ???
  4/ VM2PM: ban OK, fence OK, root OK, quarantine OK
  5/ Counting: runningCapacity OK, maxOnline OK
 
  6/ rc: preserve ???, resourceCapacity ???, overbook ???
+ 7/ seq ?
 
 -> try to reduce the number of failures
 

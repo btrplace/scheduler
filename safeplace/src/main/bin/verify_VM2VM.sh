@@ -2,7 +2,7 @@
 VERIFIERS="impl impl_repair checker"
 SPEC="v1.cspec"
 
-CSTRS="spread gather among split"
+CSTRS="spread gather among split lonely"
 RESTRICTIONS="continuous discrete"
 echo "constraint verif restriction failures tests"
 for CSTR in ${CSTRS}; do

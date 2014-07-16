@@ -56,7 +56,7 @@ public class ParallelConstraintVerificationTest {
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
                 new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
-        Constraint c = s.get("runningCapacity");
+        Constraint c = s.get("lonely");
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();
         doms.add(new IntVerifDomain(0, 10));

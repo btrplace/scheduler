@@ -69,9 +69,11 @@ public class ParallelConstraintVerificationFuzz implements Guardable {
             }
         };
         Executor exec = Executors.newFixedThreadPool(nbWorkers, tf);
+
         CompletionService<Boolean> completionService = new ExecutorCompletionService<>(exec);
 
         for (int i = 0; i < nbWorkers; i++) {
+
             try {
                 CallableVerification c;
                 if (continuous) {
