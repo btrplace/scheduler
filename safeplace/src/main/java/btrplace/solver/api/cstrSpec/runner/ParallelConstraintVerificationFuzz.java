@@ -95,7 +95,9 @@ public class ParallelConstraintVerificationFuzz implements Guardable {
                         slave.stop();
                     }
                 }
-            } catch (Exception ex) {
+            } catch (UnsupportedOperationException ex) {
+                throw ex;
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }

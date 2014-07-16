@@ -2,9 +2,9 @@ package btrplace.solver.api.cstrSpec.runner;
 
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
-import btrplace.solver.api.cstrSpec.backend.Counting;
+import btrplace.solver.api.cstrSpec.backend.Countable;
+import btrplace.solver.api.cstrSpec.backend.Counter;
 import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
-import btrplace.solver.api.cstrSpec.backend.VerificationBackend;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
 import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
@@ -25,6 +25,7 @@ import net.minidev.json.JSONObject;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -126,7 +127,7 @@ public class VerifyFuzz {
         System.exit(1);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         //Parse arguments
         int i;
         boolean endOptions = false;
@@ -144,9 +145,15 @@ public class VerifyFuzz {
         int nbNodes = Integer.parseInt(ts[1]);
         String verifier = args[3];
 
-        ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader("node_transitions")),
-                new TransitionTable(new FileReader("vm_transitions")),
-                nbNodes, nbVMs);
+
+        ReconfigurationPlanFuzzer fuzz = null;
+        try {
+            fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader("node_transitions")),
+                    new TransitionTable(new FileReader("vm_transitions")),
+                    nbNodes, nbVMs);
+        } catch (IOException ex) {
+            exit(ex.getMessage());
+        }
 
         final Specification spec = getSpec(specFile);
         final Constraint c = spec.get(cstrId);
@@ -196,12 +203,10 @@ public class VerifyFuzz {
                     break;
             }
         }
-        VerificationBackend b = null;
-        if (verbosityLvl == 1) {
-            b = new Counting();
-        }
-
-        if (verbosityLvl > 1) {
+        Countable b = null;
+        if (verbosityLvl <= 1) {
+            b = new Counter();
+        } else if (verbosityLvl > 1 || json != null) {
             b = new InMemoryBackend();
         }
 
@@ -211,20 +216,22 @@ public class VerifyFuzz {
         for (Constraint x : pre) {
             paraVerif.precondition(x);
         }
-        paraVerif.verify();
-
-        int nbD = -1, nbC = -1;
-
-        if (verbosityLvl == 1 && json == null) {
-            nbD = ((Counting) b).getNbDefiant().get();
-            nbC = ((Counting) b).getNbCompliant().get();
-
+        try {
+            paraVerif.verify();
+        } catch (Exception ex) {
+            if (ex.getMessage().contains("don't") || ex.getMessage().contains("discrete")) {
+                System.err.println(ex.getMessage());
+                if (verbosityLvl > 0) {
+                    System.out.println("-/- failure(s)");
+                }
+                System.exit(-1);
+            }
+            exit(ex.getMessage());
         }
-        if (verbosityLvl > 1) {
-            nbD = ((InMemoryBackend) b).getDefiant().size();
-            nbC = ((InMemoryBackend) b).getCompliant().size();
 
-        }
+
+        int nbD = b.getNbDefiant();
+        int nbC = b.getNbCompliant();
         if (verbosityLvl > 0) {
             System.out.println(nbD + "/" + (nbD + nbC) + " failure(s)");
         }
@@ -233,14 +240,12 @@ public class VerifyFuzz {
             final Queue<TestCase> defiant = ((InMemoryBackend) b).getDefiant();
             final Queue<TestCase> compliant = ((InMemoryBackend) b).getCompliant();
 
+            System.out.println("---- Defiant TestCases ----");
+            for (TestCase tc : defiant) {
+                System.out.println(tc.pretty(true));
+            }
 
             if (verbosityLvl > 2) {
-                System.out.println("---- Defiant TestCases ----");
-                for (TestCase tc : defiant) {
-                    System.out.println(tc.pretty(true));
-                }
-            }
-            if (verbosityLvl > 3) {
                 System.out.println("---- Compliant TestCases ----");
                 for (TestCase tc : compliant) {
                     System.out.println(tc.pretty(true));
@@ -248,11 +253,7 @@ public class VerifyFuzz {
             }
             serialize(defiant, compliant, json);
         }
-
-        if (nbD != 0) {
-            System.exit(1);
-        }
-        System.exit(0);
+        System.exit(nbD);
     }
 
     private static List<Constraint> makePreconditions(Constraint c, Specification spec) {

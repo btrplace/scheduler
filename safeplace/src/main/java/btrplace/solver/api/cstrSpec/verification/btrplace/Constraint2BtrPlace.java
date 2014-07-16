@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class Constraint2BtrPlace {
 
-    public static SatConstraint build(Constraint cstr, List<Constant> params) throws Exception {
+    public static SatConstraint build(Constraint cstr, List<Constant> params) throws ClassNotFoundException {
         return build("btrplace.model.constraint", cstr, params);
     }
 
-    public static SatConstraint build(String pkg, Constraint cstr, List<Constant> params) throws Exception {
+    public static SatConstraint build(String pkg, Constraint cstr, List<Constant> params) throws ClassNotFoundException {
         String clName = cstr.id().substring(0, 1).toUpperCase() + cstr.id().substring(1);
         Class<SatConstraint> cl = (Class<SatConstraint>) Class.forName(pkg + "." + clName);
         List<Object> values = new ArrayList<>(params.size());

@@ -7,13 +7,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Fabien Hermenier
  */
-public class Counting implements VerificationBackend {
+public class Counter implements Countable {
 
     private AtomicInteger nbDefiant;
 
     private AtomicInteger nbCompliant;
 
-    public Counting() {
+    public Counter() {
         nbDefiant = new AtomicInteger(0);
         nbCompliant = new AtomicInteger(0);
     }
@@ -32,11 +32,11 @@ public class Counting implements VerificationBackend {
     public void flush() {
     }
 
-    public AtomicInteger getNbDefiant() {
-        return nbDefiant;
+    public int getNbDefiant() {
+        return nbDefiant.get();
     }
 
-    public AtomicInteger getNbCompliant() {
-        return nbCompliant;
+    public int getNbCompliant() {
+        return nbCompliant.get();
     }
 }

@@ -49,16 +49,19 @@ public class ImplVerifier implements Verifier {
 
         List<SatConstraint> cstrs = new ArrayList<>();
         if (!c.isCore()) {
+            //TODO: encache the sat constraint
+            SatConstraint satC = null;
             try {
-                //TODO: encache the sat constraint
-                SatConstraint satC = Constraint2BtrPlace.build(c, params);
-                if (!satC.setContinuous(false)) {
-                    throw new RuntimeException("Implementation of " + c + " don't support the discrete restriction");
-                }
-                cstrs.add(satC);
-            } catch (Exception e) {
+                satC = Constraint2BtrPlace.build(c, params);
+            } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+            if (!satC.setContinuous(false)) {
+                //return null;
+                throw new UnsupportedOperationException("Implementation of " + c + " don't support the discrete restriction");
+            }
+            cstrs.add(satC);
+
         }
         actionsToConstraints(cstrs, dst);
         try {
@@ -85,10 +88,13 @@ public class ImplVerifier implements Verifier {
                 //TODO: encache the sat constraint
                 SatConstraint satC = Constraint2BtrPlace.build(c, params);
                 if (!satC.setContinuous(true)) {
-                    throw new RuntimeException("Implementation of " + c + " don't support the continuous restriction");
+                    throw new UnsupportedOperationException("Implementation of " + c + " don't support the continuous restriction");
                 }
                 cstrs.add(satC);
             } catch (Exception e) {
+                if (e instanceof UnsupportedOperationException) {
+                    throw (UnsupportedOperationException) e; //yummy
+                }
                 throw new RuntimeException(e);
             }
         }

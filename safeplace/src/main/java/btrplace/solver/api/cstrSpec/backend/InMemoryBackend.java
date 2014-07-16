@@ -8,7 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author Fabien Hermenier
  */
-public class InMemoryBackend implements VerificationBackend {
+public class InMemoryBackend implements Countable {
 
     private BlockingQueue<TestCase> defiant;
     private BlockingQueue<TestCase> compliant;
@@ -34,6 +34,16 @@ public class InMemoryBackend implements VerificationBackend {
 
     public BlockingQueue<TestCase> getCompliant() {
         return compliant;
+    }
+
+    @Override
+    public int getNbCompliant() {
+        return compliant.size();
+    }
+
+    @Override
+    public int getNbDefiant() {
+        return defiant.size();
     }
 
     @Override

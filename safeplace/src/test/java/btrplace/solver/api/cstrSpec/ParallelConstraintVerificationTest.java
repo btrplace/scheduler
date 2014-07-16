@@ -9,7 +9,6 @@ import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerification;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -54,9 +53,9 @@ public class ParallelConstraintVerificationTest {
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
                 new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
-        Constraint c = s.get("gather");
+        Constraint c = s.get("root");
         System.out.println(c.pretty());
-        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, Collections.<VerifDomain>emptyList(), new CheckerVerifier(), c);
+        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, Collections.<VerifDomain>emptyList(), new ImplVerifier(), c);
         InMemoryBackend b = new InMemoryBackend();
         pc.setBackend(b);
         //pc.limit(new ErrorGuard(20));

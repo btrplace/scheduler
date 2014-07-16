@@ -2,13 +2,13 @@
 VERIFIERS="impl impl_repair checker"
 SPEC="v1.cspec"
 
-CSTRS="spread gather among split splitAmong"
+CSTRS="spread gather among split"
 RESTRICTIONS="continuous discrete"
 echo "constraint verif restriction failures tests"
 for CSTR in ${CSTRS}; do
     for VERIFIER in ${VERIFIERS}; do
         for R in ${RESTRICTIONS}; do
-            f=`./verify_fuzz.sh ${SPEC} ${CSTR} 3x3 ${VERIFIER} --${R} -v $* |tr "/" " "|cut -d' ' -f1,2`
+            f=`./verify_fuzz.sh ${SPEC} ${CSTR} 3x3 ${VERIFIER} --${R} -v $*|tr "/" " "|cut -d' ' -f1,2`
             echo "${CSTR} ${VERIFIER} ${R} ${f}"
         done
     done
