@@ -60,6 +60,10 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
 
         //A fake spec to generate the args
         SpecModel s = new SpecModel(fuzz.newModel());
+        for (VerifDomain vDom : vDoms) {
+            s.add(vDom);
+        }
+
         ConstraintInputFuzzer cig = new ConstraintInputFuzzer(c, s);
 
         while (!stop) {

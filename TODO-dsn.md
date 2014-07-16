@@ -14,6 +14,13 @@
 
 
 -> Run, results for placement only constraints OK
+ 1/ Core: noVMsOnOfflineNodes OK, toRunning OK, toReady OK, toSleeping OK
+ 2/ States running OK, sleeping OK, ready OK, online OK, offline OK, killed OK
+ 3/ VM2VM: spread OK, gather OK, among OK, split OK, splitAmong ???
+ 4/ VM2PM: ban OK, fence OK, root OK, quarantine OK
+ 5/ Counting: runningCapacity OK, maxOnline OK
+
+ 6/ rc: preserve ???, resourceCapacity ???, overbook ???
 
 -> try to reduce the number of failures
 
@@ -30,36 +37,6 @@
 
 -> tester limits
 
--> group de benchs
-1/ Core
-2/ VM & node State
-    running
-    sleeping
-    ready
-    online
-    offline
-    killed
-
-3/ VM-VM affinity
-   spread
-   gather
-   among
-   split
-   splitAmong
-
-4/ VM-node affinity
-  ban
-  fence
-  root
-  quarantine
-
-5/ Counting
-	runningCapacity
-
-6/ Resource-oriented constraints
-	preserve
-	resourceCapacity
-	overbook
 
 HOW TO VALIDATE THE QUALITY OF THE FUZZING
 		-> SPACE EXPLORATION

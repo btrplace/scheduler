@@ -10,6 +10,7 @@ import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.testng.Assert;
@@ -17,6 +18,8 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -53,9 +56,11 @@ public class ParallelConstraintVerificationTest {
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
                 new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
-        Constraint c = s.get("root");
+        Constraint c = s.get("runningCapacity");
         System.out.println(c.pretty());
-        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, Collections.<VerifDomain>emptyList(), new ImplVerifier(), c);
+        List<VerifDomain> doms = new ArrayList<>();
+        doms.add(new IntVerifDomain(0, 10));
+        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
         InMemoryBackend b = new InMemoryBackend();
         pc.setBackend(b);
         //pc.limit(new ErrorGuard(20));
@@ -67,9 +72,7 @@ public class ParallelConstraintVerificationTest {
                 pc.precondition(x);
             }
         }
-        long st = System.currentTimeMillis();
         pc.verify();
-        long ed = System.currentTimeMillis();
         int nb = b.getDefiant().size() + b.getCompliant().size();
         System.out.println(b.getDefiant().size() + "/" + nb);
         for (TestCase tc : b.getDefiant()) {
