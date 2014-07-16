@@ -2,6 +2,8 @@ package btrplace.solver.api.cstrSpec.verification;
 
 import btrplace.plan.event.Action;
 
+import java.util.Objects;
+
 /**
  * @author Fabien Hermenier
  */
@@ -60,15 +62,13 @@ public class CheckerResult {
         CheckerResult that = (CheckerResult) o;
 
         if (!b.equals(that.b)) return false;
-        if (!ex.equals(that.ex)) return false;
+        if (ex != null ? !ex.equals(that.ex) : that.ex != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = b.hashCode();
-        result = 31 * result + ex.hashCode();
-        return result;
+        return Objects.hash(b, ex);
     }
 }

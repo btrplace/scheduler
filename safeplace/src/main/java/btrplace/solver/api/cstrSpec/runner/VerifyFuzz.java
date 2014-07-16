@@ -3,7 +3,6 @@ package btrplace.solver.api.cstrSpec.runner;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.backend.Countable;
-import btrplace.solver.api.cstrSpec.backend.Counter;
 import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * @author Fabien Hermenier
@@ -203,13 +201,7 @@ public class VerifyFuzz {
                     break;
             }
         }
-        Countable b = null;
-        if (verbosityLvl <= 1) {
-            b = new Counter();
-        } else if (verbosityLvl > 1 || json != null) {
-            b = new InMemoryBackend();
-        }
-
+        Countable b = new InMemoryBackend();
         paraVerif.setBackend(b);
 
         List<Constraint> pre = makePreconditions(c, spec);
@@ -237,8 +229,8 @@ public class VerifyFuzz {
         }
 
         if (verbosityLvl > 1) {
-            final Queue<TestCase> defiant = ((InMemoryBackend) b).getDefiant();
-            final Queue<TestCase> compliant = ((InMemoryBackend) b).getCompliant();
+            final Collection<TestCase> defiant = ((InMemoryBackend) b).getDefiant();
+            final Collection<TestCase> compliant = ((InMemoryBackend) b).getCompliant();
 
             System.out.println("---- Defiant TestCases ----");
             for (TestCase tc : defiant) {

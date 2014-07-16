@@ -2,6 +2,8 @@ package btrplace.solver.api.cstrSpec.backend;
 
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -28,22 +30,30 @@ public class InMemoryBackend implements Countable {
         compliant.add(c);
     }
 
-    public BlockingQueue<TestCase> getDefiant() {
-        return defiant;
+    public Set<TestCase> getDefiant() {
+        Set<TestCase> s = new HashSet<>();
+        for (TestCase tc : defiant) {
+            s.add(tc);
+        }
+        return s;
     }
 
-    public BlockingQueue<TestCase> getCompliant() {
-        return compliant;
+    public Set<TestCase> getCompliant() {
+        Set<TestCase> s = new HashSet<>();
+        for (TestCase tc : compliant) {
+            s.add(tc);
+        }
+        return s;
     }
 
     @Override
     public int getNbCompliant() {
-        return compliant.size();
+        return getCompliant().size();
     }
 
     @Override
     public int getNbDefiant() {
-        return defiant.size();
+        return getDefiant().size();
     }
 
     @Override

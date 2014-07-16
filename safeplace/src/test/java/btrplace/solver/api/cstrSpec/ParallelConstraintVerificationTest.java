@@ -4,13 +4,12 @@ import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
 import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
-import btrplace.solver.api.cstrSpec.guard.TimeGuard;
+import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerification;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.testng.Assert;
@@ -55,20 +54,20 @@ public class ParallelConstraintVerificationTest {
         String root = "src/main/bin/";
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
-                new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
-        Constraint c = s.get("lonely");
+                new TransitionTable(new FileReader(root + "vm_transitions")), 2, 1);
+        Constraint c = s.get("root");
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();
-        doms.add(new IntVerifDomain(0, 10));
+        //doms.add(new IntVerifDomain(0, 10));
         ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
         InMemoryBackend b = new InMemoryBackend();
         pc.setBackend(b);
-        //pc.limit(new ErrorGuard(20));
-        pc.limit(new TimeGuard(10));
-        pc.setNbWorkers(1);
+        pc.limit(new MaxTestsGuard(10000));
+        //pc.limit(new TimeGuard(60));
+        pc.setNbWorkers(3);
         pc.setContinuous(true);
         for (Constraint x : s.getConstraints()) {
-            if (x.isCore()) {
+            if (x.isCore() && x != c) {
                 pc.precondition(x);
             }
         }

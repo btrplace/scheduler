@@ -23,7 +23,13 @@
  6/ rc: preserve ???, resourceCapacity ???, overbook ???
  7/ seq ?
 
+
 -> try to reduce the number of failures
+  -> remove duplicates OK
+  -> remove symmetries ?
+
+
+
 
 -> CDF to test the impact of instance size over the failure detection
 -> CDF . . . timeout
@@ -42,3 +48,8 @@
 HOW TO VALIDATE THE QUALITY OF THE FUZZING
 		-> SPACE EXPLORATION
 HOW TO CLASSIFY TESTS
+
+HOW LONG TO TEST ?
+  -> last time since discovering of a new unique testcase
+
+  -> cdf, rate of addition (show good coverage or stuck ?)
