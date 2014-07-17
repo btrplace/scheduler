@@ -71,7 +71,9 @@ public class VerifyFuzz {
         return null;
     }
 
-    private static void serialize(Collection<TestCase> defiant, Collection<TestCase> compliant, String output) {
+    private static void serialize(InMemoryBackend b, String output) {
+        Collection<TestCase> defiant = b.getDefiant();
+        Collection<TestCase> compliant = b.getCompliant();
         TestCaseConverter tcc = new TestCaseConverter();
         if (output == null) {
             return;
@@ -242,22 +244,19 @@ public class VerifyFuzz {
         }
 
         if (verbosityLvl > 1) {
-            final Collection<TestCase> defiant = ((InMemoryBackend) b).getDefiant();
-            final Collection<TestCase> compliant = ((InMemoryBackend) b).getCompliant();
-
             System.out.println("---- Defiant TestCases ----");
-            for (TestCase tc : defiant) {
+            for (TestCase tc : b.getDefiant()) {
                 System.out.println(tc.pretty(true));
             }
 
             if (verbosityLvl > 2) {
                 System.out.println("---- Compliant TestCases ----");
-                for (TestCase tc : compliant) {
+                for (TestCase tc : b.getCompliant()) {
                     System.out.println(tc.pretty(true));
                 }
             }
-            serialize(defiant, compliant, json);
         }
+        serialize(b, json);
         System.exit(nbD);
     }
 

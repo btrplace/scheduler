@@ -43,24 +43,6 @@ public class TestCase {
         this.src = plan.getOrigin();
     }
 
-    public TestCase(CheckerResult specRes,
-                    CheckerResult againstRes,
-                    Verifier v,
-                    Constraint c,
-                    Model src,
-                    Model dst,
-                    List<Constant> args,
-                    boolean d) {
-        expected = specRes;
-        got = againstRes;
-        verifier = v;
-        this.args = args;
-        this.c = c;
-        this.d = d;
-        this.src = src;
-        this.dst = dst;
-    }
-
     public TestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
         expected = new SpecVerifier().verify(c, p, args);
         got = v.verify(c, p, args);

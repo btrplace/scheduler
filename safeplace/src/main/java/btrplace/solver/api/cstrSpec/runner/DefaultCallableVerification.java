@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.runner;
 
-import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.fuzzer.ConstraintInputFuzzer;
@@ -93,14 +92,7 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
         return true;
     }
 
-    public TestCase runTest(ReconfigurationPlan p, List<Constant> args) {
-        Model src = p.getOrigin();
-        Model dst = p.getResult();
-
-        CheckerResult specRes = specVerifier.verify(c, src, dst, args);
-        CheckerResult againstRes = ve.verify(c, src, dst, args);
-        return new TestCase(specRes, againstRes, ve, this.c, src, dst, args, true);
-    }
+    public abstract TestCase runTest(ReconfigurationPlan p, List<Constant> args);
 
     private boolean checkPre(ReconfigurationPlan p) {
         SpecVerifier spec = new SpecVerifier();

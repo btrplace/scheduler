@@ -1,17 +1,14 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
-import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
 import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
-import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerification;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,30 +20,11 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class ParallelConstraintVerificationTest {
+public class ParallelConstraintVerificationFuzzTest {
 
     public Specification getSpec() throws Exception {
         SpecReader r = new SpecReader();
         return r.getSpecification(new File("src/main/cspec/v1.cspec"));
-    }
-
-    @Test
-    public void test() throws Exception {
-        Specification s = getSpec();
-        ModelsGenerator mg = new ModelsGenerator(4, 4);
-        Constraint c = s.get("split");
-        System.out.println(c.pretty());
-        ParallelConstraintVerification pc = new ParallelConstraintVerification(mg, Collections.<VerifDomain>emptyList(), new ImplVerifier(), 20, c, true, true);
-        long st = System.currentTimeMillis();
-        pc.verify();
-        long ed = System.currentTimeMillis();
-        System.err.println("Computed in " + (ed - st) + " ms");
-        /*int nb = pc.getDefiant().size() + pc.getCompliant().size();
-        System.out.println(pc.getDefiant().size() + "/" + nb);
-        for (TestCase tc : pc.getDefiant()) {
-            System.out.println(tc.pretty(true));
-        } */
-        Assert.fail();
     }
 
     @Test
@@ -62,7 +40,7 @@ public class ParallelConstraintVerificationTest {
         ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
         InMemoryBackend b = new InMemoryBackend();
         pc.setBackend(b);
-        pc.limit(new MaxTestsGuard(10000));
+        pc.limit(new MaxTestsGuard(1000));
         //pc.limit(new TimeGuard(60));
         pc.setNbWorkers(3);
         pc.setContinuous(true);

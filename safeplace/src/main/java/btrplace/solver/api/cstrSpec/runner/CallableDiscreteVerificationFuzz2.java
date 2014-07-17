@@ -27,7 +27,7 @@ class CallableDiscreteVerificationFuzz2 extends DefaultCallableVerification {
 
         CheckerResult specRes = specVerifier.verify(c, src, dst, args);
         CheckerResult againstRes = ve.verify(c, src, dst, args);
-        return new TestCase(specRes, againstRes, ve, this.c, src, dst, args, true);
+        return new TestCase(specRes, againstRes, ve, this.c, p, args, true);
     }
 
 }
