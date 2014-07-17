@@ -150,6 +150,14 @@ public class TestCase {
         return true;
     }
 
+    public boolean falsePositive() {
+        return expected.getStatus() == false && got.getStatus() == true;
+    }
+
+    public boolean falseNegative() {
+        return expected.getStatus() == true && got.getStatus() == false;
+    }
+
     @Override
     public int hashCode() {
         int result = c.hashCode();

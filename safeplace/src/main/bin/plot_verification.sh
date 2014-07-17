@@ -3,7 +3,14 @@
 ./failureStats.R continuous $1/core.data $1/core.pdf
 
 for c in VM2VM VM2PM counting; do
-    for r in continuous discrete; do
-        ./failureStats.R ${r} $1/${c}.data $1/${c}-${r}.pdf
-    done
+    ./failures_impl.R ${r} $1/${c}.data $1/${c}-${r}.pdf
+    ./failures_checker.R ${r} $1/${c}.data $1/${c}-${r}.pdf
 done
+
+OUT=`mktemp /tmp/exemple.XXXXXX`
+for c in VM2VM VM2PM counting; do
+    ./failures_impl.R ${r} $1/${c}.data $1/${c}-${r}.pdf
+    ./failures_checker.R ${r} $1/${c}.data $1/${c}-${r}.pdf
+done
+
+

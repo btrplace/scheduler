@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.runner;
 
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
-import btrplace.solver.api.cstrSpec.backend.Countable;
 import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
@@ -201,7 +200,7 @@ public class VerifyFuzz {
                     break;
             }
         }
-        Countable b = new InMemoryBackend();
+        InMemoryBackend b = new InMemoryBackend();
         paraVerif.setBackend(b);
 
         List<Constraint> pre = makePreconditions(c, spec);
@@ -214,7 +213,7 @@ public class VerifyFuzz {
             if (ex.getMessage().contains("don't") || ex.getMessage().contains("discrete")) {
                 System.err.println(ex.getMessage());
                 if (verbosityLvl > 0) {
-                    System.out.println("-/- failure(s)");
+                    System.out.println("-/-/- failure(s)");
                 }
                 System.exit(-1);
             }
@@ -224,8 +223,22 @@ public class VerifyFuzz {
 
         int nbD = b.getNbDefiant();
         int nbC = b.getNbCompliant();
+        int falseOk = 0, falseKo = 0;
+        for (TestCase tc : b.getDefiant()) {
+            if (tc.falseNegative()) {
+                falseKo++;
+            } else if (tc.falsePositive()) {
+                falseOk++;
+            } else {
+                System.err.println("---BUG:\n" + tc.pretty(false));
+            }
+        }
+        if (nbD != (falseKo + falseOk)) {
+            System.err.println("BUG: " + nbD + " defiant but ok=" + falseOk + " and ko=" + falseKo);
+            System.exit(1);
+        }
         if (verbosityLvl > 0) {
-            System.out.println(nbD + "/" + (nbD + nbC) + " failure(s)");
+            System.out.println(falseOk + "/" + falseKo + "/" + (nbD + nbC));
         }
 
         if (verbosityLvl > 1) {

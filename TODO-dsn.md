@@ -23,12 +23,26 @@
  6/ rc: preserve ???, resourceCapacity ???, overbook ???
  7/ seq ?
 
+-> remove duplicates OK
+
+-> identify and report false positives / false negatives OK
+
+-> visu OK
+
+-> reduce failed test cases to a minimum to reduce duplicates
+
+
+EVAL fussing/reduction:
+-> the effect of reduction on the detection of duplicates
+-> the effect of times on the detection of unique tests
+
 
 -> try to reduce the number of failures
-  -> remove duplicates OK
+
+
+
+
   -> remove symmetries ?
-
-
 
 
 -> CDF to test the impact of instance size over the failure detection

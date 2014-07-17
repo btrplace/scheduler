@@ -74,9 +74,20 @@ public class ParallelConstraintVerificationTest {
         pc.verify();
         int nb = b.getDefiant().size() + b.getCompliant().size();
         System.out.println(b.getDefiant().size() + "/" + nb);
+
+        int falseOk = 0, falseKo = 0;
+
         for (TestCase tc : b.getDefiant()) {
-            System.out.println(tc.pretty(true));
+            //System.out.println(tc.pretty(true));
+            if (tc.falsePositive()) {
+                falseOk++;
+            } else if (tc.falseNegative()) {
+                falseKo++;
+            } else {
+                System.err.println("Buggy: " + tc.pretty(false));
+            }
         }
+        System.out.println(falseOk + "false positives; " + falseKo + " false negatives");
         Assert.fail();
     }
 }
