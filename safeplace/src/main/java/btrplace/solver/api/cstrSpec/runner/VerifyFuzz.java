@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.runner;
 
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
-import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
+import btrplace.solver.api.cstrSpec.backend.NoDuplicatedStore;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
 import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
@@ -71,7 +71,7 @@ public class VerifyFuzz {
         return null;
     }
 
-    private static void serialize(InMemoryBackend b, String output) {
+    private static void serialize(NoDuplicatedStore b, String output) {
         Collection<TestCase> defiant = b.getDefiant();
         Collection<TestCase> compliant = b.getCompliant();
         TestCaseConverter tcc = new TestCaseConverter();
@@ -202,7 +202,7 @@ public class VerifyFuzz {
                     break;
             }
         }
-        InMemoryBackend b = new InMemoryBackend();
+        NoDuplicatedStore b = new NoDuplicatedStore();
         paraVerif.setBackend(b);
 
         List<Constraint> pre = makePreconditions(c, spec);

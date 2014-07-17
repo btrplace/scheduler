@@ -1,10 +1,6 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-
-import java.util.List;
 
 /**
  * Reduce a test case as much as possible.
@@ -29,13 +25,13 @@ public class TestCaseReducer {
     public TestCaseReducer() {
         pr = new PlanReducer();
         sr = new SignatureReducer(null);
-        er = new ElementsReducer(null);
+        er = new ElementsReducer();
     }
 
     TestCase reduce(TestCase tc) throws Exception {
-        TestCase reducedPlan = pr.reduce(tc);
-        List<Constant> reducedParams = sr.reduce(reducedPlan.getPlan(), tc.getConstraint(), tc.getArguments());
-        ReconfigurationPlan reducedElements = er.reduce(reducedPlan.getPlan(), tc.getConstraint(), reducedParams);
-        return new TestCase(tc.getVerifier(), tc.getConstraint(), reducedElements, reducedParams, tc.isDiscrete());
+        TestCase t = pr.reduce(tc);
+        //List<Constant> reducedParams = sr.reduce(.getPlan(), tc.getConstraint(), tc.getArguments());
+        return er.reduce(t);
+        //return new TestCase(tc.getVerifier(), tc.getConstraint(), reducedElements, reducedParams, tc.isDiscrete());
     }
 }

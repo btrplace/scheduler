@@ -10,12 +10,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author Fabien Hermenier
  */
-public class InMemoryBackend implements Countable {
+public class NoDuplicatedStore implements Countable {
 
     private BlockingQueue<TestCase> defiant;
     private BlockingQueue<TestCase> compliant;
 
-    public InMemoryBackend() {
+    public NoDuplicatedStore() {
         defiant = new LinkedBlockingQueue<>();
         compliant = new LinkedBlockingQueue<>();
     }

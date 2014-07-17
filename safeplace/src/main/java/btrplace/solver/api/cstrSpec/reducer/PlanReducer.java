@@ -20,18 +20,15 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class PlanReducer {
+public class PlanReducer implements Reducer {
 
-    public PlanReducer() {
-
-    }
-
-    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        TestCase tc = new TestCase(v, cstr, p, in, true);
+    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) {
+        TestCase tc = new TestCase(v, cstr, p, in, d);
         return tc.succeed();
     }
 
-    public TestCase reduce(TestCase tc) throws Exception {
+    @Override
+    public TestCase reduce(TestCase tc) {
         if (tc.succeed()) {
             return tc;
         }
@@ -41,11 +38,11 @@ public class PlanReducer {
         Verifier v = tc.getVerifier();
 
         List<ReconfigurationPlan> mins = new ArrayList<>();
-        _reduce(v, p, cstr, in, mins);
+        _reduce(v, p, cstr, in, mins, tc.isDiscrete());
         return new TestCase(v, cstr, mins.get(0), in, tc.isDiscrete());
     }
 
-    private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) throws Exception {
+    private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) {
         ReconfigurationPlan p1 = new DefaultReconfigurationPlan(p.getOrigin());
         ReconfigurationPlan p2 = new DefaultReconfigurationPlan(p.getOrigin());
         int i = 0;
@@ -59,37 +56,41 @@ public class PlanReducer {
         return new ReconfigurationPlan[]{p1, p2};
     }
 
-    private boolean _reduce(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws Exception {
+    private boolean _reduce(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins, boolean d) {
+        //System.err.println("Working on " + p);
         if (p.getSize() <= 1) {
             mins.add(p);
             //Minimal form
             return true;
         }
 
-            int middle = p.getSize() / 2;
-            int sep = middle;
-            int max = p.getSize();
+        int middle = p.getSize() / 2;
+        int sep = middle;
+        int max = p.getSize();
 
-            boolean e1, e2;
+        boolean e1, e2;
         ReconfigurationPlan[] subs;
-            while (true) {
-                subs = splits(p, sep);
-                e1 = consistent(v, subs[0], cstr, in);
-                e2 = consistent(v, subs[1], cstr, in);
-                if (e1 ^ e2) {
-                    //Got a valid split
-                    break;
-                }
-                //Not a valid split, we adapt the separator
-                sep = (sep + 1) % max;
-                if (sep == middle) {
-                    //Not decidable, so minimal form
-                    mins.add(p);
-                    return true;
-                }
-
+        while (true) {
+            subs = splits(p, sep);
+            e1 = consistent(v, subs[0], cstr, in, d);
+            e2 = consistent(v, subs[1], cstr, in, d);
+            if (e1 ^ e2) {
+                //System.err.println("Valid split with " + Arrays.toString(subs));
+                //Got a valid split
+                break;
             }
+            //Not a valid split, we adapt the separator
+            sep = (sep + 1) % (max - 1);
+            if (sep == 0) {
+                sep = 1;
+            }
+            if (sep == middle) {
+                //Not decidable, so minimal form
+                mins.add(p);
+                return true;
+            }
+        }
         //Investigate the right sub plan
-        return _reduce(v, !e1 ? subs[0] : subs[1], cstr, in, mins);
+        return _reduce(v, !e1 ? subs[0] : subs[1], cstr, in, mins, d);
     }
 }

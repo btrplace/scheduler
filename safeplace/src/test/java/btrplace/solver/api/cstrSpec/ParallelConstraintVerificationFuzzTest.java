@@ -1,9 +1,11 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.backend.InMemoryBackend;
+import btrplace.solver.api.cstrSpec.backend.ReducedDefiantStore;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
 import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
+import btrplace.solver.api.cstrSpec.reducer.ElementsReducer;
+import btrplace.solver.api.cstrSpec.reducer.PlanReducer;
 import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -32,17 +34,19 @@ public class ParallelConstraintVerificationFuzzTest {
         String root = "src/main/bin/";
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
-                new TransitionTable(new FileReader(root + "vm_transitions")), 2, 1);
-        Constraint c = s.get("root");
+                new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
+        Constraint c = s.get("lonely");
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();
         //doms.add(new IntVerifDomain(0, 10));
         ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
-        InMemoryBackend b = new InMemoryBackend();
+        ReducedDefiantStore b = new ReducedDefiantStore();
+        b.reduceWith(new PlanReducer());
+        b.reduceWith(new ElementsReducer());
         pc.setBackend(b);
         pc.limit(new MaxTestsGuard(1000));
         //pc.limit(new TimeGuard(60));
-        pc.setNbWorkers(3);
+        pc.setNbWorkers(1);
         pc.setContinuous(true);
         for (Constraint x : s.getConstraints()) {
             if (x.isCore() && x != c) {
@@ -56,7 +60,7 @@ public class ParallelConstraintVerificationFuzzTest {
         int falseOk = 0, falseKo = 0;
 
         for (TestCase tc : b.getDefiant()) {
-            //System.out.println(tc.pretty(true));
+            //    System.out.println(tc.pretty(true));
             if (tc.falsePositive()) {
                 falseOk++;
             } else if (tc.falseNegative()) {
