@@ -7,6 +7,7 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Fabien Hermenier
@@ -17,7 +18,6 @@ public class TestCase {
 
     private ReconfigurationPlan plan;
 
-    private Model src, dst;
     private List<Constant> args;
 
     private CheckerResult expected, got;
@@ -40,7 +40,6 @@ public class TestCase {
         this.c = c;
         this.plan = p;
         this.d = d;
-        this.src = plan.getOrigin();
     }
 
     public TestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
@@ -90,11 +89,17 @@ public class TestCase {
         b.append(verifier.toString()).append(": ").append(got);
 
         if (verbose) {
-            b.append("\nSource Model:\n").append(src.getMapping());
+            b.append("\nSource Model:\n").append(plan.getOrigin().getMapping());
             if (plan != null) {
                 b.append("Plan:\n").append(plan);
             } else {
-                b.append("Resulting model:\n").append(src.getMapping());
+                Model dst = plan.getResult();
+                if (dst == null) {
+                    b.append("Resulting model: -\n");
+                } else {
+                    b.append("Resulting model:\n").append(dst.getMapping());
+                }
+
             }
         }
         return b.toString();
@@ -122,35 +127,24 @@ public class TestCase {
         if (d != testCase.d) return false;
         if (!args.equals(testCase.args)) return false;
         if (!c.equals(testCase.c)) return false;
-        if (dst != null ? !dst.equals(testCase.dst) : testCase.dst != null) return false;
         if (!expected.equals(testCase.expected)) return false;
         if (!got.equals(testCase.got)) return false;
         if (plan != null ? !plan.equals(testCase.plan) : testCase.plan != null) return false;
-        if (src != null ? !src.equals(testCase.src) : testCase.src != null) return false;
         if (!verifier.toString().equals(testCase.verifier.toString())) return false;
 
         return true;
     }
 
     public boolean falsePositive() {
-        return expected.getStatus() == false && got.getStatus() == true;
+        return !expected.getStatus() && got.getStatus();
     }
 
     public boolean falseNegative() {
-        return expected.getStatus() == true && got.getStatus() == false;
+        return expected.getStatus() && !got.getStatus();
     }
 
     @Override
     public int hashCode() {
-        int result = c.hashCode();
-        result = 31 * result + (plan != null ? plan.hashCode() : 0);
-        result = 31 * result + (src != null ? src.hashCode() : 0);
-        result = 31 * result + (dst != null ? dst.hashCode() : 0);
-        result = 31 * result + args.hashCode();
-        result = 31 * result + expected.hashCode();
-        result = 31 * result + got.hashCode();
-        result = 31 * result + verifier.hashCode();
-        result = 31 * result + (d ? 1 : 0);
-        return result;
+        return Objects.hash(c, plan, args, expected, got, verifier, d);
     }
 }

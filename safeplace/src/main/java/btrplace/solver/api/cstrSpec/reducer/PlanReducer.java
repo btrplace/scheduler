@@ -22,72 +22,74 @@ import java.util.List;
  */
 public class PlanReducer {
 
+    public PlanReducer() {
 
-    private Verifier v;
-
-    public PlanReducer(Verifier v) {
-        this.v = v;
     }
 
-    private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
+    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         TestCase tc = new TestCase(v, cstr, p, in, true);
         return tc.succeed();
     }
 
-    public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-
-        if (consistent(p, cstr, in)) {
-            return p;
+    public TestCase reduce(TestCase tc) throws Exception {
+        if (tc.succeed()) {
+            return tc;
         }
+        ReconfigurationPlan p = tc.getPlan();
+        Constraint cstr = tc.getConstraint();
+        List<Constant> in = tc.getArguments();
+        Verifier v = tc.getVerifier();
 
         List<ReconfigurationPlan> mins = new ArrayList<>();
-        _reduce(p, cstr, in, mins);
-        return mins.get(0);
+        _reduce(v, p, cstr, in, mins);
+        return new TestCase(v, cstr, mins.get(0), in, tc.isDiscrete());
     }
 
-    private boolean _reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws Exception {
+    private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) throws Exception {
+        ReconfigurationPlan p1 = new DefaultReconfigurationPlan(p.getOrigin());
+        ReconfigurationPlan p2 = new DefaultReconfigurationPlan(p.getOrigin());
+        int i = 0;
+        for (Action a : p) {
+            if (i++ < sep) {
+                p1.add(a);
+            } else {
+                p2.add(a);
+            }
+        }
+        return new ReconfigurationPlan[]{p1, p2};
+    }
+
+    private boolean _reduce(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws Exception {
         if (p.getSize() <= 1) {
             mins.add(p);
-        } else {
+            //Minimal form
+            return true;
+        }
+
             int middle = p.getSize() / 2;
             int sep = middle;
             int max = p.getSize();
 
             boolean e1, e2;
+        ReconfigurationPlan[] subs;
             while (true) {
-                ReconfigurationPlan p1 = new DefaultReconfigurationPlan(p.getOrigin());
-                ReconfigurationPlan p2 = new DefaultReconfigurationPlan(p.getOrigin());
-                int i = 0;
-                for (Action a : p) {
-                    if (i++ < sep) {
-                        p1.add(a);
-                    } else {
-                        p2.add(a);
-                    }
-                }
-                //System.out.println("Split 1:\n" + p1);
-                //System.out.println("Split 2:\n" + p2);
-                e1 = consistent(p1, cstr, in);
-                e2 = consistent(p2, cstr, in);
-                sep = (sep + 1) % max;
-                if (sep == middle) {
+                subs = splits(p, sep);
+                e1 = consistent(v, subs[0], cstr, in);
+                e2 = consistent(v, subs[1], cstr, in);
+                if (e1 ^ e2) {
+                    //Got a valid split
                     break;
                 }
-                //Only one must have the same error
-                //System.out.println("Want " + err + "\tSplit 1:" + e1 + "\tSplit 2: " + e2);
-                if (e1 ^ e2) {
-                    if (e1) {
-                        return _reduce(p1, cstr, in, mins);
-                    } else {
-                        return _reduce(p2, cstr, in, mins);
-                    }
+                //Not a valid split, we adapt the separator
+                sep = (sep + 1) % max;
+                if (sep == middle) {
+                    //Not decidable, so minimal form
+                    mins.add(p);
+                    return true;
                 }
+
             }
-            //Not decidable, this is the reduced form
-            mins.add(p);
-            return false;
-            //We decided
-        }
-        return true;
+        //Investigate the right sub plan
+        return _reduce(v, !e1 ? subs[0] : subs[1], cstr, in, mins);
     }
 }

@@ -10,15 +10,13 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.type.NodeType;
-import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,20 +64,14 @@ public class PlanReducerTest {
         p.add(new BootNode(n2, 0, 3));
         p.add(new MigrateVM(vm0, n0, n2, 4, 10));
 
-        SpecReader ex = new SpecReader();
-        Constraint cstr = makeConstraint("offline");
-
+        Constraint c = makeConstraint("noVMsOnOfflineNodes");
         List<Constant> in = new ArrayList<>();
-        in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
-
-        PlanReducer tcr = new PlanReducer(new ImplVerifier());
-        System.out.println(p.getOrigin().getMapping());
-        System.out.println(p);
-        ReconfigurationPlan reduced = tcr.reduce(p, cstr, in);
-        System.out.println(p);
-        System.out.println("Reduced to:");
-        System.out.println(reduced);
-        Assert.fail();
+        PlanReducer pr = new PlanReducer();
+        TestCase tc = new TestCase(new ImplVerifier(), c, p, in, true);
+        TestCase red = pr.reduce(tc);
+        System.out.println(tc.pretty(true));
+        System.out.println(red.pretty(true));
+        Assert.assertEquals(red.getPlan().getSize(), 1);
     }
 }

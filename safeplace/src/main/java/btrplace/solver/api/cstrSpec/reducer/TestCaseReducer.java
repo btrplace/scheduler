@@ -27,15 +27,15 @@ public class TestCaseReducer {
     private ElementsReducer er;
 
     public TestCaseReducer() {
-        pr = new PlanReducer(null);
+        pr = new PlanReducer();
         sr = new SignatureReducer(null);
         er = new ElementsReducer(null);
     }
 
     TestCase reduce(TestCase tc) throws Exception {
-        ReconfigurationPlan reducedPlan = pr.reduce(tc.getPlan(), tc.getConstraint(), tc.getArguments());
-        List<Constant> reducedParams = sr.reduce(reducedPlan, tc.getConstraint(), tc.getArguments());
-        ReconfigurationPlan reducedElements = er.reduce(reducedPlan, tc.getConstraint(), reducedParams);
+        TestCase reducedPlan = pr.reduce(tc);
+        List<Constant> reducedParams = sr.reduce(reducedPlan.getPlan(), tc.getConstraint(), tc.getArguments());
+        ReconfigurationPlan reducedElements = er.reduce(reducedPlan.getPlan(), tc.getConstraint(), reducedParams);
         return new TestCase(tc.getVerifier(), tc.getConstraint(), reducedElements, reducedParams, tc.isDiscrete());
     }
 }

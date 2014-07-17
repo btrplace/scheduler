@@ -239,4 +239,19 @@ public class ImplVerifier implements Verifier {
         }
         return "impl";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImplVerifier that = (ImplVerifier) o;
+
+        return repair == that.repair;
+    }
+
+    @Override
+    public int hashCode() {
+        return (repair ? 1 : 0);
+    }
 }
