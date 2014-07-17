@@ -20,16 +20,10 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class SignatureReducer {
+public class SignatureReducer implements Reducer {
 
-    private Verifier v;
-
-    public SignatureReducer(Verifier v) {
-        this.v = v;
-    }
-
-    private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        TestCase tc = new TestCase(v, cstr, p, in, true);
+    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) throws Exception {
+        TestCase tc = new TestCase(v, cstr, p, in, d);
         return tc.succeed();
     }
 
@@ -61,52 +55,56 @@ public class SignatureReducer {
         return l;
     }
 
-    public List<Constant> reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
+    public TestCase reduce(TestCase tc) throws Exception {
+        ReconfigurationPlan p = tc.getPlan();
+        Constraint cstr = tc.getConstraint();
+        List<Constant> in = tc.getArguments();
         List<Constant> cpy = deepCopy(in);
-        if (consistent(p, cstr, cpy)) {
-            return cpy;
+        if (consistent(tc.getVerifier(), p, cstr, cpy, tc.isDiscrete())) {
+            return new TestCase(tc.getVerifier(), cstr, p, cpy, tc.isDiscrete());
         }
         for (int i = 0; i < cpy.size(); i++) {
-            reduceArg(p, cstr, cpy, i);
+            reduceArg(tc.getVerifier(), p, cstr, cpy, tc.isDiscrete(), i);
         }
-        return cpy;
+        //return cpy;
+        return new TestCase(tc.getVerifier(), cstr, p, cpy, tc.isDiscrete());
     }
 
-    private void reduceArg(ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws Exception {
+    private void reduceArg(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d, int i) throws Exception {
         Constant c = in.get(i);
         if (c.type() instanceof SetType) {
             List l = (List) c.eval(null);
             in.set(i, new Constant(l, c.type()));
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(p, cstr, in, l, j)) {
+                if (reduceSetTo(v, p, cstr, in, d, l, j)) {
                     j--;
                 }
             }
         }
     }
 
-    private boolean reduceSetTo(ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
+    private boolean reduceSetTo(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d, List col, int i) throws Exception {
         if (col.get(i) instanceof Collection) {
-            if (failWithout(p, cstr, in, col, i)) {
+            if (failWithout(v, p, cstr, in, d, col, i)) {
                 return true;
             }
             List l = (List) col.get(i);
             col.set(i, l);
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(p, cstr, in, l, j)) {
+                if (reduceSetTo(v, p, cstr, in, d, l, j)) {
                     j--;
                 }
             }
             return false;
         } else {
-            return failWithout(p, cstr, in, col, i);
+            return failWithout(v, p, cstr, in, d, col, i);
         }
     }
 
-    private boolean failWithout(ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
+    private boolean failWithout(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d, List col, int i) throws Exception {
         Object o = col.remove(i);
 
-        if (consistent(p, cstr, in)) { //Not the same error. Component needed
+        if (consistent(v, p, cstr, in, d)) { //Not the same error. Component needed
             col.add(i, o);
         }
         return true;

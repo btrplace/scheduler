@@ -31,7 +31,6 @@ public class ReducedDefiantStore extends NoDuplicatedStore {
             }
             super.addDefiant(x);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
             super.addDefiant(c);
         }
     }

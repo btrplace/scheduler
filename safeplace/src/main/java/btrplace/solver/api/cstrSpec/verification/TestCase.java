@@ -43,8 +43,16 @@ public class TestCase {
     }
 
     public TestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
-        expected = new SpecVerifier().verify(c, p, args);
-        got = v.verify(c, p, args);
+        if (d) {
+            Model src = p.getOrigin();
+            Model dst = p.getResult();
+            expected = new SpecVerifier().verify(c, src, dst, args);
+            got = v.verify(c, src, dst, args);
+        } else {
+            expected = new SpecVerifier().verify(c, p, args);
+            got = v.verify(c, p, args);
+        }
+
         verifier = v;
         this.args = args;
         this.c = c;

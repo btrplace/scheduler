@@ -111,6 +111,10 @@ public class ImplVerifier implements Verifier {
                 return CheckerResult.newSuccess();
             }
         } catch (SolverException ex) {
+            System.err.println("Possible impl bug with " + c.toString(params));
+            System.out.println(p.getOrigin().getMapping());
+            System.out.println(p);
+            ex.printStackTrace();
             return CheckerResult.newFailure(ex.getMessage());
         } catch (Exception e) {
             return CheckerResult.newFailure(e.getClass().getSimpleName() + " " + e.getMessage());

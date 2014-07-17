@@ -3,11 +3,14 @@ package btrplace.solver.api.cstrSpec.runner;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.backend.NoDuplicatedStore;
+import btrplace.solver.api.cstrSpec.backend.ReducedDefiantStore;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
 import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
 import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
 import btrplace.solver.api.cstrSpec.guard.TimeGuard;
+import btrplace.solver.api.cstrSpec.reducer.ElementsReducer;
+import btrplace.solver.api.cstrSpec.reducer.PlanReducer;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
@@ -202,7 +205,9 @@ public class VerifyFuzz {
                     break;
             }
         }
-        NoDuplicatedStore b = new NoDuplicatedStore();
+        ReducedDefiantStore b = new ReducedDefiantStore();
+        b.reduceWith(new PlanReducer());
+        b.reduceWith(new ElementsReducer());
         paraVerif.setBackend(b);
 
         List<Constraint> pre = makePreconditions(c, spec);

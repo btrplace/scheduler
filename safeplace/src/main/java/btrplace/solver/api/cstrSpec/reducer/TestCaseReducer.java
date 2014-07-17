@@ -24,7 +24,7 @@ public class TestCaseReducer {
 
     public TestCaseReducer() {
         pr = new PlanReducer();
-        sr = new SignatureReducer(null);
+        sr = new SignatureReducer();
         er = new ElementsReducer();
     }
 

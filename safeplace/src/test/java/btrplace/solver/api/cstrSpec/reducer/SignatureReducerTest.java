@@ -9,7 +9,7 @@ import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
+import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -91,7 +91,7 @@ public class SignatureReducerTest {
         Constraint c = makeConstraint("offline");
         System.out.println(p.getOrigin().getMapping() + "\n" + p);
         System.out.println(c.pretty());
-        SignatureReducer red = new SignatureReducer(new ImplVerifier());
+        SignatureReducer red = new SignatureReducer();
         List<Constant> args = new ArrayList<>();
 
         args.add(new Constant(p.getOrigin().getMapping().getAllNodes(), new SetType(NodeType.getInstance())));
@@ -101,8 +101,11 @@ public class SignatureReducerTest {
         ps.add(new HashSet<>(Arrays.asList(n2, n3, n4)));
         args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
         args.add(BoolType.getInstance().newValue(true));                             */
-        List<Constant> r = red.reduce(p, c, args);
-        System.out.println(args + " -> " + r);
+        TestCase tc = new TestCase(new ImplVerifier(), c, p, args, false);
+        TestCase r = red.reduce(tc);
+        System.out.println(tc.pretty(true));
+
+        System.out.println(r.pretty(true));
         Assert.fail();
     }
 
@@ -136,9 +139,13 @@ public class SignatureReducerTest {
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
-        SignatureReducer sr = new SignatureReducer(new CheckerVerifier());
-        List<Constant> red = sr.reduce(p, cstr, in);
-        System.out.println(in + " -> " + red);
+        TestCase tc = new TestCase(new ImplVerifier(), cstr, p, in, false);
+        SignatureReducer red = new SignatureReducer();
+        TestCase r = red.reduce(tc);
+
+        System.out.println(tc.pretty(true));
+        System.out.println(r.pretty(true));
         Assert.fail();
+
     }
 }

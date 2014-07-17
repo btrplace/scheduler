@@ -35,7 +35,7 @@ public class ParallelConstraintVerificationFuzzTest {
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
                 new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
-        Constraint c = s.get("lonely");
+        Constraint c = s.get("split");
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();
         //doms.add(new IntVerifDomain(0, 10));
@@ -47,7 +47,7 @@ public class ParallelConstraintVerificationFuzzTest {
         pc.limit(new MaxTestsGuard(1000));
         //pc.limit(new TimeGuard(60));
         pc.setNbWorkers(1);
-        pc.setContinuous(true);
+        pc.setContinuous(false);
         for (Constraint x : s.getConstraints()) {
             if (x.isCore() && x != c) {
                 pc.precondition(x);

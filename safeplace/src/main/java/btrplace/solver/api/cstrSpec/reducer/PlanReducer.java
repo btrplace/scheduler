@@ -39,7 +39,15 @@ public class PlanReducer implements Reducer {
 
         List<ReconfigurationPlan> mins = new ArrayList<>();
         _reduce(v, p, cstr, in, mins, tc.isDiscrete());
-        return new TestCase(v, cstr, mins.get(0), in, tc.isDiscrete());
+        TestCase r = new TestCase(tc.getVerifier(), tc.getConstraint(), mins.get(0), tc.getArguments(), tc.isDiscrete());
+        if (r.succeed()) {
+            System.err.println("BUG while reducing plan was:");
+            System.err.println(tc.pretty(true));
+            System.err.println("Now: " + r.pretty(true));
+            System.err.println(tc.getPlan().equals(r.getPlan()));
+            //System.exit(1);
+        }
+        return r;
     }
 
     private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) {
