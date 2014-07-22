@@ -30,6 +30,8 @@ public class ReducedDefiantStore extends NoDuplicatedStore {
                 x = r.reduce(x);
             }
             super.addDefiant(x);
+            //System.err.println("From " + c.pretty(true));
+            //System.err.println("to " + x.pretty(true));
         } catch (Exception e) {
             super.addDefiant(c);
         }

@@ -10,6 +10,7 @@ import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,19 +36,19 @@ public class ParallelConstraintVerificationFuzzTest {
         Specification s = getSpec();
         ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
                 new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
-        Constraint c = s.get("split");
+        Constraint c = s.get("maxOnline");
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();
-        //doms.add(new IntVerifDomain(0, 10));
-        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
+        doms.add(new IntVerifDomain(0, 5));
+        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(true), c);
         ReducedDefiantStore b = new ReducedDefiantStore();
         b.reduceWith(new PlanReducer());
         b.reduceWith(new ElementsReducer());
         pc.setBackend(b);
-        pc.limit(new MaxTestsGuard(1000));
+        pc.limit(new MaxTestsGuard(10000));
         //pc.limit(new TimeGuard(60));
         pc.setNbWorkers(1);
-        pc.setContinuous(false);
+        pc.setContinuous(true);
         for (Constraint x : s.getConstraints()) {
             if (x.isCore() && x != c) {
                 pc.precondition(x);

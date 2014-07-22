@@ -52,8 +52,10 @@ public class ElementsReducer implements Reducer {
         ReconfigurationPlan res = reduceNodes(v, r1, cstr, in, tc.isDiscrete());
         TestCase r = new TestCase(v, cstr, res, in, tc.isDiscrete());
         if (r.succeed()) {
-            System.err.println("BUG while reducing element(s)");
-            System.err.println(r.pretty(true));
+            System.err.println("BUG while reducing element(s):");
+            System.err.println(tc.pretty(true));
+            System.err.println("Now: " + r.pretty(true));
+            System.err.println(tc.getPlan().equals(r.getPlan()));
             System.exit(1);
         }
         //System.out.println("From " + tc.pretty(true));
@@ -111,7 +113,7 @@ public class ElementsReducer implements Reducer {
         } else if (fullMap.isSleeping(e)) {
             redMap.addSleepingVM(e, fullMap.getVMLocation(e));
         } else if (fullMap.isRunning(e)) {
-            redMap.addSleepingVM(e, fullMap.getVMLocation(e));
+            redMap.addRunningVM(e, fullMap.getVMLocation(e));
         }
     }
 

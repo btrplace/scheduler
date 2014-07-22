@@ -58,6 +58,10 @@ EVAL fussing/reduction:
 
 -> tester limits
 
+COMPARE each:
+  spec, rebuild, repair
+    -> identify over-agressive optimisation
+    
 
 HOW TO VALIDATE THE QUALITY OF THE FUZZING
 		-> SPACE EXPLORATION
