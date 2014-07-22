@@ -3,14 +3,13 @@ library(ggplot2)
 library(reshape2)
 
 args <- commandArgs(T)
-out=args[2]
 input=args[1]
 
 pdf(file=paste0(input,"/all-impl.pdf"), width=10, height=4)
 par(mar=c(3, 3.2, 1, 1), mgp=c(1.8,0.6,0), cex=1.3)
 
 coarse <- function(id) {
-	dta <- read.table(paste0(input,"/",id,".data"), header=T, sep=" ", na.strings = "-")
+	dta <- read.table(paste0(input,"/",id,".data"), header=T, sep=" ", na.strings = "-")	
 	ok <- aggregate(dta$falseOk, by=list(dta$verif, dta$restriction), FUN=sum, na.rm=TRUE)
 	colnames(ok) = c("verif","restriction","falseOk")
 	ko <- aggregate(dta$falseKo, by=list(dta$verif, dta$restriction), FUN=sum, na.rm=TRUE)

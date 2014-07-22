@@ -1,16 +1,10 @@
 #!/bin/sh
-./failureStats.R discrete $1/states.data $1/states.pdf
-./failureStats.R continuous $1/core.data $1/core.pdf
 
-for c in VM2VM VM2PM counting; do
-    ./failures_impl.R ${r} $1/${c}.data $1/${c}-${r}.pdf
-    ./failures_checker.R ${r} $1/${c}.data $1/${c}-${r}.pdf
+for c in core states VM2VM VM2PM counting; do
+    	./failures_impl.R $1/${c}.data $1/${c}.pdf
+    	./failures_checker.R $1/${c}.data $1/${c}.pdf    
 done
 
-OUT=`mktemp /tmp/exemple.XXXXXX`
-for c in VM2VM VM2PM counting; do
-    ./failures_impl.R ${r} $1/${c}.data $1/${c}-${r}.pdf
-    ./failures_checker.R ${r} $1/${c}.data $1/${c}-${r}.pdf
-done
-
+./allfailures_impl.R $1
+./allfailures_checker.R $1
 

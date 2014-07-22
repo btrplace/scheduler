@@ -3,7 +3,6 @@ library(ggplot2)
 library(reshape2)
 
 args <- commandArgs(T)
-out=args[2]
 input=args[1]
 
 pdf(file=paste0(input,"/all-checker.pdf"), width=10, height=4)
