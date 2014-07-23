@@ -34,8 +34,8 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
 
     public ReconfigurationPlanFuzzer2() {
         try {
-            nodeTrans = new TransitionTable(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("node_transitions")));
-            vmTrans = new TransitionTable(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("vm_transitions")));
+            nodeTrans = new TransitionTable(new InputStreamReader(getClass().getResourceAsStream("/node_transitions")));
+            vmTrans = new TransitionTable(new InputStreamReader(getClass().getResourceAsStream("/vm_transitions")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -79,7 +79,10 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
     }
 
     private int duration() {
-        return rnd.nextInt(maxDuration - minDuration) + minDuration;
+        if (minDuration == maxDuration) {
+            return minDuration;
+        }
+        return rnd.nextInt(maxDuration - minDuration + 1) + minDuration;
     }
 
     @Override
