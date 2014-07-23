@@ -31,6 +31,7 @@
 
 -> reduce failed test cases to a minimum to reduce duplicates
 
+-> simplify types. Externalize. Fuzzing and custom types (int, float, ...)
 
 EVAL fussing/reduction:
 -> the effect of reduction on the detection of duplicates
@@ -71,3 +72,54 @@ HOW LONG TO TEST ?
   -> last time since discovering of a new unique testcase
 
   -> cdf, rate of addition (show good coverage or stuck ?)
+
+---
+  Distribution
+---
+
+As a maven plugin to act on sources directly
+-> annotations over the source code
+
+@BtrpConstraint(kind="core",
+                inv="!(n : nodes) nodeState(n) /= online --> card(hosted(n)) = 0")
+
+//Split
+@BtrpConstraint(kind="side", args="part: packing(vms)", inv="{ {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)")
+
+
+foo:fuzz toto -o foo.json
+foo:fuzz toto -i foo.json
+
+bcspec:test
+
+test stuff
+-> test every impl,
+    - stop after X sec || 10k tests
+    - nbWorkers = Math.max(3, #cores)
+    - first failure
+
+
+//Bind a impl and a serializer to an api
+
+
+
+
+new Fuzzer()
+.vmStateTransition()
+.nodeStateTransition()
+.dom(VerifDomain)
+.durations(min,max)
+.constraint(foo) //hidden
+
+//checker
+@Verify(input=foo.json || fuzzer = method)
+void foo(Verifier v)
+return v.stopAfter(X)
+.maxTests(Y)
+.maxUniqueTests(Y)
+.maxFailure(Z)
+.continuous()
+.discrete()
+.repair
+.rebuild
+

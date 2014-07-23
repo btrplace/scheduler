@@ -3,7 +3,7 @@ package btrplace.solver.api.cstrSpec.runner;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.backend.NoBackend;
 import btrplace.solver.api.cstrSpec.backend.VerificationBackend;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.guard.Guard;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
@@ -24,7 +24,7 @@ public class ParallelConstraintVerificationFuzz implements Guardable {
 
     private boolean continuous;
 
-    private ReconfigurationPlanFuzzer fuzz;
+    private ReconfigurationPlanFuzzer2 fuzz;
 
     private VerificationBackend backend;
 
@@ -39,7 +39,7 @@ public class ParallelConstraintVerificationFuzz implements Guardable {
 
     private List<Constraint> pre;
 
-    public ParallelConstraintVerificationFuzz(ReconfigurationPlanFuzzer fuzz, List<VerifDomain> vDoms, Verifier v, Constraint cstr) {
+    public ParallelConstraintVerificationFuzz(ReconfigurationPlanFuzzer2 fuzz, List<VerifDomain> vDoms, Verifier v, Constraint cstr) {
         guards = new ArrayList<>();
         backend = new NoBackend();
         nbWorkers = Runtime.getRuntime().availableProcessors();

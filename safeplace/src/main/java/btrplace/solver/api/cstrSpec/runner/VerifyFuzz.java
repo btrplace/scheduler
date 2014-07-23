@@ -4,8 +4,7 @@ import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.backend.NoDuplicatedStore;
 import btrplace.solver.api.cstrSpec.backend.ReducedDefiantStore;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
 import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
 import btrplace.solver.api.cstrSpec.guard.TimeGuard;
@@ -24,9 +23,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -148,14 +145,9 @@ public class VerifyFuzz {
         String verifier = args[3];
 
 
-        ReconfigurationPlanFuzzer fuzz = null;
-        try {
-            fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader("node_transitions")),
-                    new TransitionTable(new FileReader("vm_transitions")),
-                    nbNodes, nbVMs);
-        } catch (IOException ex) {
-            exit(ex.getMessage());
-        }
+        ReconfigurationPlanFuzzer2 fuzz = null;
+        fuzz = new ReconfigurationPlanFuzzer2();
+        fuzz.nbNodes(nbNodes).nbVMs(nbVMs);
 
         final Specification spec = getSpec(specFile);
         final Constraint c = spec.get(cstrId);

@@ -11,7 +11,7 @@ public class TransitionTableTest {
 
     @Test
     public void test() throws Exception {
-        String file = "vm_transitions";
+        String file = "btrplace.solver.api.cstrSpec.fuzzer/vm_transitions";
         TransitionTable trans = new TransitionTable(new FileReader(file));
         System.out.println(trans);
     }

@@ -121,6 +121,11 @@ public class TestCase {
         }
         b.append(c.toString(args));
         b.append(' ');
+        if (succeed()) {
+            b.append(" valid");
+        } else {
+            b.append(" unconsistent (").append((falsePositive() ? "under-filtering" : "over-filtering")).append(")");
+        }
         b.append(succeed());
         return b.toString();
     }

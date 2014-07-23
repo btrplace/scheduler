@@ -1,8 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.backend.ReducedDefiantStore;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.TransitionTable;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
 import btrplace.solver.api.cstrSpec.reducer.ElementsReducer;
 import btrplace.solver.api.cstrSpec.reducer.PlanReducer;
@@ -16,7 +15,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +32,7 @@ public class ParallelConstraintVerificationFuzzTest {
     public void testFuzz() throws Exception {
         String root = "src/main/bin/";
         Specification s = getSpec();
-        ReconfigurationPlanFuzzer fuzz = new ReconfigurationPlanFuzzer(new TransitionTable(new FileReader(root + "node_transitions")),
-                new TransitionTable(new FileReader(root + "vm_transitions")), 3, 3);
+        ReconfigurationPlanFuzzer2 fuzz = new ReconfigurationPlanFuzzer2();
         Constraint c = s.get("maxOnline");
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();

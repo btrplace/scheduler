@@ -70,7 +70,6 @@ constraint runningCapacity(ns <: nodes, nb : int) ::=
 constraint maxOnline(ns <: nodes, nb : int) ::=
    	card({i. i : ns , nodeState(i) = online}) <= nb
 
-
 /** Resource */
 constraint resourceCapacity(ns <: nodes, id : string, qty: int) ::=
     sum([capa(i, id). i : ns]) <= qty

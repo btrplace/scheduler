@@ -45,10 +45,6 @@ public class IntType extends Atomic {
         return new Constant(Integer.parseInt(n), IntType.getInstance());
     }
 
-    public Constant newValue(int i) {
-        return new Constant(i, IntType.getInstance());
-    }
-
     @Override
     public boolean comparable(Type t) {
         return t.equals(NoneType.getInstance()) || equals(t);

@@ -3,8 +3,7 @@ package btrplace.solver.api.cstrSpec.runner;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.fuzzer.ConstraintInputFuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.DelaysGeneratorFuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.guard.Guard;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
@@ -29,7 +28,7 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
 
     private List<VerifDomain> vDoms;
 
-    private ReconfigurationPlanFuzzer fuzz;
+    private ReconfigurationPlanFuzzer2 fuzz;
 
     private List<Guard> guards;
 
@@ -39,7 +38,7 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
 
     protected SpecVerifier specVerifier = new SpecVerifier();
 
-    public DefaultCallableVerification(ParallelConstraintVerificationFuzz master, ReconfigurationPlanFuzzer fuzz, Verifier ve, List<VerifDomain> vDoms, Constraint c) {
+    public DefaultCallableVerification(ParallelConstraintVerificationFuzz master, ReconfigurationPlanFuzzer2 fuzz, Verifier ve, List<VerifDomain> vDoms, Constraint c) {
         this.master = master;
         this.fuzz = fuzz;
         stop = false;
@@ -57,17 +56,17 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
     @Override
     public Boolean call() {
 
-        //A fake spec to generate the args
-        SpecModel s = new SpecModel(fuzz.newModel());
-        for (VerifDomain vDom : vDoms) {
-            s.add(vDom);
-        }
-
-        ConstraintInputFuzzer cig = new ConstraintInputFuzzer(c, s);
-
         while (!stop) {
-            ReconfigurationPlan skel = fuzz.newPlan();
-            ReconfigurationPlan p = DelaysGeneratorFuzzer.newDelayed(skel);
+            ReconfigurationPlan p = fuzz.next();
+
+            //A fake spec to generate the args
+            SpecModel s = new SpecModel(p.getOrigin());
+            for (VerifDomain vDom : vDoms) {
+                s.add(vDom);
+            }
+
+            ConstraintInputFuzzer cig = new ConstraintInputFuzzer(c, s);
+
             if (!checkPre(p)) {
                 continue;
             }

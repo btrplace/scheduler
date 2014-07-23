@@ -22,7 +22,7 @@ public class PlusTest {
 
     @Test
     public void testInts() {
-        Plus p = new IntPlus(IntType.getInstance().newValue(5), IntType.getInstance().newValue(7));
+        Plus p = new IntPlus(IntType.getInstance().newValue("5"), IntType.getInstance().newValue("7"));
         Assert.assertEquals(p.eval(new SpecModel()), 12);
         Assert.assertEquals(p.type(), IntType.getInstance());
     }
@@ -46,8 +46,8 @@ public class PlusTest {
 
     @Test
     public void testPlusPlus() {
-        Plus p1 = new IntPlus(IntType.getInstance().newValue(5), IntType.getInstance().newValue(7));
-        Plus p2 = new IntPlus(IntType.getInstance().newValue(1), IntType.getInstance().newValue(2));
+        Plus p1 = new IntPlus(IntType.getInstance().newValue("5"), IntType.getInstance().newValue("7"));
+        Plus p2 = new IntPlus(IntType.getInstance().newValue("1"), IntType.getInstance().newValue("2"));
         Plus p3 = new IntPlus(p1, p2);
         Assert.assertEquals(p3.eval(new SpecModel()), 15);
     }

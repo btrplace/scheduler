@@ -3,7 +3,7 @@ package btrplace.solver.api.cstrSpec.runner;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 class CallableDiscreteVerificationFuzz2 extends DefaultCallableVerification {
 
-    public CallableDiscreteVerificationFuzz2(ParallelConstraintVerificationFuzz master, ReconfigurationPlanFuzzer fuzz, Verifier ve, List<VerifDomain> vDoms, Constraint c) {
+    public CallableDiscreteVerificationFuzz2(ParallelConstraintVerificationFuzz master, ReconfigurationPlanFuzzer2 fuzz, Verifier ve, List<VerifDomain> vDoms, Constraint c) {
         super(master, fuzz, ve, vDoms, c);
     }
 
