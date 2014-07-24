@@ -40,7 +40,7 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
 
     @Override
     public void reportMethodAnnotation(Class<? extends Annotation> annotation, String className, String methodName) {
-        CTestCasesRunner runner = new CTestCasesRunner(methodName);
+        CTestCasesRunner runner = new CTestCasesRunner(className.substring(className.lastIndexOf(".") + 1) + "." + methodName);
         try {
             Class cl = Class.forName(className);
             Object o = cl.newInstance();

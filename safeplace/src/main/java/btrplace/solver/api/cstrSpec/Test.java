@@ -1,8 +1,10 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.solver.api.cstrSpec.runner.CTestCaseReport;
 import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
 import btrplace.solver.api.cstrSpec.runner.TestsScanner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,26 +12,47 @@ import java.util.List;
  */
 public class Test {
 
+    private static void reportError(CTestCaseResult res) {
+        System.out.println(res.id() + " " + res.result());
+    }
+
     public static void main(String[] args) throws Exception {
+
+        /*
+        Failed tests:
+  ComTest.testExecuteEascActivityPlan:64 expected:<200> but was:<204>
+
+        Test run: X, Failures: Y, Errors: Z
+         */
         TestsScanner scanner = new TestsScanner();
         List<CTestCasesRunner> runners = scanner.scan();
+        List<CTestCaseReport> reports = new ArrayList<>();
         for (CTestCasesRunner runner : runners) {
-            int ok = 0;
-            int falsePositives = 0;
-            int falseNegatives = 0;
+            CTestCaseReport report = new CTestCaseReport(runner.id());
             long st = System.currentTimeMillis();
             for (CTestCaseResult res : runner) {
-                CTestCaseResult.Result r = res.result();
-                if (r == CTestCaseResult.Result.success) {
-                    ok++;
-                } else if (r == CTestCaseResult.Result.falseNegative) {
-                    falseNegatives++;
-                } else if (r == CTestCaseResult.Result.falsePositive) {
-                    falsePositives++;
-                }
+                report.add(res);
             }
-            long ed = System.currentTimeMillis();
-            System.out.println(runner.id() + ": " + ok + " success; " + falsePositives + " false positives; " + falseNegatives + " false negatives detected in " + (ed - st) + "ms");
+            reports.add(report);
         }
+
+        boolean errHeader = false;
+        int ok = 0, fp = 0, fn = 0;
+        for (CTestCaseReport report : reports) {
+            ok += report.ok();
+            fp += report.fp();
+            fn += report.fn();
+            if (report.fn() > 0 || report.fp() > 0) {
+                if (!errHeader) {
+                    System.out.println("Failed tests:");
+                    errHeader = true;
+                }
+                System.out.println(report.pretty());
+            }
+        }
+        if (!errHeader) {
+            System.out.println("SUCCESS !");
+        }
+        System.out.println("\nTests run: " + (ok + fp + fn) + "; F/P: " + fp + ", F/N: " + fn);
     }
 }
