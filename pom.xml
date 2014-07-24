@@ -14,7 +14,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.antlr</groupId>
+            <groupId>eu.infomas</groupId>
+            <artifactId>annotation-detector</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+        <dependency>
+        <groupId>org.antlr</groupId>
             <artifactId>antlr4-maven-plugin</artifactId>
             <version>4.3</version>
         </dependency>

@@ -1,12 +1,15 @@
 package btrplace.solver.api.cstrSpec.runner;
 
 import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.CTestCaseResult;
+import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.guard.ErrorGuard;
 import btrplace.solver.api.cstrSpec.guard.Guard;
 import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
 import btrplace.solver.api.cstrSpec.guard.TimeGuard;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
@@ -15,6 +18,7 @@ import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,6 +57,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
             throw new UnsupportedOperationException();
         }
     };
+
     private List<Guard> guards;
 
             /*return v.stopAfter(X)
@@ -128,6 +133,11 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         return this;
     }
 
+    public CTestCasesRunner setId(String i) {
+        this.id = i;
+        return this;
+    }
+
     private void save(CTestCase tc) {
         //System.out.println("Save " + tc.id() + " into " + id + "_testcase.json");
     }
@@ -136,10 +146,33 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         //System.out.println("Save " + r.id() + " into " + id + "_result.json");
     }
 
+    private boolean checkPre(CTestCase tc) {
+        ReconfigurationPlan p = tc.getPlan();
+        List<Constraint> pre = tc.getPre();
+        SpecVerifier spec = new SpecVerifier();
+        for (Constraint c : pre) {
+            CheckerResult res = spec.verify(c, p, Collections.<Constant>emptyList());
+            if (!res.getStatus()) {
+                return false;
+            }
+        }
+        for (Constraint c : pre) {
+            CheckerResult res = verifier.verify(c, p, Collections.<Constant>emptyList());
+            if (!res.getStatus()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public CTestCaseResult next() {
 
-        CTestCase tc = in.next();
+        CTestCase tc;
+        do {
+            tc = in.next();
+        } while (!checkPre(tc));
+
         save(tc);
         CheckerResult specRes;
         CheckerResult res;

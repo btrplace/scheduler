@@ -16,13 +16,15 @@ public class CTestCase {
 
     private List<Constant> args;
 
+    private List<Constraint> pre;
     private ReconfigurationPlan plan;
 
-    public CTestCase(String id, Constraint c, List<Constant> argv, ReconfigurationPlan p) {
+    public CTestCase(String id, Constraint c, List<Constraint> pre, List<Constant> argv, ReconfigurationPlan p) {
         cstr = c;
         this.id = id;
         args = argv;
         plan = p;
+        this.pre = pre;
     }
 
     @Override
@@ -33,6 +35,10 @@ public class CTestCase {
         b.append("Origin:\n").append(plan.getOrigin().getMapping());
         b.append("Plan:\n").append(plan);
         return b.toString();
+    }
+
+    public List<Constraint> getPre() {
+        return pre;
     }
 
     public Constraint getConstraint() {
