@@ -160,4 +160,5 @@ public class TestCase {
     public int hashCode() {
         return Objects.hash(c, plan, args, expected, got, verifier, d);
     }
+
 }

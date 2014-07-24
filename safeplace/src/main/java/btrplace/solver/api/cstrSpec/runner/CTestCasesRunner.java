@@ -12,6 +12,8 @@ import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -126,35 +128,63 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         return this;
     }
 
+    private void save(CTestCase tc) {
+        //System.out.println("Save " + tc.id() + " into " + id + "_testcase.json");
+    }
+
+    private void save(CTestCaseResult r) {
+        //System.out.println("Save " + r.id() + " into " + id + "_result.json");
+    }
+
     @Override
     public CTestCaseResult next() {
 
         CTestCase tc = in.next();
-
+        save(tc);
         CheckerResult specRes;
         CheckerResult res;
-        if (continuous) {
-            specRes = specVerifier.verify(tc.getConstraint(), tc.getPlan(), tc.getParameters());
-            res = verifier.verify(tc.getConstraint(), tc.getPlan(), tc.getParameters());
-        } else {
-            Model src = tc.getPlan().getOrigin();
-            Model dst = tc.getPlan().getResult();
-            specRes = specVerifier.verify(tc.getConstraint(), src, dst, tc.getParameters());
-            res = verifier.verify(tc.getConstraint(), src, dst, tc.getParameters());
-        }
 
-        CTestCaseResult.Result r;
-        if (specRes.getStatus().equals(res.getStatus())) {
-            r = CTestCaseResult.Result.success;
-        } else {
-            if (specRes.getStatus()) {
-                r = CTestCaseResult.Result.falseNegative;
+        PrintStream oldOut = System.out;
+        PrintStream olderr = System.err;
+        try {
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+            ByteArrayOutputStream bErr = new ByteArrayOutputStream();
+            TeePrintStream teeOut = new TeePrintStream(bOut, System.out);
+            TeePrintStream teeErr = new TeePrintStream(bErr, System.err);
+
+            if (continuous) {
+                specRes = specVerifier.verify(tc.getConstraint(), tc.getPlan(), tc.getParameters());
+                System.setOut(teeOut);
+                System.setErr(teeErr);
+                res = verifier.verify(tc.getConstraint(), tc.getPlan(), tc.getParameters());
             } else {
-                r = CTestCaseResult.Result.falsePositive;
+                Model src = tc.getPlan().getOrigin();
+                Model dst = tc.getPlan().getResult();
+                specRes = specVerifier.verify(tc.getConstraint(), src, dst, tc.getParameters());
+                System.setOut(teeOut);
+                System.setErr(teeErr);
+                res = verifier.verify(tc.getConstraint(), src, dst, tc.getParameters());
             }
+
+            CTestCaseResult.Result r;
+            if (specRes.getStatus().equals(res.getStatus())) {
+                r = CTestCaseResult.Result.success;
+            } else {
+                if (specRes.getStatus()) {
+                    r = CTestCaseResult.Result.falseNegative;
+                } else {
+                    r = CTestCaseResult.Result.falsePositive;
+                }
+            }
+            prev = new CTestCaseResult(id + "_" + (nb++), tc, r);
+            prev.setStdout(bOut.toString());
+            prev.setStderr(bOut.toString());
+            save(prev);
+            return prev;
+        } finally {
+            System.setOut(oldOut);
+            System.setErr(olderr);
         }
-        prev = new CTestCaseResult(id + "_" + (nb++), tc, r);
-        return prev;
     }
 
     @Override
@@ -178,5 +208,9 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    public String id() {
+        return id;
     }
 }

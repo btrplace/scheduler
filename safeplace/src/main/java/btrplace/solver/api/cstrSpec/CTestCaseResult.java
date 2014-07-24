@@ -13,12 +13,25 @@ public class CTestCaseResult {
 
     private CTestCase tc;
 
+    private String stdout;
+
+    private String stderr;
+
     public CTestCaseResult(String id, CTestCase tc, Result r) {
         res = r;
         this.id = id;
         this.tc = tc;
+        stdout = "";
+        stderr = "";
     }
 
+    public void setStdout(String s) {
+        stdout = s;
+    }
+
+    public void setStderr(String s) {
+        stderr = s;
+    }
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
@@ -30,5 +43,9 @@ public class CTestCaseResult {
 
     public Result result() {
         return res;
+    }
+
+    public String id() {
+        return id;
     }
 }
