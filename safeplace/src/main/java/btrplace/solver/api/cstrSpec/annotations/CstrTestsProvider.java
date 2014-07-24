@@ -10,8 +10,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface CTest {
-    String input() default "";
+public @interface CstrTestsProvider {
+    String name();
+
+    String constraint();
 }
 
 

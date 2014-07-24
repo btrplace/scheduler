@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.guard;
 
+import btrplace.solver.api.cstrSpec.CTestCaseResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 
 /**
@@ -11,4 +12,5 @@ public interface Guard {
 
     boolean acceptCompliant(TestCase tc);
 
+    boolean accept(CTestCaseResult r);
 }

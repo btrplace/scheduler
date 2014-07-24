@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.guard;
 
+import btrplace.solver.api.cstrSpec.CTestCaseResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 
 /**
@@ -30,5 +31,10 @@ public class TimeGuard implements Guard {
             start = System.currentTimeMillis();
         }
         return System.currentTimeMillis() < start + d * 1000;
+    }
+
+    @Override
+    public boolean accept(CTestCaseResult r) {
+        return checkTimer();
     }
 }

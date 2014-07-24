@@ -5,7 +5,6 @@ import btrplace.model.Model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -33,18 +32,6 @@ public class SpecModel {
 
     public Model getModel() {
         return mo;
-    }
-
-    public void add(VerifDomain d) {
-        vDoms.put(d.type(), d);
-    }
-
-    public Set getVerifDomain(String lbl) {
-        VerifDomain v = vDoms.get(lbl);
-        if (v == null) {
-            return null;
-        }
-        return v.domain();
     }
 
     public SpecMapping getMapping() {

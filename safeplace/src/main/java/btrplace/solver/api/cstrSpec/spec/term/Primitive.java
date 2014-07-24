@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec.spec.term;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.Set;
 
@@ -13,10 +14,19 @@ public class Primitive extends Var<Set> {
 
     private Type type;
 
+    private VerifDomain vd;
 
     private Primitive(String name, Type enclosingType, Set c) {
         super(name);
         type = new SetType(enclosingType);
+    }
+
+    public void setVerifDomain(VerifDomain v) {
+        vd = v;
+    }
+
+    public VerifDomain getVerifDomain() {
+        return vd;
     }
 
     public Primitive(String name, Type enclosingType) {
@@ -25,7 +35,10 @@ public class Primitive extends Var<Set> {
 
     @Override
     public Set eval(SpecModel mo) {
-        Set s = mo.getVerifDomain(toString());
+        if (vd == null) {
+            throw new UnsupportedOperationException("No domain has been set for primitive '" + label() + "'");
+        }
+        Set s = vd.domain();
         if (s == null) {
             throw new UnsupportedOperationException("No domain has been set for primitive '" + label() + "'");
         }

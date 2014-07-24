@@ -9,7 +9,6 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
@@ -59,13 +58,7 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
         while (!stop) {
             ReconfigurationPlan p = fuzz.next();
 
-            //A fake spec to generate the args
-            SpecModel s = new SpecModel(p.getOrigin());
-            for (VerifDomain vDom : vDoms) {
-                s.add(vDom);
-            }
-
-            ConstraintInputFuzzer cig = new ConstraintInputFuzzer(c, s);
+            ConstraintInputFuzzer cig = new ConstraintInputFuzzer(c, null);
 
             if (!checkPre(p)) {
                 continue;

@@ -103,7 +103,7 @@ test stuff
 
 
 
-
+@CTestsProvider(name=foo, constraint="foo")
 new Fuzzer()
 .vmStateTransition()
 .nodeStateTransition()
