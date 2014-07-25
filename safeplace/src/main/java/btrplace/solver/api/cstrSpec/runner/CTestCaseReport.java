@@ -11,6 +11,8 @@ public class CTestCaseReport {
 
     private int ok = 0, fp = 0, fn = 0;
 
+    private Exception ex;
+
     public CTestCaseReport(String id) {
         this.id = id;
     }
@@ -29,7 +31,18 @@ public class CTestCaseReport {
         }
     }
 
+    public void report(Exception e) {
+        this.ex = e;
+    }
+
+    public Exception report() {
+        return ex;
+    }
+
     public String pretty() {
+        if (ex != null) {
+            return id + ": " + ex.getMessage();
+        }
         return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N";
     }
 

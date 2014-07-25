@@ -11,10 +11,8 @@ import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import eu.infomas.annotation.AnnotationDetector;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -41,6 +39,7 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
     @Override
     public void reportMethodAnnotation(Class<? extends Annotation> annotation, String className, String methodName) {
         CTestCasesRunner runner = new CTestCasesRunner(className.substring(className.lastIndexOf(".") + 1) + "." + methodName);
+        runners.add(runner);
         try {
             Class cl = Class.forName(className);
             Object o = cl.newInstance();
@@ -49,35 +48,36 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
             m.invoke(o, runner);
             Iterator<CTestCase> in;
             if (cc.provider().length() > 0) {
-                in = getProvider(o, cc.provider());
+                runner.setIn(getProvider(o, cc.provider()));
             } else if (cc.input().length() > 0) {
-                InputStream s;
                 if (new File(cc.input()).exists()) {
-                    s = new FileInputStream(cc.input());
+                    runner.setIn(new CTestsCaseInput(new FileInputStream(cc.input())));
                 } else {
-                    s = new ByteArrayInputStream(new byte[0]);
+                    runner.report(new IllegalArgumentException("unknown input file '" + cc.input() + "'"));
                 }
-                in = new CTestsCaseInput(s);
+
             } else {
-                throw new RuntimeException("No inputs for tests " + m.getName());
+                runner.report(new IllegalArgumentException("No inputs"));
             }
-            runner.setIn(in);
-            runners.add(runner);
+
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            runner.report(e);
         }
     }
 
 
     private CTestCaseFuzzer getProvider(Object o, String lbl) throws Exception {
         SpecReader r = new SpecReader();
+        //TODO Groumph, hardcoded
         Specification spec = r.getSpecification(new File("src/main/cspec/v1.cspec"));
-        Method m = o.getClass().getMethod(lbl);
-        CstrTestsProvider provAn = m.getAnnotation(CstrTestsProvider.class);
-
-        Constraint cstr = spec.get(provAn.constraint());
-        return new CTestCaseFuzzer(provAn.name(), cstr, makePreconditions(cstr, spec), (ReconfigurationPlanFuzzer2) m.invoke(o));
+        try {
+            Method m = o.getClass().getMethod(lbl);
+            CstrTestsProvider provAn = m.getAnnotation(CstrTestsProvider.class);
+            Constraint cstr = spec.get(provAn.constraint());
+            return new CTestCaseFuzzer(provAn.name(), cstr, makePreconditions(cstr, spec), (ReconfigurationPlanFuzzer2) m.invoke(o));
+        } catch (NoSuchMethodException ex) {
+            throw new Exception("Unknown provider '" + lbl + "'");
+        }
     }
 
     private List<Constraint> makePreconditions(Constraint c, Specification spec) {

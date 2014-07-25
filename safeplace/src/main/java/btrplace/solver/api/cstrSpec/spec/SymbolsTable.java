@@ -59,10 +59,9 @@ public class SymbolsTable {
     public SymbolsTable enterSpec() {
         SymbolsTable syms = new SymbolsTable(this);
         //Copy the primitives
+
         syms.put(new AllVMs());
-
         syms.put(new AllNodes());
-
         syms.put(new ConstantSet("vmState", VMStateType.getInstance(), EnumSet.allOf(VMStateType.Type.class)));
         syms.put(new ConstantSet("nodeState", NodeStateType.getInstance(), EnumSet.allOf(NodeStateType.Type.class)));
         syms.put(new Primitive("int", IntType.getInstance()));
@@ -73,6 +72,14 @@ public class SymbolsTable {
         return syms;
     }
 
+    public Primitive getPrimitive(String id) {
+        for (Primitive p : primitives) {
+            if (p.label().equals(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
     public SymbolsTable enterScope() {
         return new SymbolsTable(this);
     }

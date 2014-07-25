@@ -27,22 +27,20 @@ public class Test {
         TestsScanner scanner = new TestsScanner();
         List<CTestCasesRunner> runners = scanner.scan();
         List<CTestCaseReport> reports = new ArrayList<>();
-        for (CTestCasesRunner runner : runners) {
-            CTestCaseReport report = new CTestCaseReport(runner.id());
-            long st = System.currentTimeMillis();
-            for (CTestCaseResult res : runner) {
-                report.add(res);
-            }
-            reports.add(report);
-        }
 
         boolean errHeader = false;
         int ok = 0, fp = 0, fn = 0;
-        for (CTestCaseReport report : reports) {
+        for (CTestCasesRunner runner : runners) {
+            CTestCaseReport report = new CTestCaseReport(runner.id());
+            report.report(runner.report());
+            for (CTestCaseResult res : runner) {
+                report.add(res);
+            }
             ok += report.ok();
             fp += report.fp();
             fn += report.fn();
-            if (report.fn() > 0 || report.fp() > 0) {
+            reports.add(report);
+            if (report.report() != null || report.fn() > 0 || report.fp() > 0) {
                 if (!errHeader) {
                     System.out.println("Failed tests:");
                     errHeader = true;
@@ -50,6 +48,7 @@ public class Test {
                 System.out.println(report.pretty());
             }
         }
+
         if (!errHeader) {
             System.out.println("SUCCESS !");
         }

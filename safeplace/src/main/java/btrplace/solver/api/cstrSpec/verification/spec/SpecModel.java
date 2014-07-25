@@ -5,6 +5,7 @@ import btrplace.model.Model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -39,7 +40,6 @@ public class SpecModel {
     }
 
     public void setValue(String label, Object o) {
-        //System.err.println("Register '" + label + "' " + o + " " +vars.containsKey(label));
         vars.put(label, o);
     }
 
@@ -49,5 +49,17 @@ public class SpecModel {
             throw new RuntimeException("No value for " + label);
         }
         return o;
+    }
+
+    public void add(VerifDomain d) {
+        vDoms.put(d.type(), d);
+    }
+
+    public Set getVerifDomain(String lbl) {
+        VerifDomain v = vDoms.get(lbl);
+        if (v == null) {
+            return null;
+        }
+        return v.domain();
     }
 }

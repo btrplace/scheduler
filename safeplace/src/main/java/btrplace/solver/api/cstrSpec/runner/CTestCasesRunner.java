@@ -41,6 +41,8 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private CTestCaseResult prev;
 
+    private Exception ex;
+
     private Iterator<CTestCase> in = new Iterator<CTestCase>() {
         @Override
         public boolean hasNext() {
@@ -227,6 +229,9 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     @Override
     public boolean hasNext() {
+        if (ex != null) {
+            return false;
+        }
         if (prev == null) {
             return true;
         }
@@ -236,6 +241,14 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
             }
         }
         return true;
+    }
+
+    public void report(Exception e) {
+        this.ex = e;
+    }
+
+    public Exception report() {
+        return ex;
     }
 
     @Override

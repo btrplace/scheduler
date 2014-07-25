@@ -16,12 +16,18 @@ public class TestBan {
     }
 
     @CstrTest(provider = "foo")
-    public void testDiscreteBan(CTestCasesRunner r) {
+    public void testDiscrete(CTestCasesRunner r) {
         r.discrete().timeout(5).maxTests(1000);
     }
 
     @CstrTest(provider = "foo")
-    public void testDiscreteRepairBan(CTestCasesRunner r) {
+    public void testDiscreteRepair(CTestCasesRunner r) {
         r.discrete().repair().timeout(5).maxTests(1000);
     }
+
+    @CstrTest(input = "foo")
+    public void testFoo(CTestCasesRunner r) {
+        r.discrete().repair().timeout(5).maxTests(1000);
+    }
+
 }
