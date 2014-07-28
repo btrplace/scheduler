@@ -11,7 +11,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface CstrTest {
-    String provider() default "";
+    String[] groups() default {};
+
+    String provider();
 
     String input() default "";
 }

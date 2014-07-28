@@ -1,21 +1,18 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.test;
 
 import btrplace.solver.api.cstrSpec.annotations.CstrTest;
 import btrplace.solver.api.cstrSpec.annotations.CstrTestsProvider;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
-import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
 
 /**
  * @author Fabien Hermenier
  */
-public class TestMaxOnline {
+public class TestSpread {
 
-    @CstrTestsProvider(name = "foo", constraint = "maxOnline")
+    @CstrTestsProvider(name = "foo", constraint = "spread")
     public ReconfigurationPlanFuzzer2 foo() {
-        ReconfigurationPlanFuzzer2 f = new ReconfigurationPlanFuzzer2();
-        f.dom(new IntVerifDomain(0, 5));
-        return f;
+        return new ReconfigurationPlanFuzzer2();
     }
 
     @CstrTest(provider = "foo")
@@ -37,4 +34,5 @@ public class TestMaxOnline {
     public void testDiscreteRepair(CTestCasesRunner r) {
         r.discrete().repair().timeout(5).maxTests(1000);
     }
+
 }

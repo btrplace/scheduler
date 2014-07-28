@@ -14,6 +14,8 @@ public @interface CstrTestsProvider {
     String name();
 
     String constraint();
+
+    String source() default "";
 }
 
 

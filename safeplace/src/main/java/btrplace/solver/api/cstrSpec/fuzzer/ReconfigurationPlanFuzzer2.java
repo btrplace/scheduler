@@ -1,14 +1,19 @@
 package btrplace.solver.api.cstrSpec.fuzzer;
 
+import btrplace.json.JSONConverterException;
+import btrplace.json.model.view.ModelViewConverter;
+import btrplace.json.plan.ReconfigurationPlanConverter;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.api.cstrSpec.spec.SymbolsTable;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
+import net.minidev.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,7 +40,12 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
 
     private SymbolsTable syms;
 
+    private ReconfigurationPlanConverter rpc;
+
+    private List<ModelViewFuzzer> vfs;
     public ReconfigurationPlanFuzzer2() {
+        rpc = new ReconfigurationPlanConverter();
+        vfs = new ArrayList<>();
         try {
             nodeTrans = new TransitionTable(new InputStreamReader(getClass().getResourceAsStream("/node_transitions")));
             vmTrans = new TransitionTable(new InputStreamReader(getClass().getResourceAsStream("/vm_transitions")));
@@ -286,5 +296,24 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    public <E extends ModelView> ReconfigurationPlanFuzzer2 viewFuzzer(ModelViewFuzzer<E> f, ModelViewConverter<E> c) {
+        rpc.getModelConverter().getViewsConverter().register(c);
+
+        for (Iterator<ModelViewFuzzer> ite = vfs.iterator(); ite.hasNext(); ) {
+            ModelViewFuzzer vv = ite.next();
+            if (vv.getClass().equals(f.getClass())) {
+                ite.remove();
+                break;
+            }
+        }
+        vfs.add(f);
+
+        return this;
+    }
+
+    public JSONObject toJSON(ReconfigurationPlan p) throws JSONConverterException {
+        return rpc.toJSON(p);
     }
 }

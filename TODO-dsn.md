@@ -24,40 +24,29 @@
  7/ seq ?
 
 -> remove duplicates OK
-
+-> reduce failed test cases to a minimum to reduce duplicates OK
 -> identify and report false positives / false negatives OK
-
+-> remove symmetries ? KO
 -> visu OK
+-> filter out instances that have failures in the core constraints OK
 
--> reduce failed test cases to a minimum to reduce duplicates
 
 -> simplify types. Externalize. Fuzzing and custom types (int, float, ...)
 
 EVAL fussing/reduction:
 -> the effect of reduction on the detection of duplicates
--> the effect of times on the detection of unique tests
-
-
--> try to reduce the number of failures
-
-
-
-
-  -> remove symmetries ?
 
 
 -> CDF to test the impact of instance size over the failure detection
 -> CDF . . . timeout
    -> useless without categorization potentially (or duplicates)
 
--> filter instances that have failures in the core constraints
 
-/!\ Violations are absorbing and hide false positives
-  -> in which conditions we can test multiple constraints (special case for core constraints)
-
--> group by failures ?
+  -> group by failures ?
 
 -> tester limits
+
+-> test with checkers
 
 COMPARE each:
   spec, rebuild, repair
@@ -83,43 +72,26 @@ As a maven plugin to act on sources directly
 @BtrpConstraint(kind="core",
                 inv="!(n : nodes) nodeState(n) /= online --> card(hosted(n)) = 0")
 
-//Split
-@BtrpConstraint(kind="side", args="part: packing(vms)", inv="{ {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)")
+core=false
+with=
+inv=
+discrete=
+continuous=
 
 
-foo:fuzz toto -o foo.json
-foo:fuzz toto -i foo.json
++ annotations inside API
 
-bcspec:test
-
-test stuff
--> test every impl,
-    - stop after X sec || 10k tests
-    - nbWorkers = Math.max(3, #cores)
-    - first failure
-
-
-//Bind a impl and a serializer to an api
+module:
++ btrplace:cspec
++ btrplace:cspec-dump
++ btrplace:cspec-verif
++ btrplace:cspec-verif-plugin
 
 
 
-@CTestsProvider(name=foo, constraint="foo")
-new Fuzzer()
-.vmStateTransition()
-.nodeStateTransition()
-.dom(VerifDomain)
-.durations(min,max)
-.constraint(foo) //hidden
+cspec:test [-Dtest=XX] -Dgroup=x,y,z
+cspec:dump
 
-//checker
-@Verify(input=foo.json || fuzzer = method)
-void foo(Verifier v)
-return v.stopAfter(X)
-.maxTests(Y)
-.maxUniqueTests(Y)
-.maxFailure(Z)
-.continuous()
-.discrete()
-.repair
-.rebuild
+
+
 

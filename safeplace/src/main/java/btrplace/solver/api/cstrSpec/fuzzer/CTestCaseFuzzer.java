@@ -52,20 +52,23 @@ public class CTestCaseFuzzer implements Iterator<CTestCase>, Iterable<CTestCase>
 
     @Override
     public CTestCase next() {
-        //TODO: preconditions management
         ReconfigurationPlan p;
         List<Constant> args;
-        //do {
         p = rpf.next();
         args = argsf.newParams();
-
-        //}while(!checkPre(p));
-
         return new CTestCase(name + "_" + (nb++), cstr, pre, args, p);
     }
 
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    public String toString() {
+        return name;
+    }
+
+    public String getName() {
+        return name;
     }
 }
