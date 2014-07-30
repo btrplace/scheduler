@@ -18,7 +18,7 @@ import java.util.List;
 public class CheckerVerifier implements Verifier {
 
     @Override
-    public CheckerResult verify(Constraint cstr, Model src, Model res, List<Constant> params) {
+    public CheckerResult verify(Constraint cstr, List<Constant> params, Model res, Model src) {
         if (cstr.isCore()) {
             if (res == null) {
                 return new CheckerResult(false, "Core constraint violation");
@@ -47,7 +47,7 @@ public class CheckerVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params) {
+    public CheckerResult verify(Constraint cstr, List<Constant> params, ReconfigurationPlan p) {
         if (cstr.isCore()) {
             Model res = p.getResult();
             if (res == null) {

@@ -1,12 +1,14 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.CTestCase;
+import btrplace.solver.api.cstrSpec.CTestCaseResult;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.ColType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,12 +22,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class SignatureReducer implements Reducer {
-
-    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) throws Exception {
-        TestCase tc = new TestCase(v, cstr, p, in, d);
-        return tc.succeed();
-    }
+public class SignatureReducer extends Reducer {
 
     private List<Constant> deepCopy(List<Constant> in) {
         List<Constant> cpy = new ArrayList<>(in.size());
@@ -55,58 +52,64 @@ public class SignatureReducer implements Reducer {
         return l;
     }
 
-    public TestCase reduce(TestCase tc) throws Exception {
+    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception {
         ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
-        List<Constant> in = tc.getArguments();
+        List<Constant> in = tc.getParameters();
         List<Constant> cpy = deepCopy(in);
-        if (consistent(tc.getVerifier(), p, cstr, cpy, tc.isDiscrete())) {
-            return new TestCase(tc.getVerifier(), cstr, p, cpy, tc.isDiscrete());
-        }
+        //System.out.println("Reducing " + cpy);
         for (int i = 0; i < cpy.size(); i++) {
-            reduceArg(tc.getVerifier(), p, cstr, cpy, tc.isDiscrete(), i);
+            reduceArg(v1, v2, p, cstr, cpy, i, errType);
+            //  System.out.println("\t" + cpy);
         }
-        //return cpy;
-        return new TestCase(tc.getVerifier(), cstr, p, cpy, tc.isDiscrete());
+        //System.out.println("Result: " + cpy);
+        return new CTestCase(tc.id(), cstr, cpy, p, tc.continuous());
     }
 
-    private void reduceArg(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d, int i) throws Exception {
+    private void reduceArg(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i, CTestCaseResult.Result errType) throws Exception {
         Constant c = in.get(i);
-        if (c.type() instanceof SetType) {
+        if (c.type() instanceof ColType) {
             List l = (List) c.eval(null);
             in.set(i, new Constant(l, c.type()));
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(v, p, cstr, in, d, l, j)) {
+                if (!reduceSetTo(v1, v2, p, cstr, in, l, j, errType)) {
                     j--;
                 }
             }
         }
     }
 
-    private boolean reduceSetTo(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d, List col, int i) throws Exception {
+    private boolean reduceSetTo(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i, CTestCaseResult.Result errType) throws Exception {
         if (col.get(i) instanceof Collection) {
-            if (failWithout(v, p, cstr, in, d, col, i)) {
+            System.err.println("before fail " + col + " " + i);
+            if (failWithout(v1, v2, p, cstr, in, col, i, errType)) {
                 return true;
             }
+            System.err.println("after fail " + col + " " + i);
             List l = (List) col.get(i);
             col.set(i, l);
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(v, p, cstr, in, d, l, j)) {
+                if (!reduceSetTo(v1, v2, p, cstr, in, l, j, errType)) {
                     j--;
                 }
             }
             return false;
         } else {
-            return failWithout(v, p, cstr, in, d, col, i);
+            boolean ret = failWithout(v1, v2, p, cstr, in, col, i, errType);
+            //System.out.println(" no way to remove that value");
+            return ret;
         }
     }
 
-    private boolean failWithout(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d, List col, int i) throws Exception {
+    private boolean failWithout(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i, CTestCaseResult.Result errType) throws Exception {
         Object o = col.remove(i);
 
-        if (consistent(v, p, cstr, in, d)) { //Not the same error. Component needed
+        return false;
+        /*if (consistent(v1, v2, new CTestCase("", cstr, in, p) errType)) { //Not the same error. Component needed
             col.add(i, o);
+            //System.out.println("Unable to remove  " + o + " from " + col);
+            return true;
         }
-        return true;
+        return false;*/
     }
 }

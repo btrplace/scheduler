@@ -31,7 +31,7 @@ public class SpecVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint cstr, Model src, Model dst, List<Constant> values) {
+    public CheckerResult verify(Constraint cstr, List<Constant> values, Model dst, Model src) {
         SpecModel sRes = new SpecModel(dst);
         setInputs(cstr, sRes, values);
         Proposition ok = cstr.getProposition();
@@ -41,7 +41,7 @@ public class SpecVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values) {
+    public CheckerResult verify(Constraint cstr, List<Constant> values, ReconfigurationPlan p) {
 
         Proposition good = cstr.getProposition();
         SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.

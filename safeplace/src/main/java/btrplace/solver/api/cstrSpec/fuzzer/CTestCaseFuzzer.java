@@ -5,7 +5,6 @@ import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
-import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.Iterator;
 import java.util.List;
@@ -33,9 +32,9 @@ public class CTestCaseFuzzer implements Iterator<CTestCase>, Iterable<CTestCase>
         name = n;
         ReconfigurationPlan p = rpf.next();
         SpecModel mo = new SpecModel(p.getOrigin());
-        for (VerifDomain v : rpf.doms()) {
+        /*for (VerifDomain v : rpf.doms()) {
             mo.add(v);
-        }
+        } */
         argsf = new ConstraintInputFuzzer(c, mo);
         this.pre = pre;
     }
@@ -56,7 +55,8 @@ public class CTestCaseFuzzer implements Iterator<CTestCase>, Iterable<CTestCase>
         List<Constant> args;
         p = rpf.next();
         args = argsf.newParams();
-        return new CTestCase(name + "_" + (nb++), cstr, pre, args, p);
+        //return new CTestCase(name + "_" + (nb++), cstr, args, p);
+        return null;
     }
 
     @Override

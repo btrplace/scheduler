@@ -40,7 +40,7 @@ public class TestSpec {
         Specification spec = getSpecification();
         System.out.println(spec.pretty());
         System.out.flush();
-        Assert.assertEquals(spec.getConstraints().size(), 24);
+        Assert.assertEquals(spec.getConstraints().size(), 26);
         int sum = 0;
         for (Constraint c : spec.getConstraints()) {
             int l = c.pretty().length();
@@ -156,7 +156,7 @@ public class TestSpec {
 
         Specification spec = getSpecification();
         Constraint c = spec.get("noVMsOnOfflineNodes");
-        CheckerResult res = sv.verify(c, p, Collections.<Constant>emptyList());
+        CheckerResult res = sv.verify(c, Collections.<Constant>emptyList(), p);
         Assert.assertFalse(res.getStatus());
     }
 

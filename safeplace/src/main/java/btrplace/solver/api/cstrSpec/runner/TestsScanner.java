@@ -3,13 +3,9 @@ package btrplace.solver.api.cstrSpec.runner;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.annotations.CstrTest;
-import btrplace.solver.api.cstrSpec.annotations.CstrTestsProvider;
-import btrplace.solver.api.cstrSpec.fuzzer.CTestCaseFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
-import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import eu.infomas.annotation.AnnotationDetector;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -23,9 +19,10 @@ import java.util.Map;
 public class TestsScanner implements AnnotationDetector.MethodReporter {
 
 
-    private Map<String, CTestCaseFuzzer> fuzzerCache;
+    private Map<String, ReconfigurationPlanFuzzer2> fuzzerCache;
     private List<String> tests, grps;
 
+    private static final ReconfigurationPlanFuzzer2 DEFAULT_FUZZER = new ReconfigurationPlanFuzzer2();
     private List<CTestCasesRunner> runners;
 
     public TestsScanner() {
@@ -50,21 +47,29 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
 
     @Override
     public void reportMethodAnnotation(Class<? extends Annotation> annotation, String className, String methodName) {
-        CTestCasesRunner runner = new CTestCasesRunner(className.substring(className.lastIndexOf(".") + 1) + "." + methodName);
-        //TODO: constraint parsing, preconditions, doms, cstrs++
+        CTestCasesRunner runner = null;
+        String cstr;
         try {
             Class cl = Class.forName(className);
             Method m = cl.getMethod(methodName, CTestCasesRunner.class);
             CstrTest cc = m.getAnnotation(CstrTest.class);
+            cstr = cc.constraint();
             if (!match(cl, cc)) {
                 return;
             }
+            runner = new CTestCasesRunner(className.substring(className.lastIndexOf(".") + 1) + "." + methodName, cstr);
+            //TODO: constraint parsing, preconditions, doms, cstrs++
+
             //System.out.println(cl.getSimpleName() + " " + Arrays.toString(cc.groups())+ " match " + grps + " " + tests);
             runners.add(runner);
             Object o = cl.newInstance();
 
             m.invoke(o, runner);
-            runner.setIn(getProvider(o, cc.provider()));
+            if (cc.provider().length() == 0) {
+                runner.setIn(new ReconfigurationPlanFuzzer2());
+            } else {
+                runner.setIn(getProvider(o, cc.provider()));
+            }
 
         } catch (Exception e) {
             runner.report(e);
@@ -88,22 +93,17 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
         return tests.isEmpty();
     }
 
-    private CTestCaseFuzzer getProvider(Object o, String lbl) throws Exception {
+    private ReconfigurationPlanFuzzer2 getProvider(Object o, String lbl) throws Exception {
 
-        CTestCaseFuzzer f = fuzzerCache.get(lbl);
+        ReconfigurationPlanFuzzer2 f = fuzzerCache.get(lbl);
         if (f != null) {
             return f;
         }
-        SpecReader r = new SpecReader();
-        //TODO Groumph, hardcoded
-        Specification spec = r.getSpecification(new File("src/main/cspec/v1.cspec"));
         try {
             Method m = o.getClass().getMethod(lbl);
-            CstrTestsProvider provAn = m.getAnnotation(CstrTestsProvider.class);
-            Constraint cstr = spec.get(provAn.constraint());
-            f = new CTestCaseFuzzer(provAn.name(), cstr, makePreconditions(cstr, spec), (ReconfigurationPlanFuzzer2) m.invoke(o));
+            f = (ReconfigurationPlanFuzzer2) m.invoke(o);
             fuzzerCache.put(lbl, f);
-            return f;
+            return (ReconfigurationPlanFuzzer2) m.invoke(o);
         } catch (NoSuchMethodException ex) {
             throw new Exception("Unknown provider '" + lbl + "'");
         }

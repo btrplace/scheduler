@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface Verifier {
 
-    CheckerResult verify(Constraint c, Model src, Model dst, List<Constant> params);
+    CheckerResult verify(Constraint c, List<Constant> params, Model dst, Model src);
 
-    CheckerResult verify(Constraint c, ReconfigurationPlan p, List<Constant> params);
+    CheckerResult verify(Constraint c, List<Constant> params, ReconfigurationPlan p);
 }

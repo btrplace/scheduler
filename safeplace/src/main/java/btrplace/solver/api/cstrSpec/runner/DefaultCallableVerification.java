@@ -6,14 +6,12 @@ import btrplace.solver.api.cstrSpec.fuzzer.ConstraintInputFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.guard.Guard;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -87,19 +85,19 @@ public abstract class DefaultCallableVerification implements CallableVerificatio
     public abstract TestCase runTest(ReconfigurationPlan p, List<Constant> args);
 
     private boolean checkPre(ReconfigurationPlan p) {
-        SpecVerifier spec = new SpecVerifier();
+        /*SpecVerifier spec = new SpecVerifier();
         for (Constraint c : master.preconditions()) {
-            CheckerResult res = spec.verify(c, p, Collections.<Constant>emptyList());
+            CheckerResult res = spec.verify(c, Collections.<Constant>emptyList(), p);
             if (!res.getStatus()) {
                 return false;
             }
         }
         for (Constraint c : master.preconditions()) {
-            CheckerResult res = ve.verify(c, p, Collections.<Constant>emptyList());
+            CheckerResult res = ve.verify(c, Collections.<Constant>emptyList(), p);
             if (!res.getStatus()) {
                 return false;
             }
-        }
+        }               */
         return true;
     }
 }

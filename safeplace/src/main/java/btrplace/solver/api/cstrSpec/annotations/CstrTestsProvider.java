@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
 public @interface CstrTestsProvider {
     String name();
 
-    String constraint();
-
     String source() default "";
 }
 

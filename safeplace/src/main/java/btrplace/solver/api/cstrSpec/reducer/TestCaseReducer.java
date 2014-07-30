@@ -29,9 +29,10 @@ public class TestCaseReducer {
     }
 
     TestCase reduce(TestCase tc) throws Exception {
-        TestCase t = pr.reduce(tc);
+        //TestCase t = pr.reduce(tc);
         //List<Constant> reducedParams = sr.reduce(.getPlan(), tc.getConstraint(), tc.getArguments());
-        return er.reduce(t);
+        //return er.reduce(t);
         //return new TestCase(tc.getVerifier(), tc.getConstraint(), reducedElements, reducedParams, tc.isDiscrete());
+        return null;
     }
 }

@@ -1,8 +1,6 @@
 package btrplace.solver.api.cstrSpec.test;
 
 import btrplace.solver.api.cstrSpec.annotations.CstrTest;
-import btrplace.solver.api.cstrSpec.annotations.CstrTestsProvider;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
 
 /**
@@ -10,29 +8,24 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestGather {
 
-    @CstrTestsProvider(name = "foo", constraint = "gather")
-    public ReconfigurationPlanFuzzer2 foo() {
-        return new ReconfigurationPlanFuzzer2();
-    }
-
-    @CstrTest(provider = "foo")
+    @CstrTest(constraint = "gather", groups = {"vm2vm"})
     public void testContinuous(CTestCasesRunner r) {
         r.continuous().timeout(5).maxTests(1000);
     }
 
-    @CstrTest(provider = "foo")
+    @CstrTest(constraint = "gather", groups = {"vm2vm"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        r.continuous().repair().timeout(5).maxTests(1000);
+        r.continuous().timeout(5).maxTests(1000).impl().repair(true);
     }
 
-    @CstrTest(provider = "foo")
+    @CstrTest(constraint = "gather", groups = {"vm2vm"})
     public void testDiscrete(CTestCasesRunner r) {
         r.discrete().timeout(5).maxTests(1000);
     }
 
-    @CstrTest(provider = "foo")
+    @CstrTest(constraint = "gather", groups = {"vm2vm"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        r.discrete().repair().timeout(5).maxTests(1000);
+        r.discrete().timeout(5).maxTests(1000).impl().repair(true);
     }
 
 }

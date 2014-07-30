@@ -4,7 +4,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
@@ -20,10 +19,10 @@ public class CallableContinuousVerificationFuzz2 extends DefaultCallableVerifica
     }
 
     public TestCase runTest(ReconfigurationPlan p, List<Constant> args) {
-        CheckerResult specRes = specVerifier.verify(c, p, args);
-        CheckerResult againstRes = ve.verify(c, p, args);
-
-        return new TestCase(specRes, againstRes, ve, this.c, p, args, false);
+        /*CheckerResult specRes = specVerifier.verify(c, args, p);
+        CheckerResult againstRes = ve.verify(c, args, p);
+          */
+        return new TestCase(null, null, ve, this.c, p, args, false);
     }
 
 }

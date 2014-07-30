@@ -26,9 +26,9 @@ public class ReducedDefiantStore extends NoDuplicatedStore {
     public void addDefiant(TestCase c) {
         TestCase x = c;
         try {
-            for (Reducer r : reducers) {
+            /*for (Reducer r : reducers) {
                 x = r.reduce(x);
-            }
+            } */
             super.addDefiant(x);
             //System.err.println("From " + c.pretty(true));
             //System.err.println("to " + x.pretty(true));

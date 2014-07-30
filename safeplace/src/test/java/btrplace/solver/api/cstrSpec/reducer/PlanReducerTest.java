@@ -10,8 +10,9 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -68,10 +69,18 @@ public class PlanReducerTest {
         List<Constant> in = new ArrayList<>();
 
         PlanReducer pr = new PlanReducer();
-        TestCase tc = new TestCase(new ImplVerifier(), c, p, in, true);
-        TestCase red = pr.reduce(tc);
-        System.out.println(tc.pretty(true));
-        System.out.println(red.pretty(true));
-        Assert.assertEquals(red.getPlan().getSize(), 1);
+
+        //CTestCase tc = new CTestCase("foo", c, in, p);
+        PlanReducer er = new PlanReducer();
+        Verifier v1 = new SpecVerifier();
+//        v1.continuous(true);
+//        v1.continuous(false);
+        Verifier v2 = new ImplVerifier();
+//        v2.continuous(true);
+        //CTestCase r = er.reduce(tc, v1, v2);
+        Assert.fail();
+        /*System.out.println(tc);
+        System.out.println(r);
+        Assert.assertEquals(r.getPlan().getSize(), 1);*/
     }
 }

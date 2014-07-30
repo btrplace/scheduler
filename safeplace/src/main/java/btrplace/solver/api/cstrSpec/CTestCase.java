@@ -16,29 +16,25 @@ public class CTestCase {
 
     private List<Constant> args;
 
-    private List<Constraint> pre;
     private ReconfigurationPlan plan;
 
-    public CTestCase(String id, Constraint c, List<Constraint> pre, List<Constant> argv, ReconfigurationPlan p) {
-        cstr = c;
+    private boolean continuous;
+
+    public CTestCase(String id, Constraint cstr, List<Constant> argv, ReconfigurationPlan p, boolean c) {
+        this.cstr = cstr;
         this.id = id;
         args = argv;
         plan = p;
-        this.pre = pre;
+        continuous = c;
+    }
+
+    public boolean continuous() {
+        return continuous;
     }
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("id: ").append(id).append("\n");
-        b.append("Constraint: ").append(cstr.toString(args)).append("\n");
-        b.append("Origin:\n").append(plan.getOrigin().getMapping());
-        b.append("Plan:\n").append(plan);
-        return b.toString();
-    }
-
-    public List<Constraint> getPre() {
-        return pre;
+        return "id: " + id + "\n" + "Constraint: " + cstr.toString(args) + "\nContinuous: " + continuous() + "\n" + "Origin:\n" + plan.getOrigin().getMapping() + "Plan:\n" + plan;
     }
 
     public Constraint getConstraint() {

@@ -4,13 +4,15 @@ import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
+import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -91,7 +93,6 @@ public class SignatureReducerTest {
         Constraint c = makeConstraint("offline");
         System.out.println(p.getOrigin().getMapping() + "\n" + p);
         System.out.println(c.pretty());
-        SignatureReducer red = new SignatureReducer();
         List<Constant> args = new ArrayList<>();
 
         args.add(new Constant(p.getOrigin().getMapping().getAllNodes(), new SetType(NodeType.getInstance())));
@@ -101,11 +102,14 @@ public class SignatureReducerTest {
         ps.add(new HashSet<>(Arrays.asList(n2, n3, n4)));
         args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
         args.add(BoolType.getInstance().newValue(true));                             */
-        TestCase tc = new TestCase(new ImplVerifier(), c, p, args, false);
-        TestCase r = red.reduce(tc);
-        System.out.println(tc.pretty(true));
 
-        System.out.println(r.pretty(true));
+        CTestCase tc = new CTestCase("foo", c, args, p, false);
+        SignatureReducer er = new SignatureReducer();
+        Verifier v1 = new SpecVerifier();
+        //v1.continuous(false);
+        Verifier v2 = new ImplVerifier();
+        //v2.continuous(false);
+        //CTestCase r = er.reduce(tc, v1, v2);
         Assert.fail();
     }
 
@@ -139,12 +143,16 @@ public class SignatureReducerTest {
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
-        TestCase tc = new TestCase(new ImplVerifier(), cstr, p, in, false);
-        SignatureReducer red = new SignatureReducer();
-        TestCase r = red.reduce(tc);
+        CTestCase tc = new CTestCase("foo", cstr, in, p, false);
+        SignatureReducer er = new SignatureReducer();
+        Verifier v1 = new SpecVerifier();
+        //v1.continuous(false);
+        Verifier v2 = new ImplVerifier();
+        //v2.continuous(false);
+        //CTestCase r = er.reduce(tc, v1, v2);
 
-        System.out.println(tc.pretty(true));
-        System.out.println(r.pretty(true));
+        System.out.println(tc);
+        //System.out.println(r);
         Assert.fail();
 
     }

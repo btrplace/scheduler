@@ -6,13 +6,15 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.SuspendVM;
+import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -70,13 +72,15 @@ public class ElementsReducerTest {
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(mo.getMapping().getAllVMs(), new SetType(VMType.getInstance())));
 
-        TestCase tc = new TestCase(new ImplVerifier(), cstr, p, in, false);
+        CTestCase tc = new CTestCase("foo", cstr, in, p, true);
 
         ElementsReducer er = new ElementsReducer();
-        TestCase r = er.reduce(tc);
-        System.out.println(tc.pretty(true));
-        System.out.println(r.pretty(true));
-        Assert.assertFalse(r.succeed());
+        SpecVerifier v1 = new SpecVerifier();
+        Verifier v2 = new ImplVerifier();
+        Assert.fail();
+        CTestCase r = er.reduce(tc, v1, v2, null);
+        System.out.println(tc);
+        System.out.println(r);
         Assert.assertEquals(r.getPlan().getOrigin().getMapping().getNbNodes(), 1);
     }
 }

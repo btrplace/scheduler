@@ -1,22 +1,8 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.backend.ReducedDefiantStore;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer2;
-import btrplace.solver.api.cstrSpec.guard.MaxTestsGuard;
-import btrplace.solver.api.cstrSpec.reducer.ElementsReducer;
-import btrplace.solver.api.cstrSpec.reducer.PlanReducer;
-import btrplace.solver.api.cstrSpec.runner.ParallelConstraintVerificationFuzz;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
-import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -28,7 +14,7 @@ public class ParallelConstraintVerificationFuzzTest {
         return r.getSpecification(new File("src/main/cspec/v1.cspec"));
     }
 
-    @Test
+    /*@Test
     public void testFuzz() throws Exception {
         String root = "src/main/bin/";
         Specification s = getSpec();
@@ -37,7 +23,7 @@ public class ParallelConstraintVerificationFuzzTest {
         System.out.println(c.pretty());
         List<VerifDomain> doms = new ArrayList<>();
         doms.add(new IntVerifDomain(0, 5));
-        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(true), c);
+        ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
         ReducedDefiantStore b = new ReducedDefiantStore();
         b.reduceWith(new PlanReducer());
         b.reduceWith(new ElementsReducer());
@@ -69,5 +55,5 @@ public class ParallelConstraintVerificationFuzzTest {
         }
         System.out.println(falseOk + "false positives; " + falseKo + " false negatives");
         Assert.fail();
-    }
+    }              */
 }

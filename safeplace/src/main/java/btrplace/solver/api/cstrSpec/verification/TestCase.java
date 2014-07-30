@@ -4,7 +4,6 @@ import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.List;
 import java.util.Objects;
@@ -43,15 +42,13 @@ public class TestCase {
     }
 
     public TestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
-        if (d) {
-            Model src = p.getOrigin();
-            Model dst = p.getResult();
+        /*if (d) {
             expected = new SpecVerifier().verify(c, src, dst, args);
             got = v.verify(c, src, dst, args);
         } else {
             expected = new SpecVerifier().verify(c, p, args);
             got = v.verify(c, p, args);
-        }
+        }    */
 
         verifier = v;
         this.args = args;

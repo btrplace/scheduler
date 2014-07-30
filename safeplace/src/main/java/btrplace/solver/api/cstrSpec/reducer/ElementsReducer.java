@@ -10,11 +10,13 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.NodeEvent;
 import btrplace.plan.event.VMEvent;
+import btrplace.solver.api.cstrSpec.CTestCase;
+import btrplace.solver.api.cstrSpec.CTestCaseResult;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.Constraint2BtrPlace;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,45 +32,39 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ElementsReducer implements Reducer {
-
-
-    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) {
-        TestCase tc = new TestCase(v, cstr, p, in, d);
-        return tc.succeed();
-    }
+public class ElementsReducer extends Reducer {
 
     @Override
-    public TestCase reduce(TestCase tc) throws Exception {
-        if (tc.succeed()) {
-            return tc;
-        }
+    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception {
+        //System.err.println("Reduce: \n" + tc.getPlan().getOrigin().getMapping() + "\n" + tc.getPlan());
         ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
-        List<Constant> in = tc.getArguments();
-        Verifier v = tc.getVerifier();
+        List<Constant> in = tc.getParameters();
 
-        ReconfigurationPlan r1 = reduceVMs(v, p, cstr, in, tc.isDiscrete());
-        ReconfigurationPlan res = reduceNodes(v, r1, cstr, in, tc.isDiscrete());
-        TestCase r = new TestCase(v, cstr, res, in, tc.isDiscrete());
-        if (r.succeed()) {
+        ReconfigurationPlan r1 = reduceVMs(v1, v2, p, cstr, in, tc.continuous(), errType);
+        ReconfigurationPlan res = reduceNodes(v1, v2, r1, cstr, in, tc.continuous(), errType);
+        //TestCase r = new TestCase(v, cstr, res, in, tc.isDiscrete());
+        if (consistent(v1, v2, new CTestCase("", cstr, in, res, tc.continuous()), errType)) {
             System.err.println("BUG while reducing element(s):");
-            System.err.println(tc.pretty(true));
-            System.err.println("Now: " + r.pretty(true));
-            System.err.println(tc.getPlan().equals(r.getPlan()));
+            System.err.println(tc);
+            System.err.println("Now: " + new CTestCase(tc.id(), cstr, in, res, tc.continuous()));
+            System.err.println(tc.getPlan().equals(res));
             System.exit(1);
         }
-        //System.out.println("From " + tc.pretty(true));
-        //System.out.println("to " + r.pretty(true));
-        return r;
+        //System.out.println("Reduced from " + p.getOrigin().getMapping().getNbVMs() + " VMs x " + p.getOrigin().getMapping().getNbNodes() + " nodes  to " + res.getOrigin().getMapping().getNbVMs() + " x " + p.getOrigin().getMapping().getNbNodes());
+        return new CTestCase(tc.id(), cstr, in, res, tc.continuous());
     }
 
-    public ReconfigurationPlan reduceVMs(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) throws Exception {
-        SatConstraint s = Constraint2BtrPlace.build(cstr, in);
-        List<VM> l = new ArrayList<>(p.getOrigin().getMapping().getAllVMs());
-        l.removeAll(s.getInvolvedVMs());
+    public ReconfigurationPlan reduceVMs(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, CTestCaseResult.Result errType) throws Exception {
+        List<VM> l;
+        if (cstr.isCore()) {
+            l = new ArrayList<>(p.getOrigin().getMapping().getAllVMs());
+        } else {
+            SatConstraint s = Constraint2BtrPlace.build(cstr, in);
+            l = new ArrayList<>(p.getOrigin().getMapping().getAllVMs());
+            l.removeAll(s.getInvolvedVMs());
+        }
         Iterator<VM> ite = l.iterator();
-
         Model mo = p.getOrigin().clone();
         ReconfigurationPlan red = new DefaultReconfigurationPlan(mo);
         for (Action a : p) {
@@ -81,7 +77,7 @@ public class ElementsReducer implements Reducer {
                 System.err.println("BUGGY");
             }
             Action removedAction = removeMine(red.getActions(), vm);
-            if (consistent(v, red, cstr, in, d)) {
+            if (consistent(v1, v2, new CTestCase("", cstr, in, red, c), errType)) {
                 undo(red, removedAction, vm, p);
             }
         }
@@ -145,10 +141,15 @@ public class ElementsReducer implements Reducer {
         return null;
     }
 
-    public ReconfigurationPlan reduceNodes(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) throws Exception {
-        SatConstraint s = Constraint2BtrPlace.build(cstr, in);
-        List<Node> l = new ArrayList<>(p.getOrigin().getMapping().getAllNodes());
-        l.removeAll(s.getInvolvedNodes());
+    public ReconfigurationPlan reduceNodes(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, CTestCaseResult.Result errType) throws Exception {
+        List<Node> l;
+        if (cstr.isCore()) {
+            l = new ArrayList<>(p.getOrigin().getMapping().getAllNodes());
+        } else {
+            SatConstraint s = Constraint2BtrPlace.build(cstr, in);
+            l = new ArrayList<>(p.getOrigin().getMapping().getAllNodes());
+            l.removeAll(s.getInvolvedNodes());
+        }
         Iterator<Node> ite = l.iterator();
 
         Model mo = p.getOrigin().clone();
@@ -161,7 +162,7 @@ public class ElementsReducer implements Reducer {
             ite.remove();
             if (mo.getMapping().remove(n)) {
                 Action removedAction = removeMine(red.getActions(), n);
-                if (consistent(v, red, cstr, in, d)) {
+                if (consistent(v1, v2, new CTestCase("", cstr, in, red, c), errType)) {
                     undo(red, removedAction, n, p);
                     if (removedAction != null) {
                         red.add(removedAction);

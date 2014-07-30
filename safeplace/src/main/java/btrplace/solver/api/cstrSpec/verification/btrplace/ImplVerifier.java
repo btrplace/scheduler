@@ -34,18 +34,18 @@ public class ImplVerifier implements Verifier {
         cra.getConstraintMapper().register(new CSchedule.Builder());
     }
 
-    public boolean isRepair() {
+    public boolean repair() {
         return repair;
     }
 
-    public void setRepair(boolean repair) {
+    public void repair(boolean repair) {
         this.repair = repair;
     }
 
     private static CheckerResult noSolution = CheckerResult.newFailure("No solution");
 
     @Override
-    public CheckerResult verify(Constraint c, Model src, Model dst, List<Constant> params) {
+    public CheckerResult verify(Constraint c, List<Constant> params, Model dst, Model src) {
 
         List<SatConstraint> cstrs = new ArrayList<>();
         if (!c.isCore()) {
@@ -80,7 +80,7 @@ public class ImplVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint c, ReconfigurationPlan p, List<Constant> params) {
+    public CheckerResult verify(Constraint c, List<Constant> params, ReconfigurationPlan p) {
         List<SatConstraint> cstrs = new ArrayList<>();
 
         if (!c.isCore()) {
@@ -111,10 +111,11 @@ public class ImplVerifier implements Verifier {
                 return CheckerResult.newSuccess();
             }
         } catch (SolverException ex) {
+            /*System.out.flush();
             System.err.println("Possible impl bug with " + c.toString(params));
             System.err.println(p.getOrigin().getMapping());
             System.err.println(p);
-            ex.printStackTrace();
+            ex.printStackTrace();*/
             return CheckerResult.newFailure(ex.getMessage());
         } catch (Exception e) {
             return CheckerResult.newFailure(e.getClass().getSimpleName() + " " + e.getMessage());

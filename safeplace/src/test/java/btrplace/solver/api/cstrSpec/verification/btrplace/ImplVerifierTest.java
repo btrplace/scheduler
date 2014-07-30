@@ -9,6 +9,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.KillVM;
 import btrplace.plan.event.SuspendVM;
+import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
@@ -17,7 +18,6 @@ import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -50,16 +50,21 @@ public class ImplVerifierTest {
         mo.getMapping().addReadyVM(vm0);
         mo.getMapping().addReadyVM(vm1);
 
-        Model dst = mo.clone();
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        p.add(new BootVM(vm0, n1, 0, 1));
+        p.add(new BootVM(vm1, n1, 0, 1));
+        /*Model dst = mo.clone();
         dst.getMapping().addRunningVM(vm0, n1);
-        dst.getMapping().addRunningVM(vm1, n1);
+        dst.getMapping().addRunningVM(vm1, n1);*/
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
         ImplVerifier iv = new ImplVerifier();
-        CheckerResult res = iv.verify(c, mo, dst, Arrays.asList(
+        //iv.continuous(false);
+        CTestCase tc = new CTestCase("", c, Arrays.asList(
                 new Constant(Collections.singletonList(vm1), new SetType(VMType.getInstance())),
                 new Constant(Collections.singleton(new HashSet<>(Arrays.asList(n0))), new SetType(new SetType(NodeType.getInstance())))
-        ));
+        ), p, false);
+        CheckerResult res = iv.verify(tc.getConstraint(), tc.getParameters(), p.getOrigin(), p.getResult());
         Assert.assertEquals(res.getStatus(), Boolean.TRUE);
 
     }
@@ -78,11 +83,13 @@ public class ImplVerifierTest {
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         p.add(new SuspendVM(v0, n1, n1, 0, 3));
         p.add(new BootVM(v1, n1, 0, 3));
-        ImplVerifier v = new ImplVerifier(false);
+        ImplVerifier v = new ImplVerifier();
+        //v.continuous(true);
         Constraint c = getSpecification().get("lonely");
         List<Constant> args = Arrays.asList(new Constant(new HashSet(Arrays.asList(v0, v1)), new SetType(VMType.getInstance())));
-        TestCase tc = new TestCase(v, c, p, args, true);
-        System.out.println(tc.pretty(true));
+        System.out.println(v.verify(c, args, p.getOrigin(), p.getResult()));
+        //TestCase tc = new TestCase(v, c, p, args, true);
+        //System.out.println(tc.pretty(true));
         Assert.fail();
     }
 
@@ -97,7 +104,7 @@ public class ImplVerifierTest {
         p.add(new KillVM(v, n, 1, 4));
         ImplVerifier i = new ImplVerifier();
         Constraint c = getSpecification().get("noVMsOnOfflineNodes");
-        CheckerResult res = i.verify(c, p, Collections.<Constant>emptyList());
+        CheckerResult res = i.verify(c, Collections.<Constant>emptyList(), p);
         Assert.assertTrue(res.getStatus());
     }
 }

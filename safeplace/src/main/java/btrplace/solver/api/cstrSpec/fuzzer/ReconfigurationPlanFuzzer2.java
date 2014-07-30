@@ -11,8 +11,6 @@ import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
-import btrplace.solver.api.cstrSpec.spec.SymbolsTable;
-import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import net.minidev.json.JSONObject;
 
 import java.io.IOException;
@@ -36,13 +34,10 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
 
     private int maxDuration = 3;
 
-    private List<VerifDomain> doms = new ArrayList<>();
-
-    private SymbolsTable syms;
-
     private ReconfigurationPlanConverter rpc;
 
     private List<ModelViewFuzzer> vfs;
+
     public ReconfigurationPlanFuzzer2() {
         rpc = new ReconfigurationPlanConverter();
         vfs = new ArrayList<>();
@@ -52,27 +47,6 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        syms = SymbolsTable.newBundle();
-    }
-
-    public ReconfigurationPlanFuzzer2 dom(VerifDomain v) {
-        for (Iterator<VerifDomain> ite = doms.iterator(); ite.hasNext(); ) {
-            VerifDomain vv = ite.next();
-            if (vv.type().equals(v.type())) {
-                ite.remove();
-                break;
-            }
-        }
-        doms.add(v);
-        return this;
-    }
-
-    public SymbolsTable symbolsTable() {
-        return syms;
-    }
-
-    public List<VerifDomain> doms() {
-        return Collections.unmodifiableList(doms);
     }
 
     public ReconfigurationPlanFuzzer2 nbVMs(int n) {

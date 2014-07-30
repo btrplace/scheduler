@@ -61,9 +61,11 @@ public class VerifyFuzz {
     private static Verifier makeVerifier(String verifier) {
         switch (verifier) {
             case "impl":
-                return new ImplVerifier(false);
+                return new ImplVerifier();
             case "impl_repair":
-                return new ImplVerifier(true);
+                ImplVerifier v = new ImplVerifier();
+                v.repair(true);
+                return v;
             case "checker":
                 return new CheckerVerifier();
         }

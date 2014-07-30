@@ -12,20 +12,26 @@ import java.util.List;
  */
 public class Test {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         long st = System.currentTimeMillis();
         TestsScanner scanner = new TestsScanner();
-        scanner.restrictToTest("TestBan");
-        List<CTestCasesRunner> runners = scanner.scan();
+        scanner.restrictToTest("TestCore");
+        //scanner.restrictToGroup("intDom");
+        List<CTestCasesRunner> runners = null;
+        try {
+            runners = scanner.scan();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         boolean errHeader = false;
         int ok = 0, fp = 0, fn = 0;
         for (CTestCasesRunner runner : runners) {
             CTestCaseReport report = new CTestCaseReport(runner.id());
-            report.report(runner.report());
             for (CTestCaseResult res : runner) {
                 report.add(res);
             }
+            report.report(runner.report());
             ok += report.ok();
             fp += report.fp();
             fn += report.fn();
@@ -34,8 +40,8 @@ public class Test {
                     System.out.println("Failed tests:");
                     errHeader = true;
                 }
-                System.out.println(report.pretty());
             }
+            System.out.println(report.pretty());
         }
 
         if (!errHeader) {

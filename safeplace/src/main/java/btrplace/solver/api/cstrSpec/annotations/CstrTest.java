@@ -13,9 +13,11 @@ import java.lang.annotation.Target;
 public @interface CstrTest {
     String[] groups() default {};
 
-    String provider();
+    String provider() default "";
 
     String input() default "";
+
+    String constraint();
 }
 
 

@@ -3,10 +3,12 @@ package btrplace.solver.api.cstrSpec.reducer;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
+import btrplace.solver.api.cstrSpec.CTestCase;
+import btrplace.solver.api.cstrSpec.CTestCaseResult;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,34 +22,28 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class PlanReducer implements Reducer {
-
-    private boolean consistent(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean d) {
-        TestCase tc = new TestCase(v, cstr, p, in, d);
-        return tc.succeed();
-    }
+public class PlanReducer extends Reducer {
 
     @Override
-    public TestCase reduce(TestCase tc) {
-        if (tc.succeed()) {
-            return tc;
-        }
+    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) {
         ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
-        List<Constant> in = tc.getArguments();
-        Verifier v = tc.getVerifier();
-
+        List<Constant> in = tc.getParameters();
+        if (consistent(v1, v2, tc, errType)) {
+            System.err.println("ORIGINALLY SATISFIED");
+        }
         List<ReconfigurationPlan> mins = new ArrayList<>();
-        _reduce(v, p, cstr, in, mins, tc.isDiscrete());
-        TestCase r = new TestCase(tc.getVerifier(), tc.getConstraint(), mins.get(0), tc.getArguments(), tc.isDiscrete());
-        if (r.succeed()) {
+        _reduce(v1, v2, p, cstr, in, mins, tc.continuous(), errType);
+        CTestCase red = new CTestCase(tc.id(), cstr, in, mins.get(0), tc.continuous());
+        if (consistent(v1, v2, red, errType)) {
             System.err.println("BUG while reducing plan was:");
-            System.err.println(tc.pretty(true));
-            System.err.println("Now: " + r.pretty(true));
-            System.err.println(tc.getPlan().equals(r.getPlan()));
+            System.err.println(tc);
+            System.err.println("Now: " + red);
+            System.err.println(tc.getPlan().equals(mins.get(0)));
             //System.exit(1);
         }
-        return r;
+        //System.out.println("Reduced from " + p.getSize() + " action(s) to " + mins.get(0).getSize());
+        return new CTestCase(tc.id(), cstr, in, mins.get(0), tc.continuous());
     }
 
     private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) {
@@ -64,7 +60,7 @@ public class PlanReducer implements Reducer {
         return new ReconfigurationPlan[]{p1, p2};
     }
 
-    private boolean _reduce(Verifier v, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins, boolean d) {
+    private boolean _reduce(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins, boolean c, CTestCaseResult.Result errType) {
         //System.err.println("Working on " + p);
         if (p.getSize() <= 1) {
             mins.add(p);
@@ -80,8 +76,8 @@ public class PlanReducer implements Reducer {
         ReconfigurationPlan[] subs;
         while (true) {
             subs = splits(p, sep);
-            e1 = consistent(v, subs[0], cstr, in, d);
-            e2 = consistent(v, subs[1], cstr, in, d);
+            e1 = consistent(v1, v2, new CTestCase("", cstr, in, subs[0], c), errType);
+            e2 = consistent(v1, v2, new CTestCase("", cstr, in, subs[1], c), errType);
             if (e1 ^ e2) {
                 //System.err.println("Valid split with " + Arrays.toString(subs));
                 //Got a valid split
@@ -99,6 +95,6 @@ public class PlanReducer implements Reducer {
             }
         }
         //Investigate the right sub plan
-        return _reduce(v, !e1 ? subs[0] : subs[1], cstr, in, mins, d);
+        return _reduce(v1, v2, !e1 ? subs[0] : subs[1], cstr, in, mins, c, errType);
     }
 }

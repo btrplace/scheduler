@@ -11,16 +11,13 @@ public class CTestCaseResult {
 
     private Result res;
 
-    private CTestCase tc;
-
     private String stdout;
 
     private String stderr;
 
-    public CTestCaseResult(String id, CTestCase tc, Result r) {
+    public CTestCaseResult(String id, Result r) {
         res = r;
         this.id = id;
-        this.tc = tc;
         stdout = "";
         stderr = "";
     }
@@ -32,12 +29,12 @@ public class CTestCaseResult {
     public void setStderr(String s) {
         stderr = s;
     }
+
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
         b.append("id: ").append(id).append("\n");
         b.append("res: ").append(res).append("\n");
-        b.append("test case: ").append(tc.id());
         return b.toString();
     }
 
@@ -47,5 +44,13 @@ public class CTestCaseResult {
 
     public String id() {
         return id;
+    }
+
+    public String getStdout() {
+        return stdout;
+    }
+
+    public String getStderr() {
+        return stderr;
     }
 }
