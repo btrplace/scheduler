@@ -63,7 +63,7 @@ public class SignatureReducer extends Reducer {
             //  System.out.println("\t" + cpy);
         }
         //System.out.println("Result: " + cpy);
-        return new CTestCase(tc.id(), cstr, cpy, p, tc.continuous());
+        return derive(tc, cpy, p);
     }
 
     private void reduceArg(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i, CTestCaseResult.Result errType) throws Exception {

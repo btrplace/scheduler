@@ -10,7 +10,9 @@ import java.util.List;
  */
 public class CTestCase {
 
-    private String id;
+    private String testName;
+
+    private Class testClass;
 
     private Constraint cstr;
 
@@ -20,9 +22,14 @@ public class CTestCase {
 
     private boolean continuous;
 
-    public CTestCase(String id, Constraint cstr, List<Constant> argv, ReconfigurationPlan p, boolean c) {
+    private int nb;
+    private int number;
+
+    public CTestCase(Class clName, String testName, int nb, Constraint cstr, List<Constant> argv, ReconfigurationPlan p, boolean c) {
+        testClass = clName;
+        this.testName = testName;
+        this.nb = nb;
         this.cstr = cstr;
-        this.id = id;
         args = argv;
         plan = p;
         continuous = c;
@@ -34,7 +41,7 @@ public class CTestCase {
 
     @Override
     public String toString() {
-        return "id: " + id +
+        return "id: " + id() +
                 "\nConstraint: " + cstr.toString(args) +
                 "\nContinuous: " + continuous() +
                 "\nOrigin:\n" + plan.getOrigin().getMapping() +
@@ -54,6 +61,18 @@ public class CTestCase {
     }
 
     public String id() {
-        return id;
+        return testClass.getSimpleName() + "." + testName + "#" + nb;
+    }
+
+    public Class getTestClass() {
+        return testClass;
+    }
+
+    public String getTestName() {
+        return testName;
+    }
+
+    public int getNumber() {
+        return nb;
     }
 }

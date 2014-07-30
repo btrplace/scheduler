@@ -170,6 +170,9 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
             }
         }
 
+        for (ModelViewFuzzer v : vfs) {
+            v.decorate(p);
+        }
         return delay(p);
     }
 

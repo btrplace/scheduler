@@ -4,7 +4,6 @@ import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
-import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
@@ -103,7 +102,7 @@ public class SignatureReducerTest {
         args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
         args.add(BoolType.getInstance().newValue(true));                             */
 
-        CTestCase tc = new CTestCase("foo", c, args, p, false);
+        //CTestCase tc = new CTestCase("foo", c, args, p, false);
         SignatureReducer er = new SignatureReducer();
         Verifier v1 = new SpecVerifier();
         //v1.continuous(false);
@@ -143,7 +142,7 @@ public class SignatureReducerTest {
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
-        CTestCase tc = new CTestCase("foo", cstr, in, p, false);
+        //CTestCase tc = new CTestCase("foo", cstr, in, p, false);
         SignatureReducer er = new SignatureReducer();
         Verifier v1 = new SpecVerifier();
         //v1.continuous(false);
@@ -151,7 +150,7 @@ public class SignatureReducerTest {
         //v2.continuous(false);
         //CTestCase r = er.reduce(tc, v1, v2);
 
-        System.out.println(tc);
+        //System.out.println(tc);
         //System.out.println(r);
         Assert.fail();
 

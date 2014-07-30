@@ -14,9 +14,9 @@ public class TestUtils {
     }
 
     public static final CTestCasesRunner longCheck(CTestCasesRunner r) {
-        //r.maxTests(100);
+        r.maxTests(100);
         r.timeout(10);
-        r.maxFailures(1);
+        //r.maxFailures(1);
         return r;
     }
 }

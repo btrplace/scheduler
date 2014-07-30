@@ -41,9 +41,11 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private String id;
 
-    private SpecVerifier specVerifier;
+    private Class testClass;
 
-    private int nb = 1;
+    private String testName;
+
+    private SpecVerifier specVerifier;
 
     private CTestCaseResult prev;
 
@@ -60,6 +62,8 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     private List<Reducer> reducers;
 
     private ReductionStatistics reductionStatistics = new ReductionStatistics();
+
+    private int nb;
 
     private Iterator<ReconfigurationPlan> in = new Iterator<ReconfigurationPlan>() {
         @Override
@@ -80,8 +84,10 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private List<Guard> guards;
 
-    public CTestCasesRunner(String id, String cstr) throws Exception {
-        this.id = id;
+    public CTestCasesRunner(Class testClass, String testName, String cstr) throws Exception {
+        this.testClass = testClass;
+        this.testName = testName;
+        nb = 0;
         guards = new ArrayList<>();
         timeout(10);
         maxTests(1000);
@@ -149,14 +155,11 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     }
 
     private void save(CTestCase tc) {
-        //System.out.println("Save " + tc.id() + " into " + id + "_testcase.json");
+
     }
 
     private void save(CTestCase tc, CTestCaseResult r) {
         if (r.result() != CTestCaseResult.Result.success) {
-            int nbArgs = 0;
-            int nbElems = 0;
-            int nbActions = 0;
             CTestCase tc2 = reduce(r.result(), tc, continuous);
             CTestCaseResult res2 = test(tc2);
             if (res2.result() != r.result()) {
@@ -166,25 +169,21 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
                 System.err.println(tc2.getConstraint().equals(tc.getConstraint()));
                 throw new RuntimeException("Failure in the reduction.\nWas:\n" + tc + "\nwith\n" + r + "\nNow:\n" + tc2 + "\nwith\n" + res2);
             }
-            //System.out.println(r + " reduced to "  + res2);
+            System.out.println(res2);
         }
-
-        //System.out.println("Save " + r.id() + " into " + id + "_result.json");
     }
 
     private boolean checkPre(ReconfigurationPlan p) {
 
         //Necessarily against the continuous version
         for (Constraint c : pre) {
-            CTestCase tc = new CTestCase("", c, Collections.<Constant>emptyList(), p, true);
-            CheckerResult res = specVerifier.verify(tc.getConstraint(), tc.getParameters(), tc.getPlan());
+            CheckerResult res = specVerifier.verify(c, Collections.<Constant>emptyList(), p);
             if (!res.getStatus()) {
                 return false;
             }
         }
         for (Constraint c : pre) {
-            CTestCase tc = new CTestCase("", c, Collections.<Constant>emptyList(), p, true);
-            CheckerResult res = verifier.verify(tc.getConstraint(), tc.getParameters(), tc.getPlan());
+            CheckerResult res = verifier.verify(c, Collections.<Constant>emptyList(), p);
             if (!res.getStatus()) {
                 return false;
             }
@@ -228,17 +227,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
                 res = verifier.verify(tc.getConstraint(), tc.getParameters(), src, dst);
             }
 
-            CTestCaseResult.Result r;
-            if (specRes.getStatus().equals(res.getStatus())) {
-                r = CTestCaseResult.Result.success;
-            } else {
-                if (specRes.getStatus()) {
-                    r = CTestCaseResult.Result.falseNegative;
-                } else {
-                    r = CTestCaseResult.Result.falsePositive;
-                }
-            }
-            prev = new CTestCaseResult(id + "_" + (nb++), r);
+            prev = new CTestCaseResult(tc, specRes, res);
             prev.setStdout(bOut.toString());
             prev.setStderr(bOut.toString());
             return prev;
@@ -257,7 +246,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         } while (!checkPre(p));
 
         List<Constant> args = cig.newParams();
-        CTestCase tc = new CTestCase("foo", cstr, args, p, continuous);
+        CTestCase tc = new CTestCase(testClass, testName, nb++, cstr, args, p, continuous);
         save(tc);
         CTestCaseResult res = test(tc);
         save(tc, res);
@@ -271,6 +260,10 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     @Override
     public boolean hasNext() {
+        if (!in.hasNext()) {
+            return false;
+        }
+
         if (continuous && cstr.isDiscrete()) {
             ex = new UnsupportedOperationException(cstr.id() + " only supports discrete restriction");
             return false;
@@ -363,10 +356,8 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private CTestCase reduce(CTestCaseResult.Result errType, CTestCase tc, boolean c) {
         CTestCase x = tc;
-        //System.out.println(x);
         try {
             for (Reducer r : reducers) {
-                //System.out.println("Use " + r.getClass());
                 x = r.reduce(x, specVerifier, verifier, errType);
                 CTestCaseResult res = test(x);
                 if (res.result() != errType) {
@@ -374,7 +365,6 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
                 }
             }
             reductionStatistics.report(tc, x);
-            //System.out.println(x);
         } catch (Exception e) {
             e.printStackTrace();
             return x;

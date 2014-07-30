@@ -72,7 +72,7 @@ public class ElementsReducerTest {
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(mo.getMapping().getAllVMs(), new SetType(VMType.getInstance())));
 
-        CTestCase tc = new CTestCase("foo", cstr, in, p, true);
+        CTestCase tc = new CTestCase(null, "", 0, cstr, in, p, true);
 
         ElementsReducer er = new ElementsReducer();
         SpecVerifier v1 = new SpecVerifier();

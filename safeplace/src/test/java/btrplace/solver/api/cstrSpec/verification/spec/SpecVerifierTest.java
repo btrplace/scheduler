@@ -5,7 +5,6 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.DefaultReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
@@ -22,6 +21,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -49,12 +49,9 @@ public class SpecVerifierTest {
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
         SpecVerifier v = new SpecVerifier();
-        //v.continuous(false);
-        CTestCase tc = new CTestCase("", c, Arrays.asList(
+        CheckerResult res = v.verify(c, Arrays.asList(
                 new Constant(Arrays.asList(vm0, vm1), new SetType(VMType.getInstance())),
-                new Constant(Arrays.asList(Arrays.asList(n1)), new SetType(new SetType(NodeType.getInstance())))
-        ), new DefaultReconfigurationPlan(mo), false);
-        CheckerResult res = v.verify(tc.getConstraint(), tc.getParameters(), mo, mo);
+                new Constant(Arrays.asList(Arrays.asList(n1)), new SetType(new SetType(NodeType.getInstance())))), mo, mo);
         Assert.assertFalse(res.getStatus());
     }
 
@@ -74,11 +71,10 @@ public class SpecVerifierTest {
         Constraint c = spec.get("splitAmong");
         SpecVerifier v = new SpecVerifier();
         //v.continuous(false);
-        CTestCase tc = new CTestCase("", c, Arrays.asList(
+        List<Constant> args = Arrays.asList(
                 new Constant(Arrays.asList(Arrays.asList(vm0), Arrays.asList(vm1)), new SetType(new SetType(VMType.getInstance()))),
-                new Constant(Arrays.asList(Arrays.asList(n1, n0)), new SetType(new SetType(NodeType.getInstance())))
-        ), new DefaultReconfigurationPlan(mo), false);
-        CheckerResult res = v.verify(tc.getConstraint(), tc.getParameters(), mo, mo);
+                new Constant(Arrays.asList(Arrays.asList(n1, n0)), new SetType(new SetType(NodeType.getInstance()))));
+        CheckerResult res = v.verify(c, args, mo, mo);
         Assert.assertFalse(res.getStatus());
     }
 
@@ -121,14 +117,11 @@ public class SpecVerifierTest {
         ImplVerifier v = new ImplVerifier();
         Specification spec = getSpecification();
         Constraint c = spec.get("runningCapacity");
-        CTestCase tc = new CTestCase("", c,
-                Arrays.asList(
-                        new Constant(new HashSet<>(Arrays.asList(n0, n1)), new SetType(NodeType.getInstance())),
-                        new Constant(1, IntType.getInstance())
-                ), new DefaultReconfigurationPlan(mo),
-                false
+        List<Constant> args = Arrays.asList(
+                new Constant(new HashSet<>(Arrays.asList(n0, n1)), new SetType(NodeType.getInstance())),
+                new Constant(1, IntType.getInstance())
         );
-        Assert.assertFalse(v.verify(tc.getConstraint(), tc.getParameters(), mo, mo).getStatus());
+        Assert.assertFalse(v.verify(c, args, mo, mo).getStatus());
         //System.out.println(tc.pretty(true));
     }
 }

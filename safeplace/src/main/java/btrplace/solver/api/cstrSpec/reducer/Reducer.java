@@ -1,10 +1,15 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
 import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.CTestCaseResult;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
+
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -12,16 +17,20 @@ import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 public abstract class Reducer {
     public abstract CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception;
 
-    public boolean consistent(SpecVerifier v1, Verifier v2, CTestCase tc, CTestCaseResult.Result errType) {
+    public CTestCase derive(CTestCase tc, List<Constant> args, ReconfigurationPlan p) {
+        return new CTestCase(tc.getTestClass(), tc.getTestName(), tc.getNumber(), tc.getConstraint(), args, p, tc.continuous());
+    }
+
+    public boolean consistent(SpecVerifier v1, Verifier v2, Constraint cstr, List<Constant> args, ReconfigurationPlan p, boolean c, CTestCaseResult.Result errType) {
         boolean r1, r2;
-        if (tc.continuous()) {
-            r1 = v1.verify(tc.getConstraint(), tc.getParameters(), tc.getPlan()).getStatus();
-            r2 = v2.verify(tc.getConstraint(), tc.getParameters(), tc.getPlan()).getStatus();
+        if (c) {
+            r1 = v1.verify(cstr, args, p).getStatus();
+            r2 = v2.verify(cstr, args, p).getStatus();
         } else {
-            Model src = tc.getPlan().getOrigin();
-            Model dst = tc.getPlan().getResult();
-            r1 = v1.verify(tc.getConstraint(), tc.getParameters(), src, dst).getStatus();
-            r2 = v2.verify(tc.getConstraint(), tc.getParameters(), src, dst).getStatus();
+            Model src = p.getOrigin();
+            Model dst = p.getResult();
+            r1 = v1.verify(cstr, args, src, dst).getStatus();
+            r2 = v2.verify(cstr, args, src, dst).getStatus();
         }
         //System.out.println("With " + tc.getConstraint().toString(tc.getParameters()) + " " + r1 + " " + r2);
         if (r1 == r2) {
@@ -33,6 +42,10 @@ public abstract class Reducer {
             return false;
         }
         return true;
+    }
+
+    public boolean consistent(SpecVerifier v1, Verifier v2, CTestCase tc, CTestCaseResult.Result errType) {
+        return consistent(v1, v2, tc.getConstraint(), tc.getParameters(), tc.getPlan(), tc.continuous(), errType);
     }
 
 }

@@ -44,15 +44,15 @@ public class ElementsReducer extends Reducer {
         ReconfigurationPlan r1 = reduceVMs(v1, v2, p, cstr, in, tc.continuous(), errType);
         ReconfigurationPlan res = reduceNodes(v1, v2, r1, cstr, in, tc.continuous(), errType);
         //TestCase r = new TestCase(v, cstr, res, in, tc.isDiscrete());
-        if (consistent(v1, v2, new CTestCase("", cstr, in, res, tc.continuous()), errType)) {
+        if (consistent(v1, v2, derive(tc, in, res), errType)) {
             System.err.println("BUG while reducing element(s):");
             System.err.println(tc);
-            System.err.println("Now: " + new CTestCase(tc.id(), cstr, in, res, tc.continuous()));
+            System.err.println("Now: " + derive(tc, in, res));
             System.err.println(tc.getPlan().equals(res));
             System.exit(1);
         }
         //System.out.println("Reduced from " + p.getOrigin().getMapping().getNbVMs() + " VMs x " + p.getOrigin().getMapping().getNbNodes() + " nodes  to " + res.getOrigin().getMapping().getNbVMs() + " x " + p.getOrigin().getMapping().getNbNodes());
-        return new CTestCase(tc.id(), cstr, in, res, tc.continuous());
+        return derive(tc, in, res);
     }
 
     public ReconfigurationPlan reduceVMs(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, CTestCaseResult.Result errType) throws Exception {
@@ -77,7 +77,7 @@ public class ElementsReducer extends Reducer {
                 System.err.println("BUGGY");
             }
             Action removedAction = removeMine(red.getActions(), vm);
-            if (consistent(v1, v2, new CTestCase("", cstr, in, red, c), errType)) {
+            if (consistent(v1, v2, cstr, in, red, c, errType)) {
                 undo(red, removedAction, vm, p);
             }
         }
@@ -162,7 +162,7 @@ public class ElementsReducer extends Reducer {
             ite.remove();
             if (mo.getMapping().remove(n)) {
                 Action removedAction = removeMine(red.getActions(), n);
-                if (consistent(v1, v2, new CTestCase("", cstr, in, red, c), errType)) {
+                if (consistent(v1, v2, cstr, in, red, c, errType)) {
                     undo(red, removedAction, n, p);
                     if (removedAction != null) {
                         red.add(removedAction);

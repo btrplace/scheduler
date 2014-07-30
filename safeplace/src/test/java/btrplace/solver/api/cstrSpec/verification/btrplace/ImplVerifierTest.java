@@ -9,7 +9,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.KillVM;
 import btrplace.plan.event.SuspendVM;
-import btrplace.solver.api.cstrSpec.CTestCase;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
@@ -60,11 +59,16 @@ public class ImplVerifierTest {
         Constraint c = spec.get("among");
         ImplVerifier iv = new ImplVerifier();
         //iv.continuous(false);
-        CTestCase tc = new CTestCase("", c, Arrays.asList(
+        List<Constant> args = Arrays.asList(
+                new Constant(Collections.singletonList(vm1), new SetType(VMType.getInstance())),
+                new Constant(Collections.singleton(new HashSet<>(Arrays.asList(n0))), new SetType(new SetType(NodeType.getInstance()))));
+
+        /*CTestCase tc = new CTestCase("", c, Arrays.asList(
                 new Constant(Collections.singletonList(vm1), new SetType(VMType.getInstance())),
                 new Constant(Collections.singleton(new HashSet<>(Arrays.asList(n0))), new SetType(new SetType(NodeType.getInstance())))
         ), p, false);
-        CheckerResult res = iv.verify(tc.getConstraint(), tc.getParameters(), p.getOrigin(), p.getResult());
+        */
+        CheckerResult res = iv.verify(c, args, p.getOrigin(), p.getResult());
         Assert.assertEquals(res.getStatus(), Boolean.TRUE);
 
     }

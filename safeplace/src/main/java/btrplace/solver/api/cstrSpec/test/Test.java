@@ -15,7 +15,7 @@ public class Test {
     public static void main(String[] args) {
         TestsScanner scanner = new TestsScanner();
         long totalSt = System.currentTimeMillis();
-        //scanner.restrictToTest("TestKilled");
+        scanner.restrictToTest("TestPreserve");
         //scanner.restrictToGroup("intDom");
         List<CTestCasesRunner> runners = null;
         try {

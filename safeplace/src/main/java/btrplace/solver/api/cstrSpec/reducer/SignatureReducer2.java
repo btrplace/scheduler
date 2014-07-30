@@ -78,7 +78,7 @@ public class SignatureReducer2 extends Reducer {
             }
         }
         //System.out.println("Reduced " + tc.getConstraint().toString(tc.getParameters()) + " to " + tc.getConstraint().toString(cpy));
-        return new CTestCase(tc.id(), cstr, cpy, p, tc.continuous());
+        return derive(tc, cpy, p);
     }
 
     private void reduceCollection(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, Collection c, boolean b, CTestCaseResult.Result errType) {
@@ -98,7 +98,7 @@ public class SignatureReducer2 extends Reducer {
         for (Object o : removable) {
             s.remove(o);
 
-            if (consistent(v1, v2, new CTestCase("", cstr, in, p, c), errType)) {
+            if (consistent(v1, v2, cstr, in, p, c, errType)) {
                 //Cannot remove the element
                 s.add(o);
                 //System.out.println("Cannot remove  " + o + " from " + s);
@@ -117,7 +117,7 @@ public class SignatureReducer2 extends Reducer {
         //The elements to try to remove
         for (int i = 0; i < l.size(); ) {
             Object o = l.remove(i);
-            if (consistent(v1, v2, new CTestCase("", cstr, in, p, c), errType)) {
+            if (consistent(v1, v2, cstr, in, p, c, errType)) {
                 //Cannot remove the element
                 l.set(i, o);
                 //If the element is also a collection, maybe we can reduce it also

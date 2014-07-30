@@ -34,7 +34,7 @@ public class PlanReducer extends Reducer {
         }
         List<ReconfigurationPlan> mins = new ArrayList<>();
         _reduce(v1, v2, p, cstr, in, mins, tc.continuous(), errType);
-        CTestCase red = new CTestCase(tc.id(), cstr, in, mins.get(0), tc.continuous());
+        CTestCase red = derive(tc, in, mins.get(0));
         if (consistent(v1, v2, red, errType)) {
             System.err.println("BUG while reducing plan was:");
             System.err.println(tc);
@@ -43,7 +43,7 @@ public class PlanReducer extends Reducer {
             //System.exit(1);
         }
         //System.out.println("Reduced from " + p.getSize() + " action(s) to " + mins.get(0).getSize());
-        return new CTestCase(tc.id(), cstr, in, mins.get(0), tc.continuous());
+        return derive(tc, in, mins.get(0));
     }
 
     private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) {
@@ -76,8 +76,8 @@ public class PlanReducer extends Reducer {
         ReconfigurationPlan[] subs;
         while (true) {
             subs = splits(p, sep);
-            e1 = consistent(v1, v2, new CTestCase("", cstr, in, subs[0], c), errType);
-            e2 = consistent(v1, v2, new CTestCase("", cstr, in, subs[1], c), errType);
+            e1 = consistent(v1, v2, cstr, in, subs[0], c, errType);
+            e2 = consistent(v1, v2, cstr, in, subs[1], c, errType);
             if (e1 ^ e2) {
                 //System.err.println("Valid split with " + Arrays.toString(subs));
                 //Got a valid split

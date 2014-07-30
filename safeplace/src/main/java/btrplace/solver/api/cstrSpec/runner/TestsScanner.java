@@ -57,7 +57,7 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
             if (!match(cl, cc)) {
                 return;
             }
-            runner = new CTestCasesRunner(className.substring(className.lastIndexOf(".") + 1) + "." + methodName, cstr);
+            runner = new CTestCasesRunner(cl, methodName, cstr);
             //TODO: constraint parsing, preconditions, doms, cstrs++
 
             //System.out.println(cl.getSimpleName() + " " + Arrays.toString(cc.groups())+ " match " + grps + " " + tests);
