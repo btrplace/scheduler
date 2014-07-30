@@ -34,7 +34,11 @@ public class CTestCase {
 
     @Override
     public String toString() {
-        return "id: " + id + "\n" + "Constraint: " + cstr.toString(args) + "\nContinuous: " + continuous() + "\n" + "Origin:\n" + plan.getOrigin().getMapping() + "Plan:\n" + plan;
+        return "id: " + id +
+                "\nConstraint: " + cstr.toString(args) +
+                "\nContinuous: " + continuous() +
+                "\nOrigin:\n" + plan.getOrigin().getMapping() +
+                "Plan:\n" + plan;
     }
 
     public Constraint getConstraint() {

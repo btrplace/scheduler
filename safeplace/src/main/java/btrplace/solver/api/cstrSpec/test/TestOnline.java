@@ -8,7 +8,7 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestOnline {
 
-    @CstrTest(constraint = "online", groups = {"states"})
+    /*@CstrTest(constraint = "online", groups = {"states"})
     public void testContinuous(CTestCasesRunner r) {
         r.continuous().timeout(5).maxTests(1000);
     }
@@ -16,16 +16,16 @@ public class TestOnline {
     @CstrTest(constraint = "online", groups = {"states"})
     public void testContinuousRepair(CTestCasesRunner r) {
         r.continuous().timeout(5).maxTests(1000).impl().repair(true);
-    }
+    }  */
 
-    @CstrTest(constraint = "online", groups = {"states"})
+    @CstrTest(constraint = "online", groups = {"states", "long"})
     public void testDiscrete(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.discrete());
     }
 
-    @CstrTest(constraint = "online", groups = {"states"})
+    @CstrTest(constraint = "online", groups = {"states", "long"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000).impl().repair(true);
+        TestUtils.longCheck(r.discrete()).impl().repair(true);
     }
 
 }

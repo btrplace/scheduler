@@ -8,24 +8,24 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestLonely {
 
-    @CstrTest(constraint = "split", groups = {"vm2vm"})
+    @CstrTest(constraint = "split", groups = {"vm2vm", "long"})
     public void testContinuous(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "split", groups = {"vm2vm"})
+    @CstrTest(constraint = "split", groups = {"vm2vm", "long"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000).impl().repair(true);
+        TestUtils.longCheck(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "split", groups = {"vm2vm"})
+    @CstrTest(constraint = "split", groups = {"vm2vm", "long"})
     public void testDiscrete(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.discrete());
     }
 
-    @CstrTest(constraint = "split", groups = {"vm2vm"})
+    @CstrTest(constraint = "split", groups = {"vm2vm", "long"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000).impl().repair(true);
+        TestUtils.longCheck(r.discrete()).impl().repair(true);
     }
 
 }

@@ -9,24 +9,24 @@ import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
  */
 public class TestMaxOnline {
 
-    @CstrTest(constraint = "maxOnline", groups = {"counting"})
+    @CstrTest(constraint = "maxOnline", groups = {"counting", "long"})
     public void testContinuous(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000).dom(new IntVerifDomain(0, 5));
+        TestUtils.longCheck(r.continuous()).dom(new IntVerifDomain(0, 5));
     }
 
-    @CstrTest(constraint = "maxOnline", groups = {"counting"})
+    @CstrTest(constraint = "maxOnline", groups = {"counting", "long"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000).dom(new IntVerifDomain(0, 5)).impl().repair(true);
+        TestUtils.longCheck(r.continuous()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
     }
 
-    @CstrTest(constraint = "maxOnline", groups = {"counting"})
+    @CstrTest(constraint = "maxOnline", groups = {"counting", "long"})
     public void testDiscrete(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000).dom(new IntVerifDomain(0, 5));
+        TestUtils.longCheck(r.discrete()).dom(new IntVerifDomain(0, 5));
     }
 
-    @CstrTest(constraint = "maxOnline", groups = {"counting"})
+    @CstrTest(constraint = "maxOnline", groups = {"counting", "long"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000).dom(new IntVerifDomain(0, 5)).impl().repair(true);
+        TestUtils.longCheck(r.discrete()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
         ;
     }
 }

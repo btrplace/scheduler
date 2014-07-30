@@ -8,24 +8,24 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestCore {
 
-    @CstrTest(constraint = "noVMsOnOfflineNodes", groups = {"core"})
+    @CstrTest(constraint = "noVMsOnOfflineNodes", groups = {"core", "long"})
     public void testNoVMsOnOfflineNodes(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "toRunning", groups = {"core"})
+    @CstrTest(constraint = "toRunning", groups = {"core", "long"})
     public void testToRunning(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "toSleeping", groups = {"core"})
+    @CstrTest(constraint = "toSleeping", groups = {"core", "long"})
     public void testToSleeping(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "toReady", groups = {"core"})
+    @CstrTest(constraint = "toReady", groups = {"core", "long"})
     public void testToReady(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.continuous());
     }
 
 }

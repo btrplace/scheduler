@@ -13,6 +13,8 @@ public class CTestCaseReport {
 
     private Exception ex;
 
+    private long duration;
+
     public CTestCaseReport(String id) {
         this.id = id;
     }
@@ -39,11 +41,19 @@ public class CTestCaseReport {
         return ex;
     }
 
+    public void duration(long d) {
+        duration = d;
+    }
+
+    public long duration() {
+        return duration;
+    }
+
     public String pretty() {
         if (ex != null) {
             return id + ": " + ex.getMessage();
         }
-        return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N";
+        return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N (" + duration + "ms)";
     }
 
     public int ok() {

@@ -8,7 +8,7 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestSleeping {
 
-    @CstrTest(constraint = "sleeping", groups = {"states"})
+    /*@CstrTest(constraint = "sleeping", groups = {"states"})
     public void testContinuous(CTestCasesRunner r) {
         r.continuous().timeout(5).maxTests(1000);
     }
@@ -17,15 +17,15 @@ public class TestSleeping {
     public void testContinuousRepair(CTestCasesRunner r) {
         r.continuous().timeout(5).maxTests(1000).impl().repair(true);
     }
-
-    @CstrTest(constraint = "sleeping", groups = {"states"})
+                */
+    @CstrTest(constraint = "sleeping", groups = {"states", "long"})
     public void testDiscrete(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.discrete());
     }
 
-    @CstrTest(constraint = "sleeping", groups = {"states"})
+    @CstrTest(constraint = "sleeping", groups = {"states", "long"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        r.discrete().timeout(5).maxTests(1000).impl().repair(true);
+        TestUtils.longCheck(r.discrete()).impl().repair(true);
     }
 
 }

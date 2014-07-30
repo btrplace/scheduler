@@ -8,16 +8,17 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestRoot {
 
-    @CstrTest(constraint = "root", groups = {"vm2vm"})
+    @CstrTest(constraint = "root", groups = {"vm2vm", "long"})
     public void testContinuous(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000);
+        TestUtils.longCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "root", groups = {"vm2vm"})
+    @CstrTest(constraint = "root", groups = {"vm2vm", "long"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        r.continuous().timeout(5).maxTests(1000).impl().repair(true);
+        TestUtils.longCheck(r.continuous()).impl().repair(true);
     }
 
+    /*
     @CstrTest(constraint = "root", groups = {"vm2vm"})
     public void testDiscrete(CTestCasesRunner r) {
         r.discrete().timeout(5).maxTests(1000);
@@ -28,4 +29,5 @@ public class TestRoot {
         r.discrete().timeout(5).maxTests(1000).impl().repair(true);
     }
 
+    */
 }

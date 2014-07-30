@@ -271,6 +271,11 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     @Override
     public boolean hasNext() {
+        if (continuous && cstr.isDiscrete()) {
+            ex = new UnsupportedOperationException(cstr.id() + " only supports discrete restriction");
+            return false;
+        }
+
         if (cig == null) {
             ReconfigurationPlan p = in.next();
             SpecModel mo = new SpecModel(p.getOrigin());
