@@ -93,18 +93,12 @@ public class CSpread implements ChocoConstraint {
         Slice dJ = t2.getDSlice();
         Slice cI = t2.getCSlice();
 
-        //If both are currently hosted on the same node, no need to worry about non-overlapping
-        //between the c and the d-slices as it may create a non-solution
-        boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().instantiatedTo(cI.getHoster().getValue());
-
-        if (!currentlyGathered) {
-            if (dI != null && cJ != null) {
-                precedenceIfOverlap(s, dI, cJ);
-            }
-            //The inverse relation
-            if (dJ != null && cI != null) {
-                precedenceIfOverlap(s, dJ, cI);
-            }
+        if (dI != null && cJ != null) {
+            precedenceIfOverlap(s, dI, cJ);
+        }
+        //The inverse relation
+        if (dJ != null && cI != null) {
+            precedenceIfOverlap(s, dJ, cI);
         }
     }
 
