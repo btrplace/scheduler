@@ -15,6 +15,8 @@ colnames(df1)[2] = "mode";
 df1 <- transform(df1,mode=ifelse(mode=="impl","build","repair"))
 
 long <- melt(df1, id.vars=c("constraint","mode","restriction","tests"), variable.name='errType', value.name="errors");
+long$errors = long$errors / long$tests * 100;
+print(long);
 hp <- ggplot(long, aes(x=mode, y=errors, fill=restriction)) + geom_bar(stat="identity", position=position_dodge(), width=0.7)
 hp + facet_grid(errType~constraint)
 

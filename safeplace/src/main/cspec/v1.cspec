@@ -84,5 +84,5 @@ constraint preserve(v : vms, id : string, qty: int) ::=
 constraint noWait(v : vms) ::=
     !(a : actions(v)) begin(a) = t0
  */
-constraint seq(sched : lists(vms)) ::=
+constraint sequentialVMTransitions(sched : lists(vms)) ::=
     !(i, j : range(sched)) i < j --> (!(ai : actions(sched[i])) !(aj : actions(sched[j])) end(aj) <= begin(aj))
