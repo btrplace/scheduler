@@ -44,7 +44,7 @@ public class OnlineConverter extends ConstraintConverter<Online> {
     @Override
     public Online fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Online(requiredNode(o, "node"));
+        return new Online(requiredNode(o, "node"), requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -52,6 +52,7 @@ public class OnlineConverter extends ConstraintConverter<Online> {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("node", toJSON(o.getInvolvedNodes().iterator().next()));
+        c.put("continuous", o.isContinuous());
         return c;
     }
 }

@@ -58,7 +58,7 @@ public class CFence implements ChocoConstraint {
     public boolean inject(ReconfigurationProblem rp) {
 
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
-            rp.getLogger().error("Constraint {} is not already satisfied", cstr);
+            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
             return false;
         }
 

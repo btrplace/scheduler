@@ -56,6 +56,11 @@ public class COffline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
+        if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
+            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            return false;
+        }
+
         Node nId = cstr.getInvolvedNodes().iterator().next();
         int id = rp.getNode(nId);
         Transition m = rp.getNodeAction(nId);

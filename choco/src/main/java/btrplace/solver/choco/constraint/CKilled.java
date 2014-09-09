@@ -51,6 +51,11 @@ public class CKilled implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
+        if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
+            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            return false;
+        }
+
         return true;
     }
 
