@@ -22,7 +22,7 @@ import btrplace.json.JSONConverterException;
 import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;

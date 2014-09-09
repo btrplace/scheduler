@@ -39,7 +39,7 @@ import java.util.LinkedList;
   @Override
   public Token nextToken() {
     super.nextToken();
-    Token t = tokens.isEmpty() ? Token.EOF_TOKEN : tokens.poll();
+    Token t = tokens.isEmpty() ? getEOFToken() : tokens.poll();
     return t;
   }
 

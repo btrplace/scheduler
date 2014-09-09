@@ -21,7 +21,7 @@ package btrplace.plan;
 import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -95,10 +95,10 @@ public class DependenciesExtractorTest {
         Assert.assertTrue(ex.visit(m3));
         Assert.assertTrue(ex.visit(m4));
 
-        Assert.assertTrue(ex.getDependencies(m1).toString(), ex.getDependencies(m1).isEmpty());
-        Assert.assertTrue(ex.getDependencies(m3).toString(), ex.getDependencies(m3).isEmpty());
-        Assert.assertEquals(ex.getDependencies(m4).toString(), ex.getDependencies(m4).size(), 1);
-        Assert.assertTrue(ex.getDependencies(m4).toString(), ex.getDependencies(m4).contains(m1));
+        Assert.assertTrue(ex.getDependencies(m1).isEmpty(), ex.getDependencies(m1).toString());
+        Assert.assertTrue(ex.getDependencies(m3).isEmpty(), ex.getDependencies(m3).toString());
+        Assert.assertEquals(ex.getDependencies(m4).size(), 1, ex.getDependencies(m4).toString());
+        Assert.assertTrue(ex.getDependencies(m4).contains(m1), ex.getDependencies(m4).toString());
     }
 
     @Test
@@ -112,9 +112,9 @@ public class DependenciesExtractorTest {
         Assert.assertTrue(ex.visit(s1));
         Assert.assertTrue(ex.visit(m3));
 
-        Assert.assertTrue(ex.getDependencies(m3).toString(), ex.getDependencies(m3).isEmpty());
-        Assert.assertEquals(ex.getDependencies(s1).toString(), ex.getDependencies(s1).size(), 1);
-        Assert.assertTrue(ex.getDependencies(s1).toString(), ex.getDependencies(s1).contains(m3));
+        Assert.assertTrue(ex.getDependencies(m3).isEmpty(), ex.getDependencies(m3).toString());
+        Assert.assertEquals(ex.getDependencies(s1).size(), 1, ex.getDependencies(s1).toString());
+        Assert.assertTrue(ex.getDependencies(s1).contains(m3), ex.getDependencies(s1).toString());
     }
 
     @Test
@@ -138,9 +138,9 @@ public class DependenciesExtractorTest {
         Allocate a2 = new Allocate(vms.get(1), ns.get(0), "cpu", 3, 0, 3); // 5->3
         Assert.assertTrue(ex.visit(a1));
         Assert.assertTrue(ex.visit(a2));
-        Assert.assertTrue(ex.getDependencies(a2).toString(), ex.getDependencies(a2).isEmpty());
-        Assert.assertEquals(ex.getDependencies(a1).toString(), ex.getDependencies(a1).size(), 1);
-        Assert.assertTrue(ex.getDependencies(a1).toString(), ex.getDependencies(a1).contains(a2));
+        Assert.assertTrue(ex.getDependencies(a2).isEmpty(), ex.getDependencies(a2).toString());
+        Assert.assertEquals(ex.getDependencies(a1).size(), 1, ex.getDependencies(a1).toString());
+        Assert.assertTrue(ex.getDependencies(a1).contains(a2), ex.getDependencies(a1).toString());
     }
 
 }
