@@ -54,6 +54,11 @@ public class CBan implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
+
+        if (ban.isContinuous() && !ban.getChecker().startsWith(rp.getSourceModel())) {
+            rp.getLogger().error("Constraint {} is not already satisfied", ban);
+            return false;
+        }
         Collection<Node> nodes = ban.getInvolvedNodes();
         int[] nodesIdx = new int[nodes.size()];
         int i = 0;

@@ -46,8 +46,7 @@ public class BanTest {
         Assert.assertTrue(b.getInvolvedVMs().contains(v));
         Assert.assertEquals(nodes, b.getInvolvedNodes());
         Assert.assertFalse(b.toString().contains("null"));
-        Assert.assertFalse(b.isContinuous());
-        Assert.assertFalse(b.setContinuous(true));
+        Assert.assertTrue(b.setContinuous(true));
         Assert.assertNotNull(b.getChecker());
         System.out.println(b);
     }
