@@ -263,4 +263,38 @@ public class CAmongTest {
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
     }
+
+    /*
+    @Test
+    public void testContinuousWithOneRunningAndChange() throws SolverException {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping())
+                .on(n1, n2)
+                .run(n1, vm1).ready(vm2, vm3).get();
+
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n2));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+
+        Among a = new Among(vms, pGrps);
+        a.setContinuous(true);
+
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.addAll(Running.newRunning(map.getAllVMs()));
+        cstrs.add(new Fence(vm1, Collections.singleton(n2)));
+        cstrs.add(a);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.doRepair(true);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+    }            */
 }

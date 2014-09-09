@@ -1,0 +1,28 @@
+namespace ifStatement;
+
+@pastel-[1..10].b217.home: defaultNode;
+
+$nodes = @pastel-[1..10].b217.home;
+$first = -1;
+if (#$nodes == 10) {
+   $first = 1;
+}  else {
+   $first = 0;
+ }
+$second = -1;
+if (#$nodes != 10) {
+   $second = 0;
+} else {
+   $second = 1;
+}
+
+$third = -1;
+if (#$nodes > 10) {
+   $third = 3;
+} else if (#$nodes == 10 ) {
+  $third = 5;
+} else {
+  $third = -7;
+}
+export $first, $second,$third to *;
+

@@ -1,0 +1,4 @@
+namespace c;
+
+import out.foo;
+import out.bar;

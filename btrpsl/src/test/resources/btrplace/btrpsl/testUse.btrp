@@ -1,0 +1,5 @@
+/**
+Test the 'use' statement when conflict occurs
+*/
+use sophia.helios;
+use sophia.sol;

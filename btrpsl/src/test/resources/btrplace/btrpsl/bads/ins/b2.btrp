@@ -1,0 +1,7 @@
+namespace b2;
+
+VM[1..9]: tiny;
+
+spread(VM[1..9]);
+
+export $me;

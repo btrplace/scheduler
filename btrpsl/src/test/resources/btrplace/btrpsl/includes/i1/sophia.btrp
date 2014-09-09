@@ -1,0 +1,6 @@
+namespace sophia;
+
+import sophia.sol;
+import sophia.helios;
+
+capacity({@frontend.sophia.grid5000.fr}, 0);

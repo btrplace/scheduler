@@ -1,0 +1,18 @@
+namespace myApp;
+
+import datacenter;
+
+VM[1..10] : tinyInstance<clone,boot=7,halt=10>;
+VM[11..20] : microInstance;
+VM[21..24] : largeMemoryInstance;
+
+$T1 = VM[1..10];
+$T2 = VM[11..20];
+$T3 = VM[21..24];
+
+lonely(VM[1..24]);
+for $t in $T[1..3] {
+   spread($t);
+}
+
+among($T3, $datacenter.R[1..7]);

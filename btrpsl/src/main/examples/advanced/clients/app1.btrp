@@ -1,0 +1,15 @@
+namespace clients.app1;
+
+import datacenter;
+
+VM[1..30] : large<clone, boot=10, halt=5>;
+
+$T[1..3] = VM[1..30] / 3;
+for $t in $T[1..3] {
+    spread($t);
+}
+
+root($T3);
+among($T3, $racks);
+
+export $me to admin.*;

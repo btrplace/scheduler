@@ -1,0 +1,22 @@
+namespace admin.sysadmin;
+
+import datacenter;
+import clients.*;
+
+entropy : large;
+
+root(entropy);
+fence(entropy,@srv-frontend);
+lonely(entropy);
+
+fence($clients, $servers - {@srv-frontend});
+
+for $r in $racks {
+    capacity($r, 1000);
+}
+
+for $n in $servers {
+    capacity($n, 10);
+}
+
+ban($clients, @srv-210);
