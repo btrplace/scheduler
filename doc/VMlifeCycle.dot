@@ -2,7 +2,6 @@ digraph G{
 	Ready
 	Running
 	Sleeping
-	Killed
 
 	Ready -> Running [label="booting"]
 	Running -> Running [label="migrating"]

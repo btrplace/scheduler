@@ -8,14 +8,14 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestQuarantine {
 
-    @CstrTest(constraint = "quarantine", groups = {"vm2vm", "long"})
+    @CstrTest(constraint = "quarantine", groups = {"vm2vm", "unit"})
     public void testContinuous(CTestCasesRunner r) {
-        TestUtils.longCheck(r.continuous());
+        TestUtils.quickCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "quarantine", groups = {"vm2vm", "long"})
+    @CstrTest(constraint = "quarantine", groups = {"vm2vm", "unit"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.continuous()).impl().repair(true);
+        TestUtils.quickCheck(r.continuous()).impl().repair(true);
     }
 
     /*@CstrTest(constraint = "quarantine", groups = {"vm2vm"})

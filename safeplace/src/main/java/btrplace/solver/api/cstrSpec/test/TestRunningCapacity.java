@@ -9,24 +9,24 @@ import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
  */
 public class TestRunningCapacity {
 
-    @CstrTest(constraint = "runningCapacity", groups = {"counting", "long"})
+    @CstrTest(constraint = "runningCapacity", groups = {"counting", "unit"})
     public void testContinuous(CTestCasesRunner r) {
-        TestUtils.longCheck(r.continuous()).dom(new IntVerifDomain(0, 5));
+        TestUtils.quickCheck(r.continuous()).dom(new IntVerifDomain(0, 5));
     }
 
-    @CstrTest(constraint = "runningCapacity", groups = {"counting", "long"})
+    @CstrTest(constraint = "runningCapacity", groups = {"counting", "unit"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.continuous()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
+        TestUtils.quickCheck(r.continuous()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
     }
 
-    @CstrTest(constraint = "runningCapacity", groups = {"counting", "long"})
+    @CstrTest(constraint = "runningCapacity", groups = {"counting", "unit"})
     public void testDiscrete(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete()).dom(new IntVerifDomain(0, 5));
+        TestUtils.quickCheck(r.discrete()).dom(new IntVerifDomain(0, 5));
     }
 
-    @CstrTest(constraint = "runningCapacity", groups = {"counting", "long"})
+    @CstrTest(constraint = "runningCapacity", groups = {"counting", "unit"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
+        TestUtils.quickCheck(r.discrete()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
     }
 
 }

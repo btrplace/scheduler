@@ -18,14 +18,14 @@ public class TestSleeping {
         r.continuous().timeout(5).maxTests(1000).impl().repair(true);
     }
                 */
-    @CstrTest(constraint = "sleeping", groups = {"states", "long"})
+    @CstrTest(constraint = "sleeping", groups = {"states", "unit"})
     public void testDiscrete(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete());
+        TestUtils.quickCheck(r.discrete());
     }
 
-    @CstrTest(constraint = "sleeping", groups = {"states", "long"})
+    @CstrTest(constraint = "sleeping", groups = {"states", "unit"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete()).impl().repair(true);
+        TestUtils.quickCheck(r.discrete()).impl().repair(true);
     }
 
 }

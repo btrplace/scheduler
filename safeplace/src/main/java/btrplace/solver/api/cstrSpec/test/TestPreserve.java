@@ -14,8 +14,6 @@ import btrplace.solver.api.cstrSpec.verification.spec.StringEnumVerifDomain;
  */
 public class TestPreserve {
 
-    private static String[] rcDoms = new String[]{"cpu"};
-
     private ShareableResourceFuzzer rcf = new ShareableResourceFuzzer("cpu", 1, 7, 3, 5);
 
     @CstrTestsProvider(name = "preserve")
@@ -24,28 +22,27 @@ public class TestPreserve {
     }
 
     private static CTestCasesRunner customize(CTestCasesRunner r) {
-        r.dom(new StringEnumVerifDomain(rcDoms))
+        return r.dom(new StringEnumVerifDomain(new String[]{"cpu"}))
                 .dom(new IntVerifDomain(1, 7));
-        return r;
-    }
-    /*@CstrTest(constraint = "preserve", groups = {"rc", "long"})
-    public void testContinuous(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.continuous()));
     }
 
-    @CstrTest(constraint = "preserve", groups = {"rc", "long"})
-    public void testContinuousRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.continuous())).impl().repair(true);
-    }       */
-
-    @CstrTest(provider = "myProvider", constraint = "preserve", groups = {"rc", "long"})
+    @CstrTest(provider = "myProvider", constraint = "preserve", groups = {"rc", "unit"})
     public void testDiscrete(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.discrete()));
+        TestUtils.quickCheck(customize(r.discrete()));
     }
 
-    @CstrTest(provider = "myProvider", constraint = "preserve", groups = {"rc", "long"})
+    @CstrTest(provider = "myProvider", constraint = "preserve", groups = {"rc", "unit"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.discrete())).impl().repair(true);
+        TestUtils.quickCheck(customize(r.discrete())).impl().repair(true);
     }
 
+    /*@CstrTest(constraint = "preserve", groups = {"rc", "unit"})
+    public void testContinuous(CTestCasesRunner r) {
+        TestUtils.quickCheck(customize(r.continuous()));
+    }
+
+    @CstrTest(constraint = "preserve", groups = {"rc", "unit"})
+    public void testContinuousRepair(CTestCasesRunner r) {
+        TestUtils.quickCheck(customize(r.continuous())).impl().repair(true);
+    }       */
 }

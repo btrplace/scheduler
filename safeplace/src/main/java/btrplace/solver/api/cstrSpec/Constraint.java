@@ -13,7 +13,6 @@ import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -107,8 +106,8 @@ public class Constraint extends Function<Boolean> {
         Class<SatConstraint> cl = (Class<SatConstraint>) Class.forName(pkg + "." + clName);
         for (Constructor c : cl.getConstructors()) {
             if (c.getParameterTypes().length == values.size()) {
-                System.out.println(Arrays.toString(c.getParameterTypes()));
-                System.out.println(values);
+                //System.out.println(Arrays.toString(c.getParameterTypes()));
+                //System.out.println(values);
                 return (SatConstraint) c.newInstance(values.toArray());
             }
         }

@@ -8,24 +8,24 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestSplitAmong {
 
-    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "long"})
+    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "unit"})
     public void testContinuous(CTestCasesRunner r) {
-        TestUtils.longCheck(r.continuous());
+        TestUtils.quickCheck(r.continuous());
     }
 
-    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "long"})
+    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "unit"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.continuous()).impl().repair(true);
+        TestUtils.quickCheck(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "long"})
+    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "unit"})
     public void testDiscrete(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete());
+        TestUtils.quickCheck(r.discrete());
     }
 
-    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "long"})
+    @CstrTest(constraint = "splitAmong", groups = {"vm2vm", "unit"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete()).impl().repair(true);
+        TestUtils.quickCheck(r.discrete()).impl().repair(true);
     }
 
 }

@@ -93,7 +93,7 @@ public class ForAll implements Proposition {
             } else {
                 tail = new And(tail, prop.simplify(m));
             }
-            System.err.println("With " + Arrays.toString(tuple) + ": " + tail);
+            //System.err.println("With " + Arrays.toString(tuple) + ": " + tail);
         }
         return tail;
     }

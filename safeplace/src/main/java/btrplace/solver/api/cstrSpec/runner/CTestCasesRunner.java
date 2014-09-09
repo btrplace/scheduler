@@ -87,6 +87,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     public CTestCasesRunner(Class testClass, String testName, String cstr) throws Exception {
         this.testClass = testClass;
         this.testName = testName;
+        id = testClass.getSimpleName() + "." + testName;
         nb = 0;
         guards = new ArrayList<>();
         timeout(10);
@@ -97,6 +98,9 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         //TODO Groumph, hardcoded
         Specification spec = r.getSpecification(new File("src/main/cspec/v1.cspec"));
         this.cstr = spec.get(cstr);
+        if (this.cstr == null) {
+            ex = new Exception("Spec for constraint '" + cstr + "' not found");
+        }
         pre = makePreconditions(this.cstr, spec);
         doms = new ArrayList<>();
         reducers = new ArrayList<>();
@@ -169,7 +173,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
                 System.err.println(tc2.getConstraint().equals(tc.getConstraint()));
                 throw new RuntimeException("Failure in the reduction.\nWas:\n" + tc + "\nwith\n" + r + "\nNow:\n" + tc2 + "\nwith\n" + res2);
             }
-            System.out.println(res2);
+            //System.out.println(res2);
         }
     }
 
@@ -205,7 +209,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     private CTestCaseResult test(CTestCase tc) {
         CheckerResult specRes;
         CheckerResult res;
-
+        //System.err.println(tc.getConstraint().toString(tc.getParameters()));
         PrintStream oldOut = System.out;
         PrintStream olderr = System.err;
         try {
@@ -260,6 +264,10 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     @Override
     public boolean hasNext() {
+        if (ex != null) {
+            return false;
+        }
+
         if (!in.hasNext()) {
             return false;
         }

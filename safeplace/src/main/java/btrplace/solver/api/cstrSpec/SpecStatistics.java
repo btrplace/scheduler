@@ -15,6 +15,8 @@ public class SpecStatistics {
         System.err.println(spec.getConstraints().size() + " constraint(s)");
         System.out.println("id length");
         for (Constraint c : spec.getConstraints()) {
+
+            //int l = c.getProposition().toString().length();
             int l = c.pretty().length();
             //System.err.println(c.pretty());
             System.out.println(c.id() + " " + l);

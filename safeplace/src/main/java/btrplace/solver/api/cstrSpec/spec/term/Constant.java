@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
+import btrplace.solver.api.cstrSpec.spec.type.TimeType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
@@ -38,6 +39,8 @@ public class Constant extends Term {
             }
             b.append('}');
             return b.toString();
+        } else if (type().equals(TimeType.getInstance())) {
+            return "t" + o;
         }
         return o.toString();
     }

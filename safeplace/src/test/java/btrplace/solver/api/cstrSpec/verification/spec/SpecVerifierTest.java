@@ -56,6 +56,26 @@ public class SpecVerifierTest {
     }
 
     @Test
+    public void testSplit() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOfflineNode(n1);
+        mo.getMapping().addRunningVM(vm0, n0);
+        mo.getMapping().addSleepingVM(vm1, n0);
+
+        Specification spec = getSpecification();
+        Constraint c = spec.get("split");
+        SpecVerifier v = new SpecVerifier();
+        CheckerResult res = v.verify(c, Arrays.asList(
+                new Constant(Arrays.asList(Arrays.asList(vm1)), new SetType(new SetType(VMType.getInstance())))), mo, mo);
+        Assert.assertFalse(res.getStatus());
+    }
+
+    @Test
     public void testSplitAmong() throws Exception {
         Model mo = new DefaultModel();
         Node n0 = mo.newNode();

@@ -12,22 +12,22 @@ core constraint toSleeping() ::=
     !(v : vms) vmState(v) = sleeping --> ^vmState(v) : {running, sleeping}
 
 /** State constraints */
-discrete constraint running(v : vms) ::=
+constraint running(v : vms) ::=
     vmState(v) = running
 
-discrete constraint ready(v : vms) ::=
+constraint ready(v : vms) ::=
     vmState(v) = ready
 
-discrete constraint sleeping(v : vms) ::=
+constraint sleeping(v : vms) ::=
     vmState(v) = sleeping
 
-discrete constraint offline(n : nodes) ::=
+constraint offline(n : nodes) ::=
     nodeState(n) = offline
 
-discrete constraint online(n : nodes) ::=
+constraint online(n : nodes) ::=
     nodeState(n) = online
 
-discrete constraint killed(v : vms) ::=
+constraint killed(v : vms) ::=
     vmState(v) = terminated
 
 /** VM-to-VM affinity */
@@ -72,7 +72,7 @@ constraint maxOnline(ns <: nodes, nb : int) ::=
 
 /** Resource */
 constraint resourceCapacity(ns <: nodes, id : string, qty: int) ::=
-    sum([capa(i, id). i : ns]) <= qty
+    sum({capa(i, id). i : ns}) <= qty
 
 constraint overbook(n : nodes, id : string, qty: float) ::=
     sum({cons(v, id). v : running(n)}) * qty < capa(n, id)
@@ -80,10 +80,9 @@ constraint overbook(n : nodes, id : string, qty: float) ::=
 constraint preserve(v : vms, id : string, qty: int) ::=
     vmState(v) = running --> cons(v, id) <= qty
 
-/** Misc. */
-constraint sequentialVMTransitions(sched : lists(vms)) ::=
-    !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
-        (
-        vmState(sched[j]) : {running, sleeping, ready, terminated} &
-        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = ^vmState(sched[j])))
-        )
+/*
+constraint noWait(v : vms) ::=
+    !(a : actions(v)) begin(a) = t0
+ */
+constraint seq(sched : lists(vms)) ::=
+    !(i, j : range(sched)) i < j --> (!(ai : actions(sched[i])) !(aj : actions(sched[j])) end(aj) <= begin(aj))

@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 library(ggplot2)
 library(reshape2)
-
+library(scales)
 args <- commandArgs(T)
 input=args[1]
 

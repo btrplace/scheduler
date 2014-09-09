@@ -51,7 +51,6 @@ public class CTestCaseReport {
 
     public String pretty() {
         if (ex != null) {
-            ex.printStackTrace();
             return id + ": " + ex.getMessage();
         }
         return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N (" + duration + "ms)";

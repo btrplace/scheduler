@@ -364,12 +364,17 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         if (v != null) {
             return v;
         }
+
         if (VMStateType.getInstance().match(ref)) {
             return VMStateType.getInstance().newValue(ref);
         }
 
         if (NodeStateType.getInstance().match(ref)) {
             return NodeStateType.getInstance().newValue(ref);
+        }
+
+        if (TimeType.getInstance().match(ref)) {
+            return TimeType.getInstance().newValue(ref);
         }
 
         if (NoneType.getInstance().match(ref)) {

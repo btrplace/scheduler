@@ -49,7 +49,7 @@ public class ColType implements Type {
 
     @Override
     public boolean match(String n) {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override

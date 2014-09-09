@@ -8,8 +8,9 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
 public class TestUtils {
 
     public static final CTestCasesRunner quickCheck(CTestCasesRunner r) {
-        r.timeout(5);
-        r.maxFailures(1);
+        r.timeout(30);
+        r.maxTests(100000);
+        //r.maxFailures(1);
         return r;
     }
 

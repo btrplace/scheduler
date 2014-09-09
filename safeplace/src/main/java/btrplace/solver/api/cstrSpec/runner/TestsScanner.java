@@ -58,10 +58,11 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
                 return;
             }
             runner = new CTestCasesRunner(cl, methodName, cstr);
+            runners.add(runner);
             //TODO: constraint parsing, preconditions, doms, cstrs++
 
             //System.out.println(cl.getSimpleName() + " " + Arrays.toString(cc.groups())+ " match " + grps + " " + tests);
-            runners.add(runner);
+
             Object o = cl.newInstance();
 
             m.invoke(o, runner);

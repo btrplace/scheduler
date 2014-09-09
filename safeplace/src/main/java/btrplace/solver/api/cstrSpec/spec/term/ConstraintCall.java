@@ -36,9 +36,13 @@ public class ConstraintCall implements Proposition {
         List<UserVar> ps = c.getParameters();
         List<Object> ins = new ArrayList<>(ps.size());
         for (Term t : args) {
-            ins.add(t.eval(m));
+            Object o = t.eval(m);
+            ins.add(o);
         }
-        return c.eval(m, ins);
+        m.saveStack();
+        Boolean ret = c.eval(m, ins);
+        m.restoreStack();
+        return ret;
     }
 
     private static void check(Constraint f, List<Term> args) {

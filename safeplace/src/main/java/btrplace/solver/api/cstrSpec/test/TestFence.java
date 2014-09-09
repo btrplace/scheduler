@@ -8,13 +8,13 @@ import btrplace.solver.api.cstrSpec.runner.CTestCasesRunner;
  */
 public class TestFence {
 
-    @CstrTest(constraint = "fence", groups = {"vm2pm", "long"})
+    @CstrTest(constraint = "fence", groups = {"vm2pm", "unit"})
     public void testDiscrete(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete());
+        TestUtils.quickCheck(r.discrete());
     }
 
-    @CstrTest(constraint = "fence", groups = {"vm2pm", "long"})
+    @CstrTest(constraint = "fence", groups = {"vm2pm", "unit"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(r.discrete()).impl().repair(true);
+        TestUtils.quickCheck(r.discrete()).impl().repair(true);
     }
 }

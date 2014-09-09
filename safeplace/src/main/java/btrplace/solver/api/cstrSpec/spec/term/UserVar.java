@@ -45,7 +45,8 @@ public class UserVar<T> extends Var<T> {
     }
 
     public List<Constant> domain(SpecModel mo) {
-        Collection col = backend.eval(mo);
+        Collection col = null;
+        col = backend.eval(mo);
         if (incl) {
             List<Constant> s = new ArrayList<>();
             for (Object o : col) {

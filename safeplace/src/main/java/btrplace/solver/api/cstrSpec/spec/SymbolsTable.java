@@ -53,6 +53,9 @@ public class SymbolsTable {
         root.put(new Packings());
         root.put(new Lists());
         root.put(new Range());
+        root.put(new Actions());
+        root.put(new Begin());
+        root.put(new End());
         return root;
     }
 
@@ -65,6 +68,8 @@ public class SymbolsTable {
         syms.put(new ConstantSet("vmState", VMStateType.getInstance(), EnumSet.allOf(VMStateType.Type.class)));
         syms.put(new ConstantSet("nodeState", NodeStateType.getInstance(), EnumSet.allOf(NodeStateType.Type.class)));
         syms.put(new Primitive("int", IntType.getInstance()));
+        syms.put(new Primitive("time", TimeType.getInstance()));
+        syms.put(new Primitive("action", ActionType.getInstance()));
         syms.put(new ConstantSet("bool", BoolType.getInstance(), BoolType.DOMAIN));
         syms.put(new Primitive("float", RealType.getInstance()));
         syms.put(new Primitive("string", StringType.getInstance()));
@@ -80,6 +85,7 @@ public class SymbolsTable {
         }
         return null;
     }
+
     public SymbolsTable enterScope() {
         return new SymbolsTable(this);
     }

@@ -21,24 +21,24 @@ public class TestOverbook {
         return r;
     }
 
-    @CstrTest(constraint = "overbook", groups = {"rc", "long"})
+    @CstrTest(constraint = "overbook", groups = {"rc", "unit"})
     public void testContinuous(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.continuous()));
+        TestUtils.quickCheck(customize(r.continuous()));
     }
 
-    @CstrTest(constraint = "overbook", groups = {"rc", "long"})
+    @CstrTest(constraint = "overbook", groups = {"rc", "unit"})
     public void testContinuousRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.continuous())).impl().repair(true);
+        TestUtils.quickCheck(customize(r.continuous())).impl().repair(true);
     }
 
-    @CstrTest(constraint = "overbook", groups = {"rc", "long"})
+    @CstrTest(constraint = "overbook", groups = {"rc", "unit"})
     public void testDiscrete(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.discrete()));
+        TestUtils.quickCheck(customize(r.discrete()));
     }
 
-    @CstrTest(constraint = "overbook", groups = {"rc", "long"})
+    @CstrTest(constraint = "overbook", groups = {"rc", "unit"})
     public void testDiscreteRepair(CTestCasesRunner r) {
-        TestUtils.longCheck(customize(r.discrete())).impl().repair(true);
+        TestUtils.quickCheck(customize(r.discrete())).impl().repair(true);
     }
 
 }
