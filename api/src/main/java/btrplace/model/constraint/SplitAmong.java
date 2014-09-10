@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -29,18 +30,19 @@ import java.util.Set;
 /**
  * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
  * VMs inside a same set may still be collocated.
- * <p/>
+ * <p>
  * The set of VMs must be disjoint so must be the set of servers.
- * <p/>
+ * <p>
  * If the constraint is set to provide a discrete restriction, it only ensures no group of VMs share a group of nodes
  * while each group of VMs does not spread over several group of nodes. This allows to change the group of nodes
  * hosting the group of VMs during the reconfiguration process.
- * <p/>
+ * <p>
  * If the constraint is set to provide a continuous restriction, the constraint must be satisfied initially, then the VMs
  * of a single group can never spread on multiple groups of nodes nor change of group.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"vs : packings(vms)", "part : packings(nodes)"}, inv = "(!(v : vs) Among(v, part)) & Split(vs)")
 public class SplitAmong extends SatConstraint {
 
     /**

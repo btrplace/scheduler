@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -28,10 +29,11 @@ import java.util.List;
 
 /**
  * A constraint to force a VM at being sleeping.
- * <p/>
+ * <p>
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"v : vms"}, inv = "vmState(v) = sleeping")
 public class Sleeping extends SatConstraint {
 
     /**

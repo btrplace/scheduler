@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -32,6 +33,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"v : vms", "ns <: nodes"}, inv = "vmState(v) = running --> host(v) : ns")
 public class Fence extends SatConstraint {
 
     /**

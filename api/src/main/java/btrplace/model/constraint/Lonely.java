@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -28,15 +29,16 @@ import java.util.Set;
  * A constraint to force all the given VMs, when running,
  * to not share their host with other VMs. Co-location between
  * the VMs given as argument is still possible.
- * <p/>
+ * <p>
  * If the restriction is discrete, then the constraint ensures the given VMs
  * will not be co-located with other VMs only at the end of the reconfiguration process.
- * <p/>
+ * <p>
  * If the restriction is continuous, then no co-location is possible during the reconfiguration
  * process.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"vs <: vms"}, inv = "!(i : vs) vmState(i) = running --> (colocated(i) - {i}) <: vs")
 public class Lonely extends SatConstraint {
 
     /**

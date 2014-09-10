@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -33,6 +34,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"v : vms", "id : string", "qty : int"}, inv = "vmState(v) = running --> cons(v, id) <= qty")
 public class Preserve extends SatConstraint {
 
     private int amount;

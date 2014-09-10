@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -28,13 +29,14 @@ import java.util.List;
 
 /**
  * A constraint to avoid VM relocation to another host.
- * <p/>
+ * <p>
  * The restriction provided by the constraint is only continuous. The running
  * VMs will stay on their current node for the whole duration of the reconfiguration
  * process.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"v : vms"}, inv = "vmState(v) = running --> ^host(v) = host(v)")
 public class Root extends SatConstraint {
 
     /**

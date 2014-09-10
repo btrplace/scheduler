@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -39,6 +40,7 @@ import java.util.Set;
  *
  * @author Tu Huynh Dang
  */
+@SideConstraint(args = {"ns <: nodes", "nb : int"}, inv = "card({i. i : ns , nodeState(i) = online}) <= nb")
 public class MaxOnline extends SatConstraint {
 
     /**

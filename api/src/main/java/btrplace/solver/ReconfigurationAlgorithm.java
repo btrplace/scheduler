@@ -18,6 +18,7 @@
 
 package btrplace.solver;
 
+import btrplace.CoreConstraint;
 import btrplace.model.Instance;
 import btrplace.model.Model;
 import btrplace.model.constraint.OptConstraint;
@@ -31,8 +32,11 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
+@CoreConstraint(name = "noVMsOnOfflineNodes", inv = "!(n : nodes) nodeState(n) /= online --> card(hosted(n)) = 0")
+@CoreConstraint(name = "toRunning", inv = "!(v : vms) vmState(v) = running --> ^vmState(v) : {ready, running, sleeping}")
+@CoreConstraint(name = "toReady", inv = "!(v : vms) vmState(v) = ready --> ^vmState(v) : {ready, running}")
+@CoreConstraint(name = "toSleeping", inv = "!(v : vms) vmState(v) = sleeping --> ^vmState(v) : {running, sleeping}")
 public interface ReconfigurationAlgorithm {
-
     /**
      * Compute a reconfiguration plan to reach a solution to the model
      *

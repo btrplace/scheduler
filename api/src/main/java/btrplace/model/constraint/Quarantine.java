@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -36,6 +37,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"n : nodes"}, inv = "(!(v : hosted(n)) Root(v)) & (!(v2 /: hosted(n)) Ban(v2, {n}))")
 public class Quarantine extends SatConstraint {
 
     /**

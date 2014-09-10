@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -31,6 +32,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"v : vms"}, inv = "vmState(v) = running")
 public class Running extends SatConstraint {
 
     /**

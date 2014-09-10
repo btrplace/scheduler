@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -28,13 +29,14 @@ import java.util.List;
 
 /**
  * A constraint to force a VM at being ready for running.
- * <p/>
+ * <p>
  * The restriction provided by the constraint is discrete
  * however, if the VM is already in the ready state, then
  * its state will be unchanged.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"v : vms"}, inv = "vmState(v) = ready")
 public class Ready extends SatConstraint {
 
     /**

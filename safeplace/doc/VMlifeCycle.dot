@@ -1,0 +1,15 @@
+digraph G{
+	Ready
+	Running
+	Sleeping
+
+	Ready -> Running [label="booting"]
+	Running -> Running [label="migrating"]
+	Running -> Sleeping [label="suspending"]
+	Sleeping -> Running [label="resuming"]
+	Running -> Ready [label="halting"]
+
+	Ready -> Terminating [label="killVM"]
+	Running -> Terminating [label="killVM"]
+	Sleeping -> Terminating [label="killVM"]
+}

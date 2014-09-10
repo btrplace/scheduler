@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -31,6 +32,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"n : nodes"}, inv = "nodeState(n) = offline")
 public class Offline extends SatConstraint {
 
     /**

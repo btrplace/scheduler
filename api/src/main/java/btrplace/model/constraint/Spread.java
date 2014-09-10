@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -27,15 +28,16 @@ import java.util.Set;
 /**
  * A constraint to force that the given VMs, if running,
  * to be hosted on distinct nodes.
- * <p/>
+ * <p>
  * If the restriction is continuous, the constraint ensure no VMs are relocated to a node hosting a VM
  * involved in the same Spread constraint.
- * <p/>
+ * <p>
  * If the restriction is discrete, the constraint only ensures that there is no co-location
  * at the end of the reconfiguration plan.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"vs <: vms"}, inv = "!(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)")
 public class Spread extends SatConstraint {
 
     /**

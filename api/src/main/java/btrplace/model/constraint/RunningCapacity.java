@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -38,6 +39,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"ns <: nodes", "nb : int"}, inv = "sum([card(running(n)). n : ns]) <= nb")
 public class RunningCapacity extends SatConstraint {
 
     private int qty;

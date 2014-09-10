@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -39,6 +40,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"n : nodes", "id : string", "qty : float"}, inv = "sum({cons(v, id). v : running(n)}) * qty < capa(n, id)")
 public class Overbook extends SatConstraint {
 
     private String rcId;

@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -38,6 +39,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"ns <: nodes", "id : string", "qty : int"}, inv = "sum({capa(i, id). i : ns}) <= qty")
 public class ResourceCapacity extends SatConstraint {
 
     private int qty;

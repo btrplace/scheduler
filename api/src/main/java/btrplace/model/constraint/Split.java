@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -26,15 +27,16 @@ import java.util.*;
 /**
  * A constraint to force several sets of VMs to not share any node when they are
  * running.
- * <p/>
+ * <p>
  * When the restriction is discrete, the constraint ensures there is no co-location on
  * only on a given model.
- * <p/>
+ * <p>
  * When the restriction is continuous, the constraint ensures a VM can not be set running
  * on a node that is hosting VMs from another group, even temporary.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"part : packings(vms)"}, inv = "{ {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)")
 public class Split extends SatConstraint {
 
     private Collection<Collection<VM>> sets;
