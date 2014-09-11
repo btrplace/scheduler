@@ -9,6 +9,6 @@ for JAR in $JARS; do
 done
 
 OUT=`mktemp /tmp/exemple.XXXXXX`
-java $JAVA_OPTS -cp $CLASSPATH btrplace.safeplace.SpecStatistics $1 > $OUT
-./specLength.R $OUT $2
+java $JAVA_OPTS -cp $CLASSPATH btrplace.safeplace.DumpSpec|sed "s/^[^=]*= //g"| awk '{ print length }' > $OUT
+./specLength.R $OUT $1
 rm -rf ${OUT}

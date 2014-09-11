@@ -29,6 +29,7 @@ import btrplace.safeplace.spec.term.UserVar;
 import eu.infomas.annotation.AnnotationDetector;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.IOException;
@@ -81,6 +82,9 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
     private CommonTokenStream getTokens(String source) throws IOException {
         ANTLRInputStream is = new ANTLRInputStream(new StringReader(source));
         CstrSpecLexer lexer = new CstrSpecLexer(is);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new DiagnosticErrorListener());
+        //lexer.addErrorListener(DescriptiveErrorListener.INSTANCE);
         return new CommonTokenStream(lexer);
     }
 
@@ -126,7 +130,7 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
         CommonTokenStream tokens = getTokens(core.inv());
         CstrSpecParser parser = new CstrSpecParser(tokens);
         ParseTree tree = parser.formula();
-        MyCstrSpecVisitor v = new MyCstrSpecVisitor("");
+        MyCstrSpecVisitor v = new MyCstrSpecVisitor(core.name());
         return v.getCoreConstraint(core.name(), tree);
     }
 
@@ -139,7 +143,8 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
             }
             System.out.println(spec.getConstraints().size() + " constraint(s)");
         } catch (Exception ex) {
-            System.err.println(ex);
+            ex.printStackTrace();
+            System.exit(1);
         }
 
     }

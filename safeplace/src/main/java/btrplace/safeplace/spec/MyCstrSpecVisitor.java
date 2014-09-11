@@ -69,6 +69,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     }
 
     public Constraint getSideConstraint(String name, List<UserVar> args, List<Constraint> known, ParseTree t) throws SpecException {
+        this.filename = name;
         symbols = SymbolsTable.newBundle();
         symbols = symbols.enterSpec();
         for (Constraint c : known) {

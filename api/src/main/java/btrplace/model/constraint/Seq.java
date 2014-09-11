@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"sched : lists(vms"}, inv = "!(i, j : range(sched)) i < j --> (!(ai : actions(sched[i])) !(aj : actions(sched[j])) end(aj) <= begin(aj))")
+@SideConstraint(args = {"sched : lists(vms)"}, inv = "!(i, j : range(sched)) i < j --> (!(ai : actions(sched[i])) !(aj : actions(sched[j])) end(aj) <= begin(aj))")
 public class Seq extends SatConstraint {
 
     private List<VM> order;
