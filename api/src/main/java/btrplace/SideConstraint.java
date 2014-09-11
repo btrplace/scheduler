@@ -29,7 +29,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface SideConstraint {
-    String name();
+
+    String[] args();
 
     String inv();
 }

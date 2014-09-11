@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2014 University Nice Sophia Antipolis
+ *
+ * This file is part of btrplace.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.solver.api.cstrSpec.spec;
 
 import btrplace.solver.api.cstrSpec.*;
@@ -15,6 +33,9 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import static btrplace.solver.api.cstrSpec.spec.SpecException.ErrType.SYMBOL_NOT_FOUND;
+
+
 /**
  * @author Fabien Hermenier
  */
@@ -24,6 +45,8 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     private String filename;
 
+    private SpecException err = null;
+
     public MyCstrSpecVisitor(String fn) {
         filename = fn;
     }
@@ -32,20 +55,48 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         return (Specification) visit(t);
     }
 
-    @Override
-    public Specification visitSpec(@NotNull CstrSpecParser.SpecContext ctx) {
+
+    public Constraint getCoreConstraint(String name, ParseTree t) throws SpecException {
         symbols = SymbolsTable.newBundle();
-        List<Constraint> cstrs = new ArrayList<>();
-        for (CstrSpecParser.ConstraintContext c : ctx.constraint()) {
-            symbols = symbols.enterSpec();
-            Constraint x = visitConstraint(c);
-            symbols = symbols.leaveScope();
-            if (x != null) {
-                cstrs.add(x);
-                symbols.put(x);
-            }
+        symbols = symbols.enterSpec();
+        filename = name;
+        Proposition p = (Proposition) visit(t);
+        if (err != null) {
+            throw err;
         }
-        return new Specification(cstrs);
+        symbols = symbols.leaveScope();
+        return Constraint.newCoreConstraint(name, p, false);
+    }
+
+    public Constraint getSideConstraint(String name, List<UserVar> args, List<Constraint> known, ParseTree t) throws SpecException {
+        symbols = SymbolsTable.newBundle();
+        symbols = symbols.enterSpec();
+        for (Constraint c : known) {
+            symbols.put(c);
+        }
+        for (UserVar v : args) {
+            symbols.put(v);
+        }
+        filename = name;
+        Proposition p = (Proposition) visit(t);
+        if (err != null) {
+            throw err;
+        }
+        symbols = symbols.leaveScope();
+        return Constraint.newPluggableConstraint(name, p, args, false);
+    }
+
+    public UserVar getUserVar(String name, ParseTree t) throws SpecException {
+        filename = name;
+        symbols = SymbolsTable.newBundle();
+        symbols = symbols.enterSpec();
+        List<UserVar> l = (List) visit(t);
+        if (err != null) {
+            throw err;
+        }
+        UserVar v = l.get(0);
+        symbols = symbols.leaveScope();
+        return v;
     }
 
     @Override
@@ -76,37 +127,6 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     }
 
-    @Override
-    public Constraint visitConstraint(@NotNull CstrSpecParser.ConstraintContext ctx) {
-        List<UserVar> params = new ArrayList<>();
-        String cstrName = ctx.ID().getText();
-        if (symbols.getConstraint(cstrName) != null) {
-            report(ctx.ID().getSymbol(), "Constraint '" + cstrName + "' is already defined in the scope");
-            return null;
-        }
-
-        boolean discrete = ctx.DISCRETE() != null;
-
-        if (ctx.CORE() != null) {
-            if (!ctx.typedef().isEmpty()) {
-                report(ctx.typedef().get(0).start, "A core constraint cannot have parameters");
-                return null;
-            }
-            Proposition p = (Proposition) visit(ctx.formula());
-            return p == null ? null : Constraint.newCoreConstraint(cstrName, p, discrete);
-        } else {
-            for (CstrSpecParser.TypedefContext c : ctx.typedef()) {
-                List<UserVar> vars = visitTypedef(c);
-                if (vars == null) {
-                    return null;
-                }
-                params.addAll(vars);
-            }
-            Proposition p = (Proposition) visit(ctx.formula());
-            return p == null ? null : Constraint.newPluggableConstraint(cstrName, p, params, discrete);
-        }
-    }
-
     public FunctionCall visitCall(@NotNull CstrSpecParser.CallContext ctx) {
         String id = ctx.ID().getText();
         List<Term> ps = new ArrayList<>();
@@ -120,7 +140,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
         Function f = symbols.getFunction(id);
         if (f == null) {
-            report(ctx.ID().getSymbol(), "Cannot resolve symbol '" + id + "'");
+            report(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, id, "Cannot resolve symbol '" + id + "'");
             return null;
         }
 
@@ -162,7 +182,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
         Constraint ref = symbols.getConstraint(lbl);
         if (ref == null) {
-            report(ctx.call().ID().getSymbol(), "Cannot resolve symbol '" + lbl + "'");
+            report(ctx.call().ID().getSymbol(), SYMBOL_NOT_FOUND, lbl, "Cannot resolve symbol '" + lbl + "'");
             return null;
         }
         if (ref.isCore()) {
@@ -207,7 +227,6 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             }
             symbols.put(v);
             vars.add(v);
-            //System.out.println("declared: " + v.label() + " as " + v.type());
         }
         return vars;
     }
@@ -237,9 +256,14 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     }
 
     private void report(Token t, String msg) {
+        report(t, msg);
+    }
+
+    private void report(Token t, SpecException.ErrType type, String val, String msg) {
         int l = t.getLine();
         int c = t.getCharPositionInLine();
-        System.out.println("[" + filename + " " + l + ":" + c + "] " + msg);
+        err = new SpecException(type, "[" + filename + " " + l + ":" + c + "] " + msg);
+        err.value = val;
     }
 
     @Override
@@ -334,7 +358,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         String lbl = ctx.ID().getText();
         Var v = symbols.getVar(lbl);
         if (v == null) {
-            report(ctx.ID().getSymbol(), "Unknown symbol '" + lbl + "'");
+            report(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, lbl, "Unknown symbol '" + lbl + "'");
             return null;
         }
         //Type check
@@ -380,7 +404,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         if (NoneType.getInstance().match(ref)) {
             return None.instance();
         }
-        report(ctx.ID().getSymbol(), "Unknown symbol '" + ctx.ID().getText() + "'");
+        report(ctx.ID().getSymbol(), SYMBOL_NOT_FOUND, ctx.ID().getText(), "Unknown symbol '" + ctx.ID().getText() + "'");
         return null;
     }
 

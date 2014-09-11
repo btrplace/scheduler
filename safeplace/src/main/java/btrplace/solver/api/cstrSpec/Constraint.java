@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2014 University Nice Sophia Antipolis
+ *
+ * This file is part of btrplace.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.constraint.SatConstraint;
@@ -120,24 +138,18 @@ public class Constraint extends Function<Boolean> {
 
     public String pretty() {
         StringBuilder b = new StringBuilder();
-        if (discreteOnly) {
-            b.append("discrete ");
-        }
-        if (core) {
-            b.append("core ");
-        }
-        b.append("constraint ");
-        b.append(cstrName).append('(');
-        Iterator<UserVar> ite = params.iterator();
-        if (ite.hasNext()) {
+        b.append(cstrName);
+        if (!params.isEmpty()) {
+            b.append('(');
+            Iterator<UserVar> ite = params.iterator();
             Var v = ite.next();
             b.append(v.pretty());
+            while (ite.hasNext()) {
+                v = ite.next();
+                b.append(", ").append(v.pretty());
+            }
+            b.append(')');
         }
-        while (ite.hasNext()) {
-            Var v = ite.next();
-            b.append(", ").append(v.pretty());
-        }
-        b.append(')');
         b.append(" ::= ").append(p);
         return b.toString();
     }
@@ -148,14 +160,19 @@ public class Constraint extends Function<Boolean> {
 
     public String toString(List<Constant> values) {
         StringBuilder b = new StringBuilder();
-        b.append(id()).append('(');
-        Iterator<Constant> ite = values.iterator();
-        while (ite.hasNext()) {
-            b.append(ite.next().toString());
-            if (ite.hasNext()) {
-                b.append(", ");
+        b.append(id());
+        if (!core) {
+            b.append('(');
+            Iterator<Constant> ite = values.iterator();
+            while (ite.hasNext()) {
+                b.append(ite.next().toString());
+                if (ite.hasNext()) {
+                    b.append(", ");
+                }
             }
+            b.append(')');
         }
-        return b.append(')').toString();
+        return b.toString();
+
     }
 }
