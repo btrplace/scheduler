@@ -8,4 +8,4 @@ for JAR in $JARS; do
  CLASSPATH=$JAR:$CLASSPATH
 done
 
-java $JAVA_OPTS -cp $CLASSPATH btrplace.solver.api.cstrSpec.Verify $*
+java $JAVA_OPTS -cp $CLASSPATH btrplace.safeplace.Verify $*
