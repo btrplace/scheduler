@@ -3,6 +3,7 @@ Release notes
 
 version ?????????
 ----------------------
+- constraint SequentialVMTransitions becomes Seq
 - continuous or discrete restriction mode for state constraints, ban, fence
 - btrpsl joined the repository
 

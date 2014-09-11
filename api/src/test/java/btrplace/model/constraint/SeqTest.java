@@ -30,18 +30,18 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Unit tests for {@link SequentialVMTransitions}.
+ * Unit tests for {@link Seq}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsTest {
+public class SeqTest {
 
     @Test
     public void testInstantiation() {
 
         Model mo = new DefaultModel();
         List<VM> l = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
-        SequentialVMTransitions c = new SequentialVMTransitions(l);
+        Seq c = new Seq(l);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(l, c.getInvolvedVMs());
         Assert.assertTrue(c.getInvolvedNodes().isEmpty());
@@ -57,9 +57,9 @@ public class SequentialVMTransitionsTest {
     public void testEquals() {
         Model mo = new DefaultModel();
         List<VM> l = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
-        SequentialVMTransitions c = new SequentialVMTransitions(l);
+        Seq c = new Seq(l);
         List<VM> l2 = new ArrayList<>(l);
-        SequentialVMTransitions c2 = new SequentialVMTransitions(l2);
+        Seq c2 = new Seq(l2);
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());
         l2.add(l2.remove(0)); //shift the list
@@ -79,7 +79,7 @@ public class SequentialVMTransitionsTest {
         map.addSleepingVM(vms.get(2), ns.get(0));
         map.addRunningVM(vms.get(3), ns.get(0));
         List<VM> l = Arrays.asList(vms.get(0), vms.get(1), vms.get(2), vms.get(3));
-        SequentialVMTransitions c = new SequentialVMTransitions(l);
+        Seq c = new Seq(l);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vms.get(3), ns.get(0), ns.get(1), 0, 1));
         plan.add(new SuspendVM(vms.get(0), ns.get(0), ns.get(0), 2, 3));
@@ -120,7 +120,7 @@ public class SequentialVMTransitionsTest {
 
         List<VM> seq = Arrays.asList(vms.get(0), vms.get(1), vms.get(2), vms.get(3));
 
-        SequentialVMTransitions cstr = new SequentialVMTransitions(seq);
+        Seq cstr = new Seq(seq);
         Assert.assertEquals(cstr.isSatisfied(p), true);
     }
 }

@@ -20,7 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.VM;
-import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.model.constraint.Seq;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -29,34 +29,34 @@ import java.util.List;
 
 
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON converter for the {@link btrplace.model.constraint.Seq} constraint.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter extends ConstraintConverter<SequentialVMTransitions> {
+public class SeqConverter extends ConstraintConverter<Seq> {
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<Seq> getSupportedConstraint() {
+        return Seq.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "seq";
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) throws JSONConverterException {
+    public Seq fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
         List<VM> s = new ArrayList<>();
         for (Object ob : (JSONArray) o.get("vms")) {
             s.add(getOrMakeVM((Integer) ob));
         }
-        return new SequentialVMTransitions(s);
+        return new Seq(s);
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(Seq o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("vms", vmsToJSON(o.getInvolvedVMs()));

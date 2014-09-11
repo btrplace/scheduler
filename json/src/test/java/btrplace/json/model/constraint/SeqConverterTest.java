@@ -21,7 +21,7 @@ package btrplace.json.model.constraint;
 import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.model.constraint.Seq;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,19 +29,19 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * Unit tests for {@link btrplace.model.constraint.SequentialVMTransitions}.
+ * Unit tests for {@link btrplace.model.constraint.Seq}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverterTest {
+public class SeqConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
-        SequentialVMTransitionsConverter conv = new SequentialVMTransitionsConverter();
+        SeqConverter conv = new SeqConverter();
         conv.setModel(mo);
-        SequentialVMTransitions d = new SequentialVMTransitions(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        SequentialVMTransitions c = new SequentialVMTransitions(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+        Seq d = new Seq(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+        Seq c = new Seq(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);

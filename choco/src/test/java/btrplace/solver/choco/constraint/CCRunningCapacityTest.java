@@ -145,7 +145,7 @@ public class CCRunningCapacityTest {
         List<VM> seq = new ArrayList<>();
         seq.add(vm1);
         seq.add(vm2);
-        l.add(new SequentialVMTransitions(seq));
+        l.add(new Seq(seq));
         l.add(new Fence(vm1, Collections.singleton(n1)));
         l.add(new Sleeping(vm2));
         l.add(new Running(vm1));

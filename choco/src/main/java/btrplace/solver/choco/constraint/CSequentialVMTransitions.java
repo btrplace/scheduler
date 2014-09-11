@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
-import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.model.constraint.Seq;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.transition.RelocatableVM;
@@ -33,20 +33,20 @@ import solver.constraints.IntConstraintFactory;
 import java.util.*;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.SequentialVMTransitions}.
+ * Choco implementation of {@link btrplace.model.constraint.Seq}.
  *
  * @author Fabien Hermenier
  */
 public class CSequentialVMTransitions implements ChocoConstraint {
 
-    private SequentialVMTransitions cstr;
+    private Seq cstr;
 
     /**
      * Make a new constraint.
      *
      * @param c the constraint to rely on
      */
-    public CSequentialVMTransitions(SequentialVMTransitions c) {
+    public CSequentialVMTransitions(Seq c) {
         cstr = c;
     }
 
@@ -93,12 +93,12 @@ public class CSequentialVMTransitions implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return SequentialVMTransitions.class;
+            return Seq.class;
         }
 
         @Override
         public CSequentialVMTransitions build(Constraint c) {
-            return new CSequentialVMTransitions((SequentialVMTransitions) c);
+            return new CSequentialVMTransitions((Seq) c);
         }
     }
 }

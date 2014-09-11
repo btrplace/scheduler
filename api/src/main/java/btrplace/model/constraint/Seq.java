@@ -34,7 +34,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitions extends SatConstraint {
+public class Seq extends SatConstraint {
 
     private List<VM> order;
 
@@ -43,7 +43,7 @@ public class SequentialVMTransitions extends SatConstraint {
      *
      * @param seq the order to ensure
      */
-    public SequentialVMTransitions(List<VM> seq) {
+    public Seq(List<VM> seq) {
         super(seq, Collections.<Node>emptySet(), true);
         Set<VM> s = new HashSet<>(seq);
         if (s.size() != seq.size()) {
@@ -65,7 +65,7 @@ public class SequentialVMTransitions extends SatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        SequentialVMTransitions that = (SequentialVMTransitions) o;
+        Seq that = (Seq) o;
         return getInvolvedVMs().equals(that.getInvolvedVMs());
     }
 
@@ -86,7 +86,7 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new SequentialVMTransitionsChecker(this);
+        return new SeqChecker(this);
     }
 
 }

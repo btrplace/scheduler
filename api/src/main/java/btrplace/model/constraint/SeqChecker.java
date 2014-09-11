@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Checker for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint
+ * Checker for the {@link Seq} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.SequentialVMTransitions
+ * @see Seq
  */
-public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<SequentialVMTransitions> {
+public class SeqChecker extends AllowAllConstraintChecker<Seq> {
 
     private Set<VM> running;
 
@@ -47,7 +47,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
      *
      * @param s the associated constraint
      */
-    public SequentialVMTransitionsChecker(SequentialVMTransitions s) {
+    public SeqChecker(Seq s) {
         super(s);
         order = new ArrayList<>(s.getInvolvedVMs());
         pending = null;

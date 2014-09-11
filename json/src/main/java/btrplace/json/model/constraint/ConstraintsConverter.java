@@ -74,7 +74,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         c.register(new ReadyConverter());
         c.register(new RootConverter());
         c.register(new RunningConverter());
-        c.register(new SequentialVMTransitionsConverter());
+        c.register(new SeqConverter());
         c.register(new SleepingConverter());
         c.register(new SplitAmongConverter());
         c.register(new SplitConverter());

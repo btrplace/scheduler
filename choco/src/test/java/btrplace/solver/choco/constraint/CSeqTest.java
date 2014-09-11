@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class CSequentialVMTransitionsTest {
+public class CSeqTest {
 
     @Test
     public void testWithOnlyTransitions() throws SolverException {
@@ -58,7 +58,7 @@ public class CSequentialVMTransitionsTest {
         cstrs.addAll(Online.newOnline(map.getAllNodes()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
-        cstrs.add(new SequentialVMTransitions(seq));
+        cstrs.add(new Seq(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
     }
@@ -80,7 +80,7 @@ public class CSequentialVMTransitionsTest {
         cstrs.add(new Ready(vm4));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
-        cstrs.add(new SequentialVMTransitions(seq));
+        cstrs.add(new Seq(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
         //System.out.println(plan);
