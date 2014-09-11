@@ -27,10 +27,10 @@ import java.util.*;
 
 /**
  * Default implementation of {@link Mapping}.
- * <p/>
+ * <p>
  * Methods {@link #getRunningVMs()}, {@link #getSleepingVMs()}, {@link #getAllVMs()}, {@link #getAllNodes()},
  * {@link #getRunningVMs(Collection)}, {@link #getSleepingVMs(java.util.Collection)} have a O(n) complexity.
- * <p/>
+ * <p>
  * Methods {@code is*()} have a O(1) complexity.
  *
  * @author Fabien Hermenier

@@ -121,9 +121,6 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
         return v.getSideConstraint(s.cl, args, known, tree);
     }
 
-    private Constraint parseSide(Side s) throws IOException, SpecException {
-        return parseSide(s, new ArrayList<Constraint>());
-    }
 
     private Constraint parseCore(CoreConstraint core) throws IOException, SpecException {
         CommonTokenStream tokens = getTokens(core.inv());

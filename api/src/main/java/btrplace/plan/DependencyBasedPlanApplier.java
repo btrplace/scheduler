@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * A plan applier that relies on the dependencies between the actions composing the plan.
  * Only unblocked actions are executed. Once executed, the unblocked actions are executed.
- * <p/>
+ * <p>
  * This process is repeated until all the actions are executed. This process is ensure to finish
  * iff their is no cyclic dependencies.
  *

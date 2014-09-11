@@ -27,7 +27,7 @@ import java.util.Collection;
  * Basically, a model is composed by a {@link Mapping} to indicate the state
  * and the location of the elements, and a variety of {@link ModelView} to
  * provide additional data about the elements.
- * <p/>
+ * <p>
  * In addition, it is possible to declare attributes for specific elements.
  *
  * @author Fabien Hermenier

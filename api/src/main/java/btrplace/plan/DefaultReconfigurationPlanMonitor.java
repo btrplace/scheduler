@@ -27,10 +27,9 @@ import java.util.*;
  * Simulated execution of a {@link ReconfigurationPlan}.
  * The execution relies on the dependencies between the actions, retrieved using
  * {@link ReconfigurationPlan#getDirectDependencies(btrplace.plan.event.Action)}.
- * <p/>
+ * <p>
  * The dependencies are updated each time an action is committed, which means the action
  * have been successfully executed.
- * <p/>
  *
  * @author Fabien Hermenier
  */

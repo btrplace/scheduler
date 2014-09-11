@@ -18,14 +18,24 @@
 
 package btrplace;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Repeatable;
 
 /**
+ * Annotation to provide the specification of a core constraint.
  * @author Fabien Hermenier
  */
+@Documented
 @Repeatable(CoreConstraints.class)
 public @interface CoreConstraint {
+
+    /**
+     * @return the constraint unique name.
+     */
     String name();
 
+    /**
+     * @return the constraint invariant.
+     */
     String inv();
 }

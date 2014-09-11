@@ -29,12 +29,12 @@ import java.util.Set;
 /**
  * A constraint to force a set of nodes to have a maximum number of nodes to
  * be online.
- * <p/>
+ * <p>
  * In discrete restriction mode, the constraint only ensures that the set of
  * nodes have at most {@code n} nodes being online at by end of the reconfiguration
  * process. The set of nodes may have more number than n nodes being online in
  * the reconfiguration process.
- * <p/>
+ * <p>
  * In continuous restriction mode, a boot node action is performed only when the
  * number of online nodes is smaller than n.
  *

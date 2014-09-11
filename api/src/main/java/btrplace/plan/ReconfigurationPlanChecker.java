@@ -30,11 +30,11 @@ import java.util.PriorityQueue;
 /**
  * Checker to verify if a reconfiguration plan satisfies a set of
  * {@link btrplace.model.constraint.SatConstraintChecker}.
- * <p/>
+ * <p>
  * In practice, the origin model is send to each of the checkers.
  * Then it notifies all the checkers for the beginning and the end moment of each of the actions and events.
  * Finally, it sends the resulting model to each of the checkers.
- * <p/>
+ * <p>
  * Actions start and end moment are notified in the increasing order of their associated moment with
  * a priority given to the end moments.
  *

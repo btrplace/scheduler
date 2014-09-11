@@ -27,7 +27,7 @@ import java.util.Set;
  * This allows to monitor the execution of a reconfiguration plan while
  * considering the dependencies between the actions that are established
  * in a {@link ReconfigurationPlan}.
- * <p/>
+ * <p>
  * With regards to the actions that have already been executed, it
  * is possible to get the actions that can be safely executed.
  *

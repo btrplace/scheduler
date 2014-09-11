@@ -28,10 +28,10 @@ import java.util.*;
  * A constraint to specify and overbooking factor between
  * the physical resources offered by a node and the virtual resources
  * that are consumed by the VMs it hosts.
- * <p/>
+ *
  * To compute the virtual capacity of a server, its physical capacity is multiplied
  * by the overbooking factor. The result is then truncated.
- * <p/>
+ *
  * The restriction provided by the constraint can be either discrete or continuous.
  * If the restriction is discrete, then the constraint imposes the restriction
  * only on the end of the reconfiguration process (the resulting model).
@@ -52,7 +52,7 @@ public class Overbook extends SatConstraint {
      *
      * @param n  the node
      * @param rc the resource identifier
-     * @param r  the overbooking ratio, >= 1
+     * @param r  the overbooking ratio, &gt;= 1
      */
     public Overbook(Node n, String rc, double r) {
         this(n, rc, r, true);
@@ -63,7 +63,7 @@ public class Overbook extends SatConstraint {
      *
      * @param n          the nodes identifiers
      * @param rc         the resource identifier
-     * @param r          the overbooking ratio, >= 1
+     * @param r          the overbooking ratio, &gt;= 1
      * @param continuous {@code true} for a continuous restriction
      */
     public Overbook(Node n, String rc, double r, boolean continuous) {
@@ -80,7 +80,7 @@ public class Overbook extends SatConstraint {
      *
      * @param nodes the nodes to integrate
      * @param rc    the resource identifier
-     * @param r     the overbooking ratio, >= 1
+     * @param r     the overbooking ratio, &gt;= 1
      * @return the associated list of continuous constraints
      */
     public static List<Overbook> newOverbooks(Collection<Node> nodes, String rc, double r) {
@@ -103,7 +103,7 @@ public class Overbook extends SatConstraint {
     /**
      * Get the overbooking ratio.
      *
-     * @return a ratio >= 1
+     * @return a ratio &gt;= 1
      */
     public double getRatio() {
         return this.ratio;

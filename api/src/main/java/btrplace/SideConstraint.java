@@ -18,19 +18,26 @@
 
 package btrplace;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
+ * Annotation to provide the specification of a side-constraint.
+ * The annotation should be on a class extending {@link btrplace.model.constraint.SatConstraint}.
+ *
  * @author Fabien Hermenier
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@Documented
 public @interface SideConstraint {
 
+    /**
+     * @return the constraint parameters.
+     */
     String[] args();
 
+    /**
+     * @return the constraint invariant.
+     */
     String inv();
 }

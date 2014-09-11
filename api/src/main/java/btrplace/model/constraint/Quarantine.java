@@ -32,7 +32,7 @@ import java.util.List;
  * Running VMs in the quarantine zone can not leave their node
  * while no VMs outside the quarantine zone can be hosted on
  * the node in quarantine.
- * <p/>
+ * <p>
  * The restriction provided by the constraint is only continuous.
  *
  * @author Fabien Hermenier

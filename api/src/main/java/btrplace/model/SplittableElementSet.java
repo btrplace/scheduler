@@ -26,10 +26,10 @@ import java.util.*;
 /**
  * A collection of supposed unique {@link Element} that can be split
  * into multiple sub-sets.
- * <p/>
+ * <p>
  * The partitioning is provided by an index that indicate, at instantiation,
  * the right partition for each element.
- * <p/>
+ * <p>
  * The backend is a simple array of elements. Elements belonging to the same
  * partition are contiguous for efficiency.
  *

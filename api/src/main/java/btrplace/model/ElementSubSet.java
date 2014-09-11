@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * A set of elements in a {@link SplittableElementSet}
  * that are in the same partition.
- * <p/>
+ * <p>
  * This set is considered as immutable.
  *
  * @author Fabien Hermenier

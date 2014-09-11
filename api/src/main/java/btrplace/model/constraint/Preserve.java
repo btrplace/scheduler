@@ -29,7 +29,7 @@ import java.util.*;
  * the given VM. If it is not running, the constraint ignores it.
  * The amount to allocate must be specified as a minimum or an exact value.
  * At most, the VM will have an allocation of resources equals to the maximum allowed
- * <p/>
+ *
  * The restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier
@@ -46,7 +46,7 @@ public class Preserve extends SatConstraint {
      *
      * @param vms the VMs involved in the constraints
      * @param r   the resource identifier
-     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
+     * @param q   the the minimum amount of resources to allocate to each VM. &gt;= 0
      * @return a list of constraints
      */
     public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
@@ -62,7 +62,7 @@ public class Preserve extends SatConstraint {
      *
      * @param vm the VM
      * @param r  the resource identifier
-     * @param q  the minimum amount of resources to allocate to each VM. >= 0
+     * @param q  the minimum amount of resources to allocate to each VM. &gt;= 0
      */
     public Preserve(VM vm, String r, int q) {
         super(Collections.singleton(vm), Collections.<Node>emptySet(), false);

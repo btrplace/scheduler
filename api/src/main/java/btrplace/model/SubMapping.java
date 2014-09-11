@@ -30,7 +30,7 @@ import java.util.Set;
  * A sub-mapping that is a limited version of a parent mapping.
  * The scope is defined as a collection of nodes that <b>is supposed</b> to belong to the parent mapping.
  * The same for the ready VMs.
- * <p/>
+ * <p>
  * Modifications made on the mapping are automatically reported on the parent mapping.
  * However, it is not allowed to remove a node or a VM.
  *

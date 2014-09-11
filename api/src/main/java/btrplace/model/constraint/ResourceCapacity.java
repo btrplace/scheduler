@@ -29,11 +29,11 @@ import java.util.Set;
 /**
  * Restrict the total amount of virtual resources consumed by
  * the VMs hosted on the given nodes.
- * <p/>
+ *
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
- * <p/>
+ *
  * If the restriction is continuous, then the total resource usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *
@@ -51,7 +51,7 @@ public class ResourceCapacity extends SatConstraint {
      *
      * @param n      the n involved in the constraint
      * @param rc     the resource identifier
-     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
+     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. &gt;== 0
      */
     public ResourceCapacity(Node n, String rc, int amount) {
         this(Collections.singleton(n), rc, amount, false);
@@ -62,7 +62,7 @@ public class ResourceCapacity extends SatConstraint {
      *
      * @param n          the n involved in the constraint
      * @param rc         the resource identifier
-     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
+     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. &gt;== 0
      * @param continuous {@code true} for a continuous restriction.
      */
     public ResourceCapacity(Node n, String rc, int amount, boolean continuous) {
@@ -74,7 +74,7 @@ public class ResourceCapacity extends SatConstraint {
      *
      * @param nodes  the nodes involved in the constraint
      * @param rc     the resource identifier
-     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
+     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. &gt;== 0
      */
     public ResourceCapacity(Set<Node> nodes, String rc, int amount) {
         this(nodes, rc, amount, false);
@@ -85,7 +85,7 @@ public class ResourceCapacity extends SatConstraint {
      *
      * @param nodes      the nodes involved in the constraint
      * @param rc         the resource identifier
-     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
+     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. &gt;== 0
      * @param continuous {@code true} for a continuous restriction.
      */
     public ResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {

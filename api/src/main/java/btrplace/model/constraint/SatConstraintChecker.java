@@ -23,14 +23,14 @@ import btrplace.plan.event.*;
 
 /**
  * Check if a constraint is satisfied by a reconfiguration plan.
- * <p/>
+ * <p>
  * The checking process is performed following an event-based approach
  * using an instance of {@link btrplace.plan.ReconfigurationPlanChecker}.
- * <p/>
+ * <p>
  * First, the checker is notified for the model at the origin of the
  * reconfiguration. It is then notified each time an action starts or ends
  * and finally, it is notified about the resulting model.
- * <p/>
+ * <p>
  * Actions notifications are propagated with regards to their starting
  * and ending moment. If an action ends at the same moment another action
  * starts, the notification for the ending action is send first.

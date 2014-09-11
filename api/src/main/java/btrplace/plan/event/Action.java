@@ -24,7 +24,7 @@ import java.util.*;
 
 /**
  * An action is an event that has to be scheduled for reliability purpose.
- * <p/>
+ * <p>
  * An action may embed several other events. Events are attach to the actions
  * using {@link Hook}.
  * hook.

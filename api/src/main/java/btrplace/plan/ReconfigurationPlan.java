@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * A reconfiguration plan is a set of actions to execute
  * to reconfigure an infrastructure starting from a given model.
- * <p/>
+ * <p>
  * Actions must be sorted using a {@link TimedBasedActionComparator} that differentiate
  * simultaneous but not equals actions.
  *

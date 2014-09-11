@@ -54,7 +54,7 @@ public class Ready extends SatConstraint {
     }
 
     /**
-     * Make a new constraint.
+     * Make a new discrete constraint.
      *
      * @param vm the VM to make ready
      */
@@ -66,6 +66,7 @@ public class Ready extends SatConstraint {
      * Make a new constraint.
      *
      * @param vm the VM to make ready
+     * @param continuous {@code true} for a continuous restriction
      */
     public Ready(VM vm, boolean continuous) {
         super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);

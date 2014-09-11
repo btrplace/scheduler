@@ -23,16 +23,17 @@ import btrplace.safeplace.spec.SpecExtractor;
 /**
  * @author Fabien Hermenier
  */
-public class SpecStatistics {
+public class DumpSpec {
 
     public static void main(String[] args) throws Exception {
         SpecExtractor r = new SpecExtractor();
         Specification spec = r.extract();
-        System.err.println(spec.getConstraints().size() + " constraint(s)");
-        System.out.println("id length");
-        for (Constraint c : spec.getConstraints()) {
-            int l = c.getProposition().toString().length();
-            System.out.println(c.id() + " " + l);
-        }
+
+        System.out.println("/* Core constraints */");
+        spec.getConstraints().stream().filter(c -> c.isCore()).forEach(c -> System.out.println(c.pretty()));
+
+        System.out.println("\n/* Side constraints */");
+        spec.getConstraints().stream().filter(c -> !c.isCore()).forEach(c -> System.out.println(c.pretty()));
+
     }
 }

@@ -29,11 +29,11 @@ import java.util.Set;
 /**
  * Restrict to a given value, the total amount of VMs running
  * on the given set of nodes.
- * <p/>
+ *
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
- * <p/>
+ *
  * If the restriction is continuous, then the total usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *
@@ -48,7 +48,7 @@ public class RunningCapacity extends SatConstraint {
      * Make a new discrete constraint on a single node
      *
      * @param n      the node involved in the constraint
-     * @param amount the maximum amount running VMs running on the given node. >= 0
+     * @param amount the maximum amount running VMs running on the given node. &gt;= 0
      */
     public RunningCapacity(Node n, int amount) {
         this(Collections.singleton(n), amount, false);
@@ -58,7 +58,7 @@ public class RunningCapacity extends SatConstraint {
      * Make a new constraint on a single node
      *
      * @param n          the node involved in the constraint
-     * @param amount     the maximum amount running VMs running on the given node. >= 0
+     * @param amount     the maximum amount running VMs running on the given node. &gt;= 0
      * @param continuous {@code true} for a continuous restriction
      */
     public RunningCapacity(Node n, int amount, boolean continuous) {
@@ -69,7 +69,7 @@ public class RunningCapacity extends SatConstraint {
      * Make a new constraint having a discrete restriction.
      *
      * @param nodes  the nodes involved in the constraint
-     * @param amount the maximum amount running VMs running on the given nodes. >= 0
+     * @param amount the maximum amount running VMs running on the given nodes. &gt;= 0
      */
     public RunningCapacity(Set<Node> nodes, int amount) {
         this(nodes, amount, false);
@@ -79,7 +79,7 @@ public class RunningCapacity extends SatConstraint {
      * Make a new constraint.
      *
      * @param nodes      the nodes involved in the constraint
-     * @param amount     the maximum amount running VMs running on the given nodes. >= 0
+     * @param amount     the maximum amount running VMs running on the given nodes. &gt;= 0
      * @param continuous {@code true} for a continuous restriction
      */
     public RunningCapacity(Set<Node> nodes, int amount, boolean continuous) {

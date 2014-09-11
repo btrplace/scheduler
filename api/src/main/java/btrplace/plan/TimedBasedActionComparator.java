@@ -26,7 +26,7 @@ import java.util.Comparator;
 /**
  * A comparator to sort the actions in the increasing order of their starting moment.
  * If several actions starts at the same moment, the action that ends first in considered.
- * <p/>
+ * <p>
  * It is possible to indicate the comparator to differentiate two actions that are simultaneous but not equals.
  * This is meaningful to sort set of actions as actions that are equals
  * wrt. to the comparator will be removed from the set while being different wrt. their {@code equals()} method.
