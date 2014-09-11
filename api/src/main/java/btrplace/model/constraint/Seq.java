@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.SideConstraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
@@ -29,11 +30,12 @@ import java.util.Set;
 /**
  * A constraint to force the actions that change the given VMs state
  * to be executed in the given order.
- * <p>
+ *
  * The restriction provided by the constraint is only continuous.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"sched : lists(vms"}, inv = "!(i, j : range(sched)) i < j --> (!(ai : actions(sched[i])) !(aj : actions(sched[j])) end(aj) <= begin(aj))")
 public class Seq extends SatConstraint {
 
     private List<VM> order;
