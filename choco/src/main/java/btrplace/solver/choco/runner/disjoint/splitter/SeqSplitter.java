@@ -22,13 +22,13 @@ import btrplace.model.Instance;
 import btrplace.model.IterateProcedure;
 import btrplace.model.SplittableElementSet;
 import btrplace.model.VM;
-import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.model.constraint.Seq;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
 
 /**
- * Splitter for {@link btrplace.model.constraint.SequentialVMTransitions} constraints.
+ * Splitter for {@link btrplace.model.constraint.Seq} constraints.
  * <p/>
  * The splitting process is supported iff all the VMs belong to the same partitions.
  * If not, a {@link UnsupportedOperationException} is thrown.
@@ -37,15 +37,15 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsSplitter implements ConstraintSplitter<SequentialVMTransitions> {
+public class SeqSplitter implements ConstraintSplitter<Seq> {
 
     @Override
-    public Class<SequentialVMTransitions> getKey() {
-        return SequentialVMTransitions.class;
+    public Class<Seq> getKey() {
+        return Seq.class;
     }
 
     @Override
-    public boolean split(SequentialVMTransitions cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+    public boolean split(Seq cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final List<VM> seq = cstr.getInvolvedVMs();
         return SplittableElementSet.newVMIndex(seq, vmsPosition).
                 forEachPartition(new IterateProcedure<VM>() {
@@ -56,10 +56,10 @@ public class SequentialVMTransitionsSplitter implements ConstraintSplitter<Seque
                     public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         int size = to - from;
                         if (!first) {
-                            throw new UnsupportedOperationException("Splitting a SequentialVMTransitions over multiple partitions is not supported");
+                            throw new UnsupportedOperationException("Splitting a Seq over multiple partitions is not supported");
                         }
                         if (size == seq.size()) {
-                            partitions.get(idx).getSatConstraints().add(new SequentialVMTransitions(seq));
+                            partitions.get(idx).getSatConstraints().add(new Seq(seq));
                             first = false;
                         }
                         return true;
