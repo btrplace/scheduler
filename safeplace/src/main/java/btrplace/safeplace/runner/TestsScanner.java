@@ -18,10 +18,10 @@
 
 package btrplace.safeplace.runner;
 
-import btrplace.safeplace.Constraint;
 import btrplace.safeplace.Specification;
 import btrplace.safeplace.annotations.CstrTest;
 import btrplace.safeplace.fuzzer.ReconfigurationPlanFuzzer2;
+import btrplace.safeplace.spec.SpecExtractor;
 import eu.infomas.annotation.AnnotationDetector;
 
 import java.lang.annotation.Annotation;
@@ -43,11 +43,15 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
     private static final ReconfigurationPlanFuzzer2 DEFAULT_FUZZER = new ReconfigurationPlanFuzzer2();
     private List<CTestCasesRunner> runners;
 
-    public TestsScanner() {
+    private Specification spec;
+
+    public TestsScanner() throws Exception {
         tests = new ArrayList<>();
         grps = new ArrayList<>();
         runners = new ArrayList<>();
         fuzzerCache = new HashMap<>();
+        SpecExtractor ex = new SpecExtractor();
+        spec = ex.extract();
     }
 
     public void restrictToGroup(String g) {
@@ -75,7 +79,7 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
             if (!match(cl, cc)) {
                 return;
             }
-            runner = new CTestCasesRunner(cl, methodName, cstr);
+            runner = new CTestCasesRunner(spec, cl, methodName, cstr);
             runners.add(runner);
             //TODO: constraint parsing, preconditions, doms, cstrs++
 
@@ -128,16 +132,6 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
         }
     }
 
-    private List<Constraint> makePreconditions(Constraint c, Specification spec) {
-        List<Constraint> pre = new ArrayList<>();
-        for (Constraint x : spec.getConstraints()) {
-            if (x.isCore()) {
-                pre.add(x);
-            }
-        }
-        pre.remove(c);
-        return pre;
-    }
 
     public List<CTestCasesRunner> scan() throws Exception {
         AnnotationDetector detector = new AnnotationDetector(this);

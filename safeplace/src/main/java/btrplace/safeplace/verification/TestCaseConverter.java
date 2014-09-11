@@ -26,7 +26,7 @@ import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.safeplace.Constraint;
 import btrplace.safeplace.Specification;
-import btrplace.safeplace.spec.SpecReader;
+import btrplace.safeplace.spec.SpecExtractor;
 import btrplace.safeplace.spec.term.Constant;
 import btrplace.safeplace.spec.type.*;
 import btrplace.safeplace.verification.btrplace.CheckerVerifier;
@@ -116,8 +116,8 @@ public class TestCaseConverter {
 
     public TestCase fromJSON(JSONObject o) throws Exception {
         String cstrString = o.get("constraint").toString();
-        SpecReader r = new SpecReader();
-        Specification spec = r.getSpecification(cstrString);
+        SpecExtractor ex = new SpecExtractor();
+        Specification spec = ex.extract();
         Constraint cstr = spec.getConstraints().get(0);
         boolean discrete = Boolean.parseBoolean(o.get("discrete").toString());
         ReconfigurationPlan p = pc.fromJSON((JSONObject) o.get("plan"));

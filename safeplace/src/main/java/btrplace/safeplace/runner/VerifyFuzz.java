@@ -28,7 +28,7 @@ import btrplace.safeplace.guard.MaxTestsGuard;
 import btrplace.safeplace.guard.TimeGuard;
 import btrplace.safeplace.reducer.ElementsReducer;
 import btrplace.safeplace.reducer.PlanReducer;
-import btrplace.safeplace.spec.SpecReader;
+import btrplace.safeplace.spec.SpecExtractor;
 import btrplace.safeplace.verification.TestCase;
 import btrplace.safeplace.verification.TestCaseConverter;
 import btrplace.safeplace.verification.Verifier;
@@ -40,7 +40,6 @@ import btrplace.safeplace.verification.spec.VerifDomain;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,18 +61,9 @@ public class VerifyFuzz {
         System.exit(1);
     }
 
-    private static Specification getSpec(String specFile) {
-        if (specFile == null) {
-            exit("Missing specFile");
-        }
-        SpecReader r = new SpecReader();
-        Specification spec = null;
-        try {
-            return r.getSpecification(new File(specFile));
-        } catch (Exception e) {
-            exit("Unable to parse '" + specFile + "': " + e.getMessage());
-        }
-        return null;
+    private static Specification getSpec() throws Exception {
+        SpecExtractor r = new SpecExtractor();
+        return r.extract();
     }
 
     private static Verifier makeVerifier(String verifier) {
@@ -130,8 +120,8 @@ public class VerifyFuzz {
     }
 
     private static void usage() {
-        System.out.println("Verify [options] specFile cstr_id");
-        System.out.println("\tVerify the constraint 'cstr_id' using its specification available in 'specFile'");
+        System.out.println("Verify [options] cstr_id");
+        System.out.println("\tVerify the constraint 'cstr_id'");
         System.out.println("\nOptions:");
         System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to");
         System.out.println("--continuous perform a verification wrt. a continuous restriction (default)");
@@ -146,30 +136,28 @@ public class VerifyFuzz {
         System.exit(1);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //Parse arguments
         int i;
         boolean endOptions = false;
-        String specFile;
         String cstrId;
 
         /*
          spec cstr NxM verif options
          */
-        specFile = args[0];
-        cstrId = args[1];
+        cstrId = args[0];
 
-        String[] ts = args[2].split("x");
+        String[] ts = args[1].split("x");
         int nbVMs = Integer.parseInt(ts[0]);
         int nbNodes = Integer.parseInt(ts[1]);
-        String verifier = args[3];
+        String verifier = args[2];
 
 
         ReconfigurationPlanFuzzer2 fuzz = null;
         fuzz = new ReconfigurationPlanFuzzer2();
         fuzz.nbNodes(nbNodes).nbVMs(nbVMs);
 
-        final Specification spec = getSpec(specFile);
+        final Specification spec = getSpec();
         final Constraint c = spec.get(cstrId);
         final Verifier v = makeVerifier(verifier);
 

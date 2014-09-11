@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Specification length
-./specStatistics.sh v1.cspec specLength.pdf
+./specStatistics.sh specLength.pdf
 
 #Verifications
 GUARD="-m 10000"

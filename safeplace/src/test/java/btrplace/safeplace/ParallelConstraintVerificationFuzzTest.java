@@ -18,9 +18,7 @@
 
 package btrplace.safeplace;
 
-import btrplace.safeplace.spec.SpecReader;
-
-import java.io.File;
+import btrplace.safeplace.spec.SpecExtractor;
 
 /**
  * @author Fabien Hermenier
@@ -28,8 +26,8 @@ import java.io.File;
 public class ParallelConstraintVerificationFuzzTest {
 
     public Specification getSpec() throws Exception {
-        SpecReader r = new SpecReader();
-        return r.getSpecification(new File("src/main/cspec/v1.cspec"));
+        SpecExtractor r = new SpecExtractor();
+        return r.extract();
     }
 
     /*@Test

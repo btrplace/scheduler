@@ -29,7 +29,7 @@ import btrplace.plan.event.KillVM;
 import btrplace.plan.event.SuspendVM;
 import btrplace.safeplace.Constraint;
 import btrplace.safeplace.Specification;
-import btrplace.safeplace.spec.SpecReader;
+import btrplace.safeplace.spec.SpecExtractor;
 import btrplace.safeplace.spec.term.Constant;
 import btrplace.safeplace.spec.type.NodeType;
 import btrplace.safeplace.spec.type.SetType;
@@ -38,7 +38,6 @@ import btrplace.safeplace.verification.CheckerResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,10 +48,10 @@ import java.util.List;
  */
 public class ImplVerifierTest {
 
-    private static SpecReader ex = new SpecReader();
+    private static SpecExtractor ex = new SpecExtractor();
 
     private static Specification getSpecification() throws Exception {
-        return ex.getSpecification(new File("src/main/cspec/v1.cspec"));
+        return ex.extract();
     }
 
     @Test

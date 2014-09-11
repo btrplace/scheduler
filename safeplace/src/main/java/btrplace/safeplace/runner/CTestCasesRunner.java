@@ -30,7 +30,6 @@ import btrplace.safeplace.reducer.ElementsReducer;
 import btrplace.safeplace.reducer.PlanReducer;
 import btrplace.safeplace.reducer.Reducer;
 import btrplace.safeplace.reducer.SignatureReducer2;
-import btrplace.safeplace.spec.SpecReader;
 import btrplace.safeplace.spec.term.Constant;
 import btrplace.safeplace.verification.CheckerResult;
 import btrplace.safeplace.verification.Verifier;
@@ -41,7 +40,6 @@ import btrplace.safeplace.verification.spec.SpecVerifier;
 import btrplace.safeplace.verification.spec.VerifDomain;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +100,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private List<Guard> guards;
 
-    public CTestCasesRunner(Class testClass, String testName, String cstr) throws Exception {
+    public CTestCasesRunner(Specification spec, Class testClass, String testName, String cstr) throws Exception {
         this.testClass = testClass;
         this.testName = testName;
         id = testClass.getSimpleName() + "." + testName;
@@ -112,9 +110,6 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         maxTests(1000);
         verifier = new ImplVerifier();
         specVerifier = new SpecVerifier();
-        SpecReader r = new SpecReader();
-        //TODO Groumph, hardcoded
-        Specification spec = r.getSpecification(new File("src/main/cspec/v1.cspec"));
         this.cstr = spec.get(cstr);
         if (this.cstr == null) {
             ex = new Exception("Spec for constraint '" + cstr + "' not found");

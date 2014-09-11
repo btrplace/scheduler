@@ -23,7 +23,8 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.safeplace.Constraint;
-import btrplace.safeplace.spec.SpecReader;
+import btrplace.safeplace.Specification;
+import btrplace.safeplace.spec.SpecExtractor;
 import btrplace.safeplace.spec.term.Constant;
 import btrplace.safeplace.spec.type.NodeType;
 import btrplace.safeplace.spec.type.SetType;
@@ -33,7 +34,6 @@ import btrplace.safeplace.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,14 +90,10 @@ public class SignatureReducerTest {
     }
 
     public Constraint makeConstraint(String id) {
-
-        SpecReader ex = new SpecReader();
+        SpecExtractor ex = new SpecExtractor();
         try {
-            for (btrplace.safeplace.Constraint x : ex.getSpecification(new File("src/main/cspec/v1.cspec")).getConstraints()) {
-                if (x.id().equals(id)) {
-                    return x;
-                }
-            }
+            Specification spec = ex.extract();
+            return spec.get(id);
         } catch (Exception e) {
             Assert.fail(e.getMessage(), e);
         }

@@ -29,7 +29,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
-import btrplace.safeplace.spec.SpecReader;
+import btrplace.safeplace.spec.SpecExtractor;
 import btrplace.safeplace.spec.term.Constant;
 import btrplace.safeplace.verification.CheckerResult;
 import btrplace.safeplace.verification.spec.SpecModel;
@@ -37,7 +37,6 @@ import btrplace.safeplace.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,10 +46,10 @@ import java.util.Collections;
  */
 public class TestSpec {
 
-    SpecReader ex = new SpecReader();
+    SpecExtractor ex = new SpecExtractor();
 
     private Specification getSpecification() throws Exception {
-        return ex.getSpecification(new File("src/main/cspec/v1.cspec"));
+        return ex.extract();
     }
 
     @Test
@@ -109,7 +108,7 @@ public class TestSpec {
                     s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs()));
                     break;
                 case "sequentialVMTransitions":
-                    s = c.instantiate(Arrays.asList(new ArrayList<>(mo.getMapping().getAllVMs())));
+                    s = c.instantiate(Arrays.asList(new ArrayList<VM>(mo.getMapping().getAllVMs())));
                     break;
                 case "online":
                 case "offline":

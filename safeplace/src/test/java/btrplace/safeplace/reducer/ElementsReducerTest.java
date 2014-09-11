@@ -26,7 +26,8 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.SuspendVM;
 import btrplace.safeplace.CTestCase;
 import btrplace.safeplace.Constraint;
-import btrplace.safeplace.spec.SpecReader;
+import btrplace.safeplace.Specification;
+import btrplace.safeplace.spec.SpecExtractor;
 import btrplace.safeplace.spec.term.Constant;
 import btrplace.safeplace.spec.type.SetType;
 import btrplace.safeplace.spec.type.VMType;
@@ -36,7 +37,6 @@ import btrplace.safeplace.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,14 +46,10 @@ import java.util.List;
 public class ElementsReducerTest {
 
     public Constraint makeConstraint(String id) {
-
-        SpecReader ex = new SpecReader();
+        SpecExtractor ex = new SpecExtractor();
         try {
-            for (Constraint x : ex.getSpecification(new File("src/main/cspec/v1.cspec")).getConstraints()) {
-                if (x.id().equals(id)) {
-                    return x;
-                }
-            }
+            Specification spec = ex.extract();
+            return spec.get(id);
         } catch (Exception e) {
             Assert.fail(e.getMessage(), e);
         }

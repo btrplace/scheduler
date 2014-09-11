@@ -32,7 +32,7 @@ public class Test {
 
     private static int verbosity = 2;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         TestsScanner scanner = new TestsScanner();
         long totalSt = System.currentTimeMillis();
         scanner.restrictToTest("Bench");
