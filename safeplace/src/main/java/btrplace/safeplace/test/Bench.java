@@ -19,6 +19,8 @@
 package btrplace.safeplace.test;
 
 import btrplace.safeplace.annotations.CstrTest;
+import btrplace.safeplace.annotations.CstrTestsProvider;
+import btrplace.safeplace.fuzzer.ReconfigurationPlanFuzzer2;
 import btrplace.safeplace.runner.CTestCasesRunner;
 import btrplace.safeplace.verification.spec.IntVerifDomain;
 
@@ -27,200 +29,215 @@ import btrplace.safeplace.verification.spec.IntVerifDomain;
  */
 public class Bench {
 
+    public static int nbVMs = 5;
+    public static int nbNodes = 5;
+
+    public static boolean reduce = true;
+    public static int tests = 10;
+    public static int to = 10;
+
     public static final CTestCasesRunner check(CTestCasesRunner r) {
-        r.maxFailures(1);
-        r.maxTests(10);
+        r.maxTests(tests);
+        r.timeout(to * 1000);
+        if (!reduce) {
+            r.clearReducers();
+        }
         return r;
     }
 
+    @CstrTestsProvider(name = "my")
+    public ReconfigurationPlanFuzzer2 myProvider() {
+        return new ReconfigurationPlanFuzzer2().nbVMs(nbVMs).nbNodes(nbNodes);
+    }
+
     //Among
-    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit", "among"}, provider = "myProvider")
     public void testAmongContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testAmongContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testAmongDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Among", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testAmongDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Ban
-    @CstrTest(constraint = "Ban", groups = {"vm2pm", "unit"})
+    @CstrTest(constraint = "Ban", groups = {"vm2pm", "unit", "ban"}, provider = "myProvider")
     public void testBanDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Ban", groups = {"vm2pm", "unit"})
+    @CstrTest(constraint = "Ban", groups = {"vm2pm", "unit"}, provider = "myProvider")
     public void testBanDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Core
-    @CstrTest(constraint = "noVMsOnOfflineNodes", groups = {"core", "unit"})
+    @CstrTest(constraint = "noVMsOnOfflineNodes", groups = {"core", "unit"}, provider = "myProvider")
     public void testNoVMsOnOfflineNodes(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "toRunning", groups = {"core", "unit"})
+    @CstrTest(constraint = "toRunning", groups = {"core", "unit"}, provider = "myProvider")
     public void testToRunning(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "toSleeping", groups = {"core", "unit"})
+    @CstrTest(constraint = "toSleeping", groups = {"core", "unit"}, provider = "myProvider")
     public void testToSleeping(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "toReady", groups = {"core", "unit"})
+    @CstrTest(constraint = "toReady", groups = {"core", "unit"}, provider = "myProvider")
     public void testToReady(CTestCasesRunner r) {
         check(r.continuous());
     }
 
     //Fence
-    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit"})
+    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit", "fence"}, provider = "myProvider")
     public void testFenceDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit"})
+    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit", "fence"}, provider = "myProvider")
     public void testFenceDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testGatherContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testGatherContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testGatherDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Gather", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testGatherDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Killed
-    @CstrTest(constraint = "Killed", groups = {"states", "unit"})
+    @CstrTest(constraint = "Killed", groups = {"states", "unit"}, provider = "myProvider")
     public void testKilledDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Killed", groups = {"states", "unit"})
+    @CstrTest(constraint = "Killed", groups = {"states", "unit"}, provider = "myProvider")
     public void testKilledDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Lonely
-    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testLonelyContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testLonelyContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testLonelyDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Lonely", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testLonelyDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"})
+    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"}, provider = "myProvider")
     public void testMaxOnlineContinuous(CTestCasesRunner r) {
         check(r.continuous()).dom(new IntVerifDomain(0, 5));
     }
 
     //MaxOnline
-    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"})
+    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"}, provider = "myProvider")
     public void testMaxOnlineContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
     }
 
-    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"})
+    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"}, provider = "myProvider")
     public void testMaxOnlineDiscrete(CTestCasesRunner r) {
         check(r.discrete()).dom(new IntVerifDomain(0, 5));
     }
 
-    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"})
+    @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit"}, provider = "myProvider")
     public void testMaxOnlineDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).dom(new IntVerifDomain(0, 5)).impl().repair(true);
     }
 
     //Offline
-    @CstrTest(constraint = "Offline", groups = {"states", "unit"})
+    @CstrTest(constraint = "Offline", groups = {"states", "unit"}, provider = "myProvider")
     public void testOfflineDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Offline", groups = {"states", "unit"})
+    @CstrTest(constraint = "Offline", groups = {"states", "unit"}, provider = "myProvider")
     public void testOfflineDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Online
-    @CstrTest(constraint = "Online", groups = {"states", "unit"})
+    @CstrTest(constraint = "Online", groups = {"states", "unit"}, provider = "myProvider")
     public void testOnlineDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Online", groups = {"states", "unit"})
+    @CstrTest(constraint = "Online", groups = {"states", "unit"}, provider = "myProvider")
     public void testOnlineDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Quarantine
-    @CstrTest(constraint = "Quarantine", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Quarantine", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testQuarantineContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Quarantine", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Quarantine", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testQuarantineContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
     //Ready
-    @CstrTest(constraint = "Ready", groups = {"states", "unit"})
+    @CstrTest(constraint = "Ready", groups = {"states", "unit"}, provider = "myProvider")
     public void testReadyDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Ready", groups = {"states", "unit"})
+    @CstrTest(constraint = "Ready", groups = {"states", "unit"}, provider = "myProvider")
     public void testReadyDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Root
-    @CstrTest(constraint = "Root", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Root", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testRootContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Root", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Root", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testRootContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
@@ -231,95 +248,94 @@ public class Bench {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Running", groups = {"states", "unit"})
+    @CstrTest(constraint = "Running", groups = {"states", "unit"}, provider = "myProvider")
     public void testRunningDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Sleeping
-    @CstrTest(constraint = "Sleeping", groups = {"states", "unit"})
+    @CstrTest(constraint = "Sleeping", groups = {"states", "unit"}, provider = "myProvider")
     public void testSleepingDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Sleeping", groups = {"states", "unit"})
+    @CstrTest(constraint = "Sleeping", groups = {"states", "unit"}, provider = "myProvider")
     public void testSleepingDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
     //Split
-    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
 
     //SplitAmong
-    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitAmongContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitAmongContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitAmongDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "SplitAmong", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSplitAmongDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
 
     //Spread
-    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSpreadContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSpreadContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSpreadDiscrete(CTestCasesRunner r) {
         check(r.discrete());
     }
 
-    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Spread", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSpreadDiscreteRepair(CTestCasesRunner r) {
         check(r.discrete()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Seq", groups = {"vm2vm", "unit"})
+    /*@CstrTest(constraint = "Seq", groups = {"vm2vm", "unit"}, provider = "myProvider")
     public void testSeqContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Seq", groups = {"vm2vm", "unit"})
+    @CstrTest(constraint = "Seq", groups = {"vm2vm", "unit","seq"}, provider = "myProvider")
     public void testSeqContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
-    }
-
+    }*/
 }

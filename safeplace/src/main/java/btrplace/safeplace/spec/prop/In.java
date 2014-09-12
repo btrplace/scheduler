@@ -39,8 +39,6 @@ public class In extends AtomicProp {
 
     @Override
     public Boolean eval(SpecModel m) {
-        //System.err.println(this);
-        //System.err.println(a.type() + " : " + b.type());
         Object o = a.eval(m);
         Collection c = (Collection) b.eval(m);
         if (c != null) {

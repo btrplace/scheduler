@@ -81,6 +81,9 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private int nb;
 
+    private long lastFuzzingDuration, lastTestDuration, lastReduceDuration, preconditionCheckDuration;
+
+    private long begin = -1, end = -1;
     private Iterator<ReconfigurationPlan> in = new Iterator<ReconfigurationPlan>() {
         @Override
         public boolean hasNext() {
@@ -120,6 +123,11 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         reducers.add(new SignatureReducer2());
         reducers.add(new PlanReducer());
         reducers.add(new ElementsReducer());
+    }
+
+    public CTestCasesRunner clearReducers() {
+        reducers.clear();
+        return this;
     }
 
     public CTestCasesRunner guard(Guard g) {
@@ -177,7 +185,10 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private void save(CTestCase tc, CTestCaseResult r) {
         if (r.result() != CTestCaseResult.Result.success) {
+            lastReduceDuration = -System.currentTimeMillis();
             CTestCase tc2 = reduce(r.result(), tc, continuous);
+            lastReduceDuration += System.currentTimeMillis();
+            r.setReduceDuration(lastReduceDuration);
             CTestCaseResult res2 = test(tc2);
             if (res2.result() != r.result()) {
                 System.err.println(tc2.getPlan().equals(tc.getPlan()));
@@ -191,20 +202,23 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     }
 
     private boolean checkPre(ReconfigurationPlan p) {
-
+        preconditionCheckDuration -= System.currentTimeMillis();
         //Necessarily against the continuous version
         for (Constraint c : pre) {
             CheckerResult res = specVerifier.verify(c, Collections.<Constant>emptyList(), p);
             if (!res.getStatus()) {
+                preconditionCheckDuration += System.currentTimeMillis();
                 return false;
             }
         }
         for (Constraint c : pre) {
             CheckerResult res = verifier.verify(c, Collections.<Constant>emptyList(), p);
             if (!res.getStatus()) {
+                preconditionCheckDuration += System.currentTimeMillis();
                 return false;
             }
         }
+        preconditionCheckDuration += System.currentTimeMillis();
         return true;
     }
 
@@ -256,18 +270,37 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     @Override
     public CTestCaseResult next() {
-
+        if (begin < 0) {
+            begin = System.currentTimeMillis();
+        }
+        lastFuzzingDuration = 0;
         ReconfigurationPlan p;
-        do {
-            p = in.next();
-        } while (!checkPre(p));
+        preconditionCheckDuration = 0;
 
+        do {
+            lastFuzzingDuration -= System.currentTimeMillis();
+            p = in.next();
+            lastFuzzingDuration += System.currentTimeMillis();
+        } while (!checkPre(p));
+        //System.out.println("New params for " + cstr.id());
+        lastFuzzingDuration -= System.currentTimeMillis();
         List<Constant> args = cig.newParams();
+        lastFuzzingDuration += System.currentTimeMillis();
         CTestCase tc = new CTestCase(testClass, testName, nb++, cstr, args, p, continuous);
         save(tc);
+        lastTestDuration = -System.currentTimeMillis();
         CTestCaseResult res = test(tc);
+        lastTestDuration += System.currentTimeMillis();
+        res.setFuzzingDuration(lastFuzzingDuration);
+        res.setTestDuration(lastTestDuration);
+        res.setPreCheckDuration(preconditionCheckDuration);
         save(tc, res);
+        //System.out.println(lastFuzzingDuration + " " + lastTestDuration + " " + preconditionCheckDuration);
         return res;
+    }
+
+    public long getLastFuzzingDuration() {
+        return lastFuzzingDuration;
     }
 
     @Override
@@ -278,15 +311,18 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     @Override
     public boolean hasNext() {
         if (ex != null) {
+            end = System.currentTimeMillis();
             return false;
         }
 
         if (!in.hasNext()) {
+            end = System.currentTimeMillis();
             return false;
         }
 
         if (continuous && cstr.isDiscrete()) {
             ex = new UnsupportedOperationException(cstr.id() + " only supports discrete restriction");
+            end = System.currentTimeMillis();
             return false;
         }
 
@@ -304,6 +340,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         }
 
         if (ex != null) {
+            end = System.currentTimeMillis();
             return false;
         }
         if (prev == null) {
@@ -311,6 +348,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         }
         for (Guard g : guards) {
             if (!g.accept(prev)) {
+                end = System.currentTimeMillis();
                 return false;
             }
         }
@@ -391,5 +429,10 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
             return x;
         }
         return x;
+    }
+
+
+    public long getDuration() {
+        return end - begin;
     }
 }

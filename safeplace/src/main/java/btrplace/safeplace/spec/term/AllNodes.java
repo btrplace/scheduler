@@ -22,12 +22,17 @@ import btrplace.model.Node;
 import btrplace.safeplace.spec.type.NodeType;
 import btrplace.safeplace.verification.spec.SpecModel;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
 public class AllNodes extends Primitive {
+
+    private static Random rnd = new Random();
 
     public AllNodes() {
         super("nodes", NodeType.getInstance());
@@ -36,5 +41,28 @@ public class AllNodes extends Primitive {
     @Override
     public Set<Node> eval(SpecModel m) {
         return m.getMapping().nodes();
+    }
+
+    @Override
+    public Node pickIn(SpecModel mo) {
+        int n = rnd.nextInt(mo.getMapping().nodes().size());
+        Iterator<Node> it = mo.getMapping().nodes().iterator();
+
+        while (n > 0) {
+            it.next();
+            n--;
+        }
+        return it.next();
+    }
+
+    @Override
+    public Set<Node> pickIncluded(SpecModel mo) {
+        Set<Node> s = new HashSet<>();
+        for (Node v : mo.getMapping().nodes()) {
+            if (rnd.nextBoolean()) {
+                s.add(v);
+            }
+        }
+        return s;
     }
 }

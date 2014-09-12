@@ -47,17 +47,20 @@ public class Constraint extends Function<Boolean> {
 
     private boolean discreteOnly, core;
 
+    private String className;
+
     public static Constraint newCoreConstraint(String n, Proposition p, boolean discrete) {
-        return new Constraint(n, p, Collections.<UserVar>emptyList(), discrete, true);
+        return new Constraint(n, "", p, Collections.<UserVar>emptyList(), discrete, true);
     }
 
-    public static Constraint newPluggableConstraint(String n, Proposition p, List<UserVar> params, boolean discrete) {
-        return new Constraint(n, p, params, discrete, false);
+    public static Constraint newPluggableConstraint(String n, String cl, Proposition p, List<UserVar> params, boolean discrete) {
+        return new Constraint(n, cl, p, params, discrete, false);
     }
 
-    private Constraint(String n, Proposition p, List<UserVar> params, boolean discrete, boolean core) {
+    private Constraint(String n, String cl, Proposition p, List<UserVar> params, boolean discrete, boolean core) {
         this.p = p;
         this.cstrName = n;
+        this.className = cl;
         this.params = params;
         this.discreteOnly = discrete;
         this.core = core;
@@ -173,6 +176,9 @@ public class Constraint extends Function<Boolean> {
             b.append(')');
         }
         return b.toString();
+    }
 
+    public String getClassName() {
+        return className;
     }
 }

@@ -45,7 +45,9 @@ public class Lists extends Function<java.util.List> {
         if (c == null) {
             return null;
         }
-        return new ArrayList<>(c);
+        List l = new ArrayList<>();
+        l.add(new ArrayList<>(c));
+        return l;
     }
 
     @Override

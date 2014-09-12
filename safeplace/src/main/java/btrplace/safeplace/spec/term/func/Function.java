@@ -45,6 +45,14 @@ public abstract class Function<T> {
 
     public abstract T eval(SpecModel mo, List<Object> args);
 
+    public Object pickIn(SpecModel mo, List<Term> args) {
+        throw new UnsupportedOperationException("Sth in " + this.type() + " " + toString() + "(" + args + ")");
+    }
+
+    public Object pickIncluded(SpecModel mo, List<Term> args) {
+        throw new UnsupportedOperationException("Sth included " + this.type() + " " + toString() + "(" + args + ")");
+    }
+
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();

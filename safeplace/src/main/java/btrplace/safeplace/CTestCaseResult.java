@@ -26,6 +26,34 @@ import btrplace.safeplace.verification.CheckerResult;
  */
 public class CTestCaseResult {
 
+    private long reduceDuration;
+    private long testDuration;
+    private long preCheckDuration;
+
+    public void setReduceDuration(long reduceDuration) {
+        this.reduceDuration = reduceDuration;
+    }
+
+    public long getReduceDuration() {
+        return reduceDuration;
+    }
+
+    public void setTestDuration(long testDuration) {
+        this.testDuration = testDuration;
+    }
+
+    public long getTestDuration() {
+        return testDuration;
+    }
+
+    public void setPreCheckDuration(long preCheckDuration) {
+        this.preCheckDuration = preCheckDuration;
+    }
+
+    public long getPreCheckDuration() {
+        return preCheckDuration;
+    }
+
     public static enum Result {success, falsePositive, falseNegative}
 
     private Result res;
@@ -37,6 +65,8 @@ public class CTestCaseResult {
     private CheckerResult res1, res2;
 
     private CTestCase tc;
+
+    private long fuzzingDuration;
 
     public CTestCaseResult(CTestCase tc, CheckerResult r1, CheckerResult r2) {
         stdout = "";
@@ -98,5 +128,13 @@ public class CTestCaseResult {
 
     public String getStderr() {
         return stderr;
+    }
+
+    public void setFuzzingDuration(long d) {
+        fuzzingDuration = d;
+    }
+
+    public long getFuzzingDuration() {
+        return fuzzingDuration;
     }
 }

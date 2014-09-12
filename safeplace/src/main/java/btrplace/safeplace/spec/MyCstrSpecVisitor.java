@@ -68,7 +68,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         return Constraint.newCoreConstraint(name, p, false);
     }
 
-    public Constraint getSideConstraint(String name, List<UserVar> args, List<Constraint> known, ParseTree t) throws SpecException {
+    public Constraint getSideConstraint(String name, String cl, List<UserVar> args, List<Constraint> known, ParseTree t) throws SpecException {
         this.filename = name;
         symbols = SymbolsTable.newBundle();
         symbols = symbols.enterSpec();
@@ -84,7 +84,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             throw err;
         }
         symbols = symbols.leaveScope();
-        return Constraint.newPluggableConstraint(name, p, args, false);
+        return Constraint.newPluggableConstraint(name, cl, p, args, false);
     }
 
     public UserVar getUserVar(String name, ParseTree t) throws SpecException {

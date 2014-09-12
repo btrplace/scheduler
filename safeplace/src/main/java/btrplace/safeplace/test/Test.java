@@ -32,10 +32,18 @@ public class Test {
 
     private static int verbosity = 2;
 
-    public static void main(String[] args) throws Exception {
-        TestsScanner scanner = new TestsScanner();
-        long totalSt = System.currentTimeMillis();
+    public static void main(String[] args) {
+        TestsScanner scanner = null;
+        try {
+            scanner = new TestsScanner();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        //long totalSt = System.currentTimeMillis();
         scanner.restrictToTest("Bench");
+        //scanner.restrictToGroup("fence");
+
 
         List<CTestCasesRunner> runners = null;
         try {
@@ -51,33 +59,23 @@ public class Test {
         int ok = 0, fp = 0, fn = 0;
         for (CTestCasesRunner runner : runners) {
             CTestCaseReport report = new CTestCaseReport(runner.id());
-            long st = System.currentTimeMillis();
             for (CTestCaseResult res : runner) {
                 report.add(res);
             }
-            long ed = System.currentTimeMillis();
+            report.duration(runner.getDuration());
             report.report(runner.report());
-            report.duration(ed - st);
             ok += report.ok();
             fp += report.fp();
             fn += report.fn();
-            if (report.report() != null) {
-                errHeader = true;
-            }
             if (report.report() != null || report.fn() > 0 || report.fp() > 0 || verbosity > 1) {
-                System.out.println(report.pretty());
-                /*if (!errHeader && verbosity >= 1) {
-                    System.out.println("Failed tests:");
-                    errHeader = true;
-                } */
-
+                System.out.println(report.raw());
             }
         }
 
-        if (!errHeader && !runners.isEmpty()) {
+/*        if (!errHeader && !runners.isEmpty()) {
             System.out.println("SUCCESS !");
         }
         long ed = System.currentTimeMillis();
-        System.out.println("\nTests run: " + (ok + fp + fn) + "; F/P: " + fp + ", F/N: " + fn + " (" + (ed - totalSt) + " ms)");
+        System.out.println("\nTests run: " + (ok + fp + fn) + "; F/P: " + fp + ", F/N: " + fn + " (" + (ed - totalSt) + " ms)");*/
     }
 }

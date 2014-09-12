@@ -77,6 +77,7 @@ public class FunctionCall<T> extends Term<T> {
         for (Term t : args) {
             values.add(t.eval(m));
         }
+        //System.out.println("eval " + c.toString() + " " + values);
         return c.eval(m, values);
     }
 
@@ -120,4 +121,13 @@ public class FunctionCall<T> extends Term<T> {
         return b.append(')').toString();
     }
 
+    @Override
+    public Object pickIn(SpecModel mo) {
+        return c.pickIn(mo, args);
+    }
+
+    @Override
+    public Object pickIncluded(SpecModel mo) {
+        return c.pickIncluded(mo, args);
+    }
 }

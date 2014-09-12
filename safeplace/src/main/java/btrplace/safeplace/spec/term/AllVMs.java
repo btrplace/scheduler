@@ -22,12 +22,17 @@ import btrplace.model.VM;
 import btrplace.safeplace.spec.type.VMType;
 import btrplace.safeplace.verification.spec.SpecModel;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
 public class AllVMs extends Primitive {
+
+    private static Random rnd = new Random();
 
     public AllVMs() {
         super("vms", VMType.getInstance());
@@ -36,5 +41,29 @@ public class AllVMs extends Primitive {
     @Override
     public Set<VM> eval(SpecModel m) {
         return m.getMapping().VMs();
+    }
+
+    @Override
+    public VM pickIn(SpecModel mo) {
+        int n = rnd.nextInt(mo.getMapping().VMs().size());
+        Iterator<VM> it = mo.getMapping().VMs().iterator();
+
+        while (n > 0) {
+            it.next();
+            n--;
+        }
+        VM v = it.next();
+        return v;
+    }
+
+    @Override
+    public Set<VM> pickIncluded(SpecModel mo) {
+        Set<VM> s = new HashSet<>();
+        for (VM v : mo.getMapping().VMs()) {
+            if (rnd.nextBoolean()) {
+                s.add(v);
+            }
+        }
+        return s;
     }
 }

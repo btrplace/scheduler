@@ -71,6 +71,7 @@ public class ImplVerifier implements Verifier {
             SatConstraint satC = null;
             try {
                 satC = Constraint2BtrPlace.build(c, params);
+                //System.out.println(satC);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -105,6 +106,7 @@ public class ImplVerifier implements Verifier {
             try {
                 //TODO: encache the sat constraint
                 SatConstraint satC = Constraint2BtrPlace.build(c, params);
+//                System.out.println(satC);
                 if (!satC.setContinuous(true)) {
                     throw new UnsupportedOperationException("Implementation of " + c + " don't support the continuous restriction");
                 }

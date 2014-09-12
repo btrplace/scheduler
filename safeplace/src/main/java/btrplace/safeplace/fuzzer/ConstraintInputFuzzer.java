@@ -37,22 +37,32 @@ public class ConstraintInputFuzzer {
 
     private List<Constant>[] domains;
 
+    private SpecModel mo;
+
+    private Constraint cstr;
+
     public ConstraintInputFuzzer(Constraint cstr, SpecModel mo) {
+        this.mo = mo;
+        this.cstr = cstr;
         domains = new ArrayList[cstr.getParameters().size()];
         rnd = new Random();
 
         //cache the domains
         int i = 0;
-        for (UserVar v : cstr.getParameters()) {
+        /*for (UserVar v : cstr.getParameters()) {
             domains[i++] = v.domain(mo);
-        }
+        } */
     }
 
     public List<Constant> newParams() {
         List<Constant> l = new ArrayList<>(domains.length);
-        for (List<Constant> dom : domains) {
-            l.add(dom.get(rnd.nextInt(dom.size())));
+        for (UserVar v : cstr.getParameters()) {
+            l.add(new Constant(v.pick(mo), v.type()));
         }
+        /*for (List<Constant> dom : domains) {
+            l.add(dom.get(rnd.nextInt(dom.size())));
+        } */
+        //System.out.println(l);
         return l;
     }
 

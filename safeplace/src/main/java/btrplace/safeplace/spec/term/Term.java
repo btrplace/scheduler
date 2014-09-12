@@ -43,4 +43,11 @@ public abstract class Term<T> {
         return new UserVar(n, false, not, this);
     }
 
+    public Object pickIn(SpecModel mo) {
+        throw new UnsupportedOperationException("Sth in " + this.type() + " " + getClass().getSimpleName());
+    }
+
+    public Object pickIncluded(SpecModel mo) {
+        throw new UnsupportedOperationException("Sth included " + this.type() + " " + getClass().getSimpleName());
+    }
 }

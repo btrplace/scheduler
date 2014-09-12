@@ -72,7 +72,7 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
             SideConstraint side = (SideConstraint) cl.getAnnotation(SideConstraint.class);
             if (side != null) {
                 String name = cl.getSimpleName();
-                this.sides.add(new Side(side, name));
+                this.sides.add(new Side(side, name, className));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -122,7 +122,7 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
         ParseTree tree = parser.formula();
         MyCstrSpecVisitor v = new MyCstrSpecVisitor(s.cl);
 
-        return v.getSideConstraint(s.cl, args, known, tree);
+        return v.getSideConstraint(s.cl, s.fqcl, args, known, tree);
     }
 
 
@@ -152,10 +152,12 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
     private static class Side {
         SideConstraint s;
         String cl;
+        String fqcl;
 
-        public Side(SideConstraint c, String n) {
+        public Side(SideConstraint c, String n, String fqcl) {
             cl = n;
             s = c;
+            this.fqcl = fqcl;
         }
     }
 

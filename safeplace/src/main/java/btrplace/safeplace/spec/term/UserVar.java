@@ -62,6 +62,25 @@ public class UserVar<T> extends Var<T> {
         return (T) m.getValue(label());
     }
 
+    @Override
+    public Constant pickIn(SpecModel mo) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object pickIncluded(SpecModel mo) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Object pick(SpecModel mo) {
+        //TODO beware !
+        if (incl) {
+            return backend.pickIn(mo);
+        } else {
+            return backend.pickIncluded(mo);
+        }
+    }
+
     public List<Constant> domain(SpecModel mo) {
         Collection col = null;
         col = backend.eval(mo);

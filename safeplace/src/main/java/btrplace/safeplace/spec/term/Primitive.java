@@ -22,6 +22,9 @@ import btrplace.safeplace.spec.type.SetType;
 import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.verification.spec.SpecModel;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -53,5 +56,30 @@ public class Primitive extends Var<Set> {
     @Override
     public Type type() {
         return type;
+    }
+
+    private static Random rnd = new Random();
+
+    @Override
+    public Object pickIn(SpecModel mo) {
+        int n = rnd.nextInt(mo.getVerifDomain(label()).size());
+        Iterator it = mo.getVerifDomain(label()).iterator();
+
+        while (n > 0) {
+            it.next();
+            n--;
+        }
+        return it.next();
+    }
+
+    @Override
+    public Object pickIncluded(SpecModel mo) {
+        Set s = new HashSet<>();
+        for (Object v : mo.getVerifDomain(label())) {
+            if (rnd.nextBoolean()) {
+                s.add(v);
+            }
+        }
+        return s;
     }
 }

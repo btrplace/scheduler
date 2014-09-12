@@ -24,15 +24,14 @@ import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.util.AllPackingsGenerator;
 import btrplace.safeplace.verification.spec.SpecModel;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
 public class Packings extends Function<Set> {
+
+    private static Random rnd = new Random();
 
     @Override
     public Type type() {
@@ -71,5 +70,27 @@ public class Packings extends Function<Set> {
     @Override
     public Type type(List<Term> args) {
         return new SetType(new SetType(args.get(0).type()));
+    }
+
+    @Override
+    public Object pickIn(SpecModel mo, List<Term> args) {
+        Collection col = (Collection) args.get(0).eval(mo);
+        List<Set<Object>> p = new ArrayList<>(col.size());
+        int c = 2;
+        for (Object t : ((Collection) args.get(0).eval(mo))) {
+            int n = rnd.nextInt(c);
+            if (n != 0) { //Add in, it denotes its position (index + 1)
+                if (n >= p.size()) {
+                    Set<Object> h = new HashSet<>();
+                    p.add(h);
+                    c++;
+                }
+                p.get(n - 1).add(t);
+
+            }
+
+        }
+        return new HashSet<Set<Object>>(p);
+        //return p;
     }
 }

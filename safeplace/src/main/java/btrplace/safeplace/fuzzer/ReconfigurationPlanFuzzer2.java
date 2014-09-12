@@ -258,12 +258,12 @@ public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>
 
     private ReconfigurationPlan delay(ReconfigurationPlan src) {
         int maxDuration = 0;
-        for (Action a : src) {
+        for (Action a : src.getActions()) {
             maxDuration += a.getEnd();
         }
 
         ReconfigurationPlan rp = new DefaultReconfigurationPlan(src.getOrigin());
-        for (Action a : src) {
+        for (Action a : src.getActions()) {
             int d = maxDuration - a.getEnd() + a.getStart();
             int st;
             if (d == 0) {

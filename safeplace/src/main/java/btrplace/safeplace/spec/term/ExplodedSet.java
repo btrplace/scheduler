@@ -36,6 +36,8 @@ public class ExplodedSet extends Term<Set> {
 
     private Type t;
 
+    private Set cache;
+
     public ExplodedSet(List<Term> ts, Type enclType) {
         this.terms = ts;
         t = new SetType(enclType);
@@ -43,11 +45,13 @@ public class ExplodedSet extends Term<Set> {
 
     @Override
     public Set eval(SpecModel mo) {
-        Set s = new HashSet<>();
-        for (Term t : terms) {
-            s.add(t.eval(mo));
+        if (cache == null) {
+            cache = new HashSet<>();
+            for (Term t : terms) {
+                cache.add(t.eval(mo));
+            }
         }
-        return s;
+        return cache;
     }
 
     @Override
