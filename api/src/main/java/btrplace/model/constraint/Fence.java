@@ -78,11 +78,6 @@ public class Fence extends SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
-    }
-
-    @Override
     public SatConstraintChecker getChecker() {
         return new FenceChecker(this);
     }
