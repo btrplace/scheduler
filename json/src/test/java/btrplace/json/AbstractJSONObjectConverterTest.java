@@ -18,8 +18,8 @@
 
 package btrplace.json;
 
-import junit.framework.Assert;
 import net.minidev.json.JSONObject;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

@@ -1,0 +1,10 @@
+namespace testEntropy;
+
+VM[1..10] : tinyInstance;
+
+$nodes = @helios-[1..56].sophia.grid5000.fr;
+for $n in $nodes {
+    capacity($n, 10);
+}
+
+fence(VM[1..10], $nodes);

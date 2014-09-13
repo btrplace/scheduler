@@ -19,7 +19,7 @@
 package btrplace;
 
 import btrplace.examples.*;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -32,25 +32,25 @@ public class ExamplesIntegration {
     @Test
     public void testGettingStarted() throws Exception {
         Example ex = new GettingStarted();
-        Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
+        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
     public void testSolvingTuning() throws Exception {
         Example ex = new SolverTuning();
-        Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
+        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
     public void testModelCustomization() throws Exception {
         Example ex = new ModelCustomization();
-        Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
+        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
     public void testDecomissioning() throws Exception {
         Example ex = new Decommissionning();
-        Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
+        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
 }

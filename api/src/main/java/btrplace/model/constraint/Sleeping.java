@@ -29,16 +29,13 @@ import java.util.List;
 /**
  * A constraint to force a VM at being sleeping.
  * <p/>
- * The restriction provided by the constraint is discrete
- * however, if the VM is already sleeping, then
- * its state will be unchanged.
  *
  * @author Fabien Hermenier
  */
 public class Sleeping extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
+     * Instantiate discrete constraints for a collection of VMs.
      *
      * @param vms the VMs to integrate
      * @return the associated list of constraints
@@ -52,13 +49,23 @@ public class Sleeping extends SatConstraint {
     }
 
     /**
-     * Make a new constraint.
+     * Make a new discrete constraint.
      *
      * @param vm the VMs to make sleeping
      */
     public Sleeping(VM vm) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
+        this(vm, false);
     }
+
+    /**
+     * Make a new discrete constraint.
+     *
+     * @param n the node to set offline
+     */
+    public Sleeping(VM vm, boolean continuous) {
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
+    }
+
 
     @Override
     public SatConstraintChecker getChecker() {
@@ -67,11 +74,6 @@ public class Sleeping extends SatConstraint {
 
     @Override
     public String toString() {
-        return "sleeping(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        return "sleeping(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
     }
 }

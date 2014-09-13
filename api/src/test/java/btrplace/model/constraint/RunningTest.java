@@ -41,7 +41,7 @@ public class RunningTest {
         Assert.assertEquals(Collections.singletonList(vm), s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
-        Assert.assertFalse(s.setContinuous(true));
+        Assert.assertTrue(s.setContinuous(true));
         System.out.println(s);
     }
 

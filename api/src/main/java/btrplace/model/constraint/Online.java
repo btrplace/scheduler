@@ -28,17 +28,13 @@ import java.util.List;
 
 /**
  * A constraint to force a node at being online.
- * <p/>
- * The restriction provided by the constraint is discrete.
- * however, if the node is already offline, its
- * state will be unchanged.
  *
  * @author Fabien Hermenier
  */
 public class Online extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of nodes.
+     * Instantiate discrete constraints for a collection of nodes.
      *
      * @param nodes the nodes to integrate
      * @return the associated list of constraints
@@ -52,12 +48,22 @@ public class Online extends SatConstraint {
     }
 
     /**
-     * Make a new constraint.
+     * Make a new discrete constraint.
      *
      * @param n the node to set online
      */
     public Online(Node n) {
-        super(Collections.<VM>emptyList(), Collections.singleton(n), false);
+        this(n, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param n          the node to set online
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public Online(Node n, boolean continuous) {
+        super(Collections.<VM>emptyList(), Collections.singleton(n), continuous);
     }
 
     @Override
@@ -66,12 +72,7 @@ public class Online extends SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
-    }
-
-    @Override
     public String toString() {
-        return "online(nodes=" + getInvolvedNodes().iterator().next() + ", discrete)";
+        return "online(nodes=" + getInvolvedNodes().iterator().next() + ", " + restrictionToString() + ")";
     }
 }

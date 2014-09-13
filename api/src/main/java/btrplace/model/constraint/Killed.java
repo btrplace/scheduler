@@ -28,15 +28,13 @@ import java.util.List;
 
 /**
  * A constraint to force a VM to be killed.
- * <p/>
- * The restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier
  */
 public class Killed extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
+     * Instantiate discrete constraints for a collection of VMs.
      *
      * @param vms the VMs to integrate
      * @return the associated list of constraints
@@ -49,19 +47,25 @@ public class Killed extends SatConstraint {
         return l;
     }
 
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+    /**
+     * Make a new discrete constraint.
+     *
+     * @param vm the VMs to remove
+     */
+    public Killed(VM vm) {
+        this(vm, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param vm the VMs to remove
+     * @param vm         the VMs to remove
+     * @param continuous {@code true} for a continuous restriction
      */
-    public Killed(VM vm) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
+    public Killed(VM vm, boolean continuous) {
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
     }
+
 
     @Override
     public SatConstraintChecker getChecker() {
@@ -70,6 +74,6 @@ public class Killed extends SatConstraint {
 
     @Override
     public String toString() {
-        return "killed(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
+        return "killed(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
     }
 }

@@ -1,0 +1,19 @@
+namespace setManip;
+
+VM[1..100] : tinyVMs;
+@pastel-[1..100,frontend].b217.home : defaultNode;
+
+$S1 = VM[1..100];
+$S2 = @pastel-[1..10,15,frontend].b217.home;
+{$T1,$T2,$T3} = $S1 / 3;
+$x = #$S2;
+$y = #{$T1,$T2,$T3};
+$A = VM[1..100];
+$B = VM[50..70];
+$C = $A - $B + VM[50..60];
+$a = @pastel-[1..100].b217.home % 33;
+
+$res = VM[1..100] == VM[1..100];
+$res2 = $A == VM[1..100];
+$res3 = $A != $res;
+export $T1,$T2,$T3,$x,$y,$C,$a,$res,$res[2,3] to *;

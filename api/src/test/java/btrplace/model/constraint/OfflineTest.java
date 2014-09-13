@@ -44,7 +44,7 @@ public class OfflineTest {
         Assert.assertTrue(o.getInvolvedNodes().contains(n));
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());
-        Assert.assertFalse(o.setContinuous(true));
+        Assert.assertTrue(o.setContinuous(true));
         System.out.println(o);
     }
 

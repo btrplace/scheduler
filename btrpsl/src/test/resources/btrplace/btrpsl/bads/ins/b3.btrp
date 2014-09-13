@@ -1,0 +1,5 @@
+namespace bfoo;
+
+VM[1..9]: tiny;
+
+export $me to *;

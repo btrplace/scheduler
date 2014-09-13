@@ -1,0 +1,4 @@
+namespace a;
+
+import b;
+import c;
