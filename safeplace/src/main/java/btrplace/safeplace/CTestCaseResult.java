@@ -21,6 +21,9 @@ package btrplace.safeplace;
 import btrplace.model.view.ModelView;
 import btrplace.safeplace.verification.CheckerResult;
 
+import static btrplace.safeplace.CTestCaseResult.Result.failure;
+import static btrplace.safeplace.CTestCaseResult.Result.success;
+
 /**
  * @author Fabien Hermenier
  */
@@ -54,7 +57,7 @@ public class CTestCaseResult {
         return preCheckDuration;
     }
 
-    public static enum Result {success, falsePositive, falseNegative}
+    public static enum Result {success, falsePositive, falseNegative, failure}
 
     private Result res;
 
@@ -78,10 +81,12 @@ public class CTestCaseResult {
     }
 
     private Result makeResult(CheckerResult res1, CheckerResult res2) {
-        if (res1.getStatus().equals(res2.getStatus())) {
-            return CTestCaseResult.Result.success;
+        if (res2.getStatus() == null) {
+            return failure;
         }
-
+        if (res1.getStatus().equals(res2.getStatus())) {
+            return success;
+        }
         if (res1.getStatus()) {
             return CTestCaseResult.Result.falseNegative;
         }
@@ -136,5 +141,17 @@ public class CTestCaseResult {
 
     public long getFuzzingDuration() {
         return fuzzingDuration;
+    }
+
+    public String errMessage() {
+        switch (res) {
+            case falsePositive:
+                return "False positive: " + res1.toString();
+            case falseNegative:
+                return "False negative: " + res2.toString();
+            case failure:
+                return "Failure: " + res2.toString();
+        }
+        return "";
     }
 }

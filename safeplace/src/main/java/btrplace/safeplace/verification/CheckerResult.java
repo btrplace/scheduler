@@ -20,6 +20,8 @@ package btrplace.safeplace.verification;
 
 import btrplace.plan.event.Action;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Objects;
 
 /**
@@ -44,12 +46,19 @@ public class CheckerResult {
         this.ex = ex;
     }
 
-    public static CheckerResult newSuccess() {
+    public static CheckerResult newOk() {
         return success;
     }
 
-    public static CheckerResult newFailure(String ex) {
+    public static CheckerResult newKo(String ex) {
         return new CheckerResult(false, ex);
+    }
+
+    public static CheckerResult newError(Exception ex) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        return new CheckerResult(null, sw.toString());
     }
 
     public static CheckerResult newFailure(Action a) {
@@ -66,10 +75,10 @@ public class CheckerResult {
 
     @Override
     public String toString() {
-        if (ex == null || ex.length() == 0) {
-            return b.toString();
+        if (b == null) {
+            return ex;
         }
-        return b + " (" + ex + ")";
+        return b ? "true" : ex;
     }
 
     @Override

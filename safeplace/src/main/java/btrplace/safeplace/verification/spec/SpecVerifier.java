@@ -54,8 +54,11 @@ public class SpecVerifier implements Verifier {
         setInputs(cstr, sRes, values);
         Proposition ok = cstr.getProposition();
         Boolean bOk = ok.eval(sRes);
-
-        return new CheckerResult(bOk, "");
+        if (bOk) {
+            return CheckerResult.newOk();
+        } else {
+            return CheckerResult.newKo("Unconsistent destination model");
+        }
     }
 
     @Override
@@ -68,13 +71,17 @@ public class SpecVerifier implements Verifier {
         try {
             Action a = spc.check(good);
             if (a != null) {
+                //System.out.println("A: " + a);
                 return new CheckerResult(false, a);
             }
 
         } catch (Exception e) {
-            return new CheckerResult(false, e.getMessage());
+            if (e.getMessage().equals("Failure at the beginning of the plan")) {
+                return CheckerResult.newKo(e.getMessage());
+            }
+            return CheckerResult.newError(e);
         }
-        return CheckerResult.newSuccess();
+        return CheckerResult.newOk();
     }
 
     private void setInputs(Constraint c, SpecModel mo, List<Constant> values) {

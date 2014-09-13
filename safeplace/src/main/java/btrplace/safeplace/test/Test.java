@@ -32,6 +32,7 @@ public class Test {
 
     private static int verbosity = 2;
 
+    public static boolean raw = true;
     public static void main(String[] args) {
         TestsScanner scanner = null;
         try {
@@ -40,9 +41,8 @@ public class Test {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        //long totalSt = System.currentTimeMillis();
         scanner.restrictToTest("Bench");
-        //scanner.restrictToGroup("fence");
+        //scanner.restrictToGroup("among");
 
 
         List<CTestCasesRunner> runners = null;
@@ -55,27 +55,19 @@ public class Test {
             System.out.println("No tests found");
             System.exit(0);
         }
-        boolean errHeader = false;
-        int ok = 0, fp = 0, fn = 0;
         for (CTestCasesRunner runner : runners) {
             CTestCaseReport report = new CTestCaseReport(runner.id());
             for (CTestCaseResult res : runner) {
                 report.add(res);
+                /*if (res.result() == CTestCaseResult.Result.failure) {
+                    System.out.println(res);
+                } */
             }
             report.duration(runner.getDuration());
             report.report(runner.report());
-            ok += report.ok();
-            fp += report.fp();
-            fn += report.fn();
             if (report.report() != null || report.fn() > 0 || report.fp() > 0 || verbosity > 1) {
-                System.out.println(report.raw());
+                System.out.println(raw ? report.raw() : report.pretty());
             }
         }
-
-/*        if (!errHeader && !runners.isEmpty()) {
-            System.out.println("SUCCESS !");
-        }
-        long ed = System.currentTimeMillis();
-        System.out.println("\nTests run: " + (ok + fp + fn) + "; F/P: " + fp + ", F/N: " + fn + " (" + (ed - totalSt) + " ms)");*/
     }
 }

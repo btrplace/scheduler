@@ -41,7 +41,7 @@ public class CheckerVerifier implements Verifier {
             if (res == null) {
                 return new CheckerResult(false, "Core constraint violation");
             }
-            return CheckerResult.newSuccess();
+            return CheckerResult.newOk();
         }
         try {
             SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
@@ -54,7 +54,7 @@ public class CheckerVerifier implements Verifier {
                 if (!sat.getChecker().endsWith(res)) {
                     return new CheckerResult(false, "Violation of " + sat.toString());
                 }
-                return CheckerResult.newSuccess();
+                return CheckerResult.newOk();
             } else {
                 throw new UnsupportedOperationException(sat + " cannot be discrete");
             }
@@ -71,7 +71,7 @@ public class CheckerVerifier implements Verifier {
             if (res == null) {
                 return new CheckerResult(false, "Core constraint violation");
             }
-            return CheckerResult.newSuccess();
+            return CheckerResult.newOk();
         }
         try {
             SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
@@ -80,11 +80,11 @@ public class CheckerVerifier implements Verifier {
                 chk.addChecker(sat.getChecker());
                 try {
                     chk.check(p);
-                    return CheckerResult.newSuccess();
+                    return CheckerResult.newOk();
                 } catch (ReconfigurationPlanCheckerException ex) {
                     //     ex.printStackTrace();
                     if (ex.getAction() == null) {
-                        return CheckerResult.newFailure(ex.getMessage());
+                        return CheckerResult.newKo(ex.getMessage());
                     }
                     return CheckerResult.newFailure(ex.getAction());
                 }

@@ -27,7 +27,7 @@ public class CTestCaseReport {
 
     private String id;
 
-    private int ok = 0, fp = 0, fn = 0;
+    private int ok = 0, fp = 0, fn = 0, fe = 0;
 
     private Exception ex;
 
@@ -47,6 +47,9 @@ public class CTestCaseReport {
                 break;
             case falsePositive:
                 fp++;
+                break;
+            case failure:
+                fe++;
                 break;
         }
         fuzzingDuration += r.getFuzzingDuration();
@@ -76,14 +79,14 @@ public class CTestCaseReport {
     }
 
     public String raw() {
-        return id + " " + ok + " " + fp + " " + fn + " " + duration + " " + fuzzingDuration + " " + preCheckDuration + " " + testDuration + " " + reduceDuration;
+        return id + " " + ok + " " + fp + " " + fn + " " + fe + " " + duration + " " + fuzzingDuration + " " + preCheckDuration + " " + testDuration + " " + reduceDuration;
     }
 
     public String pretty() {
         if (ex != null) {
             return id + ": " + ex.getMessage();
         }
-        return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N in " + duration + " ms";
+        return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N; " + fe + " failure(s) (" + duration + "ms)";
     }
 
     public int ok() {

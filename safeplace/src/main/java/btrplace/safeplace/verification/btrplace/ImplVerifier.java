@@ -60,7 +60,7 @@ public class ImplVerifier implements Verifier {
         this.repair = repair;
     }
 
-    private static CheckerResult noSolution = CheckerResult.newFailure("No solution");
+    private static CheckerResult noSolution = CheckerResult.newKo("No solution");
 
     @Override
     public CheckerResult verify(Constraint c, List<Constant> params, Model dst, Model src) {
@@ -71,7 +71,6 @@ public class ImplVerifier implements Verifier {
             SatConstraint satC = null;
             try {
                 satC = Constraint2BtrPlace.build(c, params);
-                //System.out.println(satC);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -89,12 +88,12 @@ public class ImplVerifier implements Verifier {
             if (res == null) {
                 return noSolution;
             } else {
-                return CheckerResult.newSuccess();
+                return CheckerResult.newOk();
             }
         } catch (SolverException ex) {
-            return CheckerResult.newFailure(ex.getMessage());
+            return CheckerResult.newError(ex);
         } catch (Exception e) {
-            return CheckerResult.newFailure(e.getClass().getSimpleName() + " " + e.getMessage());
+            return CheckerResult.newError(e);
         }
     }
 
@@ -128,7 +127,7 @@ public class ImplVerifier implements Verifier {
             } else if (!p.equals(res)) {
                 throw new RuntimeException("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p);
             } else {
-                return CheckerResult.newSuccess();
+                return CheckerResult.newOk();
             }
         } catch (SolverException ex) {
             /*System.out.flush();
@@ -136,9 +135,9 @@ public class ImplVerifier implements Verifier {
             System.err.println(p.getOrigin().getMapping());
             System.err.println(p);
             ex.printStackTrace();*/
-            return CheckerResult.newFailure(ex.getMessage());
+            return CheckerResult.newError(ex);
         } catch (Exception e) {
-            return CheckerResult.newFailure(e.getClass().getSimpleName() + " " + e.getMessage());
+            return CheckerResult.newError(e);
         }
     }
 
