@@ -29,15 +29,13 @@ import java.util.List;
 /**
  * A constraint to force the given VM, when running,
  * to be hosted on a given group of nodes.
- * <p/>
- * The restriction provided by this constraint is discrete.
  *
  * @author Fabien Hermenier
  */
 public class Fence extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
+     * Instantiate discrete constraints for a collection of VMs.
      *
      * @param vms   the VMs to integrate
      * @param nodes the hosts to disallow
@@ -58,17 +56,23 @@ public class Fence extends SatConstraint {
      * @param nodes the involved nodes
      */
     public Fence(VM vm, Collection<Node> nodes) {
-        super(Collections.singleton(vm), nodes, false);
+        this(vm, nodes, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vm         the VM identifiers
+     * @param nodes      the nodes identifiers
+     * @param continuous {@code true} for a continuous constraint.
+     */
+    public Fence(VM vm, Collection<Node> nodes, boolean continuous) {
+        super(Collections.singleton(vm), nodes, continuous);
     }
 
     @Override
     public String toString() {
-        return "fence(vm=" + getInvolvedVMs() + ", nodes=" + getInvolvedNodes() + ", discrete" + ")";
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        return "fence(vm=" + getInvolvedVMs() + ", nodes=" + getInvolvedNodes() + ", " + restrictionToString() + ")";
     }
 
     @Override

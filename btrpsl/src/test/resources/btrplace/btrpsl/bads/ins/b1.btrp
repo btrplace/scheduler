@@ -1,0 +1,6 @@
+namespace b1;
+
+VM[1..9]: tiny;
+
+root(VM[1..9] + VM10);
+export $me to *;

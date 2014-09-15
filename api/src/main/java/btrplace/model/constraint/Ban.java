@@ -29,8 +29,6 @@ import java.util.List;
 /**
  * A constraint to disallow the given VM, when running,
  * to be hosted on a given set of nodes.
- * <p/>
- * The restriction provided by this constraint is only discrete.
  *
  * @author Fabien Hermenier
  * @see SatConstraint
@@ -38,7 +36,7 @@ import java.util.List;
 public class Ban extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
+     * Instantiate discrete constraints for a collection of VMs.
      *
      * @param vms   the VMs to integrate
      * @param nodes the hosts to disallow
@@ -53,23 +51,29 @@ public class Ban extends SatConstraint {
     }
 
     /**
-     * Make a new constraint.
+     * Make a new discrete constraint.
      *
      * @param vm    the VM identifiers
      * @param nodes the nodes identifiers
      */
     public Ban(VM vm, Collection<Node> nodes) {
-        super(Collections.singleton(vm), nodes, false);
+        this(vm, nodes, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vm         the VM identifiers
+     * @param nodes      the nodes identifiers
+     * @param continuous {@code true} for a continuous constraint.
+     */
+    public Ban(VM vm, Collection<Node> nodes, boolean continuous) {
+        super(Collections.singleton(vm), nodes, continuous);
     }
 
     @Override
     public String toString() {
-        return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", discrete)";
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", " + restrictionToString() + ")";
     }
 
     @Override

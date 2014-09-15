@@ -20,7 +20,7 @@ package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.*;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;

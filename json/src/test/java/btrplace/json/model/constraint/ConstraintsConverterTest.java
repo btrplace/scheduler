@@ -23,8 +23,8 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
-import junit.framework.Assert;
 import net.minidev.json.JSONObject;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;

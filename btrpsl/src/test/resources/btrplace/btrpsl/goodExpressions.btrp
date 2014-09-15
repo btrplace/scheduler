@@ -1,0 +1,52 @@
+$T0 = {VM1, VM2, VM3};
+//$TX = VM7;
+$x = 0;
+for $t in $T0 {
+    $x = $x + 1;
+}
+
+if (|$T0| == 1) {
+ cSpread($T0);
+} else if (|$T0| == 3) {
+ root($T0);
+} else {
+  lonely($T0);
+}
+/*
+if (|$T0| < 0) {
+ spread($T0);
+ lonely($T0);
+} else if (|$T0| == 5) {
+ root($T0);
+ root($T0);
+} else {
+ spread($T0);
+}*/
+/*
+$TX = {VM4, VM5};
+$F = $T0 * $TX;
+
+$racks = {{N1, N2, N3}, {N4, N5, N6}, {N7, N8, N9}};
+for $r in $racks {
+    capacity($r, 5);
+}
+$T1 = {VM1, VM2, VM3, VM4, VM5};
+$Z = {{VM1, VM2, VM3}, {VM4, VM5}, {VM7, VM8}};
+$V = $T1 + {VM3, VM8};
+$W = $V - {VM3, VM8};
+$ZZ = $Z + {{VM7, VM9}};
+$ZZZ = $ZZ - {{VM7,VM9}};
+$T2 = |$T1|;
+$T4 = |$T3|;
+$T5 = |$T1| != 5;
+
+$TX = |$T1];
+$T2 = 0xFF;
+if ($T1 == 5) {
+ $T3 = 2;
+ $T4 = |$T3|;
+} else if ($T2 > 0xFF) {
+ $T4 = 0;
+} else if ($T2 == 0xFF) {
+ $T1 = 4;
+}*/

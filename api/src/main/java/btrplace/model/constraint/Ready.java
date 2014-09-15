@@ -38,7 +38,7 @@ import java.util.List;
 public class Ready extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
+     * Instantiate discrete constraints for a collection of VMs.
      *
      * @param vms the VMs to integrate
      * @return the associated list of constraints
@@ -57,8 +57,18 @@ public class Ready extends SatConstraint {
      * @param vm the VM to make ready
      */
     public Ready(VM vm) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
+        this(vm, false);
     }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vm the VM to make ready
+     */
+    public Ready(VM vm, boolean continuous) {
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
+    }
+
 
     @Override
     public SatConstraintChecker getChecker() {
@@ -67,11 +77,6 @@ public class Ready extends SatConstraint {
 
     @Override
     public String toString() {
-        return "ready(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        return "ready(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
     }
 }

@@ -52,6 +52,11 @@ public class CSleeping implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
+        if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
+            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            return false;
+        }
+
         return true;
     }
 

@@ -1,0 +1,9 @@
+namespace bad;
+
+VM[1..9]: tiny;
+
+root(VM7);
+root(VM9;
+lonely(VM10);
+
+export $me to *;
