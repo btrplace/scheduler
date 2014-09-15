@@ -17,12 +17,12 @@
 
 package btrplace.btrpsl.template;
 
-import btrplace.btrpsl.NamingService;
 import btrplace.btrpsl.Script;
 import btrplace.btrpsl.element.BtrpOperand;
 import btrplace.model.Element;
 import btrplace.model.Model;
 import btrplace.model.Node;
+import btrplace.model.view.NamingService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,17 +41,21 @@ public class DefaultTemplateFactory implements TemplateFactory {
 
     private Map<String, Template> nodeTpls;
 
-    private NamingService namingServer;
+    private NamingService namingServerNodes;
+
+    private NamingService namingServerVMs;
 
     private Model mo;
 
     /**
      * Make a new factory.
      *
-     * @param srv the naming service to rely on
+     * @param srvNodes the nodes naming service to rely on
+     * @param srvVMs the vms naming service to rely on
      */
-    public DefaultTemplateFactory(NamingService srv, Model m) {
-        this.namingServer = srv;
+    public DefaultTemplateFactory(NamingService srvNodes, NamingService srvVMs, Model m) {
+        this.namingServerNodes = srvNodes;
+        this.namingServerVMs = srvVMs;
         this.mo = m;
         vmTpls = new HashMap<>();
         nodeTpls = new HashMap<>();
@@ -72,7 +76,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
         //Check if the current element already has a template, report an error if they differ
         String currentTpl = mo.getAttributes().getString(e, "template");
         if (!tplName.equals(currentTpl)) {
-            throw new ElementBuilderException(namingServer.resolve(e) + " already implements '" + currentTpl + "'. Redefinition is not allowed");
+            throw new ElementBuilderException(e.id() + " already implements '" + currentTpl + "'. Redefinition is not allowed");
         }
         Template tpl;
         if (e instanceof Node) {
@@ -88,7 +92,8 @@ public class DefaultTemplateFactory implements TemplateFactory {
 
     @Override
     public Template register(Template tpl) {
-        tpl.setNamingService(namingServer);
+        tpl.setNamingServiceNodes(namingServerNodes);
+        tpl.setNamingServiceVMs(namingServerVMs);
         if (tpl.getElementType() == BtrpOperand.Type.VM) {
             return vmTpls.put(tpl.getIdentifier(), tpl);
         } else if (tpl.getElementType() == BtrpOperand.Type.node) {
