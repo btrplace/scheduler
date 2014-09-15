@@ -25,9 +25,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.Action;
-import btrplace.plan.event.NodeEvent;
-import btrplace.plan.event.VMEvent;
+import btrplace.plan.event.*;
 import btrplace.safeplace.CTestCase;
 import btrplace.safeplace.CTestCaseResult;
 import btrplace.safeplace.Constraint;
@@ -69,7 +67,6 @@ public class ElementsReducer extends Reducer {
             System.err.println(tc.getPlan().equals(res));
             return tc;
         }
-        //System.out.println("Reduced from " + p.getOrigin().getMapping().getNbVMs() + " VMs x " + p.getOrigin().getMapping().getNbNodes() + " nodes  to " + res.getOrigin().getMapping().getNbVMs() + " x " + p.getOrigin().getMapping().getNbNodes());
         return derive(tc, in, res);
     }
 
@@ -177,6 +174,9 @@ public class ElementsReducer extends Reducer {
         }
         while (ite.hasNext()) {
             Node n = ite.next();
+            if (required(n, red)) {
+                continue;
+            }
             ite.remove();
             if (mo.getMapping().remove(n)) {
                 Action removedAction = removeMine(red.getActions(), n);
@@ -189,5 +189,34 @@ public class ElementsReducer extends Reducer {
             }
         }
         return red;
+    }
+
+    private boolean required(Node n, ReconfigurationPlan red) {
+        for (Action a : red.getActions()) {
+            if (a instanceof VMEvent) {
+                if (a instanceof RunningVMPlacement) {
+                    if (((RunningVMPlacement) a).getDestinationNode().equals(n)) {
+                        return true;
+                    }
+                } else if (a instanceof SuspendVM) {
+                    if (((SuspendVM) a).getSourceNode().equals(n) || ((SuspendVM) a).getDestinationNode().equals(n)) {
+                        return true;
+                    }
+                } else if (a instanceof ResumeVM) {
+                    if (((ResumeVM) a).getSourceNode().equals(n) || ((ResumeVM) a).getDestinationNode().equals(n)) {
+                        return true;
+                    }
+                } else if (a instanceof ShutdownVM) {
+                    if (((ShutdownVM) a).getNode().equals(n)) {
+                        return true;
+                    }
+                } else if (a instanceof Allocate) {
+                    if (((Allocate) a).getHost().equals(n)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

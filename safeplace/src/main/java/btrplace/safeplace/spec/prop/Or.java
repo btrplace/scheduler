@@ -45,11 +45,10 @@ public class Or extends BinaryProp {
         if (r1 == null) {
             return null;
         }
-        Boolean r2 = p2.eval(m);
-        if (r2 == null) {
-            return null;
+        if (r1) {
+            return true;
         }
-        return r1 || r2;
+        return p2.eval(m);
     }
 
     @Override

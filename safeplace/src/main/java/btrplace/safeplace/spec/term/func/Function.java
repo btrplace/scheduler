@@ -22,6 +22,7 @@ import btrplace.safeplace.spec.term.Term;
 import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.verification.spec.SpecModel;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,5 +66,13 @@ public abstract class Function<T> {
             }
         }
         return b.append(')').toString();
+    }
+
+    public boolean contains(SpecModel mo, List<Object> args, Object o) {
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not support contains()");
+    }
+
+    public boolean containsAll(SpecModel mo, List<Object> args, Collection<Object> col) {
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not support contains()");
     }
 }

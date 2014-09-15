@@ -44,7 +44,7 @@ public class Test {
             System.exit(1);
         }
         scanner.restrictToTest("Bench");
-        //scanner.restrictToGroup("split");
+        //scanner.restrictToGroup("fence");
 
         List<CTestCasesRunner> runners = null;
         try {

@@ -23,6 +23,7 @@ import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.verification.spec.SpecModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,10 +35,6 @@ public class FunctionCall<T> extends Term<T> {
     private Function<T> c;
 
     private List<Term> args;
-
-    private T cache = null;
-
-    private SpecModel cacheKey = null;
 
     public static enum Moment {
         begin {
@@ -76,22 +73,11 @@ public class FunctionCall<T> extends Term<T> {
 
     @Override
     public T eval(SpecModel m) {
-        if (isConstant() && cache != null) {
-            if (m.equals(cacheKey)) {
-                //System.out.println("cached");
-                return cache;
-            } /*else {
-                System.out.println("invalid");
-                System.out.println(m.getMapping() + "\n--\n" + cacheKey.getMapping());
-            }   */
-        }
         List<Object> values = new ArrayList<>(args.size());
         for (Term t : args) {
             values.add(t.eval(m));
         }
-        cache = c.eval(m, values);
-        cacheKey = m;
-        return cache;
+        return c.eval(m, values);
     }
 
     @Override
@@ -151,5 +137,24 @@ public class FunctionCall<T> extends Term<T> {
             cons &= t.isConstant();
         }
         return cons;
+    }
+
+    @Override
+    public boolean contains(SpecModel mo, Object o) {
+        List<Object> values = new ArrayList<>();
+        for (Term t : args) {
+            values.add(t.eval(mo));
+        }
+        return c.contains(mo, values, o);
+    }
+
+    @Override
+    public boolean includes(SpecModel mo, Collection<Object> col) {
+        List<Object> values = new ArrayList<>();
+        for (Term t : args) {
+            values.add(t.eval(mo));
+        }
+        return c.containsAll(mo, values, col);
+
     }
 }

@@ -103,6 +103,7 @@ public class SpecMapping {
     }
 
     public void host(VM v, Node n) {
+        Set<VM> s = host.get(n);
         host.get(n).add(v);
     }
 

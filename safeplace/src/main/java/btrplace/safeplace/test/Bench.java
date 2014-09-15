@@ -29,11 +29,11 @@ import btrplace.safeplace.verification.spec.IntVerifDomain;
  */
 public class Bench {
 
-    public static int nbVMs = 5;
-    public static int nbNodes = 5;
+    public static int nbVMs = 10;
+    public static int nbNodes = 10;
 
     public static boolean reduce = true;
-    public static int tests = 10;
+    public static int tests = 100;
     public static int to = 10;
 
     public static final CTestCasesRunner check(CTestCasesRunner r) {
@@ -124,12 +124,12 @@ public class Bench {
         check(r.discrete()).impl().repair(true);
     }
 
-    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit", "ban"}, provider = "myProvider")
+    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit", "fence"}, provider = "myProvider")
     public void testFenceContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }
 
-    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit"}, provider = "myProvider")
+    @CstrTest(constraint = "Fence", groups = {"vm2pm", "unit", "fence"}, provider = "myProvider")
     public void testFenceContinuousRepair(CTestCasesRunner r) {
         check(r.continuous()).impl().repair(true);
     }

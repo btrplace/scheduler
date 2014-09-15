@@ -94,4 +94,9 @@ public class Packings extends Function<Set> {
         return new HashSet<Set<Object>>(p);
         //return p;
     }
+
+    @Override
+    public boolean contains(SpecModel mo, List<Object> args, Object c) {
+        return ((Collection) args.get(0)).containsAll((Collection) c);
+    }
 }

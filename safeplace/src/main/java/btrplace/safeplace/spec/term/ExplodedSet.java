@@ -22,10 +22,7 @@ import btrplace.safeplace.spec.type.SetType;
 import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.verification.spec.SpecModel;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -71,5 +68,15 @@ public class ExplodedSet extends Term<Set> {
         }
         b.append('}');
         return b.toString();
+    }
+
+    @Override
+    public boolean includes(SpecModel mo, Collection<Object> col) {
+        return eval(mo).containsAll(col);
+    }
+
+    @Override
+    public boolean contains(SpecModel mo, Object o) {
+        return eval(mo).contains(o);
     }
 }

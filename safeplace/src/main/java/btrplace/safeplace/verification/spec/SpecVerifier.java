@@ -54,6 +54,9 @@ public class SpecVerifier implements Verifier {
         setInputs(cstr, sRes, values);
         Proposition ok = cstr.getProposition();
         Boolean bOk = ok.eval(sRes);
+        if (bOk == null) {
+            return CheckerResult.newError(new Exception("Runtime error in the spec"));
+        }
         if (bOk) {
             return CheckerResult.newOk();
         } else {
@@ -79,6 +82,7 @@ public class SpecVerifier implements Verifier {
             if ("Failure at the beginning of the plan".equals(e.getMessage())) {
                 return CheckerResult.newKo(e.getMessage());
             }
+            e.printStackTrace();
             return CheckerResult.newError(e);
         }
         return CheckerResult.newOk();

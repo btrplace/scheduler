@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static btrplace.safeplace.spec.SpecException.ErrType.SYMBOL_NOT_FOUND;
+import static btrplace.safeplace.spec.SpecException.ErrType.UNKNOWN;
 
 
 /**
@@ -257,7 +258,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     }
 
     private void report(Token t, String msg) {
-        report(t, msg);
+        report(t, UNKNOWN, "", msg);
     }
 
     private void report(Token t, SpecException.ErrType type, String val, String msg) {

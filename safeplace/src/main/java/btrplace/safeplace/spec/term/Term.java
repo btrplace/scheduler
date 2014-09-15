@@ -21,6 +21,7 @@ package btrplace.safeplace.spec.term;
 import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.verification.spec.SpecModel;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -36,11 +37,11 @@ public abstract class Term<T> {
         if (type() instanceof Primitive) {
             return null;
         }
-        return new UserVar(n, true, not, this);
+        return new UserVar(n, false, not, this);
     }
 
     public UserVar<Set> newPart(String n, boolean not) {
-        return new UserVar(n, false, not, this);
+        return new UserVar<Set>(n, true, not, this);
     }
 
     public Object pickIn(SpecModel mo) {
@@ -54,4 +55,13 @@ public abstract class Term<T> {
     public boolean isConstant() {
         return false;
     }
+
+    public boolean contains(SpecModel mo, Object o) {
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not support contains()");
+    }
+
+    public boolean includes(SpecModel mo, Collection<Object> col) {
+        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not support include()");
+    }
+
 }

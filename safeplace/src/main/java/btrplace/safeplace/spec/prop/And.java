@@ -48,11 +48,14 @@ public class And extends BinaryProp {
         if (r1 == null) {
             return null;
         }
+        if (!r1) {
+            return false;
+        }
         Boolean r2 = p2.eval(m);
         if (r2 == null) {
             return null;
         }
-        return r1 && r2;
+        return r2;
     }
 
     @Override

@@ -22,10 +22,7 @@ import btrplace.safeplace.spec.type.SetType;
 import btrplace.safeplace.spec.type.Type;
 import btrplace.safeplace.verification.spec.SpecModel;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -46,11 +43,7 @@ public class Primitive extends Var<Set> {
 
     @Override
     public Set eval(SpecModel mo) {
-        Set dom = mo.getVerifDomain(label());
-        if (dom == null) {
-            throw new UnsupportedOperationException("No domain has been set for primitive '" + label() + "'");
-        }
-        return dom;
+        return get(mo);
     }
 
     @Override
@@ -81,5 +74,23 @@ public class Primitive extends Var<Set> {
             }
         }
         return s;
+    }
+
+    private Set get(SpecModel mo) {
+        Set dom = mo.getVerifDomain(label());
+        if (dom == null) {
+            throw new UnsupportedOperationException("No domain has been set for primitive '" + label() + "'");
+        }
+        return dom;
+    }
+
+    @Override
+    public boolean contains(SpecModel mo, Object o) {
+        return get(mo).contains(o);
+    }
+
+    @Override
+    public boolean includes(SpecModel mo, Collection<Object> col) {
+        return get(mo).containsAll(col);
     }
 }

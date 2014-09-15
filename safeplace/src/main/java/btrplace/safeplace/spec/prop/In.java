@@ -21,8 +21,6 @@ package btrplace.safeplace.spec.prop;
 import btrplace.safeplace.spec.term.Term;
 import btrplace.safeplace.verification.spec.SpecModel;
 
-import java.util.Collection;
-
 /**
  * @author Fabien Hermenier
  */
@@ -40,10 +38,9 @@ public class In extends AtomicProp {
     @Override
     public Boolean eval(SpecModel m) {
         Object o = a.eval(m);
-        Collection c = (Collection) b.eval(m);
-        if (c != null) {
-            return c.contains(o);
+        if (o == null) {
+            System.out.println("here");
         }
-        return null;
+        return b.contains(m, o);
     }
 }

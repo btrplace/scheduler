@@ -45,7 +45,7 @@ public class UserVar<T> extends Var<T> {
 
     @Override
     public Type type() {
-        return incl ? backend.type().inside() : backend.type();
+        return incl ? backend.type() : backend.type().inside();
     }
 
     @Override
@@ -73,11 +73,10 @@ public class UserVar<T> extends Var<T> {
     }
 
     public Object pick(SpecModel mo) {
-        //TODO beware !
         if (incl) {
-            return backend.pickIn(mo);
-        } else {
             return backend.pickIncluded(mo);
+        } else {
+            return backend.pickIn(mo);
         }
     }
 
@@ -85,12 +84,6 @@ public class UserVar<T> extends Var<T> {
         Collection col = null;
         col = backend.eval(mo);
         if (incl) {
-            List<Constant> s = new ArrayList<>();
-            for (Object o : col) {
-                s.add(new Constant(o, type()));
-            }
-            return s;
-        } else {
             List<Object> s = new ArrayList<>();
             for (Object o : col) {
                 s.add(o);
@@ -105,6 +98,24 @@ public class UserVar<T> extends Var<T> {
                 res.add(new Constant(new HashSet(Arrays.asList(tuple)), backend.type()));
             }
             return new ArrayList<>(res);
+        } else {
+            List<Constant> s = new ArrayList<>();
+            for (Object o : col) {
+                s.add(new Constant(o, type()));
+            }
+            return s;
         }
+    }
+
+    @Override
+    public boolean contains(SpecModel mo, Object o) {
+        Collection col = backend.eval(mo);
+        return col.contains(o);
+    }
+
+    @Override
+    public boolean includes(SpecModel mo, Collection<Object> col) {
+        Collection c = backend.eval(mo);
+        return c.containsAll(col);
     }
 }
