@@ -19,10 +19,11 @@ package btrplace.btrpsl.tree;
 
 import btrplace.btrpsl.ANTLRBtrplaceSL2Parser;
 import btrplace.btrpsl.ErrorReporter;
-import btrplace.btrpsl.NamingService;
 import btrplace.btrpsl.Script;
 import btrplace.btrpsl.element.BtrpElement;
 import btrplace.btrpsl.element.BtrpOperand;
+import btrplace.model.Element;
+import btrplace.model.view.NamingService;
 import org.antlr.runtime.Token;
 
 /**
@@ -34,7 +35,8 @@ public class ElementTree extends BtrPlaceTree {
 
     private Script script;
 
-    private NamingService namingService;
+    private NamingService namingServiceNodes;
+    private NamingService namingServiceVMs;
 
     /**
      * Make a new parser.
@@ -42,37 +44,41 @@ public class ElementTree extends BtrPlaceTree {
      * @param t    the token to analyze
      * @param errs the errors to report
      */
-    public ElementTree(Token t, NamingService ns, Script scr, ErrorReporter errs) {
+    public ElementTree(Token t, NamingService nsNodes, NamingService nsVMs, Script scr, ErrorReporter errs) {
         super(t, errs);
         this.script = scr;
-        this.namingService = ns;
+        this.namingServiceNodes = nsNodes;
+        this.namingServiceVMs = nsVMs;
     }
 
     @Override
     public BtrpOperand go(BtrPlaceTree parent) {
         String lbl = getText();
-        BtrpElement el;
+        Element el;
+        BtrpElement btrpEl;
         switch (token.getType()) {
             case ANTLRBtrplaceSL2Parser.NODE_NAME:
                 String ref = lbl.substring(1, lbl.length());
-                el = namingService.resolve(lbl);
+                el = namingServiceNodes.resolve(lbl);
                 if (el == null) {
                     return ignoreError("Unknown node '" + ref + "'");
                 }
+                btrpEl = new BtrpElement(BtrpOperand.Type.node, lbl , el);
                 break;
             case ANTLRBtrplaceSL2Parser.IDENTIFIER:
                 /**
                  * Switch to Fully Qualified name before getting the VM
                  */
                 String fqn = script.id() + '.' + lbl;
-                el = namingService.resolve(fqn);
+                el = namingServiceVMs.resolve(fqn);
                 if (el == null) {
                     return ignoreError("Unknown VM '" + lbl + "'");
                 }
+                btrpEl = new BtrpElement(BtrpOperand.Type.VM, fqn , el);
                 break;
             default:
                 return ignoreError("Unexpected type: " + ANTLRBtrplaceSL2Parser.tokenNames[token.getType()]);
         }
-        return el;
+        return btrpEl;
     }
 }
