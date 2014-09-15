@@ -18,16 +18,21 @@
 
 package btrplace.btrpsl.tree;
 
-import btrplace.btrpsl.*;
+import btrplace.btrpsl.ANTLRBtrplaceSL2Parser;
+import btrplace.btrpsl.ErrorReporter;
+import btrplace.btrpsl.Script;
+import btrplace.btrpsl.SymbolsTable;
 import btrplace.btrpsl.element.BtrpElement;
 import btrplace.btrpsl.element.BtrpOperand;
 import btrplace.btrpsl.element.BtrpSet;
 import btrplace.btrpsl.element.IgnorableOperand;
 import btrplace.btrpsl.template.ElementBuilderException;
 import btrplace.btrpsl.template.TemplateFactory;
+import btrplace.model.Element;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.view.NamingService;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
 
@@ -42,7 +47,8 @@ import java.util.Map;
  */
 public class TemplateAssignment extends BtrPlaceTree {
 
-    private NamingService namingService;
+    private NamingService namingServiceNodes;
+    private NamingService namingServiceVMs;
 
     private Model mo;
 
@@ -66,13 +72,14 @@ public class TemplateAssignment extends BtrPlaceTree {
      * @param symbolsTable the symbol table
      * @param errs         the errors
      */
-    public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService ns, ErrorReporter errs) {
+    public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService nsNodes, NamingService nsVMs, ErrorReporter errs) {
         super(t, errs);
         this.script = s;
         this.tpls = tplFactory;
         this.syms = symbolsTable;
         this.mo = m;
-        this.namingService = ns;
+        this.namingServiceNodes = nsNodes;
+        this.namingServiceVMs = nsVMs;
     }
 
     private Map<String, String> getTemplateOptions() {
@@ -141,7 +148,7 @@ public class TemplateAssignment extends BtrPlaceTree {
     private void addVM(String tplName, String id, Map<String, String> opts) {
 
         try {
-            BtrpElement el = namingService.resolve(id);
+            Element el = namingServiceVMs.resolve(id);
             if (el == null) {
                 VM vm = mo.newVM();
                 mo.getMapping().addReadyVM(vm);
@@ -149,36 +156,39 @@ public class TemplateAssignment extends BtrPlaceTree {
                 if (vm == null) {
                     ignoreError("No UUID to create node '" + id + "'");
                 } else {
-                    el = namingService.register(id, vm);
-                    ((BtrpSet) syms.getSymbol(SymbolsTable.ME)).getValues().add(el);
+                    namingServiceVMs.register(vm, id);
+                    el = vm;
+                    ((BtrpSet) syms.getSymbol(SymbolsTable.ME)).getValues().add(
+                            new BtrpElement(BtrpOperand.Type.VM, id , el));
                 }
             }
-            tpls.check(script, tplName, el.getElement(), opts);
-            if (!script.add(el)) {
+            tpls.check(script, tplName, el, opts);
+            if (!script.add(new BtrpElement(BtrpOperand.Type.VM, id , el))) {
                 ignoreError("VM '" + id + "' already created");
             }
-        } catch (ElementBuilderException | NamingServiceException ex) {
+        } catch (ElementBuilderException ex) {
             ignoreError(ex.getMessage());
         }
     }
 
     private void addNode(String tplName, String id, Map<String, String> opts) {
         try {
-            BtrpElement el = namingService.resolve(id);
+            Element el = namingServiceNodes.resolve(id);
             if (el == null) {
                 Node n = mo.newNode();
                 mo.getMapping().addOfflineNode(n);
                 if (n == null) {
                     ignoreError("No UUID to create node '" + id + "'");
                 } else {
-                    el = namingService.register(id, n);
+                    namingServiceNodes.register(n, id);
+                    el = n;
                 }
             }
-            tpls.check(script, tplName, el.getElement(), opts);
-            if (!script.add(el)) {
+            tpls.check(script, tplName, el, opts);
+            if (!script.add(new BtrpElement(BtrpOperand.Type.node, id , el))) {
                 ignoreError("Node '" + id + "' already created");
             }
-        } catch (ElementBuilderException | NamingServiceException ex) {
+        } catch (ElementBuilderException ex) {
             ignoreError(ex.getMessage());
         }
     }
