@@ -19,10 +19,8 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.Gather;
-import btrplace.model.constraint.Running;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.*;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -43,125 +41,127 @@ import java.util.List;
 public class CNoDelayTest {
 
     @Test
-    public void testDiscreteWithoutRunningVM() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
-        Gather g = new Gather(map.getAllVMs());
-        g.setContinuous(false);
+    public void testOk1() throws SolverException {
+        Model model = new DefaultModel();
 
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
+
+        ShareableResource resources = new ShareableResource("cpu", 4, 1);
+        resources.setCapacity(n2, 3);
+        resources.setConsumption(vm1, 4);
+
+        Mapping map = new MappingFiller().on(n1, n2, n3)
+                .run(n1, vm1)
+                .run(n2, vm2)
+                .run(n3, vm3)
+                .run(n3, vm4).get();
+
+        MappingUtils.fill(map, model.getMapping());
+        model.attach(resources);
+
+        Ban b = new Ban(vm1, Collections.singleton(n1));
+        NoDelay nd = new NoDelay(vm3);
+
+        // 1 solution (priority to vm3): vm3 to n2 ; vm4 to n2 ; vm1 to n3
+
+        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        constraints.add(nd);
+        constraints.add(b);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(g));
+        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        ReconfigurationPlan plan = cra.solve(model, constraints);
+
         Assert.assertNotNull(plan);
-        Assert.assertEquals(plan.getSize(), 0);
-        Model res = plan.getResult();
-        Assert.assertTrue(res.getMapping().isReady(vm1));
-        //Assert.assertEquals(g.isSatisfied(res), SatConstraint.Sat.SATISFIED);
-        //Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertTrue(nd.isSatisfied(plan));
     }
 
     @Test
-    public void testDiscreteWithRunningVMs() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
+    public void testOk2() throws SolverException {
+        Model model = new DefaultModel();
 
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
-        Gather g = new Gather(map.getAllVMs());
-        g.setContinuous(false);
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
 
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
+
+        ShareableResource resources = new ShareableResource("cpu", 4, 1);
+        resources.setCapacity(n2, 3);
+        resources.setConsumption(vm1, 4);
+
+        Mapping map = new MappingFiller().on(n1, n2, n3)
+                .run(n1, vm1)
+                .run(n2, vm2)
+                .run(n3, vm3)
+                .run(n3, vm4).get();
+
+        MappingUtils.fill(map, model.getMapping());
+        model.attach(resources);
+
+        Ban b = new Ban(vm1, Collections.singleton(n1));
+        NoDelay nd = new NoDelay(vm4);
+
+        // 1 solution (priority to vm4): vm4 to n2 ; vm3 to n2 ; vm1 to n3
+
+        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        constraints.add(nd);
+        constraints.add(b);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(g);
-        cstrs.addAll(Running.newRunning(map.getAllVMs()));
-        ReconfigurationPlan plan = cra.solve(mo, cstrs);
+        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        ReconfigurationPlan plan = cra.solve(model, constraints);
+
         Assert.assertNotNull(plan);
-        Model res = plan.getResult();
-        Assert.assertEquals(res.getMapping().getVMLocation(vm1), res.getMapping().getVMLocation(vm2));
+        Assert.assertTrue(nd.isSatisfied(plan));
     }
 
     @Test
-    public void testGetMisplaced() {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
+    public void testKo() throws SolverException {
+        Model model = new DefaultModel();
 
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
-        Gather g = new Gather(map.getAllVMs());
-        CGather c = new CGather(g);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        map.addRunningVM(vm1, n2);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
 
-        map.addRunningVM(vm1, n1);
-        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getAllVMs());
-    }
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
 
-    @Test
-    public void testContinuousWithPartialRunning() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
-        Gather g = new Gather(map.getAllVMs());
-        g.setContinuous(true);
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Running.newRunning(map.getAllVMs()));
-        cstrs.add(g);
+        ShareableResource resources = new ShareableResource("cpu", 4, 1);
+        resources.setCapacity(n2, 3);
+        resources.setConsumption(vm1, 4);
+
+        Mapping map = new MappingFiller().on(n1, n2, n3)
+                .run(n1, vm1)
+                .run(n2, vm2)
+                .run(n3, vm3)
+                .run(n3, vm4).get();
+
+        MappingUtils.fill(map, model.getMapping());
+        model.attach(resources);
+
+        Ban b = new Ban(vm1, Collections.singleton(n1));
+        NoDelay nd = new NoDelay(vm1);
+
+        // No solution: unable to migrate vm1 at t=0
+
+        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        constraints.add(nd);
+        constraints.add(b);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, cstrs);
-        Assert.assertNotNull(plan);
-    }
+        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        ReconfigurationPlan plan = cra.solve(model, constraints);
 
-    /**
-     * We try to relocate co-located VMs in continuous mode. Not allowed
-     *
-     * @throws btrplace.solver.SolverException
-     */
-    @Test
-    public void testContinuousWithRelocationOfVMs() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n2, vm1, vm2).get();
-        Gather g = new Gather(map.getAllVMs());
-        g.setContinuous(true);
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Running.newRunning(map.getAllVMs()));
-        cstrs.add(g);
-        cstrs.add(new Fence(vm1, Collections.singleton(n1)));
-        cstrs.add(new Fence(vm2, Collections.singleton(n1)));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNull(plan);
-    }
-
-    @Test
-    public void testContinuousWithNoRunningVMs() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1, vm2).get();
-        Gather g = new Gather(map.getAllVMs());
-        g.setContinuous(true);
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(g);
-        cstrs.addAll(Running.newRunning(map.getAllVMs()));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, cstrs);
-        Assert.assertNotNull(plan);
     }
 }
