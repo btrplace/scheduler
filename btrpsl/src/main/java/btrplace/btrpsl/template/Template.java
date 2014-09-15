@@ -17,11 +17,11 @@
 
 package btrplace.btrpsl.template;
 
-import btrplace.btrpsl.NamingService;
 import btrplace.btrpsl.Script;
 import btrplace.btrpsl.element.BtrpElement;
 import btrplace.btrpsl.element.BtrpOperand;
 import btrplace.model.Element;
+import btrplace.model.view.NamingService;
 
 import java.util.Map;
 
@@ -58,10 +58,17 @@ public interface Template {
     BtrpOperand.Type getElementType();
 
     /**
-     * Set the naming service to use for that template.
+     * Set the node naming service to use for that template.
      *
-     * @param srv the service to use
+     * @param srvNodes the service to use
      */
-    void setNamingService(NamingService srv);
+    void setNamingServiceNodes(NamingService srvNodes);
+
+    /**
+     * Set the vm naming service to use for that template.
+     *
+     * @param srvVMs the service to use
+     */
+    void setNamingServiceVMs(NamingService srvVMs);
 
 }
