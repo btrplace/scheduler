@@ -24,7 +24,10 @@ import btrplace.model.Model;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Unit tests that check the examples are working.
@@ -55,6 +58,166 @@ public class ExamplesTest {
         Assert.assertEquals(map.getReadyVMs().size(), 24);
         Assert.assertEquals(map.getOfflineNodes().size(), 251);
 
+    }
+
+    @Test
+    public void fromEntropyConverterTest() throws IOException {
+
+        String[] params = new String[6];
+        params[0] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/nr/0-src.pbd";
+        params[1] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/nr/0-dst.pbd";
+        params[2] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/c33p5000/datacenter.btrp";
+        params[3] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/c33p5000/clients/c9.btrp";
+        params[4] = "-o";
+        params[5] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/nr/0-c33p5000-c9.json";
+
+        /*
+
+        String src, dst = null, output, scriptDC = null, scriptCL = null;
+
+        if (params.length < 3 || params.length > 6 || params.length == 5 || !params[params.length-2].equals("-o")) {
+            return;
+        }
+        src = params[0];
+        output = params[params.length - 1];
+        if (params.length > 3) {
+            dst = params[1];
+            if (params.length > 5) {
+                scriptDC = params[2];
+                scriptCL = params[3];
+            }
+        }
+
+        OutputStreamWriter out = null;
+        try {
+            // Convert the src file
+            ConfigurationConverter conv = new ConfigurationConverter(src);
+            Instance i = conv.getInstance();
+
+            // Read the dst file, deduce and add the states constraints
+            if (dst != null) {
+                i.getSatConstraints().addAll(conv.getNextStates(dst));
+            }
+
+            // Read the script files
+            ScriptBuilder scriptBuilder = new ScriptBuilder(i.getModel());
+            // Read the datacenter script file if exists
+            if (scriptDC != null) {
+                String strScriptDC = null;
+                try {
+                    strScriptDC = readFile(scriptDC);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Script scrDC = null;
+                try {
+                    // Build the DC script
+                    scrDC = scriptBuilder.build(strScriptDC);
+
+                } catch (ScriptBuilderException sbe) {
+                    List<ErrorMessage> errorsList = sbe.getErrorReporter().getErrors();
+                    List<JSONObject> errors = new ArrayList<JSONObject>();
+
+                    for (ErrorMessage error : errorsList) {
+                        JSONObject e = new JSONObject();
+                        e.put("row", error.lineNo());
+                        e.put("column", error.colNo());
+                        e.put("message", error.message());
+                        errors.add(e);
+                    }
+                }
+                // Set the DC script as an include
+                BasicIncludes bi = new BasicIncludes();
+                bi.add(scrDC);
+                scriptBuilder.setIncludes(bi);
+            }
+            // Read the client script file if exists
+            if (scriptCL != null) {
+                String strScriptCL = null;
+                try {
+                    strScriptCL = readFile(scriptCL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Script scrCL = null;
+                try {
+                    // Build the DC script
+                    scrCL = scriptBuilder.build(strScriptCL);
+
+                } catch (ScriptBuilderException sbe) {
+                    List<ErrorMessage> errorsList = sbe.getErrorReporter().getErrors();
+                    List<JSONObject> errors = new ArrayList<JSONObject>();
+
+                    for (ErrorMessage error : errorsList) {
+                        JSONObject e = new JSONObject();
+                        e.put("row", error.lineNo());
+                        e.put("column", error.colNo());
+                        e.put("message", error.message());
+                        errors.add(e);
+                    }
+                }
+
+                // Add the resulting constraints
+                if (scrCL.getConstraints() != null) {
+                    //i.getSatConstraints().addAll(scrCL.getConstraints());
+                    System.out.println(scrCL.getConstraints());
+                }
+
+            }
+
+            // Convert to JSON
+            InstanceConverter iConv = new InstanceConverter();
+            JSONObject o = iConv.toJSON(i);
+
+            if (output.endsWith(".gz")) {
+                out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(output)));
+            } else {
+                out = new FileWriter(output);
+            }
+
+            // Write the output file
+            o.writeJSONString(out);
+            out.close();
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    System.err.println(e.getMessage());
+                    System.exit(1);
+                }
+            }
+        }
+        */
+    }
+
+
+    /**
+     * read a file
+     *
+     * @param fileName
+     * @return the file content as a String
+     * @throws IOException
+     */
+    private String readFile(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
     }
 }
 
