@@ -58,6 +58,8 @@ public class PlanReducer extends Reducer {
             System.err.println(tc);
             System.err.println("Now: " + red);
             System.err.println(tc.getPlan().equals(mins.get(0)));
+            //FIXME: back to the original
+            return tc;
             //System.exit(1);
         }
         //System.out.println("Reduced from " + p.getSize() + " action(s) to " + mins.get(0).getSize());

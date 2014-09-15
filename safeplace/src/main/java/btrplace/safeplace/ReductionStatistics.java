@@ -32,8 +32,12 @@ public class ReductionStatistics {
     }
 
     public void report(CTestCase tc1, CTestCase tc2) {
-        //System.out.print(nbNodes(tc1) + " " + nbVMs(tc1) + " " + nbActions(tc1) + " " + arity(tc1));
-        //System.out.println(" || " + nbNodes(tc2) + " " + nbVMs(tc2) + " " + nbActions(tc2) + " " + arity(tc2));
+        System.out.print(nbNodes(tc1) + " " + nbVMs(tc1) + " " + nbActions(tc1) + " " + arity(tc1));
+        System.out.println(" || " + nbNodes(tc2) + " " + nbVMs(tc2) + " " + nbActions(tc2) + " " + arity(tc2));
+        if (nbVMs(tc2) == 0 && nbNodes(tc2) == 0) {
+            System.err.println(tc1);
+            System.err.println(tc2);
+        }
     }
 
     private int nbNodes(CTestCase tc) {

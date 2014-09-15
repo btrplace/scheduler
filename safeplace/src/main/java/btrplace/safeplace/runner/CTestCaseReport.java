@@ -18,6 +18,7 @@
 
 package btrplace.safeplace.runner;
 
+import btrplace.safeplace.CTestCaseMetrology;
 import btrplace.safeplace.CTestCaseResult;
 
 /**
@@ -31,7 +32,7 @@ public class CTestCaseReport {
 
     private Exception ex;
 
-    private long duration, fuzzingDuration = 0, reduceDuration = 0, testDuration = 0, preCheckDuration = 0;
+    private long duration, fuzzingDuration = 0, reduceDuration = 0, testDuration = 0, preCheckDuration = 0, rawVMs, rawNodes, rawArity, reducedVMs, reducedNodes, reducedArity;
 
     public CTestCaseReport(String id) {
         this.id = id;
@@ -52,10 +53,18 @@ public class CTestCaseReport {
                 fe++;
                 break;
         }
-        fuzzingDuration += r.getFuzzingDuration();
-        reduceDuration += r.getReduceDuration();
-        testDuration += r.getTestDuration();
-        preCheckDuration += r.getPreCheckDuration();
+        CTestCaseMetrology metrics = r.getMetrics();
+        fuzzingDuration += metrics.getFuzzingDuration();
+        reduceDuration += metrics.getReduceDuration();
+        testDuration += metrics.getTestingDuration();
+        preCheckDuration += metrics.getValidationDuration();
+        rawNodes += metrics.getRawNodes();
+        rawVMs += metrics.getRawVMs();
+        rawArity += metrics.getRawArity();
+        reducedArity += metrics.getReducedArity();
+        reducedVMs += metrics.getReducedVMs();
+        reducedNodes += metrics.getReducedNodes();
+
     }
 
     public void report(Exception e) {
@@ -79,14 +88,17 @@ public class CTestCaseReport {
     }
 
     public String raw() {
-        return id + " " + ok + " " + fp + " " + fn + " " + fe + " " + duration + " " + fuzzingDuration + " " + preCheckDuration + " " + testDuration + " " + reduceDuration;
+        return id + " " + ok + " " + fp + " " + fn + " " + fe + " "
+                + duration + " " + fuzzingDuration + " " + preCheckDuration + " " + testDuration + " " + reduceDuration + " "
+                + rawNodes + " " + rawVMs + " " + rawArity + " " + reducedNodes + " " + reducedVMs + " " + reducedArity
+                ;
     }
 
     public String pretty() {
         if (ex != null) {
             return id + ": " + ex.getMessage();
         }
-        return id + ": " + (ok + fn + fp) + " test(s); " + fp + " F/P; " + fn + " F/N; " + fe + " failure(s) (" + duration + "ms)";
+        return id + ": " + (ok + fn + fp + fe) + " test(s); " + fp + " F/P; " + fn + " F/N; " + fe + " failure(s) (" + duration + "ms)";
     }
 
     public int ok() {

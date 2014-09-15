@@ -98,7 +98,6 @@ public class SpecModel {
     @Override
     public String toString() {
         return stack.toString();
-        //return vars.toString();
     }
 
     public void saveStack() {
@@ -107,5 +106,27 @@ public class SpecModel {
 
     public void restoreStack() {
         stack.pop();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SpecModel specModel = (SpecModel) o;
+
+        if (!sm.equals(specModel.sm)) return false;
+        //if (!stack.equals(specModel.stack)) return false;
+        //if (!vDoms.equals(specModel.vDoms)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sm.hashCode();
+        result = 31 * result + vDoms.hashCode();
+        result = 31 * result + stack.hashCode();
+        return result;
     }
 }

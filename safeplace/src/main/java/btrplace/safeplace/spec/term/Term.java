@@ -50,4 +50,8 @@ public abstract class Term<T> {
     public Object pickIncluded(SpecModel mo) {
         throw new UnsupportedOperationException("Sth included " + this.type() + " " + getClass().getSimpleName());
     }
+
+    public boolean isConstant() {
+        return false;
+    }
 }

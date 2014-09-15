@@ -33,4 +33,6 @@ public interface Verifier {
     CheckerResult verify(Constraint c, List<Constant> params, Model dst, Model src);
 
     CheckerResult verify(Constraint c, List<Constant> params, ReconfigurationPlan p);
+
+    String id();
 }

@@ -35,6 +35,9 @@ public class FunctionCall<T> extends Term<T> {
 
     private List<Term> args;
 
+    private T cache = null;
+
+    private SpecModel cacheKey = null;
 
     public static enum Moment {
         begin {
@@ -73,12 +76,22 @@ public class FunctionCall<T> extends Term<T> {
 
     @Override
     public T eval(SpecModel m) {
+        if (isConstant() && cache != null) {
+            if (m.equals(cacheKey)) {
+                //System.out.println("cached");
+                return cache;
+            } /*else {
+                System.out.println("invalid");
+                System.out.println(m.getMapping() + "\n--\n" + cacheKey.getMapping());
+            }   */
+        }
         List<Object> values = new ArrayList<>(args.size());
         for (Term t : args) {
             values.add(t.eval(m));
         }
-        //System.out.println("eval " + c.toString() + " " + values);
-        return c.eval(m, values);
+        cache = c.eval(m, values);
+        cacheKey = m;
+        return cache;
     }
 
     @Override
@@ -129,5 +142,14 @@ public class FunctionCall<T> extends Term<T> {
     @Override
     public Object pickIncluded(SpecModel mo) {
         return c.pickIncluded(mo, args);
+    }
+
+    @Override
+    public boolean isConstant() {
+        boolean cons = true;
+        for (Term t : args) {
+            cons &= t.isConstant();
+        }
+        return cons;
     }
 }

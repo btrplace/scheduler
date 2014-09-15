@@ -65,4 +65,10 @@ public class AllNodes extends Primitive {
         }
         return s;
     }
+
+    @Override
+    public boolean isConstant() {
+        return true;
+    }
+
 }

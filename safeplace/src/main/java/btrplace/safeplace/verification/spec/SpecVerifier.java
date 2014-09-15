@@ -76,7 +76,7 @@ public class SpecVerifier implements Verifier {
             }
 
         } catch (Exception e) {
-            if (e.getMessage().equals("Failure at the beginning of the plan")) {
+            if ("Failure at the beginning of the plan".equals(e.getMessage())) {
                 return CheckerResult.newKo(e.getMessage());
             }
             return CheckerResult.newError(e);
@@ -127,5 +127,10 @@ public class SpecVerifier implements Verifier {
             }
         }
         return b.append(')').toString();
+    }
+
+    @Override
+    public String id() {
+        return "spec";
     }
 }

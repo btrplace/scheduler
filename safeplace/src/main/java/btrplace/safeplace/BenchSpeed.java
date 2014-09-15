@@ -40,7 +40,7 @@ public class BenchSpeed {
                     Bench.nbVMs = Integer.parseInt(args[++i]);
                     break;
                 case "--nodes":
-                    nbNodes = Integer.parseInt(args[++i]);
+                    Bench.nbNodes = Integer.parseInt(args[++i]);
                     break;
                 case "--tests":
                     Bench.tests = Integer.parseInt(args[++i]);

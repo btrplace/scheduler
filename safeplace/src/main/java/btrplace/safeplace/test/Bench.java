@@ -32,7 +32,7 @@ public class Bench {
     public static int nbVMs = 5;
     public static int nbNodes = 5;
 
-    public static boolean reduce = false;
+    public static boolean reduce = true;
     public static int tests = 10;
     public static int to = 10;
 
@@ -352,7 +352,7 @@ public class Bench {
 
 
     //Split
-    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit"}, provider = "myProvider")
+    @CstrTest(constraint = "Split", groups = {"vm2vm", "unit", "split"}, provider = "myProvider")
     public void testSplitContinuous(CTestCasesRunner r) {
         check(r.continuous());
     }

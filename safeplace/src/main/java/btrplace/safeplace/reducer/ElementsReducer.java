@@ -67,7 +67,7 @@ public class ElementsReducer extends Reducer {
             System.err.println(tc);
             System.err.println("Now: " + derive(tc, in, res));
             System.err.println(tc.getPlan().equals(res));
-            System.exit(1);
+            return tc;
         }
         //System.out.println("Reduced from " + p.getOrigin().getMapping().getNbVMs() + " VMs x " + p.getOrigin().getMapping().getNbNodes() + " nodes  to " + res.getOrigin().getMapping().getNbVMs() + " x " + p.getOrigin().getMapping().getNbNodes());
         return derive(tc, in, res);

@@ -278,4 +278,9 @@ public class ImplVerifier implements Verifier {
     public int hashCode() {
         return (repair ? 1 : 0);
     }
+
+    @Override
+    public String id() {
+        return repair ? "impl_repair" : "impl_rebuild";
+    }
 }

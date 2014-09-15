@@ -18,6 +18,7 @@
 
 package btrplace.safeplace.test;
 
+import btrplace.safeplace.CTestCaseMetrology;
 import btrplace.safeplace.CTestCaseResult;
 import btrplace.safeplace.runner.CTestCaseReport;
 import btrplace.safeplace.runner.CTestCasesRunner;
@@ -33,6 +34,7 @@ public class Test {
     private static int verbosity = 2;
 
     public static boolean raw = true;
+
     public static void main(String[] args) {
         TestsScanner scanner = null;
         try {
@@ -42,8 +44,7 @@ public class Test {
             System.exit(1);
         }
         scanner.restrictToTest("Bench");
-        //scanner.restrictToGroup("among");
-
+        //scanner.restrictToGroup("split");
 
         List<CTestCasesRunner> runners = null;
         try {
@@ -58,15 +59,16 @@ public class Test {
         for (CTestCasesRunner runner : runners) {
             CTestCaseReport report = new CTestCaseReport(runner.id());
             for (CTestCaseResult res : runner) {
+                if (raw) {
+                    CTestCaseMetrology metrics = res.getMetrics();
+                    System.out.println(metrics);
+                }
                 report.add(res);
-                /*if (res.result() == CTestCaseResult.Result.failure) {
-                    System.out.println(res);
-                } */
             }
             report.duration(runner.getDuration());
             report.report(runner.report());
             if (report.report() != null || report.fn() > 0 || report.fp() > 0 || verbosity > 1) {
-                System.out.println(raw ? report.raw() : report.pretty());
+                System.err.println(report.pretty());
             }
         }
     }

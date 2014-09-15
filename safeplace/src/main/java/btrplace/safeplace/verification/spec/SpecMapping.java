@@ -155,4 +155,14 @@ public class SpecMapping {
         }
         return s;*/
     }
+
+    @Override
+    public String toString() {
+        return "SpecMapping{" +
+                "vmState=" + vmState +
+                ", nodeState=" + nodeState +
+                ", activeOn=" + activeOn +
+                ", host=" + host +
+                '}';
+    }
 }

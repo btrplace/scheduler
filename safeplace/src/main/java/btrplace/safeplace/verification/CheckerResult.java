@@ -98,4 +98,6 @@ public class CheckerResult {
     public int hashCode() {
         return Objects.hash(b, ex);
     }
+
+
 }

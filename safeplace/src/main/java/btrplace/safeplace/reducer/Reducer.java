@@ -24,6 +24,7 @@ import btrplace.safeplace.CTestCase;
 import btrplace.safeplace.CTestCaseResult;
 import btrplace.safeplace.Constraint;
 import btrplace.safeplace.spec.term.Constant;
+import btrplace.safeplace.verification.CheckerResult;
 import btrplace.safeplace.verification.Verifier;
 import btrplace.safeplace.verification.spec.SpecVerifier;
 
@@ -41,15 +42,27 @@ public abstract class Reducer {
 
     public boolean consistent(SpecVerifier v1, Verifier v2, Constraint cstr, List<Constant> args, ReconfigurationPlan p, boolean c, CTestCaseResult.Result errType) {
         boolean r1, r2;
+        CheckerResult cr1, cr2;
         if (c) {
-            r1 = v1.verify(cstr, args, p).getStatus();
-            r2 = v2.verify(cstr, args, p).getStatus();
+            cr1 = v1.verify(cstr, args, p);
+            cr2 = v2.verify(cstr, args, p);
         } else {
             Model src = p.getOrigin();
             Model dst = p.getResult();
-            r1 = v1.verify(cstr, args, src, dst).getStatus();
-            r2 = v2.verify(cstr, args, src, dst).getStatus();
+            cr1 = v1.verify(cstr, args, src, dst);
+            cr2 = v2.verify(cstr, args, src, dst);
         }
+        CTestCaseResult.Result res = CTestCaseResult.makeResult(cr1, cr2);
+        if (res == CTestCaseResult.Result.success) {
+            return true;
+        }
+        return errType != res;
+        /*if (errType == res) {
+            return fal
+        }
+        System.out.println(cr1 + " " + cr2);
+        r1 = cr1.getStatus();
+        r2 = cr2.getStatus();
         //System.out.println("With " + tc.getConstraint().toString(tc.getParameters()) + " " + r1 + " " + r2);
         if (r1 == r2) {
             return true;
@@ -59,7 +72,7 @@ public abstract class Reducer {
         if ((errType == CTestCaseResult.Result.falseNegative && !r2) || (errType == CTestCaseResult.Result.falsePositive && r2)) {
             return false;
         }
-        return true;
+        return true; */
     }
 
     public boolean consistent(SpecVerifier v1, Verifier v2, CTestCase tc, CTestCaseResult.Result errType) {

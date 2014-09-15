@@ -102,4 +102,8 @@ public class CheckerVerifier implements Verifier {
         return "checker";
     }
 
+    @Override
+    public String id() {
+        return "checker";
+    }
 }

@@ -29,32 +29,14 @@ import static btrplace.safeplace.CTestCaseResult.Result.success;
  */
 public class CTestCaseResult {
 
-    private long reduceDuration;
-    private long testDuration;
-    private long preCheckDuration;
+    private CTestCaseMetrology metrics;
 
-    public void setReduceDuration(long reduceDuration) {
-        this.reduceDuration = reduceDuration;
+    public void setMetrics(CTestCaseMetrology metrics) {
+        this.metrics = metrics;
     }
 
-    public long getReduceDuration() {
-        return reduceDuration;
-    }
-
-    public void setTestDuration(long testDuration) {
-        this.testDuration = testDuration;
-    }
-
-    public long getTestDuration() {
-        return testDuration;
-    }
-
-    public void setPreCheckDuration(long preCheckDuration) {
-        this.preCheckDuration = preCheckDuration;
-    }
-
-    public long getPreCheckDuration() {
-        return preCheckDuration;
+    public CTestCaseMetrology getMetrics() {
+        return metrics;
     }
 
     public static enum Result {success, falsePositive, falseNegative, failure}
@@ -80,7 +62,7 @@ public class CTestCaseResult {
         res = makeResult(res1, res2);
     }
 
-    private Result makeResult(CheckerResult res1, CheckerResult res2) {
+    public static Result makeResult(CheckerResult res1, CheckerResult res2) {
         if (res2.getStatus() == null) {
             return failure;
         }
@@ -133,14 +115,6 @@ public class CTestCaseResult {
 
     public String getStderr() {
         return stderr;
-    }
-
-    public void setFuzzingDuration(long d) {
-        fuzzingDuration = d;
-    }
-
-    public long getFuzzingDuration() {
-        return fuzzingDuration;
     }
 
     public String errMessage() {

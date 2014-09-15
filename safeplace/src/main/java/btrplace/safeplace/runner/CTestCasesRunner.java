@@ -77,13 +77,15 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private List<Reducer> reducers;
 
-    private ReductionStatistics reductionStatistics = new ReductionStatistics();
-
     private int nb;
 
-    private long lastFuzzingDuration, lastTestDuration, lastReduceDuration, preconditionCheckDuration;
+
+    private long preconditionCheckDuration;
 
     private long begin = -1, end = -1;
+
+    private CTestCaseMetrology metrics;
+
     private Iterator<ReconfigurationPlan> in = new Iterator<ReconfigurationPlan>() {
         @Override
         public boolean hasNext() {
@@ -183,24 +185,6 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     }
 
-    private void save(CTestCase tc, CTestCaseResult r) {
-        if (r.result() != CTestCaseResult.Result.success) {
-            lastReduceDuration = -System.currentTimeMillis();
-            CTestCase tc2 = reduce(r.result(), tc, continuous);
-            lastReduceDuration += System.currentTimeMillis();
-            r.setReduceDuration(lastReduceDuration);
-            CTestCaseResult res2 = test(tc2);
-            if (res2.result() != r.result()) {
-                System.err.println(tc2.getPlan().equals(tc.getPlan()));
-                System.err.println(tc2.getParameters().equals(tc.getParameters()));
-                System.err.println(tc.getParameters() + " " + tc2.getParameters());
-                System.err.println(tc2.getConstraint().equals(tc.getConstraint()));
-                throw new RuntimeException("Failure in the reduction.\nWas:\n" + tc + "\nwith\n" + r + "\nNow:\n" + tc2 + "\nwith\n" + res2);
-            }
-            //System.out.println(res2);
-        }
-    }
-
     private boolean checkPre(ReconfigurationPlan p) {
         preconditionCheckDuration -= System.currentTimeMillis();
         //Necessarily against the continuous version
@@ -270,10 +254,11 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     @Override
     public CTestCaseResult next() {
+
         if (begin < 0) {
             begin = System.currentTimeMillis();
         }
-        lastFuzzingDuration = 0;
+        long lastFuzzingDuration = 0;
         ReconfigurationPlan p;
         preconditionCheckDuration = 0;
 
@@ -282,25 +267,35 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
             p = in.next();
             lastFuzzingDuration += System.currentTimeMillis();
         } while (!checkPre(p));
-        //System.out.println("New params for " + cstr.id());
+
         lastFuzzingDuration -= System.currentTimeMillis();
         List<Constant> args = cig.newParams();
         lastFuzzingDuration += System.currentTimeMillis();
+
+
         CTestCase tc = new CTestCase(testClass, testName, nb++, cstr, args, p, continuous);
         save(tc);
-        lastTestDuration = -System.currentTimeMillis();
+
+        long lastTestDuration = -System.currentTimeMillis();
         CTestCaseResult res = test(tc);
         lastTestDuration += System.currentTimeMillis();
-        res.setFuzzingDuration(lastFuzzingDuration);
-        res.setTestDuration(lastTestDuration);
-        res.setPreCheckDuration(preconditionCheckDuration);
-        save(tc, res);
-        //System.out.println(lastFuzzingDuration + " " + lastTestDuration + " " + preconditionCheckDuration);
-        return res;
-    }
 
-    public long getLastFuzzingDuration() {
-        return lastFuzzingDuration;
+
+        metrics = new CTestCaseMetrology(tc, verifier, res.result());
+        metrics.setFuzzingDuration(lastFuzzingDuration);
+        metrics.setTestingDuration(lastTestDuration);
+        metrics.setValidationDuration(preconditionCheckDuration);
+
+
+        long lastReduceDuration = -System.currentTimeMillis();
+        CTestCase tc2 = reduce(res.result(), tc, continuous);
+        lastReduceDuration += System.currentTimeMillis();
+        metrics.setReduceDuration(lastReduceDuration);
+        metrics.setReduced(tc2);
+
+        save(tc2);
+        res.setMetrics(metrics);
+        return res;
     }
 
     @Override
@@ -414,16 +409,19 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     }
 
     private CTestCase reduce(CTestCaseResult.Result errType, CTestCase tc, boolean c) {
+        if (errType == CTestCaseResult.Result.success) {
+            return tc;
+        }
         CTestCase x = tc;
         try {
             for (Reducer r : reducers) {
                 x = r.reduce(x, specVerifier, verifier, errType);
                 CTestCaseResult res = test(x);
                 if (res.result() != errType) {
-                    throw new RuntimeException("The error type changed from " + errType + " to " + res.result());
+                    System.err.println("The error type changed from " + errType + " to " + res.result());
+                    return tc;
                 }
             }
-            reductionStatistics.report(tc, x);
         } catch (Exception e) {
             e.printStackTrace();
             return x;
