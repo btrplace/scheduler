@@ -60,6 +60,7 @@ public class ExamplesTest {
 
     }
 
+/* TODO: To remove (debug purpose only)
     @Test
     public void fromEntropyConverterTest() throws IOException {
 
@@ -70,8 +71,6 @@ public class ExamplesTest {
         params[3] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/c33p5000/clients/c9.btrp";
         params[4] = "-o";
         params[5] = "/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/nr/0-c33p5000-c9.json";
-
-        /*
 
         String src, dst = null, output, scriptDC = null, scriptCL = null;
 
@@ -101,6 +100,8 @@ public class ExamplesTest {
 
             // Read the script files
             ScriptBuilder scriptBuilder = new ScriptBuilder(i.getModel());
+            scriptBuilder.setIncludes(new PathBasedIncludes(scriptBuilder,
+                    new File("/user/vkherbac/home/Documents/btrplace/wkld-tdsc/r3/c33p5000")));
             // Read the datacenter script file if exists
             if (scriptDC != null) {
                 String strScriptDC = null;
@@ -115,21 +116,12 @@ public class ExamplesTest {
                     scrDC = scriptBuilder.build(strScriptDC);
 
                 } catch (ScriptBuilderException sbe) {
-                    List<ErrorMessage> errorsList = sbe.getErrorReporter().getErrors();
-                    List<JSONObject> errors = new ArrayList<JSONObject>();
-
-                    for (ErrorMessage error : errorsList) {
-                        JSONObject e = new JSONObject();
-                        e.put("row", error.lineNo());
-                        e.put("column", error.colNo());
-                        e.put("message", error.message());
-                        errors.add(e);
-                    }
+                    System.out.println(sbe);
                 }
                 // Set the DC script as an include
-                BasicIncludes bi = new BasicIncludes();
-                bi.add(scrDC);
-                scriptBuilder.setIncludes(bi);
+                //BasicIncludes bi = new BasicIncludes();
+                //bi.add(scrDC);
+                //scriptBuilder.setIncludes(bi);
             }
             // Read the client script file if exists
             if (scriptCL != null) {
@@ -145,22 +137,12 @@ public class ExamplesTest {
                     scrCL = scriptBuilder.build(strScriptCL);
 
                 } catch (ScriptBuilderException sbe) {
-                    List<ErrorMessage> errorsList = sbe.getErrorReporter().getErrors();
-                    List<JSONObject> errors = new ArrayList<JSONObject>();
-
-                    for (ErrorMessage error : errorsList) {
-                        JSONObject e = new JSONObject();
-                        e.put("row", error.lineNo());
-                        e.put("column", error.colNo());
-                        e.put("message", error.message());
-                        errors.add(e);
-                    }
+                    System.out.println(sbe);
                 }
 
                 // Add the resulting constraints
                 if (scrCL.getConstraints() != null) {
-                    //i.getSatConstraints().addAll(scrCL.getConstraints());
-                    System.out.println(scrCL.getConstraints());
+                    i.getSatConstraints().addAll(scrCL.getConstraints());
                 }
 
             }
@@ -180,6 +162,7 @@ public class ExamplesTest {
             out.close();
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println(e.getMessage());
             System.exit(1);
         } finally {
@@ -192,8 +175,8 @@ public class ExamplesTest {
                 }
             }
         }
-        */
     }
+*/
 
 
     /**
