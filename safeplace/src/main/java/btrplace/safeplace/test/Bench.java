@@ -29,16 +29,19 @@ import btrplace.safeplace.verification.spec.IntVerifDomain;
  */
 public class Bench {
 
-    public static int nbVMs = 10;
-    public static int nbNodes = 10;
+    public static int nbVMs = 100;
+    public static int nbNodes = 100;
 
     public static boolean reduce = true;
     public static int tests = 100;
-    public static int to = 10;
+    public static int to = 10000;
+
+    public static boolean validate = true;
 
     public static final CTestCasesRunner check(CTestCasesRunner r) {
         r.maxTests(tests);
         r.timeout(to * 1000);
+        r.validate(validate);
         if (!reduce) {
             r.clearReducers();
         }

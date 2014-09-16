@@ -3,7 +3,7 @@ library(ggplot2)
 library(reshape)
 
 args <- commandArgs(T)
-pdf(file=paste(args[2]), width=5, height=4)
+pdf(file=paste(args[2]), width=8, height=4)
 par(mar=c(3, 3.2, 1, 1),mgp=c(1.8,0.6,0), cex=1.3)
 data <- read.table(args[1], header=F)
 
@@ -19,7 +19,7 @@ agg <- agg[,c("fuzz","validation","test", "elements")]
 
 m <- melt(agg,id="elements")
 colnames(m) <- c("elements", "phase", "duration")
-print(m)
-p <- ggplot(m,aes(x = m$elements,y = m$duration, group=m$phase, fill=m$phase)) + geom_area() + theme_bw() + scale_fill_brewer(name="phase") + guides(fill = guide_legend(reverse=TRUE))
-p + xlab("VMs + nodes") + ylab("duration in msec.")
+#print(m)
+p <- ggplot(m,aes(x = m$elements,y = m$duration, group=m$phase, fill=m$phase)) + geom_area() + scale_fill_brewer(name="phase") + guides(fill = guide_legend(reverse=TRUE))
+p + xlab("VMs + nodes") + ylab("duration in msec.") + theme_bw() + theme(legend.position = c(0.1, 0.75))
 foo <- dev.off()

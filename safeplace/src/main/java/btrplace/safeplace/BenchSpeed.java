@@ -28,12 +28,6 @@ public class BenchSpeed {
 
     public static void main(String[] args) {
 
-        int nbVMs = 3;
-        int nbNodes = 3;
-        boolean reduce = true;
-        int nbTests = 1000;
-        int to = 30;
-
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "--vms":
@@ -53,6 +47,12 @@ public class BenchSpeed {
                     break;
                 case "--no-reduce":
                     Bench.reduce = false;
+                    break;
+                case "--no-validation":
+                    Bench.validate = false;
+                    break;
+                case "--validate":
+                    Bench.validate = true;
                     break;
                 default:
                     System.err.println("Unsupported operation: " + args[i]);

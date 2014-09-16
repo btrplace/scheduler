@@ -79,6 +79,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
 
     private int nb;
 
+    private boolean validate;
 
     private long preconditionCheckDuration;
 
@@ -181,25 +182,32 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         return this;
     }
 
+    public CTestCasesRunner validate(boolean b) {
+        this.validate = b;
+        return this;
+    }
+
     private void save(CTestCase tc) {
 
     }
 
     private boolean checkPre(ReconfigurationPlan p) {
         preconditionCheckDuration -= System.currentTimeMillis();
-        //Necessarily against the continuous version
-        for (Constraint c : pre) {
-            CheckerResult res = specVerifier.verify(c, Collections.<Constant>emptyList(), p);
-            if (!res.getStatus()) {
-                preconditionCheckDuration += System.currentTimeMillis();
-                return false;
+        if (validate) {
+            //Necessarily against the continuous version
+            for (Constraint c : pre) {
+                CheckerResult res = specVerifier.verify(c, Collections.<Constant>emptyList(), p);
+                if (!res.getStatus()) {
+                    preconditionCheckDuration += System.currentTimeMillis();
+                    return false;
+                }
             }
-        }
-        for (Constraint c : pre) {
-            CheckerResult res = verifier.verify(c, Collections.<Constant>emptyList(), p);
-            if (!res.getStatus()) {
-                preconditionCheckDuration += System.currentTimeMillis();
-                return false;
+            for (Constraint c : pre) {
+                CheckerResult res = verifier.verify(c, Collections.<Constant>emptyList(), p);
+                if (!res.getStatus()) {
+                    preconditionCheckDuration += System.currentTimeMillis();
+                    return false;
+                }
             }
         }
         preconditionCheckDuration += System.currentTimeMillis();

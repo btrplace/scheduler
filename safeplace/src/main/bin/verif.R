@@ -33,24 +33,24 @@ d$falsePositivePct = d$falsePositive / (d$falseNegative + d$falsePositive + d$su
 d$falseNegativePct = d$falseNegative / (d$falseNegative + d$falsePositive + d$success + d$failure) * 100
 d$successPct = d$success / (d$falseNegative + d$falsePositive + d$success + d$failure) * 100
 
-pdf(file=paste(args[2],"/continuous_repair.pdf",sep=""), width=6, height=4)
+pdf(file=paste(args[2],"/continuous_repair.pdf",sep=""), width=8, height=4)
 d2 <- d[d$restriction == "continuous" & d$against=="impl_repair" ,c("family", "restriction", "against", "failurePct","falsePositivePct","falseNegativePct")]
 a <- melt(d2, id=c("family","restriction","against"))
-ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,100)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("failure", "false positive", "false negative"))
+ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,75)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("runtime failure", "false positive", "false negative"))
 
-pdf(file=paste(args[2],"/continuous_rebuild.pdf",sep=""), width=6, height=4)
+pdf(file=paste(args[2],"/continuous_rebuild.pdf",sep=""), width=8, height=4)
 d2 <- d[d$restriction == "continuous" & d$against=="impl_rebuild" ,c("family", "restriction", "against", "failurePct","falsePositivePct","falseNegativePct")]
 a <- melt(d2, id=c("family","restriction","against"))
-ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,100)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("failure", "false positive", "false negative"))
+ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,75)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("runtime failure", "false positive", "false negative"))
 
-pdf(file=paste(args[2],"/discrete_repair.pdf",sep=""), width=6, height=4)
+pdf(file=paste(args[2],"/discrete_repair.pdf",sep=""), width=8, height=4)
 d2 <- d[d$restriction == "discrete" & d$against=="impl_repair" ,c("family", "restriction", "against", "failurePct","falsePositivePct","falseNegativePct")]
 a <- melt(d2, id=c("family","restriction","against"))
-ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,100)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("failure", "false positive", "false negative"))
+ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,75)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("runtime failure", "false positive", "false negative"))
 
-pdf(file=paste(args[2],"/discrete_rebuild.pdf",sep=""), width=6, height=4)
+pdf(file=paste(args[2],"/discrete_rebuild.pdf",sep=""), width=8, height=4)
 d2 <- d[d$restriction == "discrete" & d$against=="impl_rebuild" ,c("family", "restriction", "against", "failurePct","falsePositivePct","falseNegativePct")]
 a <- melt(d2, id=c("family","restriction","against"))
-ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,100)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("failure", "false positive", "false negative"))
+ggplot(a, aes(x=a$family, y=a$value, fill=a$variable)) + geom_bar(stat="identity") + xlab("Constraint family") + ylab("%") + ylim(c(0,75)) + theme_bw() + scale_fill_discrete(name="Error type", labels=c("runtime failure", "false positive", "false negative"))
 
 
