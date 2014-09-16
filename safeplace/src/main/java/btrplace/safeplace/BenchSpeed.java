@@ -54,6 +54,12 @@ public class BenchSpeed {
                 case "--validate":
                     Bench.validate = true;
                     break;
+                case "--impl":
+                    Bench.checkers = false;
+                    break;
+                case "--checkers":
+                    Bench.checkers = true;
+                    break;
                 default:
                     System.err.println("Unsupported operation: " + args[i]);
             }

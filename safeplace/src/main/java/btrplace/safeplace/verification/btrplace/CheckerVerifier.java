@@ -92,8 +92,7 @@ public class CheckerVerifier implements Verifier {
                 throw new UnsupportedOperationException(sat + " cannot be continuous");
             }
         } catch (Exception ex) {
-            //ex.printStackTrace();
-            throw new RuntimeException(ex);
+            return CheckerResult.newError(ex);
         }
     }
 
