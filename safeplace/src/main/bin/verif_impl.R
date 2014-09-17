@@ -8,7 +8,7 @@ par(mar=c(3, 3.2, 1, 1),mgp=c(1.8,0.6,0), cex=1.3)
 data <- read.table(args[1], header=F)
 
 #Keep only meaningful columns
-data <- data[data$V9==5, c("V1","V2","V3","V4")];
+data <- data[data$V9==3, c("V1","V2","V3","V4")];
 colnames(data) <- c("cstr","restriction","against","res")
 VM2VM <- c("Spread","Gather","Among", "Split","Lonely","SplitAmong")
 VM2PM <- c("Ban","Fence","Root","Quarantine")
