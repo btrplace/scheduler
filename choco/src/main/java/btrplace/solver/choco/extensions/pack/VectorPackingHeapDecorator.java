@@ -122,6 +122,7 @@ public class VectorPackingHeapDecorator {
         }
         checkReHeap(loadsHaveChanged);
         for (int d=0; d<p.nbDims; d++) {
+            if (maxSlackBinHeap.get(d).isEmpty()) continue;
             int nChanges;
             long deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
             long deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
@@ -163,6 +164,9 @@ public class VectorPackingHeapDecorator {
     private int filterLoads(int d, int delta, boolean isSup) throws ContradictionException {
         assert maxSlackBinHeap != null;
         int nChanges = 0;
+        if (maxSlackBinHeap == null || maxSlackBinHeap.get(d) == null || maxSlackBinHeap.get(d).isEmpty()) {
+            System.out.println("coucou");
+        }
         if (loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta) {
             do {
                 int b = maxSlackBinHeap.get(d).poll();
