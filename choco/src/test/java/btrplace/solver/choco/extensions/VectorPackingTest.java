@@ -25,7 +25,6 @@ import org.testng.annotations.Test;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
-import solver.search.loop.monitors.SMF;
 import solver.search.strategy.IntStrategyFactory;
 import solver.variables.IntVar;
 import solver.variables.VF;
@@ -103,15 +102,15 @@ public class VectorPackingTest {
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
         //s.generateSearchStrategy();
         //s.launch();
-        SMF.log(s, true, false);
+        //SMF.log(s, true, false);
         //SMF.logContradiction(s);
         s.findSolution();
         Assert.assertEquals(s.isFeasible(), ESat.eval(isFeasible), "SAT");
     }
 
     public void testPack(int nbExpectedSols) {
-        SMF.log(s, true, true);
-        SMF.logContradiction(s);
+        //SMF.log(s, true, true);
+        //SMF.logContradiction(s);
         long nbComputedSols = s.findAllSolutions();
 
         Assert.assertEquals(s.isFeasible(), ESat.eval(nbExpectedSols != 0), "SAT");
