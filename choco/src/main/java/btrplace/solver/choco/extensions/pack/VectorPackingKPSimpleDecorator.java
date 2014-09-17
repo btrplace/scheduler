@@ -117,13 +117,15 @@ public class VectorPackingKPSimpleDecorator {
      */
     protected void postInitialize() throws ContradictionException {
         for (int i=0; i<p.bins.length; i++) {
-            DisposableValueIterator it = p.bins[i].getValueIterator(true);
-            try {
-                while (it.hasNext()) {
-                    candidate.get(it.next()).set(i);
+            if (!p.bins[i].instantiated()) {
+                DisposableValueIterator it = p.bins[i].getValueIterator(true);
+                try {
+                    while (it.hasNext()) {
+                        candidate.get(it.next()).set(i);
+                    }
+                } finally {
+                    it.dispose();
                 }
-            } finally {
-                it.dispose();
             }
         }
     }
@@ -137,7 +139,7 @@ public class VectorPackingKPSimpleDecorator {
      */
     private void filterFullBin(int bin) throws ContradictionException {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i+1)) {
-            assert p.bins[i].contains(bin);
+            //assert p.bins[i].contains(bin) : p.bins[i] + " bin=" + bin + " item=" + i;
             p.bins[i].removeValue(bin, p.getACause());
             if (p.bins[i].instantiated()) {
                 p.assignItem(i, p.bins[i].getValue());
