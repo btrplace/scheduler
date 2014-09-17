@@ -60,7 +60,6 @@ public class DefaultPacking extends Packing {
         sizes = new ArrayList<>();
         names = new ArrayList<>();
         this.rp = p;
-
     }
 
     @Override
