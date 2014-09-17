@@ -64,6 +64,11 @@ public class BenchSpeed {
                     System.err.println("Unsupported operation: " + args[i]);
             }
         }
-        Test.main(new String[]{});
+        if (Bench.checkers) {
+            Test.main(new String[]{"rebuild"});
+        } else {
+            Test.main(new String[]{});
+        }
+
     }
 }

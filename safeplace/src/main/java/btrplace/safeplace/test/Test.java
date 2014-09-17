@@ -43,8 +43,11 @@ public class Test {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        scanner.restrictToTest("Bench");
-        //scanner.restrictToGroup("fence");
+        if (args.length == 0) {
+            scanner.restrictToTest("Bench");
+        } else {
+            scanner.restrictToGroup(args[0]);
+        }
 
         List<CTestCasesRunner> runners = null;
         try {
