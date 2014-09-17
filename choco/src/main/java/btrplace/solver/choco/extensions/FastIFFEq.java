@@ -90,7 +90,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int mask) throws ContradictionException {
-            if (vars[0].instantiated()) {
+            if (vars[0].isInstantiated()) {
                 int val = vars[0].getValue();
                 if (val == 0) {
                     vars[1].removeValue(constant, aCause);
@@ -98,7 +98,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
                     vars[1].instantiateTo(constant, aCause);
                 }
             }
-            if (vars[1].instantiatedTo(constant)) {
+            if (vars[1].isInstantiatedTo(constant)) {
                 vars[0].instantiateTo(1, aCause);
             } else if (!vars[1].contains(constant)) {
                 vars[0].instantiateTo(0, aCause);
@@ -132,7 +132,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
                     vars[1].instantiateTo(constant, aCause);
                 }
             } else {
-                if (vars[1].instantiatedTo(constant)) {
+                if (vars[1].isInstantiatedTo(constant)) {
                     vars[0].instantiateTo(1, aCause);
                 } else {
                     vars[0].instantiateTo(0, aCause);
@@ -158,9 +158,9 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
         @Override
         public ESat isEntailed() {
-            if (vars[0].instantiated() || vars[1].instantiated()) {
-                return ESat.eval((vars[0].instantiatedTo(0) && !vars[1].instantiatedTo(constant))
-                        || (vars[0].instantiatedTo(1) && vars[1].instantiatedTo(constant)));
+            if (vars[0].isInstantiated() || vars[1].isInstantiated()) {
+                return ESat.eval((vars[0].isInstantiatedTo(0) && !vars[1].isInstantiatedTo(constant))
+                        || (vars[0].isInstantiatedTo(1) && vars[1].isInstantiatedTo(constant)));
             }
             return ESat.UNDEFINED;
         }

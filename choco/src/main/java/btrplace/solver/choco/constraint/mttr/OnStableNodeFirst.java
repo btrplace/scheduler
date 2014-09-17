@@ -137,7 +137,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
             stays = new BitSet();
             move = new BitSet();
             for (int i = 0; i < hosts.length; i++) {
-                if (hosts[i] != null && hosts[i].instantiated()) {
+                if (hosts[i] != null && hosts[i].isInstantiated()) {
                     int newPos = hosts[i].getValue();
                     if (oldPos[i] != -1 && newPos != oldPos[i]) {
                         //The VM has move
@@ -195,7 +195,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     private IntVar getMovingVM() {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].instantiated()) {
+            if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (oldPos[i] != hosts[i].getValue()) {
                     return starts[i];
                 }
@@ -211,7 +211,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
             if (i < vms.size() - 1) {
                 VM vm = vms.get(i);
                 if (vm != null && v != null) {
-                    if (!v.instantiated()) {
+                    if (!v.isInstantiated()) {
                         if (best == null || best.getLB() < v.getLB()) {
                             best = v;
                             if (best.getLB() == 0) {
@@ -239,7 +239,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     private IntVar getEarlyVar() {
         IntVar earlyVar = null;
         for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].instantiated()) {
+            if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (earlyVar == null) {
                     earlyVar = starts[i];
                 } else {
@@ -265,7 +265,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                 //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
-                    if (starts[i] != null && !starts[i].instantiated()) {
+                    if (starts[i] != null && !starts[i].isInstantiated()) {
                     }
                 }
             }

@@ -92,7 +92,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
             long s;
             do {
                 s = vars[0].getDomainSize() + vars[1].getDomainSize();
-                if (vars[0].instantiatedTo(1)) {
+                if (vars[0].isInstantiatedTo(1)) {
                     vars[1].instantiateTo(constant, aCause);
                 }
                 if (!vars[1].contains(constant)) {
@@ -109,7 +109,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
 
         @Override
         public ESat isEntailed() {
-            if (vars[0].instantiated() && vars[1].instantiated()) {
+            if (vars[0].isInstantiated() && vars[1].isInstantiated()) {
                 return ESat.eval((vars[0].getValue() == 1 && vars[1].getValue() == constant) || vars[0].getValue() == 0);
             }
             return ESat.UNDEFINED;

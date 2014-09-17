@@ -161,7 +161,7 @@ public class Disjoint extends IntConstraint<IntVar> {
             for (IntVar v : groups[otherGroup]) {
                 if (v.removeValue(val, aCause)) {
                     candidates[otherGroup][val].add(-1);
-                    if (v.instantiated()) {
+                    if (v.isInstantiated()) {
                         filterInst(i, otherGroup);
                     }
                 }
@@ -208,7 +208,7 @@ public class Disjoint extends IntConstraint<IntVar> {
          * @param group the group of the variable
          */
         private void initVar(IntVar var, int group) {
-            if (var.instantiated()) {
+            if (var.isInstantiated()) {
                 required[group].set(var.getValue());
             } else {
                 DisposableValueIterator it = var.getValueIterator(true);

@@ -107,8 +107,8 @@ public class CSpread implements ChocoConstraint {
      */
     private void precedenceIfOverlap(Solver s, Slice d, Slice c) {
         //No need to place the constraints if the slices do not have a chance to overlap
-        if (!(c.getHoster().instantiated() && !d.getHoster().contains(c.getHoster().getValue()))
-                && !(d.getHoster().instantiated() && !c.getHoster().contains(d.getHoster().getValue()))
+        if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
+                && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
             Arithmetic eqCstr = IntConstraintFactory.arithm(d.getHoster(), "=", c.getHoster());
             BoolVar eq = eqCstr.reif();

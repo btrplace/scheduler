@@ -273,11 +273,11 @@ public class LocalTaskScheduler {
                     + " init=" + Arrays.toString(getUsages(capacities, me)) + "; early=" + early.toString() + "; last=" + last.toString());
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                LOGGER.debug((dStarts[i].instantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(getUsages(dUsages, i)));
+                LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(getUsages(dUsages, i)));
             }
 
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                LOGGER.debug((cEnds[i].instantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(getUsages(cUsages, i)));
+                LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(getUsages(cUsages, i)));
             }
 
 
@@ -372,7 +372,7 @@ public class LocalTaskScheduler {
 
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
-            if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
+            if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                 if (DEBUG == me || DEBUG == DEBUG_ALL) {
                     LOGGER.debug("(" + me + ") - try to update lb of " + dStarts[i]);
                 }
@@ -413,7 +413,7 @@ public class LocalTaskScheduler {
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
+                if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getLB(), lastSup);
                     dStarts[i].updateUpperBound(s, aCause);
                 }
@@ -423,7 +423,7 @@ public class LocalTaskScheduler {
 
     private void updateCEndsSup() throws ContradictionException {
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (!cEnds[i].instantiated() && !associatedToDSliceOnCurrentNode(i)) {
+            if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(cUsages, i);
                 int lastT = -1;

@@ -219,7 +219,7 @@ public class Precedences extends IntConstraint<IntVar> {
                 endsByHost[i] = l[i].toArray();
             }
 
-            if (host.instantiated()) {
+            if (host.isInstantiated()) {
                 start.updateLowerBound(horizonLB[host.getValue()].get(), aCause);
             }
         }
@@ -256,7 +256,7 @@ public class Precedences extends IntConstraint<IntVar> {
                     recomputeHorizonForHost(h);
                     //We recompute the horizon of the associated host
 
-                    if (host.instantiatedTo(h)) {
+                    if (host.isInstantiatedTo(h)) {
                         start.updateLowerBound(horizonLB[h].get(), aCause);
                     } else if (host.contains(h)) {
                         //Browse the horizon for each of the possible host to update the LB
@@ -302,7 +302,7 @@ public class Precedences extends IntConstraint<IntVar> {
                 int o = idx - 2;
                 int h = othersHost[o];
                 recomputeHorizonForHost(h);
-                if (host.instantiatedTo(h)) {
+                if (host.isInstantiatedTo(h)) {
                     start.updateLowerBound(horizonLB[h].get(), aCause);
                 }
             }

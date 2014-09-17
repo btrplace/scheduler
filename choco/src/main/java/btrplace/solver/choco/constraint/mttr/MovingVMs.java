@@ -86,7 +86,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
     private boolean setToNextMovingVM() {
         for (int i = idx.get(); i < scopes.length; i++) {
             IntVar h = scopes[i];
-            if (!h.instantiated()) {
+            if (!h.isInstantiated()) {
                 VM vm = actions.get(i).getVM();
                 Node nId = map.getVMLocation(vm);
                 if (nId != null) {

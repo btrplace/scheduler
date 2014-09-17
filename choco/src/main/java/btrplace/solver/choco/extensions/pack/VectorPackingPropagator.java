@@ -149,7 +149,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     public ESat isConsistent() {
         int[][] l = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
-            if (bins[i].instantiated()) {
+            if (bins[i].isInstantiated()) {
                 for (int d = 0; d < nbDims; d++) {
                     int v = bins[i].getValue();
                     l[d][v] += iSizes[d][i];
@@ -312,7 +312,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             deltaMonitor[idx].freeze();
             deltaMonitor[idx].forEach(remProc.set(idx), EventType.REMOVE);
             deltaMonitor[idx].unfreeze();
-            if (vars[idx].instantiated()) {
+            if (vars[idx].isInstantiated()) {
                 assignItem(idx, vars[idx].getValue());
             }
         } else {
@@ -370,7 +370,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, aCause);
             bins[i].updateUpperBound(nbBins - 1, aCause);
-            if (bins[i].instantiated()) {
+            if (bins[i].isInstantiated()) {
                 for (int d = 0; d < nbDims; d++) {
                     rLoads[d][bins[i].getValue()] += iSizes[d][i];
                 }
@@ -432,7 +432,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     private void detectEntailedDimensions(int[] sumFreeSize) {
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-                if (!loads[d][b].instantiated() && loads[d][b].getUB() - loads[d][b].getLB() < sumFreeSize[d]) {
+                if (!loads[d][b].isInstantiated() && loads[d][b].getUB() - loads[d][b].getLB() < sumFreeSize[d]) {
                     notEntailedDims.set(d);
                     break;
                 }
@@ -491,7 +491,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[][] rs = new int[nbDims][nbBins];
         int[][] cs = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
-            if (bins[i].instantiated()) {
+            if (bins[i].isInstantiated()) {
                 for (int d = 0; d < nbDims; d++) {
                     rs[d][bins[i].getValue()] += iSizes[d][i];
                 }

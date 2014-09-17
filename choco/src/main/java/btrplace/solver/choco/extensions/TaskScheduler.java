@@ -435,7 +435,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 first = false;
                 boolean isFull = true;
                 for (int i = 0; i < dHosters.length; i++) {
-                    if (dHosters[i].instantiated()) {
+                    if (dHosters[i].isInstantiated()) {
                         int nIdx = dHosters[i].getValue();
                         vIns[nIdx].add(i);
                     } else {
@@ -459,7 +459,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                     }
                     boolean isFull = true;
                     for (IntVar v : dHosters) {
-                        if (!v.instantiated()) {
+                        if (!v.isInstantiated()) {
                             isFull = false;
                             break;
                         }

@@ -57,12 +57,12 @@ public class StayAwayVMTest {
         Assert.assertEquals(vm2, ma2.getVM());
 
         for (VMTransition am : rp.getVMActions()) {
-            Assert.assertTrue(am.getState().instantiatedTo(0));
+            Assert.assertTrue(am.getState().isInstantiatedTo(0));
             Assert.assertNull(am.getCSlice());
             Assert.assertNull(am.getDSlice());
-            Assert.assertTrue(am.getStart().instantiatedTo(0));
-            Assert.assertTrue(am.getEnd().instantiatedTo(0));
-            Assert.assertTrue(am.getDuration().instantiatedTo(0));
+            Assert.assertTrue(am.getStart().isInstantiatedTo(0));
+            Assert.assertTrue(am.getEnd().isInstantiatedTo(0));
+            Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
         }
 
         ReconfigurationPlan p = rp.solve(0, false);

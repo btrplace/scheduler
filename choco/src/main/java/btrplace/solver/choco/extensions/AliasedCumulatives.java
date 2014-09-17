@@ -309,7 +309,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
             //Check whether some hosting variable are already instantiated
             for (int i = 0; i < dHosters.length; i++) {
-                if (dHosters[i].instantiated()) {
+                if (dHosters[i].isInstantiated()) {
                     int nIdx = dHosters[i].getValue();
                     if (isIn(nIdx)) {
                         toInstantiate.add(-1);
@@ -332,7 +332,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                     }
                     boolean isFull = true;
                     for (IntVar v : dHosters) {
-                        if (!v.instantiated()) {
+                        if (!v.isInstantiated()) {
                             isFull = false;
                             break;
                         }

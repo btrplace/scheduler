@@ -73,7 +73,7 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
             List<IntVar> outs = graph.getOutgoing(n);
             if (outs.isEmpty()) {
                 for (IntVar v : graph.getIncoming(n)) {
-                    if (!v.instantiated()) {
+                    if (!v.isInstantiated()) {
                         return v;
                     }
                 }

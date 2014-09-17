@@ -141,7 +141,7 @@ public class RandomVMPlacement implements InValueIterator {
             }
         }
 
-        if (!x.instantiated()) {
+        if (!x.isInstantiated()) {
             int nIdx;
             if (ranks != null) {
                 nIdx = randomWithRankedValues(x);

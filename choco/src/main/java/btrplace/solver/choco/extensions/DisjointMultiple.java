@@ -187,7 +187,7 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
          * @param group the group of the variable
          */
         private void initVar(IntVar var, int group) {
-            if (var.instantiated()) {
+            if (var.isInstantiated()) {
                 required[group].set(var.getValue());
             } else {
                 DisposableValueIterator it = var.getValueIterator(true);
@@ -260,7 +260,7 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
                         for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
                             if (vars[i].removeValue(val, aCause)) {
                                 candidates[g][val].add(-1);
-                                if (vars[i].instantiated()) {
+                                if (vars[i].isInstantiated()) {
                                     if (!required[g].get(vars[i].getValue())) {
                                         setRequired(vars[i].getValue(), g);
                                     }

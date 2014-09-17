@@ -69,7 +69,7 @@ public class Slice {
     }
 
     private String printValue(IntVar v) {
-        if (v.instantiated()) {
+        if (v.isInstantiated()) {
             return Integer.toString(v.getValue());
         }
         return "[" + v.getLB() + ':' + v.getUB() + ']';

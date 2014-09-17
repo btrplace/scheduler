@@ -71,8 +71,8 @@ public class VectorPackingKPSimpleDecorator {
 
         @Override
         public int compare(Integer o1, Integer o2) {
-            return p.bins[o2].instantiated() ? 1 :
-                   p.bins[o1].instantiated() ? -1 :
+            return p.bins[o2].isInstantiated() ? 1 :
+                   p.bins[o1].isInstantiated() ? -1 :
                    p.iSizes[d][o1] - p.iSizes[d][o2];
         }
     }
@@ -93,7 +93,7 @@ public class VectorPackingKPSimpleDecorator {
             }
             int watchedBins = 0;
             for (int idx=0; idx<items[d].length; idx++) {
-                if (p.bins[items[d][idx]].instantiated() || watchedBins == p.nbBins) break;
+                if (p.bins[items[d][idx]].isInstantiated() || watchedBins == p.nbBins) break;
                 DisposableValueIterator it = p.bins[items[d][idx]].getValueIterator(true);
                 try {
                     while (it.hasNext()) {
@@ -117,7 +117,7 @@ public class VectorPackingKPSimpleDecorator {
      */
     protected void postInitialize() throws ContradictionException {
         for (int i=0; i<p.bins.length; i++) {
-            if (!p.bins[i].instantiated()) {
+            if (!p.bins[i].isInstantiated()) {
                 DisposableValueIterator it = p.bins[i].getValueIterator(true);
                 try {
                     while (it.hasNext()) {
@@ -141,7 +141,7 @@ public class VectorPackingKPSimpleDecorator {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i+1)) {
             //assert p.bins[i].contains(bin) : p.bins[i] + " bin=" + bin + " item=" + i;
             p.bins[i].removeValue(bin, p.getACause());
-            if (p.bins[i].instantiated()) {
+            if (p.bins[i].isInstantiated()) {
                 p.assignItem(i, p.bins[i].getValue());
             }
         }
@@ -179,7 +179,7 @@ public class VectorPackingKPSimpleDecorator {
         candidate.get(bin).clear(item);
         for (int d=0; d<p.nbDims; d++) {
             if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
-                assert p.loads[d][bin].instantiated();
+                assert p.loads[d][bin].isInstantiated();
                 filterFullBin(bin);
                 return;
             }
