@@ -6,7 +6,8 @@ version ?????????
 - constraint SequentialVMTransitions becomes Seq
 - continuous or discrete restriction mode for state constraints, ban, fence
 - btrpsl joined the repository
-- back to a new fast Packing constraint thanks to Sophie Demassey
+- major performance improvement with a fast Packing constraint made by
+  Sophie Demassey
 - ChocoReconfigurationAlgorithmParams renamed to Parameters
 - bug fixes
 - move to Java 8

@@ -114,6 +114,8 @@ public class SolverTuning implements Example {
         Model mo = new DefaultModel();
         Mapping mapping = mo.getMapping();
 
+        int nbNodes = 1000;
+        int nbVMs = 6 * nbNodes;
 
         //Memory usage/consumption in GB
         ShareableResource rcMem = new ShareableResource("mem");
@@ -121,9 +123,9 @@ public class SolverTuning implements Example {
         //A resource representing the bandwidth usage/consumption of the elements in GB
         ShareableResource rcBW = new ShareableResource("bandwidth");
 
-        nodes = new ArrayList<>(100);
+        nodes = new ArrayList<>(nbNodes);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < nbNodes; i++) {
             Node n = mo.newNode();
             nodes.add(n);
             mapping.addOnlineNode(n);
@@ -133,7 +135,7 @@ public class SolverTuning implements Example {
             rcMem.setCapacity(n, 32);
         }
 
-        for (int i = 0; i < 600; i++) {
+        for (int i = 0; i < nbVMs; i++) {
             VM vm = mo.newVM();
             //Basic balancing through a round-robin: 6 VMs per node
             mapping.addRunningVM(vm, nodes.get(i % nodes.size()));
