@@ -11,6 +11,8 @@ version ?????????
 - bug fixes
 - move to Java 8
 - new constraint NoDelay
+- upgrade to choco-3.2.0
+- remove the logback dependency
 
 version 0.38.2 - 19 Jun 2014
 ----------------------
