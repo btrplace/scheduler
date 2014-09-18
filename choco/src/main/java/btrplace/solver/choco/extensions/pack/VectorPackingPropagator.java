@@ -117,8 +117,10 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @param l      array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
      * @param s      array of nbDims x nbItems, each figuring the item size.
      * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param withHeap  optional: process bins in a heap if true
+     * @param withKS    optional: process knapsack filtering on each bin bif true
      */
-    public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
+    public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
         this.name = labels;
         this.loads = l;
@@ -133,6 +135,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int i = 0; i < deltaMonitor.length; i++) {
             deltaMonitor[i] = this.vars[i].monitorDelta(this);
         }
+        if (withHeap) attachHeapDecorator();
+        if (withKS) attachKPSimpleDecorator();
     }
 
     public void attachHeapDecorator() {
@@ -394,8 +398,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
-                assignedLoad[d][b] = environment.makeInt(rLoads[d][b]);
-                potentialLoad[d][b] = environment.makeInt(rLoads[d][b] + cLoads[d][b]);
+                assignedLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b]);
+                potentialLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b] + cLoads[d][b]);
                 loads[d][b].updateLowerBound(rLoads[d][b], aCause);
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
                 slb[d] += loads[d][b].getLB();
@@ -406,11 +410,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         sumLoadInf = new IStateInt[nbDims];
         sumLoadSup = new IStateInt[nbDims];
         for (int d = 0; d < nbDims; d++) {
-            sumLoadInf[d] = environment.makeInt(slb[d]);
-            sumLoadSup[d] = environment.makeInt(slu[d]);
+            sumLoadInf[d] = getSolver().getEnvironment().makeInt(slb[d]);
+            sumLoadSup[d] = getSolver().getEnvironment().makeInt(slu[d]);
         }
 
-        loadsHaveChanged = environment.makeBool(false);
+        loadsHaveChanged = getSolver().getEnvironment().makeBool(false);
 
         if (decoKPSimple != null) decoKPSimple.postInitialize();
 

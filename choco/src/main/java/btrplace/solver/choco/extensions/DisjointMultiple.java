@@ -21,8 +21,7 @@ package btrplace.solver.choco.extensions;
 
 import memory.IStateBitSet;
 import memory.IStateInt;
-import solver.Solver;
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -42,100 +41,44 @@ import java.util.BitSet;
  *
  * @author Sophie Demassey
  */
-public class DisjointMultiple extends IntConstraint<IntVar> {
+public class DisjointMultiple extends Constraint {
 
     /**
-     * the variable domains must be included in [0, nbValues-1]
-     */
-    private final int nbValues;
-
-    /**
-     * the number of groups
-     */
-    private final int nbGroups;
-
-    /**
-     * indices of variables in group 'g' is between groupIdx[g] and groupIdx[g+1]
-     * with 0 <= g < nbGroups
-     */
-    private final int[] groupIdx;
-
-    /**
-     * candidates[g][v] = number of variables in group 'g' which can be assigned to value 'v',
-     * with 0 <= g < nbGroups and 0 <= v < nbValues
-     */
-    private IStateInt[][] candidates;
-    /**
-     * required[g].get(v) iff at least one variable in group 'g' is assigned to value 'v',
-     * with 0 <= g < nbGroups and 0 <= v < nbValues
-     */
-    private IStateBitSet[] required;
-
-    /**
-     * @param s  solver
      * @param vs sets of variables
      * @param c  max variable value + 1
      */
-    public DisjointMultiple(Solver s, IntVar[][] vs, int c) {
-        super(ArrayUtils.flatten(vs), s);
-        nbValues = c;
-        nbGroups = vs.length;
-        groupIdx = new int[nbGroups + 1];
-        candidates = new IStateInt[nbGroups][c];
-        required = new IStateBitSet[nbGroups];
-        groupIdx[0] = 0;
-        int idx = 0;
-        for (int g = 0; g < nbGroups; g++) {
-            idx += vs[g].length;
-            groupIdx[g + 1] = idx;
-            required[g] = s.getEnvironment().makeBitSet(c);
-            for (int v = 0; v < c; v++) {
-                candidates[g][v] = s.getEnvironment().makeInt(0);
-            }
-        }
-        setPropagators(new DisjointPropagator(vs));
+    public DisjointMultiple(IntVar[][] vs, int c) {
+        super("DisjointMultiple", new DisjointPropagator(vs, c));
     }
 
-    private int getGroup(int idx) {
-        return getGroup(idx, 0, nbGroups);
-    }
+    static class DisjointPropagator extends Propagator<IntVar> {
 
-    private int getGroup(int idx, int s, int e) {
-        assert e > s && groupIdx[s] <= idx && idx < groupIdx[e];
-        if (e == s + 1) {
-            return s;
-        }
-        int m = (s + e) / 2;
-        if (idx >= groupIdx[m]) {
-            return getGroup(idx, m, e);
-        }
-        return getGroup(idx, s, m);
+        /**
+         * the variable domains must be included in [0, nbValues-1]
+         */
+        private final int nbValues;
 
-    }
+        /**
+         * the number of groups
+         */
+        private final int nbGroups;
 
-    @Override
-    public ESat isSatisfied(int[] tuple) {
-        BitSet valuesOne = new BitSet(nbValues);
-        for (int g = 0; g < nbGroups; g++) {
-            for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
-                valuesOne.set(tuple[i]);
-            }
-            for (int i = 0; i < groupIdx[g]; i++) {
-                if (valuesOne.get(tuple[i])) {
-                    return ESat.FALSE;
-                }
-            }
-            for (int i = groupIdx[g + 1]; i < groupIdx[nbGroups + 1]; i++) {
-                if (valuesOne.get(tuple[i])) {
-                    return ESat.FALSE;
-                }
-            }
-            valuesOne.clear();
-        }
-        return ESat.TRUE;
-    }
+        /**
+         * indices of variables in group 'g' is between groupIdx[g] and groupIdx[g+1]
+         * with 0 <= g < nbGroups
+         */
+        private final int[] groupIdx;
 
-    class DisjointPropagator extends Propagator<IntVar> {
+        /**
+         * candidates[g][v] = number of variables in group 'g' which can be assigned to value 'v',
+         * with 0 <= g < nbGroups and 0 <= v < nbValues
+         */
+        private IStateInt[][] candidates;
+        /**
+         * required[g].get(v) iff at least one variable in group 'g' is assigned to value 'v',
+         * with 0 <= g < nbGroups and 0 <= v < nbValues
+         */
+        private IStateBitSet[] required;
 
         private IIntDeltaMonitor[] idms;
 
@@ -143,8 +86,28 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
 
         private RemProc remProc;
 
-        public DisjointPropagator(IntVar[][] g) {
-            super(ArrayUtils.flatten(g), PropagatorPriority.VERY_SLOW, true);
+        /**
+         * @param vs sets of variables
+         * @param c  max variable value + 1
+         */
+        public DisjointPropagator(IntVar[][] vs, int c) {
+            super(ArrayUtils.flatten(vs), PropagatorPriority.VERY_SLOW, true);
+            nbValues = c;
+            nbGroups = vs.length;
+            groupIdx = new int[nbGroups + 1];
+            candidates = new IStateInt[nbGroups][c];
+            required = new IStateBitSet[nbGroups];
+            groupIdx[0] = 0;
+            int idx = 0;
+            for (int g = 0; g < nbGroups; g++) {
+                idx += vs[g].length;
+                groupIdx[g + 1] = idx;
+                required[g] = getSolver().getEnvironment().makeBitSet(c);
+                for (int v = 0; v < c; v++) {
+                    candidates[g][v] = getSolver().getEnvironment().makeInt(0);
+                }
+            }
+
             idms = new IIntDeltaMonitor[vars.length];
             int i = 0;
             for (IntVar v : vars) {
@@ -271,20 +234,59 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
                 }
             }
         }
-    }
 
-    private class RemProc implements UnaryIntProcedure<Integer> {
-        private int group;
-
-        @Override
-        public UnaryIntProcedure set(Integer idxVar) {
-            this.group = getGroup(idxVar);
-            return this;
+        private int getGroup(int idx) {
+            return getGroup(idx, 0, nbGroups);
         }
 
-        @Override
-        public void execute(int val) throws ContradictionException {
-            candidates[group][val].add(-1);
+        private int getGroup(int idx, int s, int e) {
+            assert e > s && groupIdx[s] <= idx && idx < groupIdx[e];
+            if (e == s + 1) {
+                return s;
+            }
+            int m = (s + e) / 2;
+            if (idx >= groupIdx[m]) {
+                return getGroup(idx, m, e);
+            }
+            return getGroup(idx, s, m);
+
+        }
+
+        public ESat isSatisfied(int[] tuple) {
+            BitSet valuesOne = new BitSet(nbValues);
+            for (int g = 0; g < nbGroups; g++) {
+                for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
+                    valuesOne.set(tuple[i]);
+                }
+                for (int i = 0; i < groupIdx[g]; i++) {
+                    if (valuesOne.get(tuple[i])) {
+                        return ESat.FALSE;
+                    }
+                }
+                for (int i = groupIdx[g + 1]; i < groupIdx[nbGroups + 1]; i++) {
+                    if (valuesOne.get(tuple[i])) {
+                        return ESat.FALSE;
+                    }
+                }
+                valuesOne.clear();
+            }
+            return ESat.TRUE;
+        }
+
+
+        private class RemProc implements UnaryIntProcedure<Integer> {
+            private int group;
+
+            @Override
+            public UnaryIntProcedure set(Integer idxVar) {
+                this.group = getGroup(idxVar);
+                return this;
+            }
+
+            @Override
+            public void execute(int val) throws ContradictionException {
+                candidates[group][val].add(-1);
+            }
         }
     }
 }

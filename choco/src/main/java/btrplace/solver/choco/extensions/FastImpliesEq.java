@@ -19,7 +19,7 @@
 package btrplace.solver.choco.extensions;
 
 
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -35,9 +35,8 @@ import util.ESat;
  * @author Charles Prud'homme
  * @since 29/06/11
  */
-public class FastImpliesEq extends IntConstraint<IntVar> {
+public class FastImpliesEq extends Constraint {
 
-    private final int constant;
 
     /**
      * New instance.
@@ -47,35 +46,26 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
      * @param c   the constant to use to set the variable if the boolean variable is set to true
      */
     public FastImpliesEq(BoolVar b, IntVar var, int c) {
-        super(new IntVar[]{b, var}, b.getSolver());
-        this.constant = c;
-        setPropagators(new FastImpliesEqProp(vars), new FastImpliesEqProp(vars));
-
+        super("IFFEq", new FastImpliesEqProp(b, var, c), new FastImpliesEqProp(b, var, c));
     }
-
-    @Override
-    public String toString() {
-        return vars[0].toString() + " -> " + vars[1] + "=" + constant;
-    }
-
-    @Override
-    public ESat isSatisfied(int[] tuple) {
-        return ESat.eval((tuple[0] == 1 && tuple[1] == constant) || tuple[0] == 0);
-    }
-
 
     /**
      * Propagator for {@link btrplace.solver.choco.extensions.FastImpliesEq}.
      */
-    class FastImpliesEqProp extends Propagator<IntVar> {
+    static class FastImpliesEqProp extends Propagator<IntVar> {
+
+        private final int constant;
 
         /**
          * Default constructor.
          *
-         * @param vs vs[0] is the boolean variable, vs[1] is the integer one
+         * @param b the boolean variable
+         * @param var the integer variable
+         * @param c the constant
          */
-        public FastImpliesEqProp(IntVar[] vs) {
-            super(vs, PropagatorPriority.UNARY, true);
+        public FastImpliesEqProp(BoolVar b, IntVar var, int c) {
+            super(new IntVar[]{b, var}, PropagatorPriority.UNARY, true);
+            this.constant = c;
         }
 
         @Override

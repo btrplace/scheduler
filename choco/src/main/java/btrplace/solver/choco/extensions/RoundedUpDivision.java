@@ -19,7 +19,7 @@
 package btrplace.solver.choco.extensions;
 
 
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -40,9 +40,7 @@ import util.ESat;
  *
  * @author Fabien Hermenier
  */
-public class RoundedUpDivision extends IntConstraint<IntVar> {
-
-    private double qq;
+public class RoundedUpDivision extends Constraint {
 
     /**
      * Make a new constraint.
@@ -52,19 +50,7 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
      * @param d the divider
      */
     public RoundedUpDivision(IntVar a, IntVar b, double d) {
-        super(new IntVar[]{a, b}, a.getSolver());
-        qq = d;
-        setPropagators(new RoundedUpDivisionPropagator(vars, d));
-    }
-
-    @Override
-    public ESat isSatisfied(int[] values) {
-        return ESat.eval(values[0] == (int) Math.ceil((double) values[1] / qq));
-    }
-
-    @Override
-    public String toString() {
-        return vars[0].toString() + " = " + vars[1].toString() + '/' + qq;
+        super("RoundedUpDivision", new RoundedUpDivisionPropagator(a, b, d));
     }
 
     static class RoundedUpDivisionPropagator extends Propagator<IntVar> {
@@ -74,11 +60,12 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
         /**
          * New propagator
          *
-         * @param vs the variables
+         * @param a the variable to divide
+         * @param b the resulting ratio
          * @param d  the divider
          */
-        public RoundedUpDivisionPropagator(IntVar[] vs, double d) {
-            super(vs, PropagatorPriority.BINARY, true);
+        public RoundedUpDivisionPropagator(IntVar a, IntVar b, double d) {
+            super(new IntVar[]{a, b}, PropagatorPriority.BINARY, true);
             this.divider = d;
         }
 

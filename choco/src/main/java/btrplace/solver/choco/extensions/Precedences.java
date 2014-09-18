@@ -20,10 +20,11 @@ package btrplace.solver.choco.extensions;
 
 
 import gnu.trove.list.array.TIntArrayList;
+import memory.IEnvironment;
 import memory.IStateInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -38,29 +39,7 @@ import util.tools.ArrayUtils;
  *
  * @author Fabien Hermenier
  */
-public class Precedences extends IntConstraint<IntVar> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
-    private IntVar host;
-
-    private IntVar start;
-
-    private int[] othersHost;
-
-    private IntVar[] othersEnd;
-
-    private int[][] endsByHost;
-
-    /**
-     * The horizon lower bound for each resource.
-     */
-    private IStateInt[] horizonLB;
-
-    /**
-     * The horizon upper bound for each resource.
-     */
-    private IStateInt[] horizonUB;
-
+public class Precedences extends Constraint {
 
     /**
      * Make a new constraint.
@@ -71,80 +50,39 @@ public class Precedences extends IntConstraint<IntVar> {
      * @param oe the moment each of the other tasks leave their resource
      */
     public Precedences(IntVar h, IntVar st, int[] oh, IntVar[] oe) {
-        super(ArrayUtils.append(new IntVar[]{h, st}, oe), h.getSolver());
-        this.host = h;
-        this.start = st;
-        this.othersHost = oh;
-        this.othersEnd = oe;
-        setPropagators(new PrecedencesPropagator(h, st, oe));
+        super("precedences", new PrecedencesPropagator(h, st, oh, oe));
     }
 
-    @Override
-    public ESat isSatisfied(int[] tuple) {
-        int h = tuple[0];
-        int st = tuple[1];
+    static class PrecedencesPropagator extends Propagator<IntVar> {
 
-        for (int i = 0; i < othersHost.length; i++) {
-            if (othersHost[i] == h && tuple[2 + i] > st) {
-                return ESat.FALSE;
-            }
-        }
-        return ESat.TRUE;
-    }
+        private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+        private IntVar host;
 
-    private boolean checkHorizonConsistency() {
-        boolean ret = true;
-        int[] lbs = new int[horizonLB.length];
-        int[] ubs = new int[horizonUB.length];
-        for (int i = 0; i < othersEnd.length; i++) {
-            IntVar end = othersEnd[i];
-            int h = othersHost[i];
-            //beware of h that can be out of the domain of the watched horizons
-            if (h < lbs.length && end.getLB() > lbs[h]) {
-                lbs[h] = end.getLB();
-            }
-            if (h < ubs.length && end.getUB() > ubs[h]) {
-                ubs[h] = end.getUB();
-            }
-        }
-        for (int i = 0; i < horizonUB.length; i++) {
-            if (horizonUB[i].get() != ubs[i]) {
-                LOGGER.info("/!\\ horizonUB[" + i + "] = " + horizonUB[i].get() + ", expected=" + ubs[i]);
-                ret = false;
-            }
-            if (horizonLB[i].get() != lbs[i]) {
-                LOGGER.info("/!\\ horizonLB[" + i + "] = " + horizonLB[i].get() + ", expected=" + lbs[i]);
-                ret = false;
-            }
-        }
-        return ret;
-    }
+        private IntVar start;
 
-    private void printOthers() {
-        LOGGER.info("--- Others ---");
-        for (int i = 0; i < othersEnd.length; i++) {
-            LOGGER.info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].toString());
-        }
-    }
+        private int[] othersHost;
 
-    private void printEndsByHost() {
-        LOGGER.info("--- EndsByHost ---");
-        for (int i = 0; i < endsByHost.length; i++) {
-            StringBuilder buf = new StringBuilder();
-            buf.append("On ").append(i).append(':');
-            for (int id : endsByHost[i]) {
-                buf.append(" ").append(othersEnd[id].toString());
-            }
-            LOGGER.info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
-        }
-        LOGGER.info("Mine placed on " + host.toString());
-        LOGGER.info("Mine starts at " + start.toString());
-    }
+        private IntVar[] othersEnd;
 
-    class PrecedencesPropagator extends Propagator<IntVar> {
+        private int[][] endsByHost;
 
-        public PrecedencesPropagator(IntVar h, IntVar st, IntVar[] oe) {
+        /**
+         * The horizon lower bound for each resource.
+         */
+        private IStateInt[] horizonLB;
+
+        /**
+         * The horizon upper bound for each resource.
+         */
+        private IStateInt[] horizonUB;
+
+
+        public PrecedencesPropagator(IntVar h, IntVar st, int[] oh, IntVar[] oe) {
             super(ArrayUtils.append(new IntVar[]{h, st}, oe), PropagatorPriority.LINEAR, true);
+            this.host = h;
+            this.start = st;
+            this.othersHost = oh;
+            this.othersEnd = oe;
         }
 
         @Override
@@ -198,9 +136,10 @@ public class Precedences extends IntConstraint<IntVar> {
 
             TIntArrayList[] l = new TIntArrayList[endsByHost.length];
 
+            IEnvironment env = getSolver().getEnvironment();
             for (int i = 0; i < horizonUB.length; i++) {
-                horizonLB[i] = environment.makeInt(0);
-                horizonUB[i] = environment.makeInt(0);
+                horizonLB[i] = env.makeInt(0);
+                horizonUB[i] = env.makeInt(0);
                 l[i] = new TIntArrayList();
             }
 
@@ -338,5 +277,55 @@ public class Precedences extends IntConstraint<IntVar> {
                 this.contradiction(start, "");
             }
         }
+
+        private boolean checkHorizonConsistency() {
+            boolean ret = true;
+            int[] lbs = new int[horizonLB.length];
+            int[] ubs = new int[horizonUB.length];
+            for (int i = 0; i < othersEnd.length; i++) {
+                IntVar end = othersEnd[i];
+                int h = othersHost[i];
+                //beware of h that can be out of the domain of the watched horizons
+                if (h < lbs.length && end.getLB() > lbs[h]) {
+                    lbs[h] = end.getLB();
+                }
+                if (h < ubs.length && end.getUB() > ubs[h]) {
+                    ubs[h] = end.getUB();
+                }
+            }
+            for (int i = 0; i < horizonUB.length; i++) {
+                if (horizonUB[i].get() != ubs[i]) {
+                    LOGGER.info("/!\\ horizonUB[" + i + "] = " + horizonUB[i].get() + ", expected=" + ubs[i]);
+                    ret = false;
+                }
+                if (horizonLB[i].get() != lbs[i]) {
+                    LOGGER.info("/!\\ horizonLB[" + i + "] = " + horizonLB[i].get() + ", expected=" + lbs[i]);
+                    ret = false;
+                }
+            }
+            return ret;
+        }
+
+        private void printOthers() {
+            LOGGER.info("--- Others ---");
+            for (int i = 0; i < othersEnd.length; i++) {
+                LOGGER.info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].toString());
+            }
+        }
+
+        private void printEndsByHost() {
+            LOGGER.info("--- EndsByHost ---");
+            for (int i = 0; i < endsByHost.length; i++) {
+                StringBuilder buf = new StringBuilder();
+                buf.append("On ").append(i).append(':');
+                for (int id : endsByHost[i]) {
+                    buf.append(" ").append(othersEnd[id].toString());
+                }
+                LOGGER.info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
+            }
+            LOGGER.info("Mine placed on " + host.toString());
+            LOGGER.info("Mine starts at " + start.toString());
+        }
+
     }
 }

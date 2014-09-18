@@ -56,7 +56,7 @@ public class VectorPackingKPSimpleDecorator {
         //this.watchCandidate = new IStateInt[p.nbDims][p.nbBins];
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i=0; i<p.nbBins; i++) {
-            candidate.add(new S64BitSet(p.environment, p.bins.length));
+            candidate.add(new S64BitSet(p.getSolver().getEnvironment(), p.bins.length));
         }
     }
 

@@ -25,7 +25,7 @@ import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import solver.Solver;
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -46,31 +46,7 @@ import java.util.BitSet;
  *
  * @author Fabien Hermenier
  */
-public class TaskScheduler extends IntConstraint<IntVar> {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
-
-    private LocalTaskScheduler[] scheds;
-
-    private IntVar[] cHosters;
-
-    private IntVar[] cEnds;
-
-    private IntVar[] dHosters;
-
-    private IntVar[] dStarts;
-
-    private int nbResources;
-
-    private int nbDims;
-
-    private int[][] capacities;
-
-    private int[][] cUsages;
-
-    private int[][] dUsages;
-
-    private IStateIntVector[] vIns;
+public class TaskScheduler extends Constraint {
 
     /**
      * Make a new constraint.
@@ -98,157 +74,32 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                          int[] assocs,
                          Solver s) {
 
-        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), s);
-
-        this.cHosters = cHosters;
-        this.dHosters = dHosters;
-        this.cEnds = cEnds;
-        this.dStarts = dStarts;
-
-        this.capacities = capas;
-        this.cUsages = cUsages;
-        this.dUsages = dUsages;
-
-        this.nbResources = capas[0].length;
-        this.nbDims = capas.length;
-
-        scheds = new LocalTaskScheduler[nbResources];
-
-
-        this.vIns = new IStateIntVector[scheds.length];
-        setPropagators(new TaskSchedulerPropagator(earlyStarts, lastEnds, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
+        super("TaskScheduler", new TaskSchedulerPropagator(earlyStarts, lastEnds, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
     }
 
-    @Override
-    public ESat isSatisfied(int[] vals) {
-        //Split this use tab to ease the analysis
-        int[] dHostersVals = new int[dHosters.length];
-        int[] dStartsVals = new int[dStarts.length];
-        int[] cHostersVals = new int[cHosters.length];
-        int[] cEndsVals = new int[cEnds.length];
+    static class TaskSchedulerPropagator extends Propagator<IntVar> {
 
-        //dHosts, cHosts, cEnds, dStarts
-        for (int i = 0; i < dHosters.length; i++) {
-            dHostersVals[i] = vals[i];
-            dStartsVals[i] = vals[i + dHosters.length + cHosters.length + cEnds.length];
-        }
+        private LocalTaskScheduler[] scheds;
 
-        for (int i = 0; i < cHosters.length; i++) {
-            cHostersVals[i] = vals[i + dHosters.length];
-            cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
-        }
+        private IntVar[] cHosters;
 
-        //A hashmap to save the changes of each node (relatives to the previous moment) and each dimension
-        TIntIntHashMap[][] changes = new TIntIntHashMap[nbDims][nbResources];
+        private IntVar[] cEnds;
 
-        for (int d = 0; d < nbDims; d++) {
-            for (int j = 0; j < nbResources; j++) {
-                changes[d][j] = new TIntIntHashMap();
-            }
-        }
+        private IntVar[] dHosters;
 
+        private IntVar[] dStarts;
 
-        for (int d = 0; d < nbDims; d++) {
-            for (int j = 0; j < dHostersVals.length; j++) {
-                //for each placed dSlices, we get the used resource
-                int r = dHostersVals[j];
-                int st = dStartsVals[j];
-                changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
-            }
-        }
+        private int nbResources;
 
-        int[][] currentFree = new int[nbDims][];
-        for (int i = 0; i < nbDims; i++) {
-            currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
-        }
+        private int nbDims;
 
-        for (int d = 0; d < nbDims; d++) {
-            for (int j = 0; j < cHostersVals.length; j++) {
-                int r = cHostersVals[j];
-                int h = cUsages[d][j];
-                int ed = cEndsVals[j];
-                changes[d][r].put(ed, changes[d][r].get(ed) + h);
-                currentFree[d][r] -= h;
-            }
-        }
+        private int[][] capacities;
 
-        boolean ok = true;
-        for (int j = 0; j < nbResources; j++) {
-            TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
-            LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
-            LOGGER.debug(" before: {} / {} changes: {}", prettyUsages(currentFree, j),
-                    prettyUsages(capacities, j),
-                    prettyChanges(myChanges));
+        private int[][] cUsages;
 
+        private int[][] dUsages;
 
-            int[] moments = myChanges.keys(new int[myChanges.size()]);
-            Arrays.sort(moments);
-            for (int t : moments) {
-                boolean bad = true;
-                for (int d = 0; d < nbDims; d++) {
-                    currentFree[d][j] += myChanges.get(t)[d];
-                    if (currentFree[d][j] < 0) {
-                        bad = false;
-                    }
-                }
-                if (!bad) {
-                    LOGGER.info("/!\\ at {}: free={}", j, prettyUsages(currentFree, j));
-                    ok = false;
-                    break;
-                }
-            }
-
-            if (LOGGER.isDebugEnabled()) {
-                for (int x = 0; x < cHostersVals.length; x++) {
-                    if (cHostersVals[x] == j) {
-                        LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
-                    }
-                }
-                for (int x = 0; x < dHostersVals.length; x++) {
-                    if (dHostersVals[x] == j) {
-                        LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
-                    }
-                }
-            }
-        }
-        return ESat.eval(ok);
-    }
-
-    private String prettyUsages(int[][] usages, int i) {
-        int[] u = new int[nbDims];
-        for (int x = 0; x < nbDims; x++) {
-            u[x] = usages[x][i];
-        }
-        return Arrays.toString(u);
-    }
-
-    private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[][] changes, int nIdx) {
-        TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
-        for (int d = 0; d < changes.length; d++) {
-            TIntIntHashMap ch = changes[d][nIdx];
-            for (int k : ch.keys()) {
-                int[] upd = map.get(k);
-                if (upd == null) {
-                    upd = new int[changes.length];
-                    map.put(k, upd);
-                }
-                upd[d] += changes[d][nIdx].get(k);
-            }
-        }
-        return map;
-    }
-
-    private String prettyChanges(TIntObjectHashMap<int[]> changes) {
-        int[] moments = changes.keys(new int[changes.size()]);
-        Arrays.sort(moments);
-        StringBuilder b = new StringBuilder();
-        for (int t : moments) {
-            b.append(t).append('=').append(Arrays.toString(changes.get(t))).append(' ');
-        }
-        return b.toString();
-    }
-
-    class TaskSchedulerPropagator extends Propagator<IntVar> {
+        private IStateIntVector[] vIns;
 
         private IntVar[] earlyStarts, lastEnds;
 
@@ -263,6 +114,22 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                                        IntVar[] dStarts,
                                        int[] assocs) {
             super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
+            this.cHosters = cHosters;
+            this.dHosters = dHosters;
+            this.cEnds = cEnds;
+            this.dStarts = dStarts;
+
+            this.capacities = capas;
+            this.cUsages = cUsages;
+            this.dUsages = dUsages;
+
+            this.nbResources = capas[0].length;
+            this.nbDims = capas.length;
+
+            scheds = new LocalTaskScheduler[nbResources];
+
+
+            this.vIns = new IStateIntVector[scheds.length];
 
             this.earlyStarts = earlyStarts;
             this.lastEnds = lastEnds;
@@ -477,5 +344,135 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 } while (size > 0);
             }
         }
+
+        public ESat isSatisfied(int[] vals) {
+            //Split this use tab to ease the analysis
+            int[] dHostersVals = new int[dHosters.length];
+            int[] dStartsVals = new int[dStarts.length];
+            int[] cHostersVals = new int[cHosters.length];
+            int[] cEndsVals = new int[cEnds.length];
+
+            //dHosts, cHosts, cEnds, dStarts
+            for (int i = 0; i < dHosters.length; i++) {
+                dHostersVals[i] = vals[i];
+                dStartsVals[i] = vals[i + dHosters.length + cHosters.length + cEnds.length];
+            }
+
+            for (int i = 0; i < cHosters.length; i++) {
+                cHostersVals[i] = vals[i + dHosters.length];
+                cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
+            }
+
+            //A hashmap to save the changes of each node (relatives to the previous moment) and each dimension
+            TIntIntHashMap[][] changes = new TIntIntHashMap[nbDims][nbResources];
+
+            for (int d = 0; d < nbDims; d++) {
+                for (int j = 0; j < nbResources; j++) {
+                    changes[d][j] = new TIntIntHashMap();
+                }
+            }
+
+
+            for (int d = 0; d < nbDims; d++) {
+                for (int j = 0; j < dHostersVals.length; j++) {
+                    //for each placed dSlices, we get the used resource
+                    int r = dHostersVals[j];
+                    int st = dStartsVals[j];
+                    changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
+                }
+            }
+
+            int[][] currentFree = new int[nbDims][];
+            for (int i = 0; i < nbDims; i++) {
+                currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
+            }
+
+            for (int d = 0; d < nbDims; d++) {
+                for (int j = 0; j < cHostersVals.length; j++) {
+                    int r = cHostersVals[j];
+                    int h = cUsages[d][j];
+                    int ed = cEndsVals[j];
+                    changes[d][r].put(ed, changes[d][r].get(ed) + h);
+                    currentFree[d][r] -= h;
+                }
+            }
+
+            boolean ok = true;
+            for (int j = 0; j < nbResources; j++) {
+                TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
+                LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
+                LOGGER.debug(" before: {} / {} changes: {}", prettyUsages(currentFree, j),
+                        prettyUsages(capacities, j),
+                        prettyChanges(myChanges));
+
+
+                int[] moments = myChanges.keys(new int[myChanges.size()]);
+                Arrays.sort(moments);
+                for (int t : moments) {
+                    boolean bad = true;
+                    for (int d = 0; d < nbDims; d++) {
+                        currentFree[d][j] += myChanges.get(t)[d];
+                        if (currentFree[d][j] < 0) {
+                            bad = false;
+                        }
+                    }
+                    if (!bad) {
+                        LOGGER.info("/!\\ at {}: free={}", j, prettyUsages(currentFree, j));
+                        ok = false;
+                        break;
+                    }
+                }
+
+                if (LOGGER.isDebugEnabled()) {
+                    for (int x = 0; x < cHostersVals.length; x++) {
+                        if (cHostersVals[x] == j) {
+                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
+                        }
+                    }
+                    for (int x = 0; x < dHostersVals.length; x++) {
+                        if (dHostersVals[x] == j) {
+                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
+                        }
+                    }
+                }
+            }
+            return ESat.eval(ok);
+        }
+
+        private String prettyUsages(int[][] usages, int i) {
+            int[] u = new int[nbDims];
+            for (int x = 0; x < nbDims; x++) {
+                u[x] = usages[x][i];
+            }
+            return Arrays.toString(u);
+        }
+
+        private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[][] changes, int nIdx) {
+            TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
+            for (int d = 0; d < changes.length; d++) {
+                TIntIntHashMap ch = changes[d][nIdx];
+                for (int k : ch.keys()) {
+                    int[] upd = map.get(k);
+                    if (upd == null) {
+                        upd = new int[changes.length];
+                        map.put(k, upd);
+                    }
+                    upd[d] += changes[d][nIdx].get(k);
+                }
+            }
+            return map;
+        }
+
+        private String prettyChanges(TIntObjectHashMap<int[]> changes) {
+            int[] moments = changes.keys(new int[changes.size()]);
+            Arrays.sort(moments);
+            StringBuilder b = new StringBuilder();
+            for (int t : moments) {
+                b.append(t).append('=').append(Arrays.toString(changes.get(t))).append(' ');
+            }
+            return b.toString();
+        }
+
+
     }
 }
