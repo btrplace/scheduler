@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * A constraint to avoid VM relocation to another host.
- * <p/>
+ * <p>
  * The restriction provided by the constraint is only continuous. The running
  * VMs will stay on their current node for the whole duration of the reconfiguration
  * process.
@@ -71,7 +71,7 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Root> getChecker() {
         return new RootChecker(this);
     }
 

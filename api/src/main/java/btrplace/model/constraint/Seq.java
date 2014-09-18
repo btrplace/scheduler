@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * A constraint to force the actions that change the given VMs state
  * to be executed in the given order.
- * <p/>
+ * <p>
  * The restriction provided by the constraint is only continuous.
  *
  * @author Fabien Hermenier
@@ -85,7 +85,7 @@ public class Seq extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Seq> getChecker() {
         return new SeqChecker(this);
     }
 

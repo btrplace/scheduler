@@ -27,10 +27,10 @@ import java.util.Collections;
 /**
  * A constraint to force a set of VMs, if running, to be
  * hosted on the same node.
- * <p/>
+ * <p>
  * If the restriction is discrete, VMs may then be temporary not co-located during the reconfiguration process but they
  * are ensure of being co-located at the end of the reconfiguration.
- * <p/>
+ * <p>
  * If the restriction is continuous, VMs will always be co-located. In practice, if the VMs are all running, they
  * have to already be co-located and it will not possible to relocate them to avoid a potential temporary separation.
  *
@@ -63,7 +63,7 @@ public class Gather extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Gather> getChecker() {
         return new GatherChecker(this);
     }
 

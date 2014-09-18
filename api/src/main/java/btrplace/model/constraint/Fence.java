@@ -76,7 +76,7 @@ public class Fence extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Fence> getChecker() {
         return new FenceChecker(this);
     }
 

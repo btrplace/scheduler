@@ -68,7 +68,7 @@ public class Sleeping extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Sleeping> getChecker() {
         return new SleepingChecker(this);
     }
 

@@ -29,11 +29,11 @@ import java.util.Set;
 /**
  * A constraint to force a set of VMs to be hosted on a single group of nodes
  * among those available.
- * <p/>
+ * <p>
  * When the restriction is discrete, the constraint only ensure that the VMs are not spread over several
  * group of nodes at the end of the reconfiguration process. However, this situation may occur temporary during
  * the reconfiguration. Basically, this allows to select a new group of nodes for the VMs.
- * <p/>
+ * <p>
  * When the restriction is continuous, if some VMs are already running, on a group of nodes,
  * it will not be possible to relocated the VMs to a new group of nodes.
  *
@@ -144,7 +144,7 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Among> getChecker() {
         return new AmongChecker(this);
     }
 

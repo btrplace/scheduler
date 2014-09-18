@@ -71,7 +71,7 @@ public class Ready extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Ready> getChecker() {
         return new ReadyChecker(this);
     }
 

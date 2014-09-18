@@ -67,7 +67,7 @@ public class Running extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Running> getChecker() {
         return new RunningChecker(this);
     }
 

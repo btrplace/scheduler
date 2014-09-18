@@ -26,10 +26,10 @@ import java.util.*;
 /**
  * A constraint to force several sets of VMs to not share any node when they are
  * running.
- * <p/>
+ * <p>
  * When the restriction is discrete, the constraint ensures there is no co-location on
  * only on a given model.
- * <p/>
+ * <p>
  * When the restriction is continuous, the constraint ensures a VM can not be set running
  * on a node that is hosting VMs from another group, even temporary.
  *
@@ -127,7 +127,7 @@ public class Split extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Split> getChecker() {
         return new SplitChecker(this);
     }
 
