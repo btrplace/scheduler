@@ -129,8 +129,8 @@ public class CShareableResourceTest {
         rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(3, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertTrue(rcm.getVirtualUsage(0).instantiatedTo(2));
-        Assert.assertTrue(rcm.getVirtualUsage(1).instantiatedTo(3));
+        Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
+        Assert.assertTrue(rcm.getVirtualUsage(1).isInstantiatedTo(3));
     }
 
     @Test

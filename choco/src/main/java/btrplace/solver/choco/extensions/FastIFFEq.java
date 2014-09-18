@@ -19,7 +19,7 @@
 package btrplace.solver.choco.extensions;
 
 
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -34,9 +34,7 @@ import util.ESat;
  * @author Charles Prud'homme
  * @since 29/06/11
  */
-public class FastIFFEq extends IntConstraint<IntVar> {
-
-    private final int constant;
+public class FastIFFEq extends Constraint {
 
     /**
      * New constraint.
@@ -46,34 +44,26 @@ public class FastIFFEq extends IntConstraint<IntVar> {
      * @param c   the constraint
      */
     public FastIFFEq(BoolVar b, IntVar var, int c) {
-        super(new IntVar[]{b, var}, b.getSolver());
-        this.constant = c;
-        setPropagators(new FastIFFEqProp(vars), new FastIFFEqProp(vars));
-    }
-
-    @Override
-    public ESat isSatisfied(int[] tuple) {
-        return ESat.eval((tuple[0] == 1 && tuple[1] == constant)
-                || (tuple[0] == 0 && tuple[1] != constant));
-    }
-
-    @Override
-    public String toString() {
-        return vars[0].toString() + " <-> " + vars[1] + "=" + constant;
+        super("IFEq", new FastIFFEqProp(b, var, c), new FastIFFEqProp(b, var, c));
     }
 
     /**
      * Propagator for {@link btrplace.solver.choco.extensions.FastIFFEq}
      */
-    class FastIFFEqProp extends Propagator<IntVar> {
+    static class FastIFFEqProp extends Propagator<IntVar> {
+
+        private final int constant;
 
         /**
          * Default constructor.
          *
-         * @param vs vs[0] is the boolean variable, vs[1] is the integer one
+         * @param b the boolean variable
+         * @param var the integer variable
+         * @param c the constant
          */
-        public FastIFFEqProp(IntVar[] vs) {
-            super(vs, PropagatorPriority.BINARY, true);
+        public FastIFFEqProp(BoolVar b, IntVar var, int c) {
+            super(new IntVar[]{b, var}, PropagatorPriority.BINARY, true);
+            this.constant = c;
         }
 
         @Override
@@ -90,7 +80,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int mask) throws ContradictionException {
-            if (vars[0].instantiated()) {
+            if (vars[0].isInstantiated()) {
                 int val = vars[0].getValue();
                 if (val == 0) {
                     vars[1].removeValue(constant, aCause);
@@ -98,7 +88,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
                     vars[1].instantiateTo(constant, aCause);
                 }
             }
-            if (vars[1].instantiatedTo(constant)) {
+            if (vars[1].isInstantiatedTo(constant)) {
                 vars[0].instantiateTo(1, aCause);
             } else if (!vars[1].contains(constant)) {
                 vars[0].instantiateTo(0, aCause);
@@ -132,7 +122,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
                     vars[1].instantiateTo(constant, aCause);
                 }
             } else {
-                if (vars[1].instantiatedTo(constant)) {
+                if (vars[1].isInstantiatedTo(constant)) {
                     vars[0].instantiateTo(1, aCause);
                 } else {
                     vars[0].instantiateTo(0, aCause);
@@ -158,9 +148,9 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
         @Override
         public ESat isEntailed() {
-            if (vars[0].instantiated() || vars[1].instantiated()) {
-                return ESat.eval((vars[0].instantiatedTo(0) && !vars[1].instantiatedTo(constant))
-                        || (vars[0].instantiatedTo(1) && vars[1].instantiatedTo(constant)));
+            if (vars[0].isInstantiated() || vars[1].isInstantiated()) {
+                return ESat.eval((vars[0].isInstantiatedTo(0) && !vars[1].isInstantiatedTo(constant))
+                        || (vars[0].isInstantiatedTo(1) && vars[1].isInstantiatedTo(constant)));
             }
             return ESat.UNDEFINED;
         }

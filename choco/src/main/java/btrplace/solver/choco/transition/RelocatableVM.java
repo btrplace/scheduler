@@ -135,7 +135,7 @@ public class RelocatableVM implements KeepRunningVM {
         //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
         s.post(new FastIFFEq(stay, duration, 0));
 
-        if (!getRelocationMethod().instantiated()) {
+        if (!getRelocationMethod().isInstantiated()) {
             //TODO: not very compliant with the Forge transition but forge is useless for the moment
             int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), btrplace.plan.event.ForgeVM.class, vm);
             IntVar time = VariableFactory.bounded(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, Integer.MAX_VALUE / 100, s);
@@ -147,9 +147,9 @@ public class RelocatableVM implements KeepRunningVM {
     }
 
     private static String prettyMethod(IntVar method) {
-        if (method.instantiatedTo(0)) {
+        if (method.isInstantiatedTo(0)) {
             return "migration";
-        } else if (method.instantiatedTo(1)) {
+        } else if (method.isInstantiatedTo(1)) {
             return "re-instantiation";
         }
         return "(migration || re-instantiation)";
@@ -202,7 +202,7 @@ public class RelocatableVM implements KeepRunningVM {
             assert stay.getValue() == 0;
             Action a;
             Node dst = rp.getNode(dSlice.getHoster().getValue());
-            if (doReinstantiation.instantiatedTo(0)) {
+            if (doReinstantiation.isInstantiatedTo(0)) {
                 int st = getStart().getValue();
                 int ed = getEnd().getValue();
                 a = new MigrateVM(vm, src, dst, st, ed);

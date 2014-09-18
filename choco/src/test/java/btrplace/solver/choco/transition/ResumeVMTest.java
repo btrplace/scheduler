@@ -73,11 +73,11 @@ public class ResumeVMTest {
         ResumeVM m = (ResumeVM) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
-        Assert.assertTrue(m.getDuration().instantiatedTo(10));
-        Assert.assertTrue(m.getState().instantiatedTo(1));
-        Assert.assertFalse(m.getDSlice().getHoster().instantiated());
-        Assert.assertFalse(m.getDSlice().getStart().instantiated());
-        Assert.assertFalse(m.getDSlice().getEnd().instantiated());
+        Assert.assertTrue(m.getDuration().isInstantiatedTo(10));
+        Assert.assertTrue(m.getState().isInstantiatedTo(1));
+        Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
+        Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
+        Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);

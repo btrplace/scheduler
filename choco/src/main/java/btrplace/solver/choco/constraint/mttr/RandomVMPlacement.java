@@ -23,7 +23,7 @@ import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
-import solver.search.strategy.selectors.InValueIterator;
+import solver.search.strategy.selectors.IntValueSelector;
 import solver.variables.IntVar;
 import util.iterators.DisposableValueIterator;
 
@@ -38,7 +38,7 @@ import java.util.Random;
  *
  * @author Fabien Hermenier
  */
-public class RandomVMPlacement implements InValueIterator {
+public class RandomVMPlacement implements IntValueSelector {
 
     private boolean stay;
 
@@ -141,7 +141,7 @@ public class RandomVMPlacement implements InValueIterator {
             }
         }
 
-        if (!x.instantiated()) {
+        if (!x.isInstantiated()) {
             int nIdx;
             if (ranks != null) {
                 nIdx = randomWithRankedValues(x);

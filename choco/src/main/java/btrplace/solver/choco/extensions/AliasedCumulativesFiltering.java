@@ -266,11 +266,11 @@ public class AliasedCumulativesFiltering {
                     + " capacities=(" + Arrays.toString(capacities) + ") ---");
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                LOGGER.debug((dStarts[i].instantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
+                LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
             }
 
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                LOGGER.debug((cEnds[i].instantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
+                LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
             }
             LOGGER.debug("---");
 
@@ -348,7 +348,7 @@ public class AliasedCumulativesFiltering {
 
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
-            if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
+            if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(dUsages, i);
 
@@ -388,7 +388,7 @@ public class AliasedCumulativesFiltering {
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getUB() > lastSup) {
+                if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getUB() > lastSup) {
                     int s = Math.max(dStarts[i].getLB(), lastSup);
                     dStarts[i].updateUpperBound(s, aCause);
                 }
@@ -398,7 +398,7 @@ public class AliasedCumulativesFiltering {
 
     private void updateCEndsSup() throws ContradictionException {
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (!cEnds[i].instantiated() && !associatedToDSliceOnCurrentNode(i)) {
+            if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(cUsages, i);
                 int lastT = -1;

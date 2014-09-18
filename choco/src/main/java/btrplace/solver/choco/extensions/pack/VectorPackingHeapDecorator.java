@@ -42,9 +42,9 @@ public class VectorPackingHeapDecorator {
      */
     private ArrayList<PriorityQueue<Integer>> maxSlackBinHeap;
 
-    public int lastWorld = -1;
-    public long lastNbOfBacktracks = -1;
-    public long lastNbOfRestarts = -1;
+    private int lastWorld = -1;
+    private long lastNbOfBacktracks = -1;
+    private long lastNbOfRestarts = -1;
 
     public VectorPackingHeapDecorator(VectorPackingPropagator p) {
         this.p = p;

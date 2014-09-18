@@ -21,7 +21,7 @@ package btrplace.solver.choco.extensions.pack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.variables.IntVar;
 import util.ESat;
 import util.tools.ArrayUtils;
@@ -31,27 +31,7 @@ import util.tools.ArrayUtils;
  *
  * @author Fabien Hermenier
  */
-public class VectorPacking extends IntConstraint<IntVar> {
-
-    private final Logger LOGGER = LoggerFactory.getLogger("solver");
-
-    /**
-     * The number of bins.
-     */
-    private final int nbBins;
-
-    private final int nbDims;
-
-    /**
-     * The bin assigned to each item.
-     */
-    private final IntVar[] bins;
-
-    /**
-     * The constant size of each item in decreasing order.
-     * [nbDims][nbItems]
-     */
-    private final int[][] iSizes;
+public class VectorPacking extends Constraint {
 
     /**
      * constructor of the FastBinPacking global constraint
@@ -60,21 +40,15 @@ public class VectorPacking extends IntConstraint<IntVar> {
      * @param l      array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
      * @param s      array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param withHeap  optional: process bins in a heap if true
+     * @param withKS    optional: process knapsack filtering on each bin bif true
      */
-    public VectorPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
-        super(ArrayUtils.append(b, ArrayUtils.flatten(l)), l[0][0].getSolver());
-        this.nbBins = l[0].length;
-        this.nbDims = l.length;
-        this.bins = b;
-        this.iSizes = s;
-        VectorPackingPropagator p = new VectorPackingPropagator(labels, l, s, b);
-        p.attachHeapDecorator();
-        p.attachKPSimpleDecorator();
-        setPropagators(p);
+    public VectorPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
+        super("VectorPacking", new VectorPackingPropagator(labels, l, s, b, withHeap, withKS));
     }
 
-    @Override
-    public ESat isSatisfied(int[] tuple) {
+
+/*    public ESat isSatisfied(int[] tuple) {
         int[][] l = new int[nbDims][nbBins];
         int[][] c = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
@@ -95,5 +69,6 @@ public class VectorPacking extends IntConstraint<IntVar> {
         }
         return ESat.TRUE;
     }
+    */
 
 }

@@ -22,7 +22,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
 import memory.IStateInt;
 import memory.IStateIntVector;
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -40,37 +40,7 @@ import java.util.BitSet;
  * @author Fabien Hermenier
  * @see btrplace.solver.choco.extensions.TaskScheduler
  */
-public class AliasedCumulatives extends IntConstraint<IntVar> {
-
-    private AliasedCumulativesFiltering resource;
-
-    private IntVar[] cHosters;
-
-    private IntVar[] cEnds;
-
-    private IntVar[] dHosters;
-
-    private IntVar[] dStarts;
-
-    private int nbDims;
-
-    private int[] capacities;
-
-    private int[][] cUsages;
-
-    private int[][] dUsages;
-
-    private IStateIntVector vIns;
-
-    /**
-     * 0 [0,1,2,4]
-     * 1 [0,1,2,4]
-     * 2 [2]
-     * 3 [3,5]
-     * 4 [0,1,2,4]
-     * 5 [3,5]
-     */
-    private TIntHashSet alias;
+public class AliasedCumulatives extends Constraint {
 
     /**
      * Make a new constraint.
@@ -95,91 +65,40 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                               IntVar[] dStarts,
                               int[] assocs) {
 
-        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts), cHosters[0].getSolver());
-        this.alias = new TIntHashSet(alias);
-        this.cHosters = cHosters;
-        this.dHosters = dHosters;
-        this.cEnds = cEnds;
-        this.dStarts = dStarts;
-
-        this.capacities = capas;
-        this.cUsages = cUsages;
-        this.dUsages = dUsages;
-
-        this.nbDims = capas.length;
-
-        this.vIns = cHosters[0].getSolver().getEnvironment().makeIntVector(0, 0);
-        setPropagators(new AliasedCumulativesPropagator(alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
-
+        super("AliasedCumulatives", new AliasedCumulativesPropagator(alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
     }
 
-    @Override
-    public ESat isSatisfied(int[] vals) {
-        //Split this use tab to ease the analysis
-        int[] dHostersVals = new int[dHosters.length];
-        int[] cHostersVals = new int[cHosters.length];
-        int[] dStartsVals = new int[dStarts.length];
-        int[] cEndsVals = new int[cEnds.length];
+    static class AliasedCumulativesPropagator extends Propagator<IntVar> {
 
-        //dHosts, cHosts, cEnds, dStarts
-        for (int i = 0; i < dHosters.length; i++) {
-            dHostersVals[i] = vals[i];
-            dStartsVals[i] = vals[i + dHosters.length + cHosters.length + cEnds.length];
-        }
+        private AliasedCumulativesFiltering resource;
 
-        for (int i = 0; i < cHosters.length; i++) {
-            cHostersVals[i] = vals[i + dHosters.length];
-            cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
-        }
+        private IntVar[] cHosters;
 
-        //A hashmap to save the changes of the resource (relatives to the previous moment) in the resources distribution
-        TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
+        private IntVar[] cEnds;
 
-        for (int i = 0; i < nbDims; i++) {
-            changes[i] = new TIntIntHashMap();
-        }
+        private IntVar[] dHosters;
 
+        private IntVar[] dStarts;
 
-        for (int i = 0; i < nbDims; i++) {
-            for (int j = 0; j < dHostersVals.length; j++) {
-                //for each placed dSlices, we get the used resource and the moment the slice arrives on it
-                int nIdx = dHostersVals[j];
-                if (isIn(nIdx)) {
-                    changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
-                }
-            }
-        }
+        private int nbDims;
 
-        int[] currentFree = Arrays.copyOf(capacities, capacities.length);
+        private int[] capacities;
 
-        for (int i = 0; i < nbDims; i++) {
-            for (int j = 0; j < cHostersVals.length; j++) {
-                int nIdx = cHostersVals[j];
-                if (isIn(nIdx)) {
-                    changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j]) + cUsages[i][j]);
-                    currentFree[i] -= cUsages[i][j];
-                }
-            }
-        }
+        private int[][] cUsages;
 
-        for (int i = 0; i < nbDims; i++) {
-            //Now we check the evolution of the absolute free space.
-            for (int x = 0; x < changes[i].keys().length; x++) {
-                currentFree[i] += changes[i].get(x);
-                if (currentFree[i] < 0) {
-                    return ESat.FALSE;
-                }
-            }
-        }
-        return ESat.TRUE;
-    }
+        private int[][] dUsages;
 
-    private boolean isIn(int idx) {
-        return alias.contains(idx);
-    }
+        private IStateIntVector vIns;
 
-
-    class AliasedCumulativesPropagator extends Propagator<IntVar> {
+        /**
+         * 0 [0,1,2,4]
+         * 1 [0,1,2,4]
+         * 2 [2]
+         * 3 [3,5]
+         * 4 [0,1,2,4]
+         * 5 [3,5]
+         */
+        private TIntHashSet alias;
 
         private IStateInt toInstantiate;
 
@@ -195,6 +114,20 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                                             IntVar[] dStarts,
                                             int[] assocs) {
             super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts), PropagatorPriority.VERY_SLOW, true);
+            this.alias = new TIntHashSet(alias);
+            this.cHosters = cHosters;
+            this.dHosters = dHosters;
+            this.cEnds = cEnds;
+            this.dStarts = dStarts;
+
+            this.capacities = capas;
+            this.cUsages = cUsages;
+            this.dUsages = dUsages;
+
+            this.nbDims = capas.length;
+
+            this.vIns = cHosters[0].getSolver().getEnvironment().makeIntVector(0, 0);
+
 
 
             BitSet out = new BitSet(cHosters.length);
@@ -309,7 +242,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
             //Check whether some hosting variable are already instantiated
             for (int i = 0; i < dHosters.length; i++) {
-                if (dHosters[i].instantiated()) {
+                if (dHosters[i].isInstantiated()) {
                     int nIdx = dHosters[i].getValue();
                     if (isIn(nIdx)) {
                         toInstantiate.add(-1);
@@ -332,7 +265,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                     }
                     boolean isFull = true;
                     for (IntVar v : dHosters) {
-                        if (!v.instantiated()) {
+                        if (!v.isInstantiated()) {
                             isFull = false;
                             break;
                         }
@@ -358,5 +291,69 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
             }
             forcePropagate(EventType.INSTANTIATE);
         }
+        public ESat isSatisfied(int[] vals) {
+            //Split this use tab to ease the analysis
+            int[] dHostersVals = new int[dHosters.length];
+            int[] cHostersVals = new int[cHosters.length];
+            int[] dStartsVals = new int[dStarts.length];
+            int[] cEndsVals = new int[cEnds.length];
+
+            //dHosts, cHosts, cEnds, dStarts
+            for (int i = 0; i < dHosters.length; i++) {
+                dHostersVals[i] = vals[i];
+                dStartsVals[i] = vals[i + dHosters.length + cHosters.length + cEnds.length];
+            }
+
+            for (int i = 0; i < cHosters.length; i++) {
+                cHostersVals[i] = vals[i + dHosters.length];
+                cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
+            }
+
+            //A hashmap to save the changes of the resource (relatives to the previous moment) in the resources distribution
+            TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
+
+            for (int i = 0; i < nbDims; i++) {
+                changes[i] = new TIntIntHashMap();
+            }
+
+
+            for (int i = 0; i < nbDims; i++) {
+                for (int j = 0; j < dHostersVals.length; j++) {
+                    //for each placed dSlices, we get the used resource and the moment the slice arrives on it
+                    int nIdx = dHostersVals[j];
+                    if (isIn(nIdx)) {
+                        changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
+                    }
+                }
+            }
+
+            int[] currentFree = Arrays.copyOf(capacities, capacities.length);
+
+            for (int i = 0; i < nbDims; i++) {
+                for (int j = 0; j < cHostersVals.length; j++) {
+                    int nIdx = cHostersVals[j];
+                    if (isIn(nIdx)) {
+                        changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j]) + cUsages[i][j]);
+                        currentFree[i] -= cUsages[i][j];
+                    }
+                }
+            }
+
+            for (int i = 0; i < nbDims; i++) {
+                //Now we check the evolution of the absolute free space.
+                for (int x = 0; x < changes[i].keys().length; x++) {
+                    currentFree[i] += changes[i].get(x);
+                    if (currentFree[i] < 0) {
+                        return ESat.FALSE;
+                    }
+                }
+            }
+            return ESat.TRUE;
+        }
+
+        private boolean isIn(int idx) {
+            return alias.contains(idx);
+        }
+
     }
 }

@@ -67,9 +67,9 @@ public class SuspendVMTest {
         SuspendVM m = (SuspendVM) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
-        Assert.assertTrue(m.getDuration().instantiatedTo(5));
-        Assert.assertTrue(m.getState().instantiatedTo(0));
-        Assert.assertTrue(m.getCSlice().getHoster().instantiatedTo(0));
+        Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
+        Assert.assertTrue(m.getState().isInstantiatedTo(0));
+        Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
 
         ReconfigurationPlan p = rp.solve(0, false);
         btrplace.plan.event.SuspendVM a = (btrplace.plan.event.SuspendVM) p.getActions().iterator().next();

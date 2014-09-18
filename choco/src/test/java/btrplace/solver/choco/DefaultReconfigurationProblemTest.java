@@ -168,7 +168,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
         Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length, rp.getManageableVMs().toString());
-        Assert.assertTrue(rp.getStart().instantiated() && rp.getStart().getValue() == 0);
+        Assert.assertTrue(rp.getStart().isInstantiated() && rp.getStart().getValue() == 0);
 
         //Test the index values of the nodes and the VMs.
         for (int i = 0; i < rp.getVMs().length; i++) {
@@ -796,7 +796,7 @@ public class DefaultReconfigurationProblemTest {
         rp.setObjective(true, nbNodes);
         ReconfigurationPlan plan = rp.solve(-1, true);
         Assert.assertNotNull(plan);
-        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 1);
+        Assert.assertEquals(s.getMeasures().getSolutionCount(), 1);
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }

@@ -85,7 +85,7 @@ public class CAmong implements ChocoConstraint {
                 running.add(vm);
                 IntVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
                 //If one of the VM is already placed, no need for the constraint, the group will be known
-                if (vAssign.instantiated()) {
+                if (vAssign.isInstantiated()) {
                     //Get the group of nodes that match the selected node
                     int g = getGroup(rp.getNode(vAssign.getValue()));
                     if (errorReported(rp, vm, nextGrp, g)) {

@@ -79,7 +79,7 @@ public class CSplit implements ChocoConstraint {
         for (int i = 0; i < groups.size(); i++) {
             vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
         }
-        s.post(new DisjointMultiple(s, vars, nbNodes));
+        s.post(new DisjointMultiple(vars, nbNodes));
 
         if (cstr.isContinuous() && !injectContinuous(rp, vmGroups, groups)) {
             return false;

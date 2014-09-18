@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
+import solver.search.strategy.ISF;
 import solver.search.strategy.IntStrategyFactory;
 import solver.variables.IntVar;
 import solver.variables.VF;
@@ -92,7 +93,7 @@ public class VectorPackingTest {
         }
         sizes = height;
         bins = VF.enumeratedArray("b", nItems, 0, nBins, s);
-        Constraint cPack = new VectorPacking(name, loads, sizes, bins);
+        Constraint cPack = new VectorPacking(name, loads, sizes, bins, true, true);
         s.post(cPack);
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
@@ -176,7 +177,7 @@ public class VectorPackingTest {
         int[] capa = new int[]{16,32};
         int[] height = new int[]{1,1};
         modelPack(nBins, capa, nItems, height);
-        s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
+        s.set(ISF.custom(ISF.lexico_var_selector(), ISF.min_value_selector(), bins));
         testPack(true);
         //Assert.fail();
     }
