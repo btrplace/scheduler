@@ -25,7 +25,7 @@ import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -95,7 +95,7 @@ public class FixedNodeSetsPartitioningTest {
         FixedNodeSetsPartitioning f = new FixedNodeSetsPartitioning(parts);
         f.setWorkersCount(3);
 
-        List<Instance> subs = f.split(new DefaultChocoReconfigurationAlgorithmParams(), origin);
+        List<Instance> subs = f.split(new DefaultParameters(), origin);
         //Check disjoint set of ready VMs
         Set<VM> allReady = new HashSet<>();
         for (Instance i : subs) {
@@ -118,6 +118,6 @@ public class FixedNodeSetsPartitioningTest {
         orig.getSatConstraints().add(new MaxOnline(orig.getModel().getMapping().getAllNodes(), 5));
         List<Collection<Node>> parts = splitIn(orig.getModel().getMapping().getAllNodes(), 3);
         FixedNodeSetsPartitioning f = new FixedNodeSetsPartitioning(parts);
-        f.split(new DefaultChocoReconfigurationAlgorithmParams(), orig);
+        f.split(new DefaultParameters(), orig);
     }
 }

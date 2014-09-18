@@ -20,7 +20,7 @@ package btrplace.solver.choco.runner;
 
 import btrplace.model.Instance;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +41,6 @@ public interface InstanceSolver {
      * @return the result of the solving process
      * @throws SolverException if an error prevent from running a solving process
      */
-    InstanceResult solve(ChocoReconfigurationAlgorithmParams ps,
+    InstanceResult solve(Parameters ps,
                          Instance i) throws SolverException;
 }

@@ -24,9 +24,9 @@ import btrplace.plan.event.BootNode;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -71,7 +71,7 @@ public class ShutdownableNodeTest {
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(10));
@@ -107,7 +107,7 @@ public class ShutdownableNodeTest {
 
         map.addOnlineNode(n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -138,7 +138,7 @@ public class ShutdownableNodeTest {
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownVM.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
@@ -179,7 +179,7 @@ public class ShutdownableNodeTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownVM.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
@@ -212,7 +212,7 @@ public class ShutdownableNodeTest {
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownVM.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
@@ -238,7 +238,7 @@ public class ShutdownableNodeTest {
 
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
@@ -275,7 +275,7 @@ public class ShutdownableNodeTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(10));
@@ -328,7 +328,7 @@ public class ShutdownableNodeTest {
         map.addOnlineNode(n1);
         map.addOfflineNode(n4);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(3));
@@ -366,7 +366,7 @@ public class ShutdownableNodeTest {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n4);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(3));

@@ -34,7 +34,7 @@ import java.util.Set;
  * By default:
  * <ul>
  * <li>All the VMs are manageable</li>
- * <li>Default ChocoReconfigurationAlgorithmParams: {@link btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams}</li>
+ * <li>Default Parameters: {@link DefaultParameters}</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *
@@ -48,7 +48,7 @@ public class DefaultReconfigurationProblemBuilder {
 
     private Set<VM> manageable;
 
-    private ChocoReconfigurationAlgorithmParams ps;
+    private Parameters ps;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -65,7 +65,7 @@ public class DefaultReconfigurationProblemBuilder {
      * @param p the parameters
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setParams(ChocoReconfigurationAlgorithmParams p) {
+    public DefaultReconfigurationProblemBuilder setParams(Parameters p) {
         this.ps = p;
         return this;
     }
@@ -131,7 +131,7 @@ public class DefaultReconfigurationProblemBuilder {
         }
 
         if (ps == null) {
-            ps = new DefaultChocoReconfigurationAlgorithmParams();
+            ps = new DefaultParameters();
         }
         return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable);
     }

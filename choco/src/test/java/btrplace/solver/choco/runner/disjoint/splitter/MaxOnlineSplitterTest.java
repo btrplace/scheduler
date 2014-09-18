@@ -26,7 +26,7 @@ import btrplace.model.constraint.MaxOnline;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.runner.disjoint.FixedNodeSetsPartitioning;
 import btrplace.solver.choco.runner.disjoint.FixedSizePartitioning;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -59,7 +59,7 @@ public class MaxOnlineSplitterTest {
 
         FixedNodeSetsPartitioning cut = new FixedSizePartitioning(5);
         Instance origin = new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR());
-        List<Instance> instances = cut.split(new DefaultChocoReconfigurationAlgorithmParams(), origin);
+        List<Instance> instances = cut.split(new DefaultParameters(), origin);
         TIntIntHashMap vmIndex = Instances.makeVMIndex(instances);
         TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
 

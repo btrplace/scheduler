@@ -152,7 +152,7 @@ public class DefaultReconfigurationProblemTest {
         toRun.add(vm4);
         toRun.add(vm1);
         mo.getAttributes().put(vm7, "template", "small");
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dEval = ps.getDurationEvaluators();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
@@ -644,7 +644,7 @@ public class DefaultReconfigurationProblemTest {
         map.addReadyVM(vm5);
         map.addReadyVM(vm6);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         ModelViewMapper mapper = new ModelViewMapper();
         ps.setViewMapper(mapper);
         mapper.register(new ChocoModelViewBuilder() {
@@ -759,7 +759,7 @@ public class DefaultReconfigurationProblemTest {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo,
-                new DefaultChocoReconfigurationAlgorithmParams(),
+                new DefaultParameters(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
@@ -819,7 +819,7 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         ps.setVerbosity(3);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
         Solver s = rp.getSolver();

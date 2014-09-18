@@ -65,7 +65,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.doRepair(true);
         Assert.assertEquals(cra.doRepair(), true);
 
-        //cra.setVerbosity(3);
+        cra.setVerbosity(3);
         Assert.assertEquals(cra.getVerbosity(), 3);
 
         Assert.assertNotNull(cra.getViewMapper());

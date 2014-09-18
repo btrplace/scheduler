@@ -63,7 +63,7 @@ public class SolverViewsManagerTest {
         b.add(new MockViewBuilder("b", Collections.<String>emptyList()));
         b.add(new MockViewBuilder("c", Arrays.asList("a")));
         b.add(new MockViewBuilder("d", Arrays.asList("a", "c")));
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel()).setParams(new DefaultChocoReconfigurationAlgorithmParams()).build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel()).setParams(new DefaultParameters()).build();
         SolverViewsManager l = new SolverViewsManager(rp, b);
         Assert.assertEquals(MockViewBuilder.order, Arrays.asList("a", "b", "c", "d"));
     }
@@ -74,7 +74,7 @@ public class SolverViewsManagerTest {
         b.add(new MockViewBuilder("a", Arrays.asList("c")));
         b.add(new MockViewBuilder("b", Arrays.asList("a")));
         b.add(new MockViewBuilder("c", Arrays.asList("b")));
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel()).setParams(new DefaultChocoReconfigurationAlgorithmParams()).build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel()).setParams(new DefaultParameters()).build();
         SolverViewsManager l = new SolverViewsManager(rp, b);
     }        */
 }

@@ -23,9 +23,9 @@ import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Running;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.InstanceResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class FixedSizePartitioningTest {
 
-    private static ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithmParams();
+    private static Parameters params = new DefaultParameters();
 
     @Test
     public void basicTesting() {

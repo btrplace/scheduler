@@ -22,7 +22,7 @@ import btrplace.model.Instance;
 import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 
 import java.util.*;
 
@@ -69,7 +69,7 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     }
 
     @Override
-    public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
+    public List<Instance> split(Parameters ps, Instance i) throws SolverException {
         Mapping map = i.getModel().getMapping();
 
         setPartitions(random ? randomPartitions(map) : linearPartitions(map));

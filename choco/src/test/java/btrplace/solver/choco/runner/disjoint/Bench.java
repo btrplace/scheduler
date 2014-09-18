@@ -24,7 +24,7 @@ import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 
@@ -147,7 +147,7 @@ public class Bench {
         try {
             for (int x = 0; x < nbSamples; x++) {
                 long start = System.currentTimeMillis();
-                List<Instance> instances = partitioner.split(new DefaultChocoReconfigurationAlgorithmParams(), inst);
+                List<Instance> instances = partitioner.split(new DefaultParameters(), inst);
                 long end = System.currentTimeMillis();
                 System.err.println(instances.size() + " " + nbNodes + " " + nbNodes * ratio + " " + inst.getSatConstraints().size() + " " + (end - start));
             }

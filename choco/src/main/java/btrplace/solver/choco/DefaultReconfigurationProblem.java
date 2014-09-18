@@ -118,7 +118,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
-                                         ChocoReconfigurationAlgorithmParams ps,
+                                         Parameters ps,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
@@ -155,7 +155,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     }
 
-    private void makeViews(ChocoReconfigurationAlgorithmParams ps) throws SolverException {
+    private void makeViews(Parameters ps) throws SolverException {
         List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
         ModelViewMapper vm = ps.getViewMapper();
         for (ModelView v : model.getViews()) {

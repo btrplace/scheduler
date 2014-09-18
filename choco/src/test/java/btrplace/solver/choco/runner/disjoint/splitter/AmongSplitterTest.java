@@ -23,7 +23,7 @@ import btrplace.model.constraint.Among;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.runner.disjoint.FixedNodeSetsPartitioning;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -83,7 +83,7 @@ public class AmongSplitterTest {
          */
         FixedNodeSetsPartitioning partitionner = new FixedNodeSetsPartitioning(parts);
         partitionner.setPartitions(parts);
-        List<Instance> instances = partitionner.split(new DefaultChocoReconfigurationAlgorithmParams(),
+        List<Instance> instances = partitionner.split(new DefaultParameters(),
                 new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR()));
 
         TIntIntHashMap vmIndex = Instances.makeVMIndex(instances);
