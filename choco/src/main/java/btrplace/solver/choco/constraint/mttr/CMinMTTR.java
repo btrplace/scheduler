@@ -34,10 +34,10 @@ import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
 import solver.search.limits.BacktrackCounter;
 import solver.search.loop.monitors.SMF;
-import solver.search.strategy.selectors.values.InDomainMin;
+import solver.search.strategy.selectors.values.IntDomainMin;
 import solver.search.strategy.selectors.variables.InputOrder;
 import solver.search.strategy.strategy.AbstractStrategy;
-import solver.search.strategy.strategy.Assignment;
+import solver.search.strategy.strategy.IntStrategy;
 import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
@@ -133,7 +133,16 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
         Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
         if (!vmsToExclude.isEmpty()) {
-            strategies.add(new Assignment(new MovingVMs(p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
+            List<VMTransition> actions = new LinkedList<>();
+            //Get all the involved slices
+            for (VM vm : vmsToExclude) {
+                if (p.getFutureRunningVMs().contains(vm)) {
+                    actions.add(p.getVMAction(vm));
+                }
+            }
+            IntVar[] scopes = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
+
+            strategies.add(new IntStrategy(scopes, new MovingVMs(p, map, actions), new RandomVMPlacement(p, pla, true)));
         }
 
         placeVMs(strategies, badActions, schedHeuristic, pla);
@@ -148,16 +157,16 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         placeVMs(strategies, runActions, schedHeuristic, pla);
 
         if (p.getNodeActions().length > 0) {
-            strategies.add(new Assignment(new InputOrder<>(TransitionUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+            strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new InputOrder<>(), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
-        strategies.add(new Assignment(new StartOnLeafNodes(rp, gr), new InDomainMin()));
-        strategies.add(new Assignment(schedHeuristic, new InDomainMin()));
+        strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
+        strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
         //At this stage only it matters to plug the cost constraints
-        strategies.add(new Assignment(new InputOrder<>(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
+        strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new InputOrder<>(), new IntDomainMin()));
 
         s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
     }
@@ -166,8 +175,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {
-                HostingVariableSelector selectForBad = new HostingVariableSelector(hosts, schedHeuristic);
-                strategies.add(new Assignment(selectForBad, new RandomVMPlacement(rp, map, true)));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), new RandomVMPlacement(rp, map, true)));
             }
         }
     }

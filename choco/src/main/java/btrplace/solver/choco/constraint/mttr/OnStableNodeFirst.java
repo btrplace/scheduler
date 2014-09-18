@@ -152,7 +152,10 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     }
 
     @Override
-    public IntVar getVariable() {
+    public IntVar getVariable(IntVar[] scope) {
+
+        // TODO: test last == null ? test coherence between scope and the variable returned
+        if (last == null) return null;
 
         makeIncoming();
         IntVar v = getVMtoLeafNode();
@@ -168,21 +171,11 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         }
 
         IntVar early = getEarlyVar();
-        last = early != null ? early : minInf();
+        last = (early != null) ? early : minInf();
         return last;
 
     }
 
-    @Override
-    public boolean hasNext() {
-        return last != null;
-    }
-
-    @Override
-    public void advance() {
-    }
-
-    @Override
     public IntVar[] getScope() {
         return starts;
     }

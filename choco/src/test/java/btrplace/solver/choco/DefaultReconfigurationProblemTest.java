@@ -796,7 +796,7 @@ public class DefaultReconfigurationProblemTest {
         rp.setObjective(true, nbNodes);
         ReconfigurationPlan plan = rp.solve(-1, true);
         Assert.assertNotNull(plan);
-        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 1);
+        Assert.assertEquals(s.getMeasures().getSolutionCount(), 1);
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }
@@ -827,7 +827,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 10);
+        Assert.assertEquals(s.getMeasures().getSolutionCount(), 10);
         Assert.assertEquals(usedNodes(dst), 10);
     }
 

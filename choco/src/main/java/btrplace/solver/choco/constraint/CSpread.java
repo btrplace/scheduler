@@ -110,9 +110,8 @@ public class CSpread implements ChocoConstraint {
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
-            Arithmetic eqCstr = IntConstraintFactory.arithm(d.getHoster(), "=", c.getHoster());
-            BoolVar eq = eqCstr.reif();
-            Arithmetic leqCstr = IntConstraintFactory.arithm(c.getEnd(), "<=", d.getStart());
+            BoolVar eq = IntConstraintFactory.arithm(d.getHoster(), "=", c.getHoster()).reif();
+            solver.constraints.Constraint leqCstr = IntConstraintFactory.arithm(c.getEnd(), "<=", d.getStart());
             ChocoUtils.postImplies(s, eq, leqCstr);
         }
     }

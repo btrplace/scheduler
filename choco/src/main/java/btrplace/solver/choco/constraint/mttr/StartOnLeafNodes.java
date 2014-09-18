@@ -38,10 +38,6 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
 
     private MovementGraph graph;
 
-    private IntVar[] scope;
-
-    private IntVar next;
-
     private Node[] nodes;
 
     /**
@@ -52,23 +48,13 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
      */
     public StartOnLeafNodes(ReconfigurationProblem rp, MovementGraph g) {
         this.graph = g;
-        scope = SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions()));
         nodes = rp.getNodes();
     }
 
     @Override
-    public IntVar[] getScope() {
-        return scope;
-    }
-
-    @Override
-    public boolean hasNext() {
+    public IntVar getVariable(IntVar[] scope) {
+        // todo check coherence between scope (Dslices) and graph vars (Cslices)
         graph.make();
-        next = setNextIncoming();
-        return (next != null);
-    }
-
-    private IntVar setNextIncoming() {
         for (Node n : nodes) {
             List<IntVar> outs = graph.getOutgoing(n);
             if (outs.isEmpty()) {
@@ -80,15 +66,5 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
             }
         }
         return null;
-    }
-
-    @Override
-    public void advance() {
-        next = setNextIncoming();
-    }
-
-    @Override
-    public IntVar getVariable() {
-        return next;
     }
 }

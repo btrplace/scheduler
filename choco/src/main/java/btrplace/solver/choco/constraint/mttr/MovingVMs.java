@@ -51,8 +51,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     private ReconfigurationProblem rp;
 
-    private IntVar[] scopes;
-
     private IStateInt idx;
 
     /**
@@ -61,29 +59,17 @@ public class MovingVMs implements VariableSelector<IntVar> {
      *
      * @param s   the solver to use to extract the assignment variables
      * @param m   the initial configuration
-     * @param vms the VMs to consider
+     * @param actions the actions to consider
      */
-    public MovingVMs(ReconfigurationProblem s, Mapping m, Set<VM> vms) {
-        map = m;
-
+    public MovingVMs(ReconfigurationProblem s, Mapping m, List<VMTransition> actions) {
+        this.map = m;
+        this.actions = actions;
         this.rp = s;
-        this.actions = new LinkedList<>();
-        //Get all the involved slices
-        for (VM vm : vms) {
-            if (rp.getFutureRunningVMs().contains(vm)) {
-                actions.add(rp.getVMAction(vm));
-            }
-        }
-        scopes = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
-        idx = s.getSolver().getEnvironment().makeInt(0);
+        this.idx = s.getSolver().getEnvironment().makeInt(0);
     }
 
-    @Override
-    public IntVar[] getScope() {
-        return scopes;
-    }
-
-    private boolean setToNextMovingVM() {
+    private boolean setToNextMovingVM(IntVar[] scopes) {
+        assert actions.size() == scopes.length;
         for (int i = idx.get(); i < scopes.length; i++) {
             IntVar h = scopes[i];
             if (!h.isInstantiated()) {
@@ -103,17 +89,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
     }
 
     @Override
-    public boolean hasNext() {
-        return setToNextMovingVM();
-    }
-
-    @Override
-    public void advance() {
-        setToNextMovingVM();
-    }
-
-    @Override
-    public IntVar getVariable() {
-        return scopes[idx.get()];
+    public IntVar getVariable(IntVar[] scopes) {
+        return (setToNextMovingVM(scopes)) ? scopes[idx.get()] : null;
     }
 }

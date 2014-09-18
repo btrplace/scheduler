@@ -47,6 +47,7 @@ public class VectorPacking extends Constraint {
         super("VectorPacking", new VectorPackingPropagator(labels, l, s, b, withHeap, withKS));
     }
 
+
 /*    public ESat isSatisfied(int[] tuple) {
         int[][] l = new int[nbDims][nbBins];
         int[][] c = new int[nbDims][nbBins];
