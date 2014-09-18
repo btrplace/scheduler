@@ -38,6 +38,8 @@ public class ForgeVM extends Action implements VMStateTransition {
      * Make a new action.
      *
      * @param vm the VM to forge.
+     * @param start the moment the action starts
+     * @param end the moment the action ends
      */
     public ForgeVM(VM vm, int start, int end) {
         super(start, end);
