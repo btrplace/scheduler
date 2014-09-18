@@ -78,7 +78,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
         amf = TransitionFactory.newBundle();
         solverViewsBuilder = new HashMap<>();
         //Default solver views
-        solverViewsBuilder.put(Packing.VIEW_ID, new DefaultPacking.Builder());
+        solverViewsBuilder.put(Packing.VIEW_ID, new VectorPacking.Builder());
         solverViewsBuilder.put(Cumulatives.VIEW_ID, new DefaultCumulatives.Builder());
         solverViewsBuilder.put(AliasedCumulatives.VIEW_ID, new DefaultAliasedCumulatives.Builder());
 

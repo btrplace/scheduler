@@ -65,7 +65,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.doRepair(true);
         Assert.assertEquals(cra.doRepair(), true);
 
-        cra.setVerbosity(3);
+        //cra.setVerbosity(3);
         Assert.assertEquals(cra.getVerbosity(), 3);
 
         Assert.assertNotNull(cra.getViewMapper());
@@ -78,8 +78,6 @@ public class DefaultChocoReconfigurationAlgorithmTest {
     public void testGetStatistics() throws SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
-        Node n1 = mo.newNode();
-        map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
             Node n = mo.newNode();
             map.addOnlineNode(n);
@@ -112,8 +110,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
                         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
-                        rp.setObjective(false, nbNodes);
+                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
+                        rp.setObjective(true, nbNodes);
                         return true;
                     }
 
@@ -132,10 +130,11 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 nbRunning++;
             }
         }
-        Assert.assertEquals(nbRunning, 10);
+        Assert.assertEquals(nbRunning, 1);
         SolvingStatistics st = cra.getStatistics();
         System.out.println(st);
-        Assert.assertEquals(st.getSolutions().size(), 10);
+        Assert.assertEquals(st.getSolutions().get(0).getOptValue(), 1);
+        Assert.assertEquals(st.getSolutions().size(), 1);
     }
 
     @Test

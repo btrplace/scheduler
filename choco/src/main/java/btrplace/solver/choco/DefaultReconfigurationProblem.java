@@ -490,7 +490,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (useLabels) {
             StringBuilder b = new StringBuilder();
             for (Object s : lbl) {
-                b.append(s);
+                if (s instanceof Object[]) {
+                    for (Object x : (Object[]) s) {
+                        b.append(x);
+                    }
+                } else {
+                    b.append(s);
+                }
             }
             return b.toString();
         }
