@@ -50,6 +50,7 @@ import solver.variables.RealVar;
 import solver.variables.SetVar;
 import solver.variables.VariableFactory;
 import util.ESat;
+import util.tools.ArrayUtils;
 
 import java.util.*;
 
@@ -188,9 +189,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         appendNaiveBranchHeuristic();
 
-        int nbIntVars = solver.retrieveIntVars().length;
-        int nbCstrs = solver.getNbCstrs();
-        getLogger().debug("{} constraints; {} integers", nbCstrs, nbIntVars);
+        getLogger().debug("{} constraints; {} integers", solver.getNbCstrs(), solver.retrieveIntVars().length + solver.retrieveBoolVars().length);
 
 
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
@@ -242,12 +241,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         StrategiesSequencer seq;
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(
-                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), solver.retrieveIntVars()));
+                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
 
         } else {
             seq = new StrategiesSequencer(
                     solver.getSearchLoop().getStrategy(),
-                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), solver.retrieveIntVars()));
+                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
         }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {
