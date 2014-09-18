@@ -9,6 +9,7 @@ version ?????????
 - back to a new fast Packing constraint thanks to Sophie Demassey
 - ChocoReconfigurationAlgorithmParams renamed to Parameters
 - bug fixes
+- new constraint NoDelay
 
 version 0.38.2 - 19 Jun 2014
 ----------------------
