@@ -18,9 +18,10 @@
 package btrplace.btrpsl.tree;
 
 import btrplace.btrpsl.ErrorReporter;
-import btrplace.btrpsl.NamingService;
 import btrplace.btrpsl.Script;
 import btrplace.btrpsl.element.*;
+import btrplace.model.Element;
+import btrplace.model.view.NamingService;
 import org.antlr.runtime.Token;
 
 /**
@@ -34,7 +35,9 @@ public class EnumElement extends BtrPlaceTree {
 
     private Script script;
 
-    private NamingService namingService;
+    private NamingService namingServiceNodes;
+
+    private NamingService namingServiceVMs;
 
     /**
      * Make a new tree.
@@ -44,11 +47,12 @@ public class EnumElement extends BtrPlaceTree {
      * @param ty      the type of the elements in the enumeration
      * @param errors  the errors to report
      */
-    public EnumElement(Token payload, NamingService srv, Script v, BtrpOperand.Type ty, ErrorReporter errors) {
+    public EnumElement(Token payload, NamingService srvNodes, NamingService srvVMs, Script v, BtrpOperand.Type ty, ErrorReporter errors) {
         super(payload, errors);
         this.type = ty;
         this.script = v;
-        this.namingService = srv;
+        this.namingServiceNodes = srvNodes;
+        this.namingServiceVMs = srvVMs;
     }
 
     /**
@@ -117,7 +121,9 @@ public class EnumElement extends BtrPlaceTree {
                 String id = head + o.toString() + tail;
 
                 if (type == BtrpOperand.Type.node) {
-                    BtrpElement el = namingService.resolve(id);
+                    //TODO: 'id' does not contains "@" in the solver NamingService
+                    Element el = namingServiceNodes.resolve(id);
+                    //Element el = namingServiceNodes.resolve(id.substring(1));
                     if (el == null) {
                         //Should be fair as each getChild(i) is a range with at least on child. Prevent from a fake token
                         //with no line number
@@ -127,15 +133,15 @@ public class EnumElement extends BtrPlaceTree {
                         }
                         return ignoreError(t, "Unknown node '" + id.substring(1) + "'");
                     }
-                    res.getValues().add(el);
+                    res.getValues().add(new BtrpElement(BtrpOperand.Type.node, id ,namingServiceNodes.resolve(id)));
                 } else if (type == BtrpOperand.Type.VM) {
                     String fqn = script.id() + '.' + id;
-                    BtrpElement el = namingService.resolve(fqn);
+                    Element el = namingServiceVMs.resolve(fqn);
                     Token t = getChild(i).getChild(0).getToken();
                     if (el == null) {
                         return ignoreError(t, "Unknown VM '" + id + "'");
                     }
-                    res.getValues().add(el);
+                    res.getValues().add(new BtrpElement(BtrpOperand.Type.VM, fqn ,namingServiceVMs.resolve(fqn)));
                 } else {
                     return ignoreError("Unsupported type '" + type + "' in enumeration");
                 }
