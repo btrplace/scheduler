@@ -114,7 +114,7 @@ public class SolverTuning implements Example {
         Model mo = new DefaultModel();
         Mapping mapping = mo.getMapping();
 
-        int nbNodes = 5000;
+        int nbNodes = 1000;
         int nbVMs = 6 * nbNodes;
 
         //Memory usage/consumption in GB
