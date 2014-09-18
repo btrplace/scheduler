@@ -152,7 +152,7 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         ModelViewMapper vMapper = ps.getViewMapper();
         vMapper.register(new CShareableResource.Builder());
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)

@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.runner;
 
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 
 import java.util.List;
 
@@ -118,5 +118,5 @@ public interface SolvingStatistics {
      *
      * @return a set of parameters
      */
-    ChocoReconfigurationAlgorithmParams getParameters();
+    Parameters getParameters();
 }

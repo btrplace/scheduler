@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.runner.disjoint;
 
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.SolutionStatistics;
 import btrplace.solver.choco.runner.SolvingStatistics;
 
@@ -42,7 +42,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
     private boolean hitTimeout;
 
-    private ChocoReconfigurationAlgorithmParams params;
+    private Parameters params;
 
     /**
      * Make the statistics.
@@ -57,7 +57,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      * @param w       the number of workers to solve the partitions in parallel
      * @param nbParts the number of partitions to compute
      */
-    public StaticPartitioningStatistics(ChocoReconfigurationAlgorithmParams ps, int n, int v, int c,
+    public StaticPartitioningStatistics(Parameters ps, int n, int v, int c,
                                         long st, long sd, long d, int w, int nbParts) {
         partResults = new ArrayList<>();
         this.start = st;
@@ -181,7 +181,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams getParameters() {
+    public Parameters getParameters() {
         return params;
     }
 

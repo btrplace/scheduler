@@ -22,9 +22,9 @@ import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -56,7 +56,7 @@ public class ShutdownVMTest {
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -95,7 +95,7 @@ public class ShutdownVMTest {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)

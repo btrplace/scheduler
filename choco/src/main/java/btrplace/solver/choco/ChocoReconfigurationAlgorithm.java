@@ -33,7 +33,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm, ChocoReconfigurationAlgorithmParams {
+public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm, Parameters {
 
     /**
      * Get statistics about the last solved problem.

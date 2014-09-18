@@ -27,7 +27,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 /**
  * Interface denoting the Choco implementation of a View. Such a view might be
  * generated from a {@link btrplace.model.view.ModelView} thanks to the {@link btrplace.solver.choco.view.ChocoModelViewBuilder}
- * or might be a solver-only view provided through {@link btrplace.solver.choco.ChocoReconfigurationAlgorithmParams}.
+ * or might be a solver-only view provided through {@link btrplace.solver.choco.Parameters}.
  *
  * @author Fabien Hermenier
  */

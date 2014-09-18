@@ -24,9 +24,9 @@ import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -68,7 +68,7 @@ public class BootableNodeTest {
 
         map.addOfflineNode(n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
 
@@ -98,7 +98,7 @@ public class BootableNodeTest {
         Node n1 = mo.newNode();
         map.addOfflineNode(n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -130,7 +130,7 @@ public class BootableNodeTest {
         map.addOfflineNode(n1);
         map.addReadyVM(vm1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         dev.register(BootVM.class, new ConstantActionDuration(2));
@@ -157,7 +157,7 @@ public class BootableNodeTest {
         map.addOfflineNode(n1);
         map.addOfflineNode(n2);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -179,7 +179,7 @@ public class BootableNodeTest {
         Node n2 = mo.newNode();
 
         map.addOfflineNode(n2);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -207,7 +207,7 @@ public class BootableNodeTest {
 
         map.addOnlineNode(n1);
         map.addOfflineNode(n4);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(3));

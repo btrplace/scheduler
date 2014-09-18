@@ -31,7 +31,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface ChocoReconfigurationAlgorithmParams {
+public interface Parameters {
 
     /**
      * State if the algorithm only have to repair the model instead
@@ -40,7 +40,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param b {@code true} to repair
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams doRepair(boolean b);
+    Parameters doRepair(boolean b);
 
     /**
      * Indicate if the algorithm repair the model.
@@ -55,7 +55,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param b {@code true} to make the algorithm try to improve the solution
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams doOptimize(boolean b);
+    Parameters doOptimize(boolean b);
 
     /**
      * Tell is the solver tries to improve the first computed solution.
@@ -79,7 +79,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param m the mapper to use
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams setViewMapper(ModelViewMapper m);
+    Parameters setViewMapper(ModelViewMapper m);
 
     /**
      * Set the timeout value for the solving process.
@@ -88,7 +88,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param t the timeout value, in second.
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams setTimeLimit(int t);
+    Parameters setTimeLimit(int t);
 
     /**
      * Get the timeout value.
@@ -111,7 +111,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param map the mapper to use
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams setConstraintMapper(ConstraintMapper map);
+    Parameters setConstraintMapper(ConstraintMapper map);
 
     /**
      * Get the evaluator that is used to indicate the estimated duration of each action.
@@ -126,7 +126,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param dev the evaluator to use
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams setDurationEvaluators(DurationEvaluators dev);
+    Parameters setDurationEvaluators(DurationEvaluators dev);
 
     /**
      * Set the maximum duration of a reconfiguration plan.
@@ -134,7 +134,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param end a positive integer
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams setMaxEnd(int end);
+    Parameters setMaxEnd(int end);
 
     /**
      * Get the maximum duration of a reconfiguration plan.
@@ -155,7 +155,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param lvl the verbosity level
      * @return the current instance
      */
-    ChocoReconfigurationAlgorithmParams setVerbosity(int lvl);
+    Parameters setVerbosity(int lvl);
 
     /**
      * Get the verbosity level of the solver.

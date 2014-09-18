@@ -63,7 +63,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -117,7 +117,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -196,7 +196,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(2));
 
@@ -228,7 +228,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(20));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
@@ -280,7 +280,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(2));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
@@ -321,7 +321,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
@@ -376,7 +376,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
