@@ -87,8 +87,7 @@ public class FastImpliesEq extends Constraint {
                         vars[1].instantiateTo(constant, aCause);
                     }
                     setPassive();
-                }
-                if (!vars[1].contains(constant)) {
+                } else if (!vars[1].contains(constant)) {
                     vars[0].instantiateTo(0, aCause);
                     setPassive();
                 }
