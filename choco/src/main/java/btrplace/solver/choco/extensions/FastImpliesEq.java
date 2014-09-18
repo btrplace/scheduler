@@ -29,7 +29,7 @@ import solver.variables.IntVar;
 import util.ESat;
 
 /**
- * A fast implementation for BVAR <=> VAR = CSTE
+ * A fast implementation for BVAR => VAR = CSTE
  * <br/>
  *
  * @author Charles Prud'homme
@@ -46,7 +46,7 @@ public class FastImpliesEq extends Constraint {
      * @param c   the constant to use to set the variable if the boolean variable is set to true
      */
     public FastImpliesEq(BoolVar b, IntVar var, int c) {
-        super("IFFEq", new FastImpliesEqProp(b, var, c), new FastImpliesEqProp(b, var, c));
+        super("FastImpliesEq", new FastImpliesEqProp(b, var, c));
     }
 
     /**
@@ -64,7 +64,7 @@ public class FastImpliesEq extends Constraint {
          * @param c the constant
          */
         public FastImpliesEqProp(BoolVar b, IntVar var, int c) {
-            super(new IntVar[]{b, var}, PropagatorPriority.UNARY, true);
+            super(new IntVar[]{b, var}, PropagatorPriority.BINARY, true);
             this.constant = c;
         }
 
@@ -73,34 +73,51 @@ public class FastImpliesEq extends Constraint {
             if (idx == 0) {
                 return EventType.INSTANTIATE.mask;
             } else {
-                return EventType.REMOVE.mask + EventType.INSTANTIATE.mask + EventType.BOUND.mask;
+                if (vars[1].hasEnumeratedDomain()) {
+                    return EventType.INSTANTIATE.mask + EventType.BOUND.mask + EventType.REMOVE.mask;
+                }
+                return EventType.INSTANTIATE.mask + EventType.BOUND.mask;
             }
         }
 
         @Override
         public void propagate(int mask) throws ContradictionException {
-            long s;
-            do {
-                s = vars[0].getDomainSize() + vars[1].getDomainSize();
-                if (vars[0].isInstantiatedTo(1)) {
-                    vars[1].instantiateTo(constant, aCause);
+                if (vars[0].isInstantiated()) {
+                    if (vars[0].contains(1)) {
+                        vars[1].instantiateTo(constant, aCause);
+                    }
+                    setPassive();
                 }
                 if (!vars[1].contains(constant)) {
                     vars[0].instantiateTo(0, aCause);
+                    setPassive();
                 }
-                s -= (vars[0].getDomainSize() + vars[1].getDomainSize());
-            } while (s > 0);
         }
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            forcePropagate(EventType.INSTANTIATE);
+            if (idx == 0) {
+                assert EventType.isInstantiate(mask);
+                if (vars[0].contains(1)) {
+                    vars[1].instantiateTo(constant, aCause);
+                }
+                setPassive();
+            } else if (!vars[1].contains(constant)) {
+                vars[0].instantiateTo(0, aCause);
+                setPassive();
+            }
         }
 
+        /**
+         * @return true if (b==0) or (b=1 && x=c) and false if (b=1 && c\not\in D(x))
+         */
         @Override
         public ESat isEntailed() {
-            if (vars[0].isInstantiated() && vars[1].isInstantiated()) {
-                return ESat.eval((vars[0].getValue() == 1 && vars[1].getValue() == constant) || vars[0].getValue() == 0);
+            if (vars[0].isInstantiated()) {
+                if (vars[0].contains(0)) {
+                    return ESat.TRUE;
+                }
+                return (!vars[1].contains(constant)) ? ESat.FALSE : (vars[1].isInstantiated()) ? ESat.TRUE : ESat.UNDEFINED;
             }
             return ESat.UNDEFINED;
         }
