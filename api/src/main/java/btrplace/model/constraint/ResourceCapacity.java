@@ -130,7 +130,7 @@ public class ResourceCapacity extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<ResourceCapacity> getChecker() {
         return new ResourceCapacityChecker(this);
     }
 

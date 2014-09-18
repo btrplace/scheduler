@@ -17,12 +17,16 @@
 
 package btrplace.btrpsl.tree;
 
-import btrplace.btrpsl.*;
+import btrplace.btrpsl.ANTLRBtrplaceSL2Lexer;
+import btrplace.btrpsl.ErrorReporter;
+import btrplace.btrpsl.Script;
+import btrplace.btrpsl.SymbolsTable;
 import btrplace.btrpsl.constraint.ConstraintsCatalog;
 import btrplace.btrpsl.element.BtrpOperand;
 import btrplace.btrpsl.includes.Includes;
 import btrplace.btrpsl.template.TemplateFactory;
 import btrplace.model.Model;
+import btrplace.model.view.NamingService;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
@@ -47,7 +51,9 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
 
     private TemplateFactory tpls;
 
-    private NamingService srv;
+    private NamingService srvNodes;
+
+    private NamingService srvVMs;
 
     private Model model;
 
@@ -57,9 +63,10 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
      * @param errs the errors to report
      * @param s    the symbol table to use
      */
-    public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService ns, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
+    public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService nsNodes, NamingService nsVMs, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
         this.errors = errs;
-        this.srv = ns;
+        this.srvNodes = nsNodes;
+        this.srvVMs = nsVMs;
         this.tpls = tplFactory;
         this.symbols = s;
         this.catalog = c;
@@ -80,9 +87,9 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.ENUM_VAR:
                 return new EnumVar(payload, symbols, errors);
             case ANTLRBtrplaceSL2Lexer.ENUM_FQDN:
-                return new EnumElement(payload, srv, script, BtrpOperand.Type.node, errors);
+                return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.node, errors);
             case ANTLRBtrplaceSL2Lexer.ENUM_ID:
-                return new EnumElement(payload, srv, script, BtrpOperand.Type.VM, errors);
+                return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.VM, errors);
             case ANTLRBtrplaceSL2Lexer.AND:
                 return new BooleanBinaryOperation(payload, true, errors);
             case ANTLRBtrplaceSL2Lexer.OR:
@@ -141,9 +148,9 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.FOR:
                 return new ForStatement(payload, symbols, errors);
             case ANTLRBtrplaceSL2Lexer.IDENTIFIER:
-                return new ElementTree(payload, srv, script, errors);
+                return new ElementTree(payload, srvNodes, srvVMs, script, errors);
             case ANTLRBtrplaceSL2Lexer.NODE_NAME:
-                return new ElementTree(payload, srv, script, errors);
+                return new ElementTree(payload, srvNodes, srvVMs, script, errors);
             case ANTLRBtrplaceSL2Lexer.EXPLODED_SET:
                 return new ExplodedSetTree(payload, errors);
             case ANTLRBtrplaceSL2Lexer.CARDINALITY:
@@ -151,7 +158,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.CONSTRAINTIDENTIFIER:
                 return new ConstraintStatement(payload, script, catalog, errors);
             case ANTLRBtrplaceSL2Lexer.TYPE_DEFINITION:
-                return new TemplateAssignment(payload, script, tpls, symbols, model, srv, errors);
+                return new TemplateAssignment(payload, script, tpls, symbols, model, srvNodes, srvVMs, errors);
             case ANTLRBtrplaceSL2Lexer.EXPORT:
                 return new ExportStatement(payload, script, errors);
             case ANTLRBtrplaceSL2Lexer.USE:

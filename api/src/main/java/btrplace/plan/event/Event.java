@@ -18,7 +18,6 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.Element;
 import btrplace.model.Model;
 
 /**
@@ -28,7 +27,7 @@ import btrplace.model.Model;
  * @author Fabien Hermenier
  * @see Action
  */
-public interface Event<E extends Element> {
+public interface Event {
 
     /**
      * Apply the event on a given model.

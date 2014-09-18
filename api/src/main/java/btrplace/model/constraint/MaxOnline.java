@@ -94,7 +94,7 @@ public class MaxOnline extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<MaxOnline> getChecker() {
         return new MaxOnlineChecker(this);
     }
 

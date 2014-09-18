@@ -17,14 +17,13 @@
 
 package btrplace.btrpsl.template;
 
-import btrplace.btrpsl.InMemoryNamingService;
-import btrplace.btrpsl.NamingService;
 import btrplace.btrpsl.Script;
 import btrplace.btrpsl.element.BtrpElement;
 import btrplace.btrpsl.element.BtrpOperand;
 import btrplace.model.DefaultModel;
 import btrplace.model.Element;
 import btrplace.model.Model;
+import btrplace.model.view.NamingService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,7 +39,8 @@ public class DefaultTemplateFactoryTest {
 
     public static class MockVMTemplate implements Template {
 
-        NamingService srv;
+        NamingService srvNodes;
+        NamingService srvVMs;
         String tplName;
 
         @Override
@@ -63,9 +63,13 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public void setNamingService(NamingService srv) {
-            this.srv = srv;
+        public void setNamingServiceNodes(NamingService srvNodes) {
+            this.srvNodes = srvNodes;
+        }
 
+        @Override
+        public void setNamingServiceVMs(NamingService srvVMs) {
+            this.srvVMs = srvVMs;
         }
     }
 
@@ -73,7 +77,8 @@ public class DefaultTemplateFactoryTest {
 
         String tplName;
 
-        private NamingService srv;
+        private NamingService srvNodes;
+        private NamingService srvVMs;
 
         public Model mo;
 
@@ -99,28 +104,36 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public void setNamingService(NamingService srv) {
-            this.srv = srv;
+        public void setNamingServiceVMs(NamingService srvVMs) {
+            this.srvVMs = srvVMs;
+        }
+
+        @Override
+        public void setNamingServiceNodes(NamingService srvNodes) {
+            this.srvNodes = srvNodes;
         }
     }
 
     @Test
     public void testInstantiation() {
-        DefaultTemplateFactory tplf = new DefaultTemplateFactory(new InMemoryNamingService(), new DefaultModel());
+        DefaultTemplateFactory tplf = new DefaultTemplateFactory(NamingService.newNodeNS(), NamingService.newVMNS(), new DefaultModel());
         Assert.assertTrue(tplf.getAvailables().isEmpty());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testRegister() {
-        NamingService srv = new InMemoryNamingService();//new DefaultModel());
-        DefaultTemplateFactory tplf = new DefaultTemplateFactory(srv, new DefaultModel());
+        NamingService srvNodes = NamingService.newNodeNS();
+        NamingService srvVMs = NamingService.newVMNS();
+        DefaultTemplateFactory tplf = new DefaultTemplateFactory(srvNodes, srvVMs, new DefaultModel());
         MockVMTemplate t1 = new MockVMTemplate("mock1");
         Assert.assertNull(tplf.register(t1));
-        Assert.assertEquals(t1.srv, srv);
+        Assert.assertEquals(t1.srvNodes, srvNodes);
+        Assert.assertEquals(t1.srvVMs, srvVMs);
         Assert.assertTrue(tplf.getAvailables().contains("mock1"));
         MockVMTemplate t2 = new MockVMTemplate("mock2");
         Assert.assertNull(tplf.register(t2));
-        Assert.assertEquals(t2.srv, srv);
+        Assert.assertEquals(t2.srvNodes, srvNodes);
+        Assert.assertEquals(t2.srvVMs, srvVMs);
         Assert.assertTrue(tplf.getAvailables().contains("mock2") && tplf.getAvailables().size() == 2);
 
     }
@@ -174,7 +187,7 @@ public class DefaultTemplateFactoryTest {
     @Test(expectedExceptions = {ElementBuilderException.class})
     public void testTypingIssue() throws ElementBuilderException {
         Model mo = new DefaultModel();
-        DefaultTemplateFactory tplf = new DefaultTemplateFactory(new InMemoryNamingService(), mo);
+        DefaultTemplateFactory tplf = new DefaultTemplateFactory(NamingService.newNodeNS(), NamingService.newVMNS(), mo);
         tplf.register(new MockVMTemplate("mock1"));
         Script scr = new Script();
         tplf.check(scr, "mock1", mo.newNode(), new HashMap<String, String>());

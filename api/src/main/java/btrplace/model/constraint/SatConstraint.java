@@ -31,12 +31,12 @@ import java.util.Objects;
 /**
  * Abstract class to characterize a satisfaction-oriented constraint
  * that impose a restriction on some components of a model.
- * <p/>
+ * <p>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If the restriction is discrete, then the constraint imposes a restriction on a {@link btrplace.model.Model}.
  * If the restriction is continuous, then the constraint imposes also a restriction on a whole {@link ReconfigurationPlan}.
  * This may be the action schedule but also all the intermediary models that result from the application of the reconfiguration plan.
- * <p/>
+ * <p>
  * A constraint does not necessarily support both continuous or discrete restriction.
  *
  * @author Fabien Hermenier
@@ -158,12 +158,13 @@ public abstract class SatConstraint implements Constraint {
      *
      * @return a non-null {@link SatConstraintChecker}
      */
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<?> getChecker() {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Pretty string for a restriction
+     * @return {@code "continuous"} or {@code "discrete"} depending on the restriction
      */
     public String restrictionToString() {
         return isContinuous() ? "continuous" : "discrete";

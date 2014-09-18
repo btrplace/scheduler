@@ -124,7 +124,7 @@ public class Overbook extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Overbook> getChecker() {
         return new OverbookChecker(this);
     }
 

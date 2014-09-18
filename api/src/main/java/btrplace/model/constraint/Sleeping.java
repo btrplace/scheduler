@@ -60,7 +60,8 @@ public class Sleeping extends SatConstraint {
     /**
      * Make a new discrete constraint.
      *
-     * @param n the node to set offline
+     * @param vm the VMs to make sleeping
+     * @param continuous {@code true} for a continuous restriction
      */
     public Sleeping(VM vm, boolean continuous) {
         super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
@@ -68,7 +69,7 @@ public class Sleeping extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Sleeping> getChecker() {
         return new SleepingChecker(this);
     }
 

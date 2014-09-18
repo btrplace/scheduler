@@ -64,7 +64,7 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Lonely> getChecker() {
         return new LonelyChecker(this);
     }
 

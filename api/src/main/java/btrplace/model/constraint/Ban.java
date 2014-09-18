@@ -77,7 +77,7 @@ public class Ban extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Ban> getChecker() {
         return new BanChecker(this);
     }
 

@@ -29,6 +29,7 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.model.view.NamingService;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
@@ -195,9 +196,10 @@ public class ScriptBuilderTest {
         ScriptBuilder b = new ScriptBuilder(mo);
         Script v = b.build("namespace test.template;\nVM[1..5] : tinyVMs;\nfrontend : mediumVMs; @N[1..12] : defaultNodes;\n");
         Assert.assertEquals(v.getVMs().size(), 6);
-        NamingService srv = (NamingService) mo.getView(NamingService.ID);
+        NamingService srvNodes = (NamingService) mo.getView(NamingService.ID+"node");
+        NamingService srvVMs = (NamingService) mo.getView(NamingService.ID+"vm");
         for (VM el : v.getVMs()) {
-            String name = srv.resolve(el);
+            String name = srvVMs.resolve(el);
             if (name.endsWith("frontend")) {
                 Assert.assertEquals(mo.getAttributes().get(el, "template"), "mediumVMs");
             } else {
@@ -462,7 +464,7 @@ public class ScriptBuilderTest {
 
 
     @Test(expectedExceptions = {ScriptBuilderException.class})
-    public void testTemplateReassignment() throws ScriptBuilderException, NamingServiceException {
+    public void testTemplateReassignment() throws ScriptBuilderException {
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         VM v2 = mo.newVM();
@@ -470,12 +472,14 @@ public class ScriptBuilderTest {
         mo.getMapping().addReadyVM(v2);
         mo.getAttributes().put(v, "template", "t1");
         mo.getAttributes().put(v2, "template", "tiny");
-        NamingService ns = new InMemoryNamingService();
-        mo.attach(ns);
-        ns.register("foo.VM1", v);
-        ns.register("foo.VM2", v2);
+        NamingService nsNodes = NamingService.newNodeNS();
+        NamingService nsVMs = NamingService.newVMNS();
+        mo.attach(nsNodes);
+        mo.attach(nsVMs);
+        nsVMs.register(v, "foo.VM1");
+        nsVMs.register(v2, "foo.VM2");
         ScriptBuilder b = new ScriptBuilder(100, mo);
-        b.setTemplateFactory(new DefaultTemplateFactory(ns, mo));
+        b.setTemplateFactory(new DefaultTemplateFactory(nsNodes, nsVMs, mo));
         b.getTemplateFactory().register(new DefaultTemplateFactoryTest.MockVMTemplate("tiny"));
         b.getTemplateFactory().register(new DefaultTemplateFactoryTest.MockVMTemplate("t1"));
         ErrorReporter r;
@@ -494,16 +498,17 @@ public class ScriptBuilderTest {
     public void testResolution() throws Exception {
         Model mo = new DefaultModel();
         ScriptBuilder b = new ScriptBuilder(mo);
-        NamingService ns = b.getNamingService();
+        NamingService nsNodes = b.getNamingServiceNodes();
+        NamingService nsVMs = b.getNamingServiceVMs();
 
         for (int i = 1; i < 10; i++) {
             if (i <= 5) {
                 Node n = mo.newNode();
                 mo.getMapping().addOnlineNode(n);
-                ns.register("@N" + i, n);
+                nsNodes.register(n, "@N" + i);
             }
             VM v = mo.newVM();
-            ns.register("ns.VM" + i, v);
+            nsVMs.register(v, "ns.VM" + i);
             mo.getMapping().addReadyVM(v);
         }
 
@@ -524,11 +529,5 @@ public class ScriptBuilderTest {
         ReconfigurationPlanConverter rpc = new ReconfigurationPlanConverter();
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 10);
-
-        rpc.getModelConverter().getViewsConverter().register(new InMemoryNamingServiceConverter());
-        String json = rpc.toJSON(p).toJSONString();
-        ReconfigurationPlan cp = rpc.fromJSON(json);
-        Assert.assertEquals(cp.getResult(), p.getResult());
-        Assert.assertEquals(cp.getOrigin(), p.getOrigin());
     }
 }

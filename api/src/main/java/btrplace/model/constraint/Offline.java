@@ -68,7 +68,7 @@ public class Offline extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Offline> getChecker() {
         return new OfflineChecker(this);
     }
 

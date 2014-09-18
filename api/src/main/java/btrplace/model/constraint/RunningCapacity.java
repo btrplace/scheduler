@@ -28,11 +28,11 @@ import java.util.Set;
 /**
  * Restrict to a given value, the total amount of VMs running
  * on the given set of nodes.
- * <p/>
+ * <p>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
- * <p/>
+ * <p>
  * If the restriction is continuous, then the total usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *
@@ -114,7 +114,7 @@ public class RunningCapacity extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<RunningCapacity> getChecker() {
         return new RunningCapacityChecker(this);
     }
 
