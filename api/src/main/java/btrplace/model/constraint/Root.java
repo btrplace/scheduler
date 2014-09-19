@@ -73,7 +73,7 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Root> getChecker() {
         return new RootChecker(this);
     }
 

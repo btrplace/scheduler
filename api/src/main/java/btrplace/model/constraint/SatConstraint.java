@@ -158,12 +158,13 @@ public abstract class SatConstraint implements Constraint {
      *
      * @return a non-null {@link SatConstraintChecker}
      */
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<?> getChecker() {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Pretty string for a restriction
+     * @return {@code "continuous"} or {@code "discrete"} depending on the restriction
      */
     public String restrictionToString() {
         return isContinuous() ? "continuous" : "discrete";

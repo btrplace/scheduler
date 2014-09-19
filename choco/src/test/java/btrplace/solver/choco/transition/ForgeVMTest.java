@@ -23,9 +23,9 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -51,7 +51,7 @@ public class ForgeVMTest {
         final VM vm1 = mo.newVM();
 
         mo.getAttributes().put(vm1, "template", "small");
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -61,10 +61,10 @@ public class ForgeVMTest {
         ForgeVM ma = (ForgeVM) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
         Assert.assertEquals(ma.getTemplate(), "small");
-        Assert.assertTrue(ma.getDuration().instantiatedTo(7));
-        Assert.assertFalse(ma.getStart().instantiated());
-        Assert.assertFalse(ma.getEnd().instantiated());
-        Assert.assertTrue(ma.getState().instantiatedTo(0));
+        Assert.assertTrue(ma.getDuration().isInstantiatedTo(7));
+        Assert.assertFalse(ma.getStart().isInstantiated());
+        Assert.assertFalse(ma.getEnd().isInstantiated());
+        Assert.assertTrue(ma.getState().isInstantiatedTo(0));
         Assert.assertNull(ma.getCSlice());
         Assert.assertNull(ma.getDSlice());
     }
@@ -75,7 +75,7 @@ public class ForgeVMTest {
         Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
@@ -94,7 +94,7 @@ public class ForgeVMTest {
 
         m.addOnlineNode(n1);
         mo.getAttributes().put(vm1, "template", "small");
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
         dev.register(ShutdownNode.class, new ConstantActionDuration(20));

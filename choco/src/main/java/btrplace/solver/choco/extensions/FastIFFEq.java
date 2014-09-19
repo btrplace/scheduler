@@ -19,7 +19,7 @@
 package btrplace.solver.choco.extensions;
 
 
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -29,14 +29,12 @@ import solver.variables.IntVar;
 import util.ESat;
 
 /**
- * A fast implementation for BVAR => VAR = CSTE
+ * A fast implementation for BVAR <=> VAR = CSTE
  *
  * @author Charles Prud'homme
  * @since 29/06/11
  */
-public class FastIFFEq extends IntConstraint<IntVar> {
-
-    private final int constant;
+public class FastIFFEq extends Constraint {
 
     /**
      * New constraint.
@@ -46,34 +44,26 @@ public class FastIFFEq extends IntConstraint<IntVar> {
      * @param c   the constraint
      */
     public FastIFFEq(BoolVar b, IntVar var, int c) {
-        super(new IntVar[]{b, var}, b.getSolver());
-        this.constant = c;
-        setPropagators(new FastIFFEqProp(vars), new FastIFFEqProp(vars));
-    }
-
-    @Override
-    public ESat isSatisfied(int[] tuple) {
-        return ESat.eval((tuple[0] == 1 && tuple[1] == constant)
-                || (tuple[0] == 0 && tuple[1] != constant));
-    }
-
-    @Override
-    public String toString() {
-        return vars[0].toString() + " <-> " + vars[1] + "=" + constant;
+        super("IFFEq", new FastIFFEqProp(b, var, c));
     }
 
     /**
      * Propagator for {@link btrplace.solver.choco.extensions.FastIFFEq}
      */
-    class FastIFFEqProp extends Propagator<IntVar> {
+    static class FastIFFEqProp extends Propagator<IntVar> {
+
+        private final int constant;
 
         /**
          * Default constructor.
          *
-         * @param vs vs[0] is the boolean variable, vs[1] is the integer one
+         * @param b the boolean variable
+         * @param var the integer variable
+         * @param c the constant
          */
-        public FastIFFEqProp(IntVar[] vs) {
-            super(vs, PropagatorPriority.BINARY, true);
+        public FastIFFEqProp(BoolVar b, IntVar var, int c) {
+            super(new IntVar[]{b, var}, PropagatorPriority.BINARY, true);
+            this.constant = c;
         }
 
         @Override
@@ -82,7 +72,7 @@ public class FastIFFEq extends IntConstraint<IntVar> {
                 return EventType.INSTANTIATE.mask;
             } else {
                 if (vars[1].hasEnumeratedDomain()) {
-                    return EventType.INSTANTIATE.mask + EventType.REMOVE.mask;
+                    return EventType.INSTANTIATE.mask + EventType.BOUND.mask + EventType.REMOVE.mask;
                 }
                 return EventType.INSTANTIATE.mask + EventType.BOUND.mask;
             }
@@ -90,77 +80,51 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int mask) throws ContradictionException {
-            if (vars[0].instantiated()) {
-                int val = vars[0].getValue();
-                if (val == 0) {
-                    vars[1].removeValue(constant, aCause);
+            if (vars[0].isInstantiated()) {
+                if(vars[0].contains(0)) {
+                    if (vars[1].removeValue(constant, aCause))
+                        setPassive();
                 } else {
                     vars[1].instantiateTo(constant, aCause);
                 }
-            }
-            if (vars[1].instantiatedTo(constant)) {
+            } else if (vars[1].isInstantiatedTo(constant)) {
                 vars[0].instantiateTo(1, aCause);
             } else if (!vars[1].contains(constant)) {
                 vars[0].instantiateTo(0, aCause);
+                setPassive();
             }
         }
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (EventType.isInstantiate(mask)) {
-                awakeOnInst(idx);
-            }
-            if (EventType.isRemove(mask)) {
-                if (!vars[1].contains(constant)) {
-                    vars[0].instantiateTo(0, aCause);
-                }
-            }
-            if (EventType.isDecupp(mask)) {
-                awakeOnSup(idx);
-            }
-            if (EventType.isInclow(mask)) {
-                awakeOnInf(idx);
-            }
-        }
-
-        public void awakeOnInst(int idx) throws ContradictionException {
             if (idx == 0) {
-                int val = vars[0].getValue();
-                if (val == 0) {
-                    vars[1].removeValue(constant, aCause);
+                assert EventType.isInstantiate(mask);
+                if (vars[0].contains(0)) {
+                    if (vars[1].removeValue(constant, aCause))
+                        setPassive();
                 } else {
                     vars[1].instantiateTo(constant, aCause);
                 }
             } else {
-                if (vars[1].instantiatedTo(constant)) {
+                if (vars[1].isInstantiatedTo(constant)) {
                     vars[0].instantiateTo(1, aCause);
-                } else {
+                } else if (!vars[1].contains(constant)) {
                     vars[0].instantiateTo(0, aCause);
+                    setPassive();
                 }
             }
         }
 
-        public void awakeOnInf(int varIdx) throws ContradictionException {
-            if (varIdx == 1) {
-                if (!vars[1].contains(constant)) {
-                    vars[0].instantiateTo(0, aCause);
-                }
-            }
-        }
-
-        public void awakeOnSup(int varIdx) throws ContradictionException {
-            if (varIdx == 1) {
-                if (!vars[1].contains(constant)) {
-                    vars[0].instantiateTo(0, aCause);
-                }
-            }
-        }
-
+        /**
+         * @return true if (b==0 && c\not\in D(x)) or (b=1 && x=c) and false if (b=1 && c\not\in D(x)) or (b==0 && x=c)
+         */
         @Override
         public ESat isEntailed() {
-            if (vars[0].instantiated() || vars[1].instantiated()) {
-                return ESat.eval((vars[0].instantiatedTo(0) && !vars[1].instantiatedTo(constant))
-                        || (vars[0].instantiatedTo(1) && vars[1].instantiatedTo(constant)));
+            if (vars[0].isInstantiated()) {
+                if (vars[0].contains(0)) {
+                    return (!vars[1].contains(constant)) ? ESat.TRUE : (vars[1].isInstantiated()) ? ESat.FALSE : ESat.UNDEFINED;
+                }
+                return (!vars[1].contains(constant)) ? ESat.FALSE : (vars[1].isInstantiated()) ? ESat.TRUE : ESat.UNDEFINED;
             }
             return ESat.UNDEFINED;
         }

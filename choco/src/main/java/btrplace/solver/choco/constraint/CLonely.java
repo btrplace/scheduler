@@ -71,7 +71,7 @@ public class CLonely implements ChocoConstraint {
         }
         //Link the assignment variables with the set
         Solver s = rp.getSolver();
-        s.post(new Disjoint(s, myHosts.toArray(new IntVar[myHosts.size()]),
+        s.post(new Disjoint(myHosts.toArray(new IntVar[myHosts.size()]),
                 otherHosts.toArray(new IntVar[otherHosts.size()]),
                 rp.getNodes().length));
 

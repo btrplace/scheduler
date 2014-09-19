@@ -87,7 +87,7 @@ public class SliceBuilder {
         ticksSooner(s, end, end);
         ticksSooner(s, duration, end);
 
-        if (!start.instantiatedTo(0)) {
+        if (!start.isInstantiatedTo(0)) {
             VF.task(start, duration, end);
         }
         return new Slice(vm, start, end, duration, hoster);
@@ -110,11 +110,11 @@ public class SliceBuilder {
      * Make the duration variable depending on the others.
      */
     private IntVar makeDuration() throws SolverException {
-        if (start.instantiated() && end.instantiated()) {
+        if (start.isInstantiated() && end.isInstantiated()) {
             int d = end.getValue() - start.getValue();
             return rp.makeDuration(d, d, lblPrefix, "_duration");
-        } else if (start.instantiated()) {
-            if (start.instantiatedTo(0)) {
+        } else if (start.isInstantiated()) {
+            if (start.isInstantiatedTo(0)) {
                 return end;
             } else {
                 VF.offset(end, -start.getValue());

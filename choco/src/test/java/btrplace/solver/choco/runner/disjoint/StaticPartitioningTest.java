@@ -24,8 +24,8 @@ import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.InstanceResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -45,7 +45,7 @@ public class StaticPartitioningTest {
     public void testInstantiation() {
         StaticPartitioning st = new StaticPartitioning() {
             @Override
-            public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
+            public List<Instance> split(Parameters ps, Instance i) throws SolverException {
                 throw new UnsupportedOperationException();
             }
         };
@@ -84,11 +84,11 @@ public class StaticPartitioningTest {
 
         StaticPartitioning st = new StaticPartitioning() {
             @Override
-            public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
+            public List<Instance> split(Parameters ps, Instance i) throws SolverException {
                 return Arrays.asList(i1, i2);
             }
         };
-        ChocoReconfigurationAlgorithmParams p = new DefaultChocoReconfigurationAlgorithm();
+        Parameters p = new DefaultChocoReconfigurationAlgorithm();
 
         InstanceResult res = st.solve(p, i0);
         ReconfigurationPlan plan = res.getPlan();
@@ -134,11 +134,11 @@ public class StaticPartitioningTest {
 
         StaticPartitioning st = new StaticPartitioning() {
             @Override
-            public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
+            public List<Instance> split(Parameters ps, Instance i) throws SolverException {
                 return Arrays.asList(i1, i2);
             }
         };
-        ChocoReconfigurationAlgorithmParams p = new DefaultChocoReconfigurationAlgorithm();
+        Parameters p = new DefaultChocoReconfigurationAlgorithm();
         st.solve(p, i0);
     }
 }

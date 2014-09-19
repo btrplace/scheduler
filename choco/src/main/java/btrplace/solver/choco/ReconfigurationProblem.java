@@ -39,7 +39,7 @@ import java.util.Set;
 
 /**
  * Interface for the Reconfiguration Problem.
- * <p/>
+ * <p>
  * VM and node identifiers are translated to a position in an array.
  *
  * @author Fabien Hermenier
@@ -182,7 +182,7 @@ public interface ReconfigurationProblem {
      * @param id the VMs
      * @return an array of transition. The order is provided by the collection iterator.
      */
-    VMTransition[] getVMActions(Set<VM> id);
+    VMTransition[] getVMActions(Collection<VM> id);
 
 
     /**

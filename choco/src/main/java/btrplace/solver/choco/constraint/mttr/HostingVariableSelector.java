@@ -35,17 +35,19 @@ public class HostingVariableSelector extends InputOrder<IntVar> {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
-     * @param hosts the variables denoting the VMs next host
      * @param sched the scheduling heuristic to notify when the placement is invalidated
      */
-    public HostingVariableSelector(IntVar[] hosts, OnStableNodeFirst sched) {
-        super(hosts);
+    public HostingVariableSelector(OnStableNodeFirst sched) {
+        super();
         this.schedHeuristic = sched;
     }
 
+    /**
+     * @param hosts the variables denoting the VMs next host
+     */
     @Override
-    public IntVar getVariable() {
-        IntVar v = super.getVariable();
+    public IntVar getVariable(IntVar[] hosts) {
+        IntVar v = super.getVariable(hosts);
         if (schedHeuristic != null) {
             schedHeuristic.invalidPlacement();
         }

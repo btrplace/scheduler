@@ -87,7 +87,7 @@ public class Seq extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Seq> getChecker() {
         return new SeqChecker(this);
     }
 

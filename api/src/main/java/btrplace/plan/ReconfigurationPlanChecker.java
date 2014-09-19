@@ -46,7 +46,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     private static final TimedBasedActionComparator STARTS_CMP = new TimedBasedActionComparator(true, true);
     private static final TimedBasedActionComparator ENDS_CMP = new TimedBasedActionComparator(false, true);
-    private List<SatConstraintChecker> checkers;
+    private List<SatConstraintChecker<?>> checkers;
 
     /**
      * Make a new instance.
@@ -61,7 +61,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * @param c the checker to add
      * @return {@code true} iff the checker has been added
      */
-    public boolean addChecker(SatConstraintChecker c) {
+    public boolean addChecker(SatConstraintChecker<?> c) {
         return checkers.add(c);
     }
 
@@ -71,13 +71,13 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * @param c the checker to remove
      * @return {@code true} iff the checker was present
      */
-    public boolean removeChecker(SatConstraintChecker c) {
+    public boolean removeChecker(SatConstraintChecker<?> c) {
         return checkers.remove(c);
     }
 
     @Override
     public SatConstraint visit(Allocate a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -91,7 +91,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public Object visit(AllocateEvent a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (!c.consume(a)) {
                 return c.getConstraint();
             }
@@ -101,7 +101,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public SatConstraint visit(SubstitutedVMEvent a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (!c.consume(a)) {
                 return c.getConstraint();
             }
@@ -111,7 +111,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public SatConstraint visit(BootNode a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -126,7 +126,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public SatConstraint visit(BootVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -141,7 +141,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public SatConstraint visit(ForgeVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -156,7 +156,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public SatConstraint visit(KillVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -170,7 +170,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public SatConstraint visit(MigrateVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -184,7 +184,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public Object visit(ResumeVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -198,7 +198,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public Object visit(ShutdownNode a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -212,7 +212,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public Object visit(ShutdownVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -226,7 +226,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public Object visit(SuspendVM a) {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return c.getConstraint();
@@ -319,7 +319,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * @throws ReconfigurationPlanCheckerException if at least one constraint is violated.
      */
     private void checkModel(Model mo, boolean start) throws ReconfigurationPlanCheckerException {
-        for (SatConstraintChecker c : checkers) {
+        for (SatConstraintChecker<?> c : checkers) {
             if (start && !c.startsWith(mo)) {
                 SatConstraint cs = c.getConstraint();
                 if (cs != null) {

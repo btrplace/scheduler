@@ -22,9 +22,9 @@ import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -56,7 +56,7 @@ public class ShutdownVMTest {
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -67,9 +67,9 @@ public class ShutdownVMTest {
         ShutdownVM m = (ShutdownVM) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
-        Assert.assertTrue(m.getDuration().instantiatedTo(5));
-        Assert.assertTrue(m.getState().instantiatedTo(0));
-        Assert.assertTrue(m.getCSlice().getHoster().instantiatedTo(0));
+        Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
+        Assert.assertTrue(m.getState().isInstantiatedTo(0));
+        Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
 
         ReconfigurationPlan p = rp.solve(0, false);
         btrplace.plan.event.ShutdownVM a = (btrplace.plan.event.ShutdownVM) p.getActions().iterator().next();
@@ -95,7 +95,7 @@ public class ShutdownVMTest {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)

@@ -116,7 +116,7 @@ public class RunningCapacity extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<RunningCapacity> getChecker() {
         return new RunningCapacityChecker(this);
     }
 

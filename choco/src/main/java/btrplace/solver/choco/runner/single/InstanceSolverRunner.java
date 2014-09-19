@@ -27,8 +27,8 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
@@ -51,7 +51,7 @@ import java.util.concurrent.Callable;
  */
 public class InstanceSolverRunner implements Callable<InstanceResult> {
 
-    private ChocoReconfigurationAlgorithmParams params;
+    private Parameters params;
 
     private ReconfigurationProblem rp;
 
@@ -80,7 +80,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * @param ps the parameters for the solving process
      * @param i  the instance to solve
      */
-    public InstanceSolverRunner(ChocoReconfigurationAlgorithmParams ps, Instance i) {
+    public InstanceSolverRunner(Parameters ps, Instance i) {
         cstrs = i.getSatConstraints();
         obj = i.getOptConstraint();
         origin = i.getModel();

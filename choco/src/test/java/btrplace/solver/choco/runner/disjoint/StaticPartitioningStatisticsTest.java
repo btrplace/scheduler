@@ -18,8 +18,8 @@
 
 package btrplace.solver.choco.runner.disjoint;
 
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.SolutionStatistics;
 import btrplace.solver.choco.runner.single.SingleRunnerStatistics;
 import org.testng.Assert;
@@ -34,7 +34,7 @@ public class StaticPartitioningStatisticsTest {
 
     @Test
     public void test() {
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         StaticPartitioningStatistics stats = new StaticPartitioningStatistics(ps,
                 7, 8, 9, 4, 5, 6, 2, 3);
         Assert.assertEquals(stats.getNbNodes(), 7);

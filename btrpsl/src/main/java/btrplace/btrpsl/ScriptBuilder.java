@@ -26,6 +26,7 @@ import btrplace.btrpsl.template.TemplateFactory;
 import btrplace.btrpsl.tree.BtrPlaceTree;
 import btrplace.btrpsl.tree.BtrPlaceTreeAdaptor;
 import btrplace.model.Model;
+import btrplace.model.view.NamingService;
 import org.antlr.runtime.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,8 @@ public class ScriptBuilder {
      */
     private ErrorReporterBuilder errBuilder = new PlainTextErrorReporterBuilder();
 
-    private NamingService namingService;
+    private NamingService namingServiceNodes;
+    private NamingService namingServiceVMs;
 
     /**
      * Make a new builder with a default cache size.
@@ -89,12 +91,17 @@ public class ScriptBuilder {
     public ScriptBuilder(final int cacheSize, Model mo) {
 
         this.model = mo;
-        namingService = (NamingService) mo.getView(NamingService.ID);
-        if (namingService == null) {
-            namingService = new InMemoryNamingService();
-            mo.attach(namingService);
-        }
 
+        namingServiceNodes = (NamingService) mo.getView(NamingService.ID+"node");
+        if(namingServiceNodes == null) {
+            namingServiceNodes = NamingService.newNodeNS();
+            mo.attach(namingServiceNodes);
+        }
+        namingServiceVMs = (NamingService) mo.getView(NamingService.ID+"vm");
+        if(namingServiceVMs == null) {
+            namingServiceVMs = NamingService.newVMNS();
+            mo.attach(namingServiceVMs);
+        }
 
         catalog = DefaultConstraintsCatalog.newBundle();
         this.tpls = new MockTemplateFactory(mo);
@@ -190,7 +197,7 @@ public class ScriptBuilder {
 
         SymbolsTable t = new SymbolsTable();
 
-        parser.setTreeAdaptor(new BtrPlaceTreeAdaptor(v, model, namingService, tpls, errorReporter, t, includes, catalog));
+        parser.setTreeAdaptor(new BtrPlaceTreeAdaptor(v, model, namingServiceNodes, namingServiceVMs, tpls, errorReporter, t, includes, catalog));
 
         try {
             BtrPlaceTree tree = (BtrPlaceTree) parser.script_decl().getTree();
@@ -239,12 +246,21 @@ public class ScriptBuilder {
     }
 
     /**
-     * Get the naming service that is used to create element.
+     * Get the naming service that is used to create VMs.
      *
      * @return the naming service provided at instantiation
      */
-    public NamingService getNamingService() {
-        return this.namingService;
+    public NamingService getNamingServiceVMs() {
+        return this.namingServiceVMs;
+    }
+
+    /**
+     * Get the naming service that is used to create Nodes.
+     *
+     * @return the naming service provided at instantiation
+     */
+    public NamingService getNamingServiceNodes() {
+        return this.namingServiceNodes;
     }
 
     /**

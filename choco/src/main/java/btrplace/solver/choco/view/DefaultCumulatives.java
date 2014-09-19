@@ -196,7 +196,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     }
 
     private boolean zeroDuration(BoolVar stay, Slice s) {
-        if (stay.instantiatedTo(1)) {
+        if (stay.isInstantiatedTo(1)) {
             try {
                 s.getDuration().instantiateTo(0, Cause.Null);
             } catch (ContradictionException ex) {

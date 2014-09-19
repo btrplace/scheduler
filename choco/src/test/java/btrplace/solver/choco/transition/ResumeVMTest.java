@@ -22,9 +22,9 @@ import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -61,7 +61,7 @@ public class ResumeVMTest {
         map.addOnlineNode(n2);
         map.addSleepingVM(vm1, n1);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ResumeVM.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -73,11 +73,11 @@ public class ResumeVMTest {
         ResumeVM m = (ResumeVM) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
-        Assert.assertTrue(m.getDuration().instantiatedTo(10));
-        Assert.assertTrue(m.getState().instantiatedTo(1));
-        Assert.assertFalse(m.getDSlice().getHoster().instantiated());
-        Assert.assertFalse(m.getDSlice().getStart().instantiated());
-        Assert.assertFalse(m.getDSlice().getEnd().instantiated());
+        Assert.assertTrue(m.getDuration().isInstantiatedTo(10));
+        Assert.assertTrue(m.getState().isInstantiatedTo(1));
+        Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
+        Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
+        Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -109,7 +109,7 @@ public class ResumeVMTest {
         map.addSleepingVM(vm1, n1);
         map.addSleepingVM(vm2, n2);
 
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ResumeVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)

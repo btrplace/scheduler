@@ -64,7 +64,7 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Quarantine> getChecker() {
         return new QuarantineChecker(this);
     }
 

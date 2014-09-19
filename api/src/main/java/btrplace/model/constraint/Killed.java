@@ -70,7 +70,7 @@ public class Killed extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Killed> getChecker() {
         return new KilledChecker(this);
     }
 

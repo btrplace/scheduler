@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Default implementation of {@link ChocoReconfigurationAlgorithmParams}.
+ * Default implementation of {@link Parameters}.
  * <ul>
  * <li>repair mode is disabled</li>
  * <li>no time limit</li>
@@ -43,7 +43,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfigurationAlgorithmParams {
+public class DefaultParameters implements Parameters {
 
     private ModelViewMapper viewMapper;
 
@@ -71,21 +71,21 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     /**
      * New set of parameters.
      */
-    public DefaultChocoReconfigurationAlgorithmParams() {
+    public DefaultParameters() {
         cstrMapper = ConstraintMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
         viewMapper = ModelViewMapper.newBundle();
         amf = TransitionFactory.newBundle();
         solverViewsBuilder = new HashMap<>();
         //Default solver views
-        solverViewsBuilder.put(Packing.VIEW_ID, new DefaultPacking.Builder());
+        solverViewsBuilder.put(Packing.VIEW_ID, new VectorPacking.Builder());
         solverViewsBuilder.put(Cumulatives.VIEW_ID, new DefaultCumulatives.Builder());
         solverViewsBuilder.put(AliasedCumulatives.VIEW_ID, new DefaultAliasedCumulatives.Builder());
 
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams doRepair(boolean b) {
+    public Parameters doRepair(boolean b) {
         repair = b;
         return this;
     }
@@ -96,7 +96,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams doOptimize(boolean b) {
+    public Parameters doOptimize(boolean b) {
         optimize = b;
         return this;
     }
@@ -112,13 +112,13 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setViewMapper(ModelViewMapper m) {
+    public Parameters setViewMapper(ModelViewMapper m) {
         viewMapper = m;
         return this;
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setTimeLimit(int t) {
+    public Parameters setTimeLimit(int t) {
         timeLimit = t;
         return this;
     }
@@ -134,7 +134,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setConstraintMapper(ConstraintMapper map) {
+    public Parameters setConstraintMapper(ConstraintMapper map) {
         cstrMapper = map;
         return this;
     }
@@ -145,13 +145,13 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setDurationEvaluators(DurationEvaluators dev) {
+    public Parameters setDurationEvaluators(DurationEvaluators dev) {
         durationEvaluators = dev;
         return this;
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setMaxEnd(int end) {
+    public Parameters setMaxEnd(int end) {
         maxEnd = end;
         return this;
     }
@@ -162,7 +162,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setVerbosity(int lvl) {
+    public Parameters setVerbosity(int lvl) {
         verbosityLevel = lvl;
         return this;
     }

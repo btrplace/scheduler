@@ -47,7 +47,7 @@ import java.util.Collection;
  */
 public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfigurationAlgorithm {
 
-    private ChocoReconfigurationAlgorithmParams params;
+    private Parameters params;
 
     private InstanceSolver runner;
 
@@ -58,7 +58,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
      *
      * @param ps the parameters to use to configure the algorithm
      */
-    public DefaultChocoReconfigurationAlgorithm(DefaultChocoReconfigurationAlgorithmParams ps) {
+    public DefaultChocoReconfigurationAlgorithm(DefaultParameters ps) {
         params = ps;
         runner = new SingleRunner();
     }
@@ -67,11 +67,11 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
      * Make a new algorithm with default parameters.
      */
     public DefaultChocoReconfigurationAlgorithm() {
-        this(new DefaultChocoReconfigurationAlgorithmParams());
+        this(new DefaultParameters());
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams doOptimize(boolean b) {
+    public Parameters doOptimize(boolean b) {
         return params.doOptimize(b);
     }
 
@@ -81,7 +81,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setTimeLimit(int t) {
+    public Parameters setTimeLimit(int t) {
         return params.setTimeLimit(t);
     }
 
@@ -91,7 +91,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams doRepair(boolean b) {
+    public Parameters doRepair(boolean b) {
         return params.doRepair(b);
     }
 
@@ -134,7 +134,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setMaxEnd(int end) {
+    public Parameters setMaxEnd(int end) {
         return params.setMaxEnd(end);
     }
 
@@ -149,22 +149,22 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setViewMapper(ModelViewMapper m) {
+    public Parameters setViewMapper(ModelViewMapper m) {
         return params.setViewMapper(m);
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setVerbosity(int lvl) {
+    public Parameters setVerbosity(int lvl) {
         return params.setVerbosity(lvl);
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setConstraintMapper(ConstraintMapper map) {
+    public Parameters setConstraintMapper(ConstraintMapper map) {
         return params.setConstraintMapper(map);
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams setDurationEvaluators(DurationEvaluators d) {
+    public Parameters setDurationEvaluators(DurationEvaluators d) {
         return params.setDurationEvaluators(d);
     }
 

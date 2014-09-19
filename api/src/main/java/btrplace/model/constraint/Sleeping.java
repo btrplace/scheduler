@@ -62,7 +62,7 @@ public class Sleeping extends SatConstraint {
     /**
      * Make a new discrete constraint.
      *
-     * @param vm the vm to set offline
+     * @param vm the VM to make sleeping
      * @param continuous {@code true} for a continuous restriction
      */
     public Sleeping(VM vm, boolean continuous) {
@@ -71,7 +71,7 @@ public class Sleeping extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Sleeping> getChecker() {
         return new SleepingChecker(this);
     }
 

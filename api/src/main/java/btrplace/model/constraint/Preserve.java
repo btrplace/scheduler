@@ -29,7 +29,11 @@ import java.util.*;
  * the given VM. If it is not running, the constraint ignores it.
  * The amount to allocate must be specified as a minimum or an exact value.
  * At most, the VM will have an allocation of resources equals to the maximum allowed
+<<<<<<< HEAD
  *
+=======
+ * <p>
+>>>>>>> develop
  * The restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier
@@ -115,7 +119,7 @@ public class Preserve extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Preserve> getChecker() {
         return new PreserveChecker(this);
     }
 

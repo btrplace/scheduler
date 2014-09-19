@@ -23,7 +23,7 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
@@ -37,10 +37,10 @@ import java.util.concurrent.*;
 /**
  * An abstract solver that decompose statically an instance
  * into multiple disjoint sub-instances than are solved in parallel.
- * <p/>
+ * <p>
  * The resulting reconfiguration plan is composed by all the sub
  * reconfiguration plans. Each sub-instance must then have a solution.
- * <p/>
+ * <p>
  * The solving process relies on a master/worker paradigm with a number
  * of workers equals to the number of available cores by default.
  *
@@ -77,7 +77,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     @Override
-    public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra, Instance orig) throws SolverException {
+    public InstanceResult solve(Parameters cra, Instance orig) throws SolverException {
         long start = System.currentTimeMillis();
         long splitDuration = -System.currentTimeMillis();
         List<Instance> partitions = split(cra, orig);
@@ -154,5 +154,5 @@ public abstract class StaticPartitioning implements InstanceSolver {
      * @return a list of disjoint instances. Cannot be empty.
      * @throws SolverException if an error prevent the splitting process
      */
-    public abstract List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException;
+    public abstract List<Instance> split(Parameters ps, Instance i) throws SolverException;
 }

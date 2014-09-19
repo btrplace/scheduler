@@ -69,7 +69,7 @@ public class Online extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Online> getChecker() {
         return new OnlineChecker(this);
     }
 

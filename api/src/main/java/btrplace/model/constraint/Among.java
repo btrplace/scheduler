@@ -146,7 +146,7 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Among> getChecker() {
         return new AmongChecker(this);
     }
 

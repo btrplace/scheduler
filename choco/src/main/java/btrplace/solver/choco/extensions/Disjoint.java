@@ -21,8 +21,7 @@ package btrplace.solver.choco.extensions;
 
 import memory.IStateBitSet;
 import memory.IStateInt;
-import solver.Solver;
-import solver.constraints.IntConstraint;
+import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -42,66 +41,39 @@ import java.util.BitSet;
  *
  * @author Sophie Demassey
  */
-public class Disjoint extends IntConstraint<IntVar> {
+public class Disjoint extends Constraint {
 
     /**
-     * number of variables in the first set (group 0)
-     */
-    private final int nbX;
-
-    /**
-     * the variable domains must be included in [0, nbValues-1]
-     */
-    private final int nbValues;
-
-    /**
-     * candidates[g][v] = number of variables in group 'g' which can be assigned to the value 'v',
-     * with g = 0 || 1 and 0 <= v < nbValues
-     */
-    private IStateInt[][] candidates;
-    /**
-     * required[g].get(v) iff at least one variable in the group 'g' is assigned to the value 'v',
-     * with g = 0 || 1 and 0 <= v < nbValues
-     */
-    private IStateBitSet[] required;
-
-    /**
-     * @param s solver
      * @param x first set of variables (group 0)
      * @param y second set of variables (group 1)
      * @param c max variable value + 1
      */
-    public Disjoint(Solver s, IntVar[] x, IntVar[] y, int c) {
-        super(ArrayUtils.append(x, y), s);
-        this.nbX = x.length;
-        this.nbValues = c;
-        candidates = new IStateInt[2][c];
-        required = new IStateBitSet[2];
-        required[0] = s.getEnvironment().makeBitSet(c);
-        required[1] = s.getEnvironment().makeBitSet(c);
-        for (int v = 0; v < c; v++) {
-            candidates[0][v] = s.getEnvironment().makeInt(0);
-            candidates[1][v] = s.getEnvironment().makeInt(0);
-        }
-        setPropagators(new DisjointPropagator(x, y));
+    public Disjoint(IntVar[] x, IntVar[] y, int c) {
+        super("Disjoint", new DisjointPropagator(x, y, c));
     }
 
-    @Override
-    public ESat isSatisfied(int[] tuple) {
-        BitSet valuesOne = new BitSet(nbValues);
-        int i = 0;
-        for (; i < nbX; i++) {
-            valuesOne.set(tuple[i]);
-        }
-        for (; i < tuple.length; i++) {
-            if (valuesOne.get(tuple[i])) {
-                return ESat.FALSE;
-            }
-        }
-        return ESat.TRUE;
-    }
+    static class DisjointPropagator extends Propagator<IntVar> {
 
-    class DisjointPropagator extends Propagator<IntVar> {
+        /**
+         * number of variables in the first set (group 0)
+         */
+        private final int nbX;
+
+        /**
+         * the variable domains must be included in [0, nbValues-1]
+         */
+        private final int nbValues;
+
+        /**
+         * candidates[g][v] = number of variables in group 'g' which can be assigned to the value 'v',
+         * with g = 0 || 1 and 0 <= v < nbValues
+         */
+        private IStateInt[][] candidates;
+        /**
+         * required[g].get(v) iff at least one variable in the group 'g' is assigned to the value 'v',
+         * with g = 0 || 1 and 0 <= v < nbValues
+         */
+        private IStateBitSet[] required;
 
         private IIntDeltaMonitor[] idms;
 
@@ -111,8 +83,23 @@ public class Disjoint extends IntConstraint<IntVar> {
 
         private IntVar[][] groups;
 
-        public DisjointPropagator(IntVar[] g1, IntVar[] g2) {
-            super(ArrayUtils.append(g1, g2), PropagatorPriority.VERY_SLOW, true);
+        /**
+         * @param x first set of variables (group 0)
+         * @param y second set of variables (group 1)
+         * @param c max variable value + 1
+         */
+        public DisjointPropagator(IntVar[] x, IntVar[] y, int c) {
+            super(ArrayUtils.append(x, y), PropagatorPriority.VERY_SLOW, true);
+            this.nbX = x.length;
+            this.nbValues = c;
+            candidates = new IStateInt[2][c];
+            required = new IStateBitSet[2];
+            required[0] = getSolver().getEnvironment().makeBitSet(c);
+            required[1] = getSolver().getEnvironment().makeBitSet(c);
+            for (int v = 0; v < c; v++) {
+                candidates[0][v] = getSolver().getEnvironment().makeInt(0);
+                candidates[1][v] = getSolver().getEnvironment().makeInt(0);
+            }
             idms = new IIntDeltaMonitor[vars.length];
             int i = 0;
             for (IntVar v : vars) {
@@ -120,8 +107,8 @@ public class Disjoint extends IntConstraint<IntVar> {
             }
             remProc = new RemProc();
             groups = new IntVar[2][];
-            groups[0] = g1;
-            groups[1] = g2;
+            groups[0] = x;
+            groups[1] = y;
         }
 
         @Override
@@ -161,7 +148,7 @@ public class Disjoint extends IntConstraint<IntVar> {
             for (IntVar v : groups[otherGroup]) {
                 if (v.removeValue(val, aCause)) {
                     candidates[otherGroup][val].add(-1);
-                    if (v.instantiated()) {
+                    if (v.isInstantiated()) {
                         filterInst(i, otherGroup);
                     }
                 }
@@ -208,7 +195,7 @@ public class Disjoint extends IntConstraint<IntVar> {
          * @param group the group of the variable
          */
         private void initVar(IntVar var, int group) {
-            if (var.instantiated()) {
+            if (var.isInstantiated()) {
                 required[group].set(var.getValue());
             } else {
                 DisposableValueIterator it = var.getValueIterator(true);
@@ -267,22 +254,35 @@ public class Disjoint extends IntConstraint<IntVar> {
             required[group].set(val);
             return false;
         }
-    }
 
-    private class RemProc implements UnaryIntProcedure<Integer> {
-        private int var;
-
-        @Override
-        public UnaryIntProcedure set(Integer idxVar) {
-            this.var = idxVar;
-            return this;
+        public ESat isSatisfied(int[] tuple) {
+            BitSet valuesOne = new BitSet(nbValues);
+            int i = 0;
+            for (; i < nbX; i++) {
+                valuesOne.set(tuple[i]);
+            }
+            for (; i < tuple.length; i++) {
+                if (valuesOne.get(tuple[i])) {
+                    return ESat.FALSE;
+                }
+            }
+            return ESat.TRUE;
         }
 
-        @Override
-        public void execute(int val) throws ContradictionException {
-            int group = (var < nbX) ? 0 : 1;
-            candidates[group][val].add(-1);
+        private class RemProc implements UnaryIntProcedure<Integer> {
+            private int var;
+
+            @Override
+            public UnaryIntProcedure set(Integer idxVar) {
+                this.var = idxVar;
+                return this;
+            }
+
+            @Override
+            public void execute(int val) throws ContradictionException {
+                int group = (var < nbX) ? 0 : 1;
+                candidates[group][val].add(-1);
+            }
         }
     }
-
 }

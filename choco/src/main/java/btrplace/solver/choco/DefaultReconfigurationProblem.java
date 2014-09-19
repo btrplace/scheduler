@@ -37,19 +37,20 @@ import solver.constraints.IntConstraintFactory;
 import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.search.solution.AllSolutionsRecorder;
-import solver.search.strategy.IntStrategyFactory;
+import solver.search.strategy.ISF;
 import solver.search.strategy.selectors.values.RealDomainMiddle;
+import solver.search.strategy.selectors.values.SetDomainMin;
 import solver.search.strategy.selectors.variables.InputOrder;
 import solver.search.strategy.selectors.variables.Occurrence;
-import solver.search.strategy.strategy.AssignmentInterval;
+import solver.search.strategy.strategy.RealStrategy;
+import solver.search.strategy.strategy.SetSearchStrategy;
 import solver.search.strategy.strategy.StrategiesSequencer;
-import solver.search.strategy.strategy.set.SetSearchStrategy;
-import solver.search.strategy.strategy.set.SetValSelector;
 import solver.variables.IntVar;
 import solver.variables.RealVar;
 import solver.variables.SetVar;
 import solver.variables.VariableFactory;
 import util.ESat;
+import util.tools.ArrayUtils;
 
 import java.util.*;
 
@@ -118,7 +119,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
-                                         ChocoReconfigurationAlgorithmParams ps,
+                                         Parameters ps,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
@@ -135,7 +136,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = ps.getDurationEvaluators();
 
         solver = new Solver();
-        solver.getSearchLoop().plugSearchMonitor(new AllSolutionsRecorder(solver));
+        solver.set(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
         end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, DEFAULT_MAX_TIME, solver);
 
@@ -155,7 +156,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     }
 
-    private void makeViews(ChocoReconfigurationAlgorithmParams ps) throws SolverException {
+    private void makeViews(Parameters ps) throws SolverException {
         List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
         ModelViewMapper vm = ps.getViewMapper();
         for (ModelView v : model.getViews()) {
@@ -188,21 +189,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         appendNaiveBranchHeuristic();
 
-        int nbIntVars = solver.retrieveIntVars().length;
-        int nbCstrs = solver.getNbCstrs();
-        getLogger().debug("{} constraints; {} integers", nbCstrs, nbIntVars);
+        getLogger().debug("{} constraints; {} integers", solver.getNbCstrs(), solver.retrieveIntVars().length + solver.retrieveBoolVars().length);
 
 
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
-            solver.getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
-                @Override
-                public void onSolution() {
-                    int v = objective.getValue();
-                    String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
-                    solver.postCut(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
-                }
+            solver.getSearchLoop().plugSearchMonitor((IMonitorSolution) () -> {
+                int v = objective.getValue();
+                String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
+                solver.post(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
             });
             solver.findOptimalSolution(solvingPolicy, objective);
         }
@@ -245,20 +241,24 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         StrategiesSequencer seq;
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(
-                    IntStrategyFactory.firstFail_InDomainMin(solver.retrieveIntVars()));
+                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
 
         } else {
-            seq = new StrategiesSequencer(solver.getSearchLoop().getStrategy(),
-                    IntStrategyFactory.firstFail_InDomainMin(solver.retrieveIntVars()));
+            seq = new StrategiesSequencer(
+                    solver.getSearchLoop().getStrategy(),
+                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
         }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {
-            seq = new StrategiesSequencer(seq, new AssignmentInterval(rv, new Occurrence<>(solver.retrieveRealVars()), new RealDomainMiddle()));
+            seq = new StrategiesSequencer(
+                    seq,
+                    new RealStrategy(rv, new Occurrence<>(), new RealDomainMiddle()));
         }
         SetVar[] sv = solver.retrieveSetVars();
         if (sv != null && sv.length > 0) {
-            seq = new StrategiesSequencer(seq,
-                    new SetSearchStrategy(new InputOrder<>(solver.retrieveSetVars()), new SetValSelector.FirstVal(), true));
+            seq = new StrategiesSequencer(
+                    seq,
+                    new SetSearchStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
         }
         solver.set(seq);
     }
@@ -490,7 +490,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (useLabels) {
             StringBuilder b = new StringBuilder();
             for (Object s : lbl) {
-                b.append(s);
+                if (s instanceof Object[]) {
+                    for (Object x : (Object[]) s) {
+                        b.append(x);
+                    }
+                } else {
+                    b.append(s);
+                }
             }
             return b.toString();
         }
@@ -499,7 +505,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Set<VM> getManageableVMs() {
-        return manageable;
+        return Collections.unmodifiableSet(manageable);
     }
 
     @Override
@@ -598,8 +604,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public VMTransition[] getVMActions(Set<VM> id) {
-        return vmActions;
+    public VMTransition[] getVMActions(Collection<VM> ids) {
+        VMTransition[] trans = new VMTransition[ids.size()];
+        int i = 0;
+        for (VM v : ids) {
+            trans[i++] = getVMAction(v);
+        }
+        return trans;
     }
 
     @Override

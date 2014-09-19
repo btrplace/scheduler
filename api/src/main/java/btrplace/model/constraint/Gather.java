@@ -65,7 +65,7 @@ public class Gather extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Gather> getChecker() {
         return new GatherChecker(this);
     }
 

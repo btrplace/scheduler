@@ -181,7 +181,7 @@ public class SplitAmong extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<SplitAmong> getChecker() {
         return new SplitAmongChecker(this);
     }
 

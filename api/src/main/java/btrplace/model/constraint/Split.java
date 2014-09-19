@@ -129,7 +129,7 @@ public class Split extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<Split> getChecker() {
         return new SplitChecker(this);
     }
 

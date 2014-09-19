@@ -18,8 +18,8 @@
 
 package btrplace.solver.choco.runner.single;
 
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultParameters;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.SolutionStatistics;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,7 +35,7 @@ public class SingleRunnerStatisticsTest {
 
     @Test
     public void testInstantiate() {
-        ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters params = new DefaultParameters();
         SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 12, 100, 1, 2, false, 7, 34);
         Assert.assertEquals(st.getNbNodes(), 10);
         Assert.assertEquals(st.getNbVMs(), 20);
@@ -54,7 +54,7 @@ public class SingleRunnerStatisticsTest {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddSolution() {
-        ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithmParams();
+        Parameters params = new DefaultParameters();
         SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 12, 100, 1, 2, false, 7, 34);
         SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
         SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);

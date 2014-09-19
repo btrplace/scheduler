@@ -42,7 +42,7 @@ public class ReconfigurationPlanCheckerTest {
     @Test
     public void tesAddandRemove() {
         ReconfigurationPlanChecker rc = new ReconfigurationPlanChecker();
-        SatConstraintChecker chk = mock(SatConstraintChecker.class);
+        SatConstraintChecker<?> chk = mock(SatConstraintChecker.class);
         Assert.assertTrue(rc.addChecker(chk));
         Assert.assertTrue(rc.removeChecker(chk));
         Assert.assertFalse(rc.removeChecker(chk));

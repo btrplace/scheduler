@@ -22,7 +22,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.disjoint.splitter.ConstraintSplitterMapper;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.THashSet;
@@ -37,7 +37,7 @@ import java.util.*;
  * Running and sleeping VMs are spread on the sub-instances
  * depending on their current location while ready VMs are spread
  * evenly.
- * <p/>
+ * <p>
  * The {@link SatConstraint}s are split when necessary using
  * splitters available through the {@link ConstraintSplitterMapper}.
  * The {@link btrplace.model.constraint.OptConstraint} is re-used
@@ -111,7 +111,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     }
 
     @Override
-    public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
+    public List<Instance> split(Parameters ps, Instance i) throws SolverException {
         Model mo = i.getModel();
 
         SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo);

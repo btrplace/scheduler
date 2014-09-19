@@ -20,7 +20,7 @@ package btrplace.solver.choco.runner.single;
 
 import btrplace.model.Instance;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 
@@ -32,7 +32,7 @@ import btrplace.solver.choco.runner.InstanceSolver;
 public class SingleRunner implements InstanceSolver {
 
     @Override
-    public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra,
+    public InstanceResult solve(Parameters cra,
                                 Instance i) throws SolverException {
         InstanceSolverRunner r = new InstanceSolverRunner(cra, i);
         return r.call();

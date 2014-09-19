@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.runner.single;
 
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.Parameters;
 import btrplace.solver.choco.runner.SolutionStatistics;
 import btrplace.solver.choco.runner.SolvingStatistics;
 
@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class SingleRunnerStatistics implements SolvingStatistics {
 
-    private ChocoReconfigurationAlgorithmParams params;
+    private Parameters params;
 
     /**
      * The number of VMs actually managed by the problem.
@@ -88,7 +88,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
      * @param cd         the duration of the core-RP building process
      * @param sd         the duration of the core-RP specialization process
      */
-    public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int n, int v, int c, int managedVMs, long st,
+    public SingleRunnerStatistics(Parameters ps, int n, int v, int c, int managedVMs, long st,
                                   long t, long nbN, long nbB, boolean to, long cd, long sd) {
         nbManagedVMs = managedVMs;
         this.params = ps;
@@ -223,7 +223,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams getParameters() {
+    public Parameters getParameters() {
         return params;
     }
 }

@@ -6,6 +6,14 @@ version ?????????
 - constraint SequentialVMTransitions becomes Seq
 - continuous or discrete restriction mode for state constraints, ban, fence
 - btrpsl joined the repository
+- major performance improvement with a fast Packing constraint made by
+  Sophie Demassey
+- ChocoReconfigurationAlgorithmParams renamed to Parameters
+- bug fixes
+- move to Java 8
+- new constraint NoDelay
+- upgrade to choco-3.2.0
+- remove the logback dependency
 
 version 0.38.2 - 19 Jun 2014
 ----------------------

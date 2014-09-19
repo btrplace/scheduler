@@ -39,7 +39,7 @@ public class DisjointTest {
             g1[i] = VF.enumerated("G1-" + i, 0, (i + 1), s);
             g2[i] = VF.enumerated("G2-" + i, 0, (i + 1), s);
         }
-        s.post(new Disjoint(s, g1, g2, 4));
+        s.post(new Disjoint(g1, g2, 4));
         s.post(IntConstraintFactory.arithm(g2[g2.length - 1], "<=", g1[g1.length - 1]));
         s.findAllSolutions();
     }
@@ -53,12 +53,12 @@ public class DisjointTest {
                 groups[g][i] = VF.enumerated("G" + g + "-" + i, 0, 2, s);
             }
         }
-        s.post(new DisjointMultiple(s, groups, 3));
+        s.post(new DisjointMultiple(groups, 3));
         for (int g = 1; g < groups.length; g++) {
             s.post(IntConstraintFactory.arithm(groups[g - 1][2], "<=", groups[g][2]));
         }
         SMF.log(s, true, true);
-        SMF.logContradiction(s);
+        //SMF.logContradiction(s);
         s.findAllSolutions();
 
     }
