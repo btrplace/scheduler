@@ -18,16 +18,18 @@
 package btrplace.btrpsl;
 
 import btrplace.btrpsl.includes.PathBasedIncludes;
+import btrplace.fromEntropy.ConfigurationConverter;
+import btrplace.json.model.InstanceConverter;
 import btrplace.model.DefaultModel;
+import btrplace.model.Instance;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Unit tests that check the examples are working.
@@ -60,7 +62,7 @@ public class ExamplesTest {
 
     }
 
-/* TODO: To remove (debug purpose only)
+/* TODO: To remove (debug purpose only) */
     @Test
     public void fromEntropyConverterTest() throws IOException {
 
@@ -176,7 +178,7 @@ public class ExamplesTest {
             }
         }
     }
-*/
+/**/
 
 
     /**
