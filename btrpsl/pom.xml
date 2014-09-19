@@ -27,7 +27,7 @@
     </parent>
     <name>btrpsl</name>
     <artifactId>btrpsl</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <developers>
         <developer>
             <name>Fabien Hermenier</name>
@@ -51,11 +51,6 @@
             <groupId>btrplace</groupId>
             <artifactId>solver-json</artifactId>
             <version>0.39-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>fromEntropy</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
