@@ -43,8 +43,8 @@ import solver.search.strategy.selectors.values.SetDomainMin;
 import solver.search.strategy.selectors.variables.InputOrder;
 import solver.search.strategy.selectors.variables.Occurrence;
 import solver.search.strategy.strategy.RealStrategy;
-import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.search.strategy.strategy.SetSearchStrategy;
+import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.RealVar;
 import solver.variables.SetVar;
@@ -505,7 +505,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Set<VM> getManageableVMs() {
-        return manageable;
+        return Collections.unmodifiableSet(manageable);
     }
 
     @Override
@@ -604,8 +604,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public VMTransition[] getVMActions(Set<VM> id) {
-        return vmActions;
+    public VMTransition[] getVMActions(Collection<VM> ids) {
+        VMTransition[] trans = new VMTransition[ids.size()];
+        int i = 0;
+        for (VM v : ids) {
+            trans[i++] = getVMAction(v);
+        }
+        return trans;
     }
 
     @Override

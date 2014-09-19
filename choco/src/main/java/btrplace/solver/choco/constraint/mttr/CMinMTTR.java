@@ -104,15 +104,10 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p, this);
 
-        //Get the VMs to move
-        Set<VM> onBadNodes = p.getManageableVMs();
+        //Get the VMs to place
+        Set<VM> onBadNodes = new HashSet<>(p.getManageableVMs());
 
-        for (VM vm : map.getSleepingVMs()) {
-            if (p.getFutureRunningVMs().contains(vm)) {
-                onBadNodes.add(vm);
-            }
-        }
-
+        //Get the VMs that runs and have a pretty low chances to move
         Set<VM> onGoodNodes = map.getRunningVMs(map.getOnlineNodes());
         onGoodNodes.removeAll(onBadNodes);
 
@@ -149,14 +144,16 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         placeVMs(strategies, goodActions, schedHeuristic, pla);
 
         //VMs to run
-        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
+/*        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(p.getFutureReadyVMs());
 
         VMTransition[] runActions = p.getVMActions(vmsToRun);
 
         placeVMs(strategies, runActions, schedHeuristic, pla);
+  */
 
         if (p.getNodeActions().length > 0) {
+            //Boot some nodes if needed
             strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new InputOrder<>(), new IntDomainMin()));
         }
 
@@ -171,6 +168,9 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
     }
 
+    /*
+     * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
+     */
     private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
