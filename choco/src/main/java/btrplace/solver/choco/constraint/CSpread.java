@@ -29,7 +29,6 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.extensions.ChocoUtils;
 import btrplace.solver.choco.transition.VMTransition;
 import solver.Solver;
-import solver.constraints.Arithmetic;
 import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
@@ -71,7 +70,9 @@ public class CSpread implements ChocoConstraint {
             VM[] vms = new VM[running.size()];
             int x = 0;
             for (VM vm : cstr.getInvolvedVMs()) {
-                vms[x++] = vm;
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    vms[x++] = vm;
+                }
             }
             for (int i = 0; i < vms.length; i++) {
                 VM vm = vms[i];

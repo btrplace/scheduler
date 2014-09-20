@@ -1,0 +1,4 @@
+Spread:
+2 bugs:
+- runtime due to possible transition omission
+-
