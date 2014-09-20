@@ -67,6 +67,10 @@ public class CSpread implements ChocoConstraint {
         s.post(IntConstraintFactory.alldifferent(running.toArray(new IntVar[running.size()]), "BC"));
 
         if (cstr.isContinuous()) {
+            if (!cstr.getChecker().endsWith(rp.getSourceModel())) {
+                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+                return false;
+            }
             VM[] vms = new VM[running.size()];
             int x = 0;
             for (VM vm : cstr.getInvolvedVMs()) {
