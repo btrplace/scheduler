@@ -31,11 +31,24 @@ import java.util.List;
  */
 public class Test {
 
-    private static int verbosity = 2;
+    private static int verbosity = 0;
 
     public static boolean raw = true;
 
     public static void main(String[] args) {
+        boolean raw = false;
+
+        int i = 0;
+        for (; i < args.length; i++) {
+            if (args[i].equals("--")) {
+                break;
+            }
+            if (args[i].equals("-v")) {
+                verbosity++;
+            } else if (args[i].equals("-r")) {
+                raw = true;
+            }
+        }
         TestsScanner scanner = null;
         try {
             scanner = new TestsScanner();
@@ -43,16 +56,18 @@ public class Test {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        if (args.length == 0) {
-            scanner.restrictToTest("Bench");
-        } else {
-            scanner.restrictToGroup(args[0]);
+        for (; i < args.length; i++) {
+            scanner.restrictToGroup(args[i]);
         }
 
+        //TODO: un-hardcode
+        //scanner.restrictToTest("Bench");
         List<CTestCasesRunner> runners = null;
         try {
             runners = scanner.scan();
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
 
         if (runners.isEmpty()) {
@@ -62,9 +77,16 @@ public class Test {
         for (CTestCasesRunner runner : runners) {
             CTestCaseReport report = new CTestCaseReport(runner.id());
             for (CTestCaseResult res : runner) {
-                if (raw) {
+                if (verbosity == 1 && res.result() != CTestCaseResult.Result.success) {
+                    System.out.println(res);
+                } else if (verbosity > 1) {
+                    System.out.println(res);
+                } else if (raw) {
                     CTestCaseMetrology metrics = res.getMetrics();
-                    System.out.println(metrics);
+                    //System.out.println(metrics);
+                    if (res.result() != CTestCaseResult.Result.success) {
+                        System.out.println(res);
+                    }
                 }
                 report.add(res);
             }
