@@ -105,7 +105,6 @@ public class ImplVerifier implements Verifier {
             try {
                 //TODO: encache the sat constraint
                 SatConstraint satC = Constraint2BtrPlace.build(c, params);
-//                System.out.println(satC);
                 if (!satC.setContinuous(true)) {
                     throw new UnsupportedOperationException("Implementation of " + c + " don't support the continuous restriction");
                 }
@@ -130,11 +129,6 @@ public class ImplVerifier implements Verifier {
                 return CheckerResult.newOk();
             }
         } catch (SolverException ex) {
-            /*System.out.flush();
-            System.err.println("Possible impl bug with " + c.toString(params));
-            System.err.println(p.getOrigin().getMapping());
-            System.err.println(p);
-            ex.printStackTrace();*/
             return CheckerResult.newError(ex);
         } catch (Exception e) {
             return CheckerResult.newError(e);

@@ -228,7 +228,6 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
     private CTestCaseResult test(CTestCase tc) {
         CheckerResult specRes;
         CheckerResult res;
-        //System.err.println(tc.getConstraint().toString(tc.getParameters()));
         PrintStream oldOut = System.out;
         PrintStream olderr = System.err;
         try {
@@ -300,7 +299,7 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
         lastReduceDuration += System.currentTimeMillis();
         metrics.setReduceDuration(lastReduceDuration);
         metrics.setReduced(tc2);
-
+        res.setReduced(tc2);
         save(tc2);
         res.setMetrics(metrics);
         return res;
@@ -430,11 +429,10 @@ public class CTestCasesRunner implements Iterator<CTestCaseResult>, Iterable<CTe
                     return tc;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
             return x;
+        } catch (Exception e) {
+            return tc;
         }
-        return x;
     }
 
 

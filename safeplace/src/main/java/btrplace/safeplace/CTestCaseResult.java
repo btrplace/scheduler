@@ -30,6 +30,7 @@ import static btrplace.safeplace.CTestCaseResult.Result.success;
 public class CTestCaseResult {
 
     private CTestCaseMetrology metrics;
+    private CTestCase reduced;
 
     public void setMetrics(CTestCaseMetrology metrics) {
         this.metrics = metrics;
@@ -37,6 +38,14 @@ public class CTestCaseResult {
 
     public CTestCaseMetrology getMetrics() {
         return metrics;
+    }
+
+    public void setReduced(CTestCase reduced) {
+        this.reduced = reduced;
+    }
+
+    public CTestCase getReduced() {
+        return reduced;
     }
 
     public static enum Result {success, falsePositive, falseNegative, failure}
@@ -91,6 +100,7 @@ public class CTestCaseResult {
         b.append("specRes: ").append(res1).append("\n");
         b.append("vRes: ").append(res2).append("\n");
         b.append("res: ").append(res).append("\n");
+        CTestCase tc = reduced != null ? reduced : this.tc;
         b.append("origin:\n").append(tc.getPlan().getOrigin().getMapping());
         if (!tc.getPlan().getOrigin().getViews().isEmpty()) {
             for (ModelView v : tc.getPlan().getOrigin().getViews()) {

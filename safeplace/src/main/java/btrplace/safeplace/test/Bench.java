@@ -32,7 +32,7 @@ public class Bench {
     public static int nbVMs = 3;
     public static int nbNodes = 3;
 
-    public static boolean reduce = true;
+    public static boolean reduce = false;
     public static int tests = 100;
     public static int to = 10000;
 

@@ -53,9 +53,6 @@ public abstract class Reducer {
             cr2 = v2.verify(cstr, args, src, dst);
         }
         CTestCaseResult.Result res = CTestCaseResult.makeResult(cr1, cr2);
-        if (res == CTestCaseResult.Result.success) {
-            return true;
-        }
         return errType != res;
         /*if (errType == res) {
             return fal

@@ -82,19 +82,17 @@ public class Test {
                 } else if (verbosity > 1) {
                     System.out.println(res);
                 } else if (raw) {
-                    CTestCaseMetrology metrics = res.getMetrics();
                     //System.out.println(metrics);
                     if (res.result() != CTestCaseResult.Result.success) {
-                        System.out.println(res);
+                        CTestCaseMetrology metrics = res.getMetrics();
+                        System.out.println(metrics);
                     }
                 }
                 report.add(res);
             }
             report.duration(runner.getDuration());
             report.report(runner.report());
-            if (report.report() != null || report.fn() > 0 || report.fp() > 0 || verbosity > 1) {
-                System.err.println(report.pretty());
-            }
+            System.err.println(report.pretty());
         }
     }
 }

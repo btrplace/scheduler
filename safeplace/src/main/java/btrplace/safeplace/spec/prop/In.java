@@ -38,9 +38,6 @@ public class In extends AtomicProp {
     @Override
     public Boolean eval(SpecModel m) {
         Object o = a.eval(m);
-        if (o == null) {
-            System.out.println("here");
-        }
         return b.contains(m, o);
     }
 }

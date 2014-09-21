@@ -74,7 +74,6 @@ public class SpecVerifier implements Verifier {
         try {
             Action a = spc.check(good);
             if (a != null) {
-                //System.out.println("A: " + a);
                 return new CheckerResult(false, a);
             }
 
@@ -82,7 +81,6 @@ public class SpecVerifier implements Verifier {
             if ("Failure at the beginning of the plan".equals(e.getMessage())) {
                 return CheckerResult.newKo(e.getMessage());
             }
-            e.printStackTrace();
             return CheckerResult.newError(e);
         }
         return CheckerResult.newOk();
