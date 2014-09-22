@@ -38,7 +38,7 @@ import solver.variables.VariableFactory;
  * An estimation of the action duration must be provided through a
  * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ShutdownNode.class}
- * <p/>
+ * <p>
  * The action is modeled as follow:
  * <ul>
  * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
@@ -47,7 +47,7 @@ import solver.variables.VariableFactory;
  * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
  * </ul>
  * </li>
- * <li>The action duration equals 0 if the node stays offline. Otherwise, it equals the evaluated action duration {@code d}
+ * <li>The action duration equals 0 if the node stays online. Otherwise, it equals the evaluated action duration {@code d}
  * retrieved from {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()}:
  * <ul>
  * <li>{@link #getDuration()} = {0,d}</li>
@@ -71,7 +71,7 @@ import solver.variables.VariableFactory;
  * </ul>
  * </li>
  * </ul>
- * <p/>
+ * <p>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ShutdownNode} action is inserted
  * into the resulting reconfiguration plan if the node is turned offline.
  *

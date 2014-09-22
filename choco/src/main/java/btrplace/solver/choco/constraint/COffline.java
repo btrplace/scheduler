@@ -66,6 +66,9 @@ public class COffline implements ChocoConstraint {
         Transition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(0, Cause.Null);
+            if (rp.getSourceModel().getMapping().isOffline(nId)) {
+                m.getStart().instantiateTo(0, Cause.Null);
+            }
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
             return false;

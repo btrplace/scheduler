@@ -61,6 +61,9 @@ public class COnline implements ChocoConstraint {
         Transition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(1, Cause.Null);
+            if (rp.getSourceModel().getMapping().isOnline(nId)) {
+                m.getStart().instantiateTo(0, Cause.Null);
+            }
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to force node '{}' at being online", nId);
             return false;
