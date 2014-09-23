@@ -97,32 +97,42 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             return true;
         }
 
+        int nbDims = capacities.size();
+        int nbRes = capacities.get(0).length;
+
         //We get the UB of the node capacity and the LB for the VM usage.
-        int[][] capas = new int[capacities.size()][];
-        int i = 0;
+        int[][] capas = new int[nbRes][nbDims];
+        int d = 0;
         for (IntVar[] capaDim : capacities) {
-            capas[i] = new int[capaDim.length];
+            assert capaDim.length == nbRes;
             for (int j = 0; j < capaDim.length; j++) {
-                capas[i][j] = capaDim[j].getUB();
+                capas[j][d] = capaDim[j].getUB();
             }
-            i++;
+            d++;
         }
-        i = 0;
-        int[][] cUses = new int[cUsages.size()][];
-
+        assert cUsages.size() == nbDims;
+        int nbCHosts = cUsages.get(0).length;
+        int[][] cUses = new int[nbCHosts][nbDims];
+        d = 0;
         for (int[] cUseDim : cUsages) {
-            cUses[i++] = cUseDim;
+            assert cUseDim.length == nbCHosts;
+            for (int i=0; i<nbCHosts; i++) {
+                cUses[i][d] = cUseDim[i];
+            }
+            d++;
         }
 
-        i = 0;
 
-        int[][] dUses = new int[dUsages.size()][];
+        assert dUsages.size() == nbDims;
+        int nbDHosts = dUsages.get(0).length;
+        int[][] dUses = new int[nbDHosts][nbDims];
+        d = 0;
         for (IntVar[] dUseDim : dUsages) {
-            dUses[i] = new int[dUseDim.length];
-            for (int j = 0; j < dUseDim.length; j++) {
-                dUses[i][j] = dUseDim[j].getLB();
+            assert dUseDim.length == nbDHosts;
+            for (int j = 0; j < nbDHosts; j++) {
+                dUses[j][d] = dUseDim[j].getLB();
             }
-            i++;
+            d++;
         }
         symmetryBreakingForStayingVMs();
         IntVar[] earlyStarts = TransitionUtils.getHostingStarts(rp.getNodeActions());
@@ -133,8 +143,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                         capas,
                         cHosts, cUses, cEnds,
                         dHosts, dUses, dStarts,
-                        associations,
-                        rp.getSolver())
+                        associations)
         );
         return true;
     }
