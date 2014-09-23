@@ -33,10 +33,12 @@ import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.FastIFFEq;
 import solver.Solver;
-import solver.constraints.Constraint;
+import solver.constraints.Arithmetic;
 import solver.constraints.IntConstraintFactory;
+import solver.constraints.Operator;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
+import solver.variables.VF;
 import solver.variables.VariableFactory;
 
 
@@ -48,15 +50,15 @@ import solver.variables.VariableFactory;
  * original VM is shut down. Such a relocation n may be faster than a migration-based
  * one while being less aggressive for the network. However, the VM must be able to
  * be cloned from a template.
- * <p/>
+ * <p>
  * If the relocation is performed with a live-migration, a {@link MigrateVM} action
  * will be generated. If the relocation is performed through a re-instantiation, a {@link ForgeVM},
  * a {@link BootVM}, and a {@link ShutdownVM} actions are generated.
- * <p/>
+ * <p>
  * To relocate the VM using a re-instantiation, the VM must first have an attribute {@code clone}
  * set to {@code true}. The re-instantiation duration is then estimated. If it is shorter than
  * the migration duration, then re-instantiation will be preferred.
- * <p/>
+ * <p>
  *
  * @author Fabien Hermenier
  */
@@ -118,19 +120,15 @@ public class RelocatableVM implements KeepRunningVM {
 
         start = dSlice.getStart();
         end = cSlice.getEnd();
-        Constraint cstr = IntConstraintFactory.arithm(cSlice.getHoster(), "!=", dSlice.getHoster());
-        BoolVar move = cstr.reif();
+        stay = VF.bool(vm + "stay", s);
+        s.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
 
-        stay = VariableFactory.not(move);
-
-        s.post(IntConstraintFactory.arithm(duration, "<=", cSlice.getDuration()));
-        s.post(IntConstraintFactory.arithm(duration, "<=", dSlice.getDuration()));
+        s.post(new Arithmetic(duration, Operator.LE, cSlice.getDuration()));
+        s.post(new Arithmetic(duration, Operator.LE, dSlice.getDuration()));
         VariableFactory.task(dSlice.getStart(), duration, cSlice.getEnd());
 
-        s.post(IntConstraintFactory.arithm(cSlice.getDuration(), "<=", p.getEnd()));
-        s.post(IntConstraintFactory.arithm(dSlice.getDuration(), "<=", p.getEnd()));
-        s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", p.getEnd()));
-        s.post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
+        s.post(new Arithmetic(dSlice.getEnd(), Operator.LE, p.getEnd()));
+        s.post(new Arithmetic(cSlice.getEnd(), Operator.LE, p.getEnd()));
 
         //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
         s.post(new FastIFFEq(stay, duration, 0));
@@ -140,7 +138,7 @@ public class RelocatableVM implements KeepRunningVM {
             int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), btrplace.plan.event.ForgeVM.class, vm);
             IntVar time = VariableFactory.bounded(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, Integer.MAX_VALUE / 100, s);
             s.post(IntConstraintFactory.times(doReinstantiation, VariableFactory.fixed(forgeD, s), time));
-            s.post(IntConstraintFactory.arithm(this.dSlice.getStart(), ">=", time));
+            s.post(new Arithmetic(this.dSlice.getStart(), Operator.GE, time));
 
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
         }

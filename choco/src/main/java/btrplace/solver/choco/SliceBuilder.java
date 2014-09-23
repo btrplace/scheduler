@@ -182,7 +182,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = VF.fixed(rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v, rp.getSolver());
+        this.hoster = VF.fixed("cste -- " + rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v, rp.getSolver());
         return this;
     }
 }
