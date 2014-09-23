@@ -21,7 +21,8 @@ package btrplace.solver.choco;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import solver.Solver;
-import solver.constraints.IntConstraintFactory;
+import solver.constraints.Arithmetic;
+import solver.constraints.Operator;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -102,7 +103,7 @@ public class SliceBuilder {
      */
     private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
         if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
-            s.post(IntConstraintFactory.arithm(t1, "<=", t2));
+            s.post(new Arithmetic(t1, Operator.LE, t2));
         }
     }
 
