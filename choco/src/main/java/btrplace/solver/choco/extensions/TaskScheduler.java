@@ -53,7 +53,7 @@ public class TaskScheduler extends Constraint {
      *
      * @param earlyStarts a variable for each resource to indicate the earliest moment a task can arrive on the resource
      * @param lastEnds    a variable for each resource to indicate the latest moment a task can stay on the resource
-     * @param capas       for each dimension, the capacity of each resource
+     * @param capas       the capacity for each resource and for each dimension
      * @param cHosters    the placement variable of each cTask
      * @param cUsages     the resource usage of each cTask for each dimension
      * @param cEnds       the moment each cTask ends
@@ -118,13 +118,16 @@ public class TaskScheduler extends Constraint {
             this.dHosters = dHosters;
             this.cEnds = cEnds;
             this.dStarts = dStarts;
+            this.nbResources = capas.length;
+            this.nbDims = capas[0].length;
 
+            assert cUsages.length == cHosters.length;
+            assert dUsages.length == dHosters.length;
+            assert cUsages.length == 0 || cUsages[0].length == nbDims;
+            assert dUsages.length == 0 || dUsages[0].length == nbDims;
             this.capacities = capas;
             this.cUsages = cUsages;
             this.dUsages = dUsages;
-
-            this.nbResources = capas[0].length;
-            this.nbDims = capas.length;
 
             scheds = new LocalTaskScheduler[nbResources];
 
@@ -142,7 +145,7 @@ public class TaskScheduler extends Constraint {
                 outs[cHosters[i].getValue()].set(i);
             }
 
-            int nbCTasks = cUsages[0].length;
+            int nbCTasks = cHosters.length;
 
             int[] revAssociations = new int[nbCTasks];
             for (int i = 0; i < revAssociations.length; i++) {
@@ -158,15 +161,15 @@ public class TaskScheduler extends Constraint {
             for (int i = 0; i < scheds.length; i++) {
                 vIns[i] = earlyStarts[0].getSolver().getEnvironment().makeIntVector(0, 0);
                 scheds[i] = new LocalTaskScheduler(i,
-                        earlyStarts[i],
-                        lastEnds[i],
-                        capacities,
-                        cUsages,
-                        cEnds,
+                        this.earlyStarts[i],
+                        this.lastEnds[i],
+                        this.capacities,
+                        this.cUsages,
+                        this.cEnds,
                         outs[i],
-                        dUsages,
-                        dStarts,
-                        vIns[i],
+                        this.dUsages,
+                        this.dStarts,
+                        this.vIns[i],
                         assocs,
                         revAssociations,
                         aCause
@@ -177,7 +180,10 @@ public class TaskScheduler extends Constraint {
 
         @Override
         protected int getPropagationConditions(int vIdx) {
-            return EventType.INSTANTIATE.mask;
+        //    if (vIdx < dHosters.length) {
+                return EventType.INSTANTIATE.mask;
+       //     }
+       //     return EventType.VOID.mask;
         }
 
         private boolean first = true;
@@ -235,22 +241,22 @@ public class TaskScheduler extends Constraint {
                     //for each placed dSlices, we get the used resource
                     int r = dHostersVals[j];
                     int st = dStartsVals[j];
-                    changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
+                    changes[d][r].put(st, changes[d][r].get(st) - dUsages[j][d]);
                 }
             }
 
-            int[][] currentFree = new int[nbDims][];
-            for (int i = 0; i < nbDims; i++) {
+            int[][] currentFree = new int[nbResources][];
+            for (int i = 0; i < nbResources; i++) {
                 currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
             }
 
             for (int d = 0; d < nbDims; d++) {
                 for (int j = 0; j < cHostersVals.length; j++) {
                     int r = cHostersVals[j];
-                    int h = cUsages[d][j];
+                    int h = cUsages[j][d];
                     int ed = cEndsVals[j];
                     changes[d][r].put(ed, changes[d][r].get(ed) + h);
-                    currentFree[d][r] -= h;
+                    currentFree[r][d] -= h;
                 }
             }
 
@@ -259,8 +265,8 @@ public class TaskScheduler extends Constraint {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
                 LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
                 LOGGER.debug(" before: {}/{} {}changes: "
-                        , prettyUsages(currentFree, j)
-                        , prettyUsages(capacities, j)
+                        , Arrays.toString(currentFree[j])
+                        , Arrays.toString(capacities[j])
                         , prettyChanges(myChanges));
 
                 int[] moments = myChanges.keys(new int[myChanges.size()]);
@@ -268,13 +274,13 @@ public class TaskScheduler extends Constraint {
                 for (int t : moments) {
                     boolean bad = true;
                     for (int d = 0; d < nbDims; d++) {
-                        currentFree[d][j] += myChanges.get(t)[d];
-                        if (currentFree[d][j] < 0) {
+                        currentFree[j][d] += myChanges.get(t)[d];
+                        if (currentFree[j][d] < 0) {
                             bad = false;
                         }
                     }
                     if (!bad) {
-                        LOGGER.info("/!\\ at {}: free={}", t, prettyUsages(currentFree, j));
+                        LOGGER.info("/!\\ at {}: free={}", t, Arrays.toString(currentFree[j]));
                         ok = false;
                         break;
                     }
@@ -283,12 +289,12 @@ public class TaskScheduler extends Constraint {
                 if (LOGGER.isDebugEnabled()) {
                     for (int x = 0; x < cHostersVals.length; x++) {
                         if (cHostersVals[x] == j) {
-                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
+                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + Arrays.toString(cUsages[x]));
                         }
                     }
                     for (int x = 0; x < dHostersVals.length; x++) {
                         if (dHostersVals[x] == j) {
-                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
+                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + Arrays.toString(dUsages[x]));
                         }
                     }
                 }
@@ -378,22 +384,22 @@ public class TaskScheduler extends Constraint {
                     //for each placed dSlices, we get the used resource
                     int r = dHostersVals[j];
                     int st = dStartsVals[j];
-                    changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
+                    changes[d][r].put(st, changes[d][r].get(st) - dUsages[j][d]);
                 }
             }
 
-            int[][] currentFree = new int[nbDims][];
-            for (int i = 0; i < nbDims; i++) {
+            int[][] currentFree = new int[nbResources][];
+            for (int i = 0; i < nbResources; i++) {
                 currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
             }
 
             for (int d = 0; d < nbDims; d++) {
                 for (int j = 0; j < cHostersVals.length; j++) {
                     int r = cHostersVals[j];
-                    int h = cUsages[d][j];
+                    int h = cUsages[j][d];
                     int ed = cEndsVals[j];
                     changes[d][r].put(ed, changes[d][r].get(ed) + h);
-                    currentFree[d][r] -= h;
+                    currentFree[r][d] -= h;
                 }
             }
 
@@ -401,8 +407,8 @@ public class TaskScheduler extends Constraint {
             for (int j = 0; j < nbResources; j++) {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
                 LOGGER.debug("--- Resource {} isSatisfied() ? ---", j);
-                LOGGER.debug(" before: {} / {} changes: {}", prettyUsages(currentFree, j),
-                        prettyUsages(capacities, j),
+                LOGGER.debug(" before: {} / {} changes: {}", Arrays.toString(currentFree[j]),
+                        Arrays.toString(capacities[j]),
                         prettyChanges(myChanges));
 
 
@@ -411,13 +417,13 @@ public class TaskScheduler extends Constraint {
                 for (int t : moments) {
                     boolean bad = true;
                     for (int d = 0; d < nbDims; d++) {
-                        currentFree[d][j] += myChanges.get(t)[d];
-                        if (currentFree[d][j] < 0) {
+                        currentFree[j][d] += myChanges.get(t)[d];
+                        if (currentFree[j][d] < 0) {
                             bad = false;
                         }
                     }
                     if (!bad) {
-                        LOGGER.info("/!\\ at {}: free={}", j, prettyUsages(currentFree, j));
+                        LOGGER.info("/!\\ at {}: free={}", j, Arrays.toString(currentFree[j]));
                         ok = false;
                         break;
                     }
@@ -426,19 +432,19 @@ public class TaskScheduler extends Constraint {
                 if (LOGGER.isDebugEnabled()) {
                     for (int x = 0; x < cHostersVals.length; x++) {
                         if (cHostersVals[x] == j) {
-                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
+                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + Arrays.toString(cUsages[x]));
                         }
                     }
                     for (int x = 0; x < dHostersVals.length; x++) {
                         if (dHostersVals[x] == j) {
-                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
+                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + Arrays.toString(dUsages[x]));
                         }
                     }
                 }
             }
             return ESat.eval(ok);
         }
-
+/*
         private String prettyUsages(int[][] usages, int i) {
             int[] u = new int[nbDims];
             for (int x = 0; x < nbDims; x++) {
@@ -446,7 +452,7 @@ public class TaskScheduler extends Constraint {
             }
             return Arrays.toString(u);
         }
-
+*/
         private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[][] changes, int nIdx) {
             TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
             for (int d = 0; d < changes.length; d++) {
