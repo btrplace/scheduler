@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import solver.ICause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
+import util.ESat;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -55,6 +56,8 @@ public class LocalTaskScheduler {
      * The moment the demanding slices ends. Same order as the hosting variables.
      */
     private IntVar[] dStarts;
+    final private IntVar[] dHosters;
+
     private int[] startupFree;
     private int[] associations;
     private int[] revAssociations;
@@ -80,7 +83,7 @@ public class LocalTaskScheduler {
 
     private int[][] cUsages, dUsages;
 
-    private int nbDims = 0;
+    private int nbDims;
 
     private IntVar early, last;
 
@@ -93,6 +96,7 @@ public class LocalTaskScheduler {
                               int[][] cUsages,
                               IntVar[] cEnds,
                               BitSet outs,
+                              IntVar[] dHosters,
                               int[][] dUsages,
                               IntVar[] dStarts,
                               IStateIntVector vIn,
@@ -116,6 +120,7 @@ public class LocalTaskScheduler {
 
 
         this.dStarts = dStarts;
+        this.dHosters = dHosters;
         this.vIn = vIn;
         this.out = outs;
         revAssociations = revAssocs;
@@ -134,13 +139,13 @@ public class LocalTaskScheduler {
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
-        for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
+        for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
             for (int d = 0; d < nbDims; d++) {
-                startupFree[d] -= cUsages[j][d];
+                startupFree[d] -= cUsages[ct][d];
             }
 
-            int i = cEnds[j].getLB();
-            int s = cEnds[j].getUB();
+            int i = cEnds[ct].getLB();
+            int s = cEnds[ct].getUB();
             if (i < lastInf) {
                 lastInf = i;
             }
@@ -168,17 +173,19 @@ public class LocalTaskScheduler {
         }
     }
 
-    public boolean propagate() throws ContradictionException {
+    public ESat propagate() throws ContradictionException {
         computeProfiles();
+        ESat idempotent = ESat.TRUE;
         last.updateLowerBound(lastCendInf.get(), aCause);
+        // TODO check idempotence here ?
 
         if (!checkInvariant()) {
-            return false;
+            return ESat.FALSE;
         }
-        updateCEndsSup();
-        updateDStartsInf();
-        updateDStartsSup();
-        return true;
+        if (!updateCEndsSup()) idempotent = ESat.UNDEFINED;
+        if (!updateDStartsInf()) idempotent = ESat.UNDEFINED;
+        if (!updateDStartsSup()) idempotent = ESat.UNDEFINED;
+        return idempotent;
     }
 
     public void computeProfiles() {
@@ -197,42 +204,42 @@ public class LocalTaskScheduler {
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
-        for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
+        for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
 
-            int t = cEnds[j].getLB();
+            int t = cEnds[ct].getLB();
             if (t < lastInf) {
                 lastInf = t;
             }
-            boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
+            boolean increasing = associatedToDSliceOnCurrentNode(ct) && increase(ct, revAssociations[ct]);
             if (increasing) {
                 if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug(me + " " + cEnds[j].toString() + " increasing");
+                    LOGGER.debug(me + " " + cEnds[ct].toString() + " increasing");
                 }
                 for (int d = 0; d < nbDims; d++) {
-                    profilesMax[d].put(t, profilesMax[d].get(t) - cUsages[j][d]);
+                    profilesMax[d].put(t, profilesMax[d].get(t) - cUsages[ct][d]);
                 }
 
             } else {
                 if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug(me + " " + cEnds[j].toString() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].toString() : "no rev") + "?)");
+                    LOGGER.debug(me + " " + cEnds[ct].toString() + " < or non-associated (" + (revAssociations[ct] >= 0 ? dStarts[revAssociations[ct]].toString() : "no rev") + "?)");
                 }
                 for (int d = 0; d < nbDims; d++) {
-                    profilesMin[d].put(t, profilesMin[d].get(t) - cUsages[j][d]);
+                    profilesMin[d].put(t, profilesMin[d].get(t) - cUsages[ct][d]);
                 }
 
             }
 
-            t = cEnds[j].getUB();
+            t = cEnds[ct].getUB();
             if (t > lastSup) {
                 lastSup = t;
             }
             if (increasing) {
                 for (int d = 0; d < nbDims; d++) {
-                    profilesMin[d].put(t, profilesMin[d].get(t) - cUsages[j][d]);
+                    profilesMin[d].put(t, profilesMin[d].get(t) - cUsages[ct][d]);
                 }
             } else {
                 for (int d = 0; d < nbDims; d++) {
-                    profilesMax[d].put(t, profilesMax[d].get(t) - cUsages[j][d]);
+                    profilesMax[d].put(t, profilesMax[d].get(t) - cUsages[ct][d]);
                 }
             }
         }
@@ -302,18 +309,7 @@ public class LocalTaskScheduler {
     }
 
     private boolean associatedToDSliceOnCurrentNode(int cSlice) {
-        return revAssociations[cSlice] != NO_ASSOCIATIONS && isIn(revAssociations[cSlice]);
-    }
-
-    private boolean isIn(int idx) {
-
-        for (int x = 0; x < vIn.size(); x++) {
-            int i = vIn.get(x);
-            if (i == idx) {
-                return true;
-            }
-        }
-        return false;
+        return revAssociations[cSlice] != NO_ASSOCIATIONS && dHosters[revAssociations[cSlice]].isInstantiatedTo(me);
     }
 
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
@@ -371,8 +367,9 @@ public class LocalTaskScheduler {
         return true;
     }
 
-    private void updateDStartsInf() throws ContradictionException {
+    private boolean updateDStartsInf() throws ContradictionException {
 
+        boolean idempotent = true;
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
             if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
@@ -394,13 +391,15 @@ public class LocalTaskScheduler {
                     }
                 }
                 dStarts[i].updateLowerBound(Math.max(lastT, early.getLB()), aCause);
+                if (dStarts[i].isInstantiated()) idempotent = false;
             }
         }
+        return idempotent;
     }
 
-    private void updateDStartsSup() throws ContradictionException {
+    private boolean updateDStartsSup() throws ContradictionException {
 
-
+        boolean idempotent = true;
         int lastSup = -1;
         for (int i = sortedMaxProfile.length - 1; i >= 0; i--) {
             int t = sortedMaxProfile[i];
@@ -416,12 +415,15 @@ public class LocalTaskScheduler {
                 if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getLB(), lastSup);
                     dStarts[i].updateUpperBound(s, aCause);
+                    if (dStarts[i].isInstantiated()) idempotent = false;
                 }
             }
         }
+        return idempotent;
     }
 
-    private void updateCEndsSup() throws ContradictionException {
+    private boolean updateCEndsSup() throws ContradictionException {
+        boolean idempotent = true;
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
             if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
@@ -441,9 +443,11 @@ public class LocalTaskScheduler {
                 } else {
                     cEnds[i].updateUpperBound(last.getUB(), aCause);
                 }
-            }
+                if (cEnds[i].isInstantiated()) idempotent = false;
 
+            }
         }
+        return idempotent;
     }
 
     private boolean exceedCapacity(TIntIntHashMap[] profiles, int t, int[] usage) {

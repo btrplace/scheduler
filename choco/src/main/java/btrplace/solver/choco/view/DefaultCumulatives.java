@@ -143,8 +143,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                         capas,
                         cHosts, cUses, cEnds,
                         dHosts, dUses, dStarts,
-                        associations,
-                        rp.getSolver())
+                        associations)
         );
         return true;
     }
