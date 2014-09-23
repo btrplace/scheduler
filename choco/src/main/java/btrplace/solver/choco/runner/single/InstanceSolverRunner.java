@@ -126,12 +126,12 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 if (m.hasObjective()) {
                     sol = new SolutionStatistics(m.getNodeCount(),
                             m.getBackTrackCount(),
-                            (long) m.getTimeCount(),
+                            (long) (m.getTimeCount() * 1000),
                             m.getBestSolutionValue().intValue());
                 } else {
                     sol = new SolutionStatistics(m.getNodeCount(),
                             m.getBackTrackCount(),
-                            (long) m.getTimeCount());
+                            (long) (m.getTimeCount() * 1000));
                 }
                 measures.add(sol);
             }
@@ -299,10 +299,10 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 cstrs.size(),
                 rp.getManageableVMs().size(),
                 start,
-                (long) m2.getTimeCount(),
+                (long) (m2.getTimeCount() * 1000),
                 m2.getNodeCount(),
                 m2.getBackTrackCount(),
-                params.getTimeLimit() <= (m2.getTimeCount() / 1000),
+                params.getTimeLimit() <= m2.getTimeCount(),
                 coreRPDuration,
                 speRPDuration);
 
