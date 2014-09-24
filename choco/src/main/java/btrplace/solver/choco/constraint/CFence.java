@@ -30,10 +30,7 @@ import btrplace.solver.choco.Slice;
 import solver.Cause;
 import solver.exception.ContradictionException;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -77,7 +74,7 @@ public class CFence implements ChocoConstraint {
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
-                Set<Node> otherNodes = new HashSet<>(rp.getNodes().length - nodes.size());
+                List<Node> otherNodes = new ArrayList<>(rp.getNodes().length - nodes.size());
                 for (Node n : rp.getNodes()) {
                     if (!nodes.contains(n)) {
                         otherNodes.add(n);
