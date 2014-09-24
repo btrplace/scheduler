@@ -20,8 +20,9 @@ package btrplace.solver.choco.extensions;
 
 
 import solver.Solver;
+import solver.constraints.Arithmetic;
 import solver.constraints.Constraint;
-import solver.constraints.IntConstraintFactory;
+import solver.constraints.Operator;
 import solver.variables.BoolVar;
 import solver.variables.VariableFactory;
 
@@ -51,7 +52,7 @@ public final class ChocoUtils {
         BoolVar bC2 = c2.reif();
 
         BoolVar notB1 = VariableFactory.not(b1);
-        s.post(IntConstraintFactory.arithm(b1, "!=", notB1));
+        s.post(new Arithmetic(b1, Operator.NQ, notB1));
 
         s.post(or(notB1, bC2));
     }

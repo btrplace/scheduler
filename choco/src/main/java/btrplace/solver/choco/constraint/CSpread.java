@@ -30,6 +30,7 @@ import btrplace.solver.choco.extensions.ChocoUtils;
 import btrplace.solver.choco.transition.VMTransition;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.constraints.Operator;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
 
@@ -115,8 +116,8 @@ public class CSpread implements ChocoConstraint {
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
-            BoolVar eq = IntConstraintFactory.arithm(d.getHoster(), "=", c.getHoster()).reif();
-            solver.constraints.Constraint leqCstr = IntConstraintFactory.arithm(c.getEnd(), "<=", d.getStart());
+            BoolVar eq = new Arithmetic(d.getHoster(), Operator.EQ, c.getHoster()).reif();
+            solver.constraints.Constraint leqCstr = new Arithmetic(c.getEnd(), Operator.LE, d.getStart());
             ChocoUtils.postImplies(s, eq, leqCstr);
         }
     }

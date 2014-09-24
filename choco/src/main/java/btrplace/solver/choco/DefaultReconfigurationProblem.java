@@ -472,7 +472,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return VariableFactory.fixed(makeVarLabel(n), idx, solver);
+        if (useLabels) {
+            return VariableFactory.fixed(makeVarLabel(n), idx, solver);
+        }
+        return VariableFactory.fixed("cste -- ", idx, solver);
     }
 
     @Override

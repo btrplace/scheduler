@@ -90,7 +90,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
         if (p.getVMs().length > 0) {
-            SMF.geometrical(s, 1, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
+            SMF.geometrical(s, p.getVMs().length * 2, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
         }
         injectPlacementHeuristic(p, cost);
         postCostConstraints();

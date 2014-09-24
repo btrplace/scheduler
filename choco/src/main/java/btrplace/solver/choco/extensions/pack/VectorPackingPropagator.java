@@ -113,12 +113,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     /**
      * constructor of the VectorPacking global constraint
      *
-     * @param labels the label describing each dimension [nbDims]
-     * @param l      array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param s      array of nbDims x nbItems, each figuring the item size.
-     * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
-     * @param withHeap  optional: process bins in a heap if true
-     * @param withKS    optional: process knapsack filtering on each bin bif true
+     * @param labels   the label describing each dimension [nbDims]
+     * @param l        array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+     * @param s        array of nbDims x nbItems, each figuring the item size.
+     * @param b        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param withHeap optional: process bins in a heap if true
+     * @param withKS   optional: process knapsack filtering on each bin bif true
      */
     public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
@@ -128,26 +128,42 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         this.nbDims = l.length;
         this.bins = b;
         this.iSizes = s;
-        this.potentialLoad = new IStateInt[nbDims][nbBins];
-        this.assignedLoad = new IStateInt[nbDims][nbBins];
         this.remProc = new RemProc(this);
-		this.deltaMonitor = new IIntDeltaMonitor[b.length];
+        this.deltaMonitor = new IIntDeltaMonitor[b.length];
         for (int i = 0; i < deltaMonitor.length; i++) {
             deltaMonitor[i] = this.vars[i].monitorDelta(this);
         }
         if (withHeap) attachHeapDecorator();
         if (withKS) attachKPSimpleDecorator();
+
+        //make backtrackable stuff
+        this.potentialLoad = new IStateInt[nbDims][nbBins];
+        this.assignedLoad = new IStateInt[nbDims][nbBins];
+        for (int x = 0; x < nbBins; x++) {
+            for (int d = 0; d < nbDims; d++) {
+                assignedLoad[d][x] = getSolver().getEnvironment().makeInt();
+                potentialLoad[d][x] = getSolver().getEnvironment().makeInt();
+            }
+        }
+        sumLoadInf = new IStateInt[nbDims];
+        sumLoadSup = new IStateInt[nbDims];
+        for (int d = 0; d < nbDims; d++) {
+            sumLoadInf[d] = getSolver().getEnvironment().makeInt();
+            sumLoadSup[d] = getSolver().getEnvironment().makeInt();
+        }
     }
 
     public void attachHeapDecorator() {
         decoHeap = new VectorPackingHeapDecorator(this);
     }
+
     public void attachKPSimpleDecorator() {
         decoKPSimple = new VectorPackingKPSimpleDecorator(this);
     }
 
     /**
      * check the consistency of the constraint
+     *
      * @return false if the total size of the items assigned to a bin exceeds the bin load upper bound, true otherwise
      */
     public ESat isConsistent() {
@@ -167,20 +183,21 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     }
 
     //***********************************************************************************************************************//
-	// EVENTS
+    // EVENTS
     //***********************************************************************************************************************//
 
-	/**
-	 * react on removal events on bins variables
-	 * react on bound events on loads variables
-	 */
+    /**
+     * react on removal events on bins variables
+     * react on bound events on loads variables
+     */
     @Override
     public int getPropagationConditions(int idx) {
-		return (idx < bins.length ? EventType.INT_ALL_MASK() : EventType.BOUND.mask + EventType.INSTANTIATE.mask);
+        return (idx < bins.length ? EventType.INT_ALL_MASK() : EventType.BOUND.mask + EventType.INSTANTIATE.mask);
     }
 
     /**
      * TODO: check when no propagation may occur anymore
+     *
      * @return if the consistency state of the constraint if is is instantiated, undefined otherwise
      */
     @Override
@@ -193,6 +210,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * - initialize the data at first call
      * - recompute the sum of the load variable bounds
      * - propagate until the fix point (with or without considering the heap of bins)
+     *
      * @param evtMask type of event
      * @throws ContradictionException if a contradiction is raised
      */
@@ -220,32 +238,34 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * the fix point procedure without heap, on each dimension:
      * - check rule 1.0: if sumItemSizes < sumBinLoadInf or sumItemSizes > sumBinLoadSups then fail
      * - filter according to rule 1.1, for each bin: sumItemSizes - (sumBinLoadSup - sup(binLoad)) <= binLoad <= sumItemSizes - (sumBinLoadInf - inf(binLoad))
+     *
      * @throws ContradictionException if a contradiction (rules 1) is raised
      */
     public void fixPoint() throws ContradictionException {
         boolean noFixPoint = true;
         while (noFixPoint) {
-            for (int d=0; d<nbDims; d++) {
+            for (int d = 0; d < nbDims; d++) {
                 if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
                     contradiction(null, "");
                 }
             }
             noFixPoint = false;
 
-            for (int d=0; d<nbDims; d++) {
-                for (int b=0; b<nbBins; b++) {
-					assert(loads[d][b].getLB() >= assignedLoad[d][b].get() && loads[d][b].getUB() <= potentialLoad[d][b].get());
-					noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
-					noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
-				}
+            for (int d = 0; d < nbDims; d++) {
+                for (int b = 0; b < nbBins; b++) {
+                    assert (loads[d][b].getLB() >= assignedLoad[d][b].get() && loads[d][b].getUB() <= potentialLoad[d][b].get());
+                    noFixPoint |= filterLoadInf(d, b, (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getUB());
+                    noFixPoint |= filterLoadSup(d, b, (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getLB());
+                }
             }
         }
     }
 
     /**
      * update the inf(binLoad) and sumLoadInf accordingly
-     * @param dim the dimension
-     * @param bin the bin
+     *
+     * @param dim        the dimension
+     * @param bin        the bin
      * @param newLoadInf the new lower bound value
      * @return if the lower bound has actually been updated
      * @throws ContradictionException if the domain of the bin load variable becomes empty
@@ -262,8 +282,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
     /**
      * update sup(binLoad) and sumLoadSup accordingly
-     * @param dim the dimension
-     * @param bin the bin
+     *
+     * @param dim        the dimension
+     * @param bin        the bin
      * @param newLoadSup the new lower bound value
      * @return if the upper bound has actually been updated
      * @throws ContradictionException if the domain of the bin load variable becomes empty
@@ -281,23 +302,25 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
     /**
      * apply rule 2 (binLoad <= binPotentialLoad) when an item has been removed from the bin candidate list
+     *
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
-        for (int d=0; d<nbDims; d++) {
+        for (int d = 0; d < nbDims; d++) {
             filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
-		}
+        }
         if (decoKPSimple != null) decoKPSimple.postRemoveItem(item, bin);
-	}
-	
+    }
+
     /**
      * apply rule 2 (binLoad >= binAssignedLoad) when an item has been assign to the bin
+     *
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void assignItem(int item, int bin) throws ContradictionException {
-        for (int d=0; d<nbDims; d++) {
+        for (int d = 0; d < nbDims; d++) {
             filterLoadInf(d, bin, assignedLoad[d][bin].add(iSizes[d][item]));
-		}
+        }
         if (decoKPSimple != null) decoKPSimple.postAssignItem(item, bin);
     }
 
@@ -306,7 +329,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * - if the event concerns a bin variable, then update data and apply rule 2:
      * on the assigned bin: binAssignedLoad <= binLoad <= binPotentialLoad
      * - otherwise remember to recompute the load sums and do nothing
-     * @param idx the variable index
+     *
+     * @param idx  the variable index
      * @param mask the event mask
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
@@ -331,24 +355,26 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     private static class RemProc implements UnaryIntProcedure<Integer> {
         private final VectorPackingPropagator p;
         private int idxVar;
+
         public RemProc(VectorPackingPropagator p) {
             this.p = p;
         }
+
         @Override
         public UnaryIntProcedure set(Integer idxVar) {
             this.idxVar = idxVar;
             return this;
         }
+
         @Override
         public void execute(int val) throws ContradictionException {
-			p.removeItem(idxVar, val);
+            p.removeItem(idxVar, val);
         }
     }
 
 
-
     //***********************************************************************************************************************//
-	// HELPER
+    // HELPER
     //***********************************************************************************************************************//
 
 
@@ -398,8 +424,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
-                assignedLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b]);
-                potentialLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b] + cLoads[d][b]);
+//                assignedLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b]);
+//                potentialLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b] + cLoads[d][b]);
+                assignedLoad[d][b].set(rLoads[d][b]);
+                potentialLoad[d][b].set(rLoads[d][b] + cLoads[d][b]);
+
                 loads[d][b].updateLowerBound(rLoads[d][b], aCause);
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
                 slb[d] += loads[d][b].getLB();
@@ -407,11 +436,14 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             }
         }
 
-        sumLoadInf = new IStateInt[nbDims];
-        sumLoadSup = new IStateInt[nbDims];
+//        sumLoadInf = new IStateInt[nbDims];
+//        sumLoadSup = new IStateInt[nbDims];
         for (int d = 0; d < nbDims; d++) {
-            sumLoadInf[d] = getSolver().getEnvironment().makeInt(slb[d]);
-            sumLoadSup[d] = getSolver().getEnvironment().makeInt(slu[d]);
+            //sumLoadInf[d] = getSolver().getEnvironment().makeInt(slb[d]);
+            //sumLoadSup[d] = getSolver().getEnvironment().makeInt(slu[d]);
+            sumLoadInf[d].set(slb[d]);
+            sumLoadSup[d].set(slu[d]);
+
         }
 
         loadsHaveChanged = getSolver().getEnvironment().makeBool(false);
@@ -421,7 +453,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 //        detectEntailedDimensions(sumFreeSize);
 
         assert checkLoadConsistency();
- //       LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
+        //       LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
         LOGGER.trace("BinPacking: " + Arrays.toString(name));
 
     }
@@ -434,16 +466,16 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @param sumFreeSize the un-assigned height for each dimension.
      *
     private void detectEntailedDimensions(int[] sumFreeSize) {
-        for (int d = 0; d < nbDims; d++) {
-            for (int b = 0; b < nbBins; b++) {
-                if (!loads[d][b].isInstantiated() && loads[d][b].getUB() - loads[d][b].getLB() < sumFreeSize[d]) {
-                    notEntailedDims.set(d);
-                    break;
-                }
-            }
-        }
+    for (int d = 0; d < nbDims; d++) {
+    for (int b = 0; b < nbBins; b++) {
+    if (!loads[d][b].isInstantiated() && loads[d][b].getUB() - loads[d][b].getLB() < sumFreeSize[d]) {
+    notEntailedDims.set(d);
+    break;
     }
-    */
+    }
+    }
+    }
+     */
 
     /**
      * Compute the sum of the item sizes for each dimension.
@@ -464,7 +496,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     private void recomputeLoadSums() {
         loadsHaveChanged.set(false);
-        for (int d=0; d<nbDims; d++) {
+        for (int d = 0; d < nbDims; d++) {
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < nbBins; b++) {
@@ -475,8 +507,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             this.sumLoadSup[d].set(sls);
         }
     }
-
-
 
 
     //****************************************************************//

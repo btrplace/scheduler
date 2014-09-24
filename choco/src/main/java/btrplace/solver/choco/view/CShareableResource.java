@@ -114,7 +114,7 @@ public class CShareableResource implements ChocoView {
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation[i] = VariableFactory.fixed(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "'"), 0, s);
+                vmAllocation[i] = VariableFactory.fixed(p.makeVarLabel("cste -- " + "vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "'"), 0, s);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
@@ -330,7 +330,7 @@ public class CShareableResource implements ChocoView {
             } else {
                 //TODO: not constant time operation. Maybe a big failure
                 VM dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
-                for (Action a : p) {
+                for (Action a : p.getActions()) {
                     if (a instanceof RunningVMPlacement) {
                         RunningVMPlacement tmp = (RunningVMPlacement) a;
                         if (tmp.getVM() == dVM) {

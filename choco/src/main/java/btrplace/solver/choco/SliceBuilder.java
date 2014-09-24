@@ -21,7 +21,8 @@ package btrplace.solver.choco;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import solver.Solver;
-import solver.constraints.IntConstraintFactory;
+import solver.constraints.Arithmetic;
+import solver.constraints.Operator;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -102,7 +103,7 @@ public class SliceBuilder {
      */
     private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
         if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
-            s.post(IntConstraintFactory.arithm(t1, "<=", t2));
+            s.post(new Arithmetic(t1, Operator.LE, t2));
         }
     }
 
@@ -117,7 +118,7 @@ public class SliceBuilder {
             if (start.isInstantiatedTo(0)) {
                 return end;
             } else {
-                VF.offset(end, -start.getValue());
+                return VF.offset(end, -start.getValue());
             }
         }
         int inf = end.getLB() - start.getUB();
@@ -181,7 +182,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = VF.fixed(rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v, rp.getSolver());
+        this.hoster = VF.fixed("cste -- " + rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v, rp.getSolver());
         return this;
     }
 }
