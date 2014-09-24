@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2014 University Nice Sophia Antipolis
+ *
+ * This file is part of btrplace.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
@@ -5,12 +23,20 @@ import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.NoDelay;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.extensions.ChocoUtils;
+import btrplace.solver.choco.transition.RelocatableVM;
 import btrplace.solver.choco.transition.VMTransition;
+import solver.Cause;
 import solver.Solver;
-import solver.constraints.IntConstraintFactory;
+import solver.constraints.Arithmetic;
+import solver.constraints.Operator;
+import solver.exception.ContradictionException;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
+import solver.variables.VF;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -29,8 +55,8 @@ public class CNoDelay implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Model model) {
-
-        return new HashSet<VM>(noDelay.getInvolvedVMs());
+        return Collections.emptySet();
+        //return new HashSet<VM>(noDelay.getInvolvedVMs());
     }
 
     @Override
@@ -39,13 +65,11 @@ public class CNoDelay implements ChocoConstraint {
         // Get the solver
         Solver s = rp.getSolver();
 
+        VM v = noDelay.getInvolvedVMs().iterator().next();
         // For each vm involved in the constraint
-        for (VMTransition vt : rp.getVMActions()) {
-
-            if (noDelay.getInvolvedVMs().contains(vt.getVM())) {
-
-                // Get the VMTransition start time
-                IntVar start = vt.getStart();
+        VMTransition vt = rp.getVMAction(v);
+        // Get the VMTransition start time
+        IntVar start = vt.getStart();
 
                 /*
                 //TODO: Something wrong with "vt.getDuration().getValue()" (not instanciated)
@@ -62,12 +86,24 @@ public class CNoDelay implements ChocoConstraint {
 
                 } else {
                 */
-                    // Add the constraint "start = 0" to the solver
-                    s.post(IntConstraintFactory.arithm(start, "=", 0));
-                //}
-            }
+        // Add the constraint "start = 0" to the solver
+        Slice d = vt.getDSlice();
+        if (d == null) {
+            return true;
         }
+        if (!(vt instanceof RelocatableVM)) {
+            try {
 
+                d.getStart().instantiateTo(0, Cause.Null);
+            } catch (ContradictionException ex) {
+                rp.getLogger().info("Unable to prevent any delay on '" + v + "'");
+                return false;
+            }
+        } else {
+            solver.constraints.Constraint c = new Arithmetic(d.getStart(), Operator.EQ, 0);
+            BoolVar move = VF.not(((RelocatableVM) vt).isStaying());
+            ChocoUtils.postImplies(s, move, c);
+        }
         return true;
     }
 
