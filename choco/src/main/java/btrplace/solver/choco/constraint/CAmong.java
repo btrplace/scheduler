@@ -87,7 +87,7 @@ public class CAmong implements ChocoConstraint {
                 //If one of the VM is already placed, no need for the constraint, the group will be known
                 if (vAssign.isInstantiated()) {
                     //Get the group of nodes that match the selected node
-                    int g = getGroup(rp.getNode(vAssign.getValue()));
+                    int g = getGroup(rp.getNode(vAssign.getValue()), groups);
                     if (errorReported(rp, vm, nextGrp, g)) {
                         return false;
                     }
@@ -98,7 +98,7 @@ public class CAmong implements ChocoConstraint {
             if (cstr.isContinuous() && src.isRunning(vm)) {
                 //The VM is already running, so we get its current group
                 Node curNode = src.getVMLocation(vm);
-                int g = getGroup(curNode);
+                int g = getGroup(curNode, groups);
                 if (errorReported(rp, vm, curGrp, g)) {
                     return false;
                 }
@@ -135,16 +135,18 @@ public class CAmong implements ChocoConstraint {
             //grp: A table to indicate the group each node belong to, -1 for no group
             int[] grp = new int[rp.getNodes().length];
             for (int i = 0; i < grp.length; i++) {
-                Node n = rp.getNodes()[i];
-                int idx = getGroup(n);
+                Node n = rp.getNode(i);
+                int idx = getGroup(n, groups);
                 if (idx >= 0) {
                     grp[i] = idx;
+                } else {
+                    System.err.println("Weird");
                 }
             }
             //We link the VM placement variable with the group variable
             for (VM vm : running) {
                 IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
-                Constraint c = IntConstraintFactory.element(assign, grp, vmGrpId, 0, "detect");
+                Constraint c = IntConstraintFactory.element(vmGrpId, grp, assign, 0, "detect");
                 rp.getSolver().post(c);
             }
         } else {
@@ -172,9 +174,9 @@ public class CAmong implements ChocoConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    public int getGroup(Node n) {
+    public int getGroup(Node n, List<Collection<Node>> grps) {
         int i = 0;
-        for (Collection<Node> pGrp : cstr.getGroupsOfNodes()) {
+        for (Collection<Node> pGrp : grps) {
             if (pGrp.contains(n)) {
                 return i;
             }
