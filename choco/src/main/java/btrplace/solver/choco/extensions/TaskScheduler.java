@@ -101,6 +101,8 @@ public class TaskScheduler extends Constraint {
 
         private IStateInt watchDTask;
 
+        private BitSet watchHosts;
+
         public TaskSchedulerPropagator(IntVar[] earlyStarts,
                                        IntVar[] lastEnds,
                                        int[][] capas,
@@ -161,6 +163,7 @@ public class TaskScheduler extends Constraint {
                         this.earlyStarts[h],
                         this.lastEnds[h],
                         this.capacities,
+                        this.cHosters,
                         this.cUsages,
                         this.cEnds,
                         outs[h],
@@ -175,27 +178,9 @@ public class TaskScheduler extends Constraint {
             }
 
             watchDTask = earlyStarts[0].getSolver().getEnvironment().makeInt(0);
+            watchHosts = new BitSet(nbHosts);
         }
 
-/*
-        @Override
-        protected int getPropagationConditions(int vIdx) {
-        //    if (vIdx < dHosters.length) {
-                return EventType.INSTANTIATE.mask;
-        //     }
-        //    return EventType.VOID.mask;
-        }
-
-        @Override
-        public void propagate(int idx, int mask) throws ContradictionException {
-
-            if (idx < dHosters.length) {
-                int hIdx = vars[idx].getValue();
-                vIns[hIdx].add(idx);
-            }
-            forcePropagate(EventType.INSTANTIATE);
-        }
-*/
         @Override
         public ESat isEntailed() {
 
@@ -291,18 +276,13 @@ public class TaskScheduler extends Constraint {
             if (freeDTask < dHosters.length && (!dHosters[freeDTask].isInstantiated() || updateVInsAndWatch(freeDTask))) {
                 return;
             }
-            boolean idempotent;
+            watchHosts.set(0,nbHosts);
             do {
-                idempotent = true;
-                for (int h = 0; h < scheds.length; h++) {
-                    ESat ok = scheds[h].propagate();
-                    if (ESat.FALSE == ok) {
-                        this.contradiction(earlyStarts[h], "Invalid profile on resource '" + h + "'");
-                    } else if (ESat.UNDEFINED == ok) {
-                        idempotent = false;
-                    }
+                for (int h = watchHosts.nextSetBit(0); h >= 0; h = watchHosts.nextSetBit(h+1)) {
+                    scheds[h].propagate(watchHosts);
+                    watchHosts.clear(h);
                 }
-            } while (!idempotent);
+            } while (!watchHosts.isEmpty());
 
         }
 
