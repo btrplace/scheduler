@@ -140,7 +140,7 @@ public class CAmong implements ChocoConstraint {
                 if (idx >= 0) {
                     grp[i] = idx;
                 } else {
-                    System.err.println("Weird");
+                    grp[i] = -1;
                 }
             }
             //We link the VM placement variable with the group variable
