@@ -353,8 +353,8 @@ public class ScriptBuilderTest {
             Assert.assertEquals(v.getDependencies().size(), 2);
             String res = "a\n" +
                     "|- b\n" +
-                    "   |- in.titi\n" +
-                    "   \\- in.toto\n" +
+                    "   |- in.toto\n" +
+                    "   \\- in.titi\n" +
                     "\\- c\n" +
                     "   |- out.foo\n" +
                     "   \\- out.bar\n";
