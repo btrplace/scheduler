@@ -4,6 +4,7 @@ Release notes
 version ?????????
 ----------------------
 - Btrplace-solver is now relocated to git@github.com:btrplace/scheduler.git
+- new module 'bench' to easily bench instances in JSON
 - constraint SequentialVMTransitions becomes Seq
 - continuous or discrete restriction mode for state constraints, ban, fence
 - btrpsl joined the repository
