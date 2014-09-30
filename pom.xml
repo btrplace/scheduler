@@ -39,13 +39,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <developers>
-        <developer>
-            <email>fabien.hermenier@unice.fr</email>
-            <name>Fabien Hermenier</name>
-        </developer>
-    </developers>
-
     <licenses>
         <license>
             <name>GNU Lesser General Public License v3</name>
