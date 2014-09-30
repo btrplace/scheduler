@@ -95,9 +95,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
-        <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
-        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
+        <connection>scm:git:git://github.com/btrplace/scheduler.git</connection>
+        <url>scm:git:git@github.com:btrplace/scheduler</url>
+        <developerConnection>scm:git:git@github.com:btrplace/scheduler.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
