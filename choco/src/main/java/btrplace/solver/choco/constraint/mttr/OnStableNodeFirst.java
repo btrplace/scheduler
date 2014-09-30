@@ -259,6 +259,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                 BitSet in = ins[x];
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
                     if (starts[i] != null && !starts[i].isInstantiated()) {
+                        return starts[i];
                     }
                 }
             }
