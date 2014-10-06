@@ -5,3 +5,9 @@ script: mvn clean test
 branches:
   only:
     - develop
+notifications:
+  email:
+    recipients:
+      - btrplace-ci@googlegroups.com
+    on_success: always
+    on_failure: always
