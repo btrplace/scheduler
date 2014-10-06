@@ -3,7 +3,7 @@
 This repository contains the main sources of the flexible VM placement
 algorithm btrPlace (http://btrp.inria.fr)
 
-[![Build Status](https://api.travis-ci.org/btrplace/scheduler.svg btrplace-solver)](https://travis-ci.org/btrplace/scheduler)
+[![Build Status](https://api.travis-ci.org/btrplace/scheduler.svg)](https://travis-ci.org/btrplace/scheduler)
 
 Contact: fabien.hermenier@unice.fr
 
