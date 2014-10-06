@@ -1,13 +1,14 @@
-#!/bin/sh
-LOCAL=$1
+#!/bin/bash
+LOCAL=`mktemp -d -t btrplace.XXX`
+REMOTE=$1
 VERSION=$2
+echo "${LOCAL}"
+set -x
+git -C ${LOCAL} init
+git -C ${LOCAL} remote add origin git@github.com:btrplace/${REMOTE} || exit 1
+git -C ${LOCAL} pull origin gh-pages || exit 1
+git -C ${LOCAL} checkout gh-pages || exit 1
 
-#Clone the dedicated repository if needed
-if [ ! -d ${LOCAL} ]; then	
-	git clone git@github.com:btrplace/apidocs.git ${LOCAL} || exit 1
-else
-	git -C ${LOCAL} pull || exit 1
-fi
 
 #Generate and copy
 mvn javadoc:aggregate
@@ -16,3 +17,4 @@ cp -r target/site/apidocs/* ${LOCAL}/
 #Publish
 git -C ${LOCAL} commit -m "apidoc for version ${VERSION}" -a || exit 1
 git -C ${LOCAL} push || exit 1
+rm -rf ${LOCAL}

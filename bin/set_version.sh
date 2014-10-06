@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #Script to notify the website about a release
 
 function guess {

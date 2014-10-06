@@ -48,6 +48,10 @@ if [ ${BRANCH} = "release" ]; then
     #Javadoc
     ./bin/push_javadoc apidocs.git ${VERSION}
 
+    #Clean
+    git branch -d release
+    git push origin --delete release
+
 else
     mvn clean test
 fi
