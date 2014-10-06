@@ -25,7 +25,7 @@ else
 fi
 echo "New version is ${VERSION}"
 #Update the poms
-mvn versions:set -Dnewversion=${VERSION}
+mvn versions:set -DnewVersion=${VERSION}
 #README.md
 sedInPlace "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
 d=`LANG=en_US.utf8 date +"%d %b %Y"`
