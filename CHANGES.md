@@ -3,6 +3,7 @@ Release notes
 
 version ?????????
 ----------------------
+- ci made by travis ?
 - Btrplace-solver is now relocated to git@github.com:btrplace/scheduler.git
 - new module 'bench' to easily bench instances in JSON
 - constraint SequentialVMTransitions becomes Seq
