@@ -1,17 +1,18 @@
 /*
- * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ * Copyright (c) 2014 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -338,7 +339,7 @@ public class ScriptBuilderTest {
         Assert.assertEquals(out.size(), 250);
     }
 
-    public void testDependencies() {
+    public void testDependencies() throws Exception {
         //
         // a
         // |- b
@@ -348,20 +349,23 @@ public class ScriptBuilderTest {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
         PathBasedIncludes includes = new PathBasedIncludes(b, new File(RC_ROOT + "deps"));
         b.setIncludes(includes);
-        try {
-            Script v = b.build(new File(RC_ROOT + "deps/a.btrp"));
+
+        Script v = b.build(new File(RC_ROOT + "deps/a.btrp"));
             Assert.assertEquals(v.getDependencies().size(), 2);
-            String res = "a\n" +
-                    "|- b\n" +
-                    "   |- in.toto\n" +
-                    "   \\- in.titi\n" +
-                    "\\- c\n" +
-                    "   |- out.foo\n" +
-                    "   \\- out.bar\n";
-            Assert.assertEquals(v.prettyDependencies(), res);
-        } catch (Exception x) {
-            Assert.fail(x.getMessage(), x);
-        }
+            for (Script s : v.getDependencies()) {
+                if (s.getlocalName().equals("c")) {
+                    for (Script s2 : s.getDependencies()) {
+                        Assert.assertTrue(s2.getlocalName().equals("foo") || s2.getlocalName().equals("bar"));
+                    }
+                } else if (s.getlocalName().equals("b")) {
+                    for (Script s2 : s.getDependencies()) {
+                        Assert.assertTrue(s2.getlocalName().equals("toto") || s2.getlocalName().equals("titi"));
+                    }
+                } else {
+                    Assert.fail();
+                }
+            }
+            System.out.println(v.prettyDependencies());
     }
 
 
