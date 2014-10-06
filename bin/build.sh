@@ -20,7 +20,7 @@ if [ ${BRANCH} = "release" ]; then
     git ls-remote --exit-code --tags origin ${TAG} ||exit 1
 
     #Establish the version, maven side, misc. side
-    ./bin/set_version.sh ${VERSION} || exit 1
+    ./bin/set_version.sh --auto ${VERSION} || exit 1
 
     #Working version ?
     mvn clean test ||exit 1
@@ -35,7 +35,7 @@ if [ ${BRANCH} = "release" ]; then
     #Set the next development version
     git checkout develop
     git merge --no-ff ${TAG}
-    ./bin/set_version.sh --auto
+    ./bin/set_version.sh --auto ${VERSION}
     git commit -m "Prepare the code for the next version" -a
 
     #Push changes, with the tag
@@ -43,7 +43,7 @@ if [ ${BRANCH} = "release" ]; then
     git push --tags ||exit 1
 
     #Deploy the artifacts
-    mvn deploy || exit 1
+    mvn deploy ||exit 1
 
     #Javadoc
     ./bin/push_javadoc apidocs.git ${VERSION}
@@ -51,7 +51,6 @@ if [ ${BRANCH} = "release" ]; then
     #Clean
     git branch -d release
     git push origin --delete release
-
 else
     mvn clean test
 fi
