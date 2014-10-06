@@ -20,7 +20,7 @@ if [ ${BRANCH} = "release" ]; then
     git ls-remote --exit-code --tags origin ${TAG} ||exit 1
 
     #Establish the version, maven side, misc. side
-    ./bin/set_version.sh --auto ${VERSION} || exit 1
+    ./bin/set_version.sh --auto ${VERSION}
 
     #Working version ?
     mvn clean test ||exit 1
