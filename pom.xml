@@ -31,7 +31,6 @@
         <module>choco</module>
         <module>json</module>
         <module>api</module>
-        <module>bundle</module>
         <module>examples</module>
         <module>btrpsl</module>
         <module>bench</module>

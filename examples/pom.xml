@@ -32,7 +32,12 @@
     <dependencies>
         <dependency>
             <groupId>btrplace</groupId>
-            <artifactId>solver-bundle</artifactId>
+            <artifactId>solver-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>btrplace</groupId>
+            <artifactId>solver-choco</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
