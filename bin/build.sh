@@ -16,7 +16,7 @@ fi
 
 if [ ${BRANCH} = "release" ]; then
     #Extract the version
-    VERSION=getVersion
+    VERSION=$(getVersion)
     TAG="btrplace-scheduler-${VERSION}"
     COMMIT=$(git rev-parse HEAD)
     echo "** Starting the release of ${TAG} from commit **"
