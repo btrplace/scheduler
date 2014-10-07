@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ?????????
+version 0.39 - 07 Oct 2014
 ----------------------
 - groupId changed to org.btrplace, so are the packages.
   This reflect naming conventions required to be hosted on the central repository

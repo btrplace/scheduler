@@ -23,7 +23,7 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.39-SNAPSHOT</version>
+    <version>0.39</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <url>http://btrp.inria.fr</url>
