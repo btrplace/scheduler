@@ -12,6 +12,7 @@ script: ./bin/build.sh
 branches:
   only:
   - develop
+  - release
 notifications:
   email:
     recipients:
