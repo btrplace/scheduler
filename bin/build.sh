@@ -52,7 +52,5 @@ if [ ${BRANCH} = "release" ]; then
     git branch -d release
     git push origin --delete release
 else
-
-    mvn -s etc/sonatype.xml clean javadoc:jar source:jar gpg:sign -Dgpg.passphrase="${env.GPG_PASSPHRASE}" deploy
-
+    mvn -s etc/sonatype.xml clean javadoc:jar source:jar gpg:sign -Dgpg.passphrase=${env.GPG_PASSPHRASE} deploy
 fi
