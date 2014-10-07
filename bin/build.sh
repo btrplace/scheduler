@@ -1,6 +1,10 @@
 #!/bin/bash
 
-function getVersion {
+function quit() {
+    echo "ERROR: $1"
+    exit 1
+}
+function getVersion() {
     mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"
 }
 
@@ -15,12 +19,13 @@ if [ ${BRANCH} = "release" ]; then
     VERSION=getVersion
     TAG="btrplace-scheduler-${VERSION}"
     COMMIT=$(git rev-parse HEAD)
-
+    echo "** Starting the release of ${TAG} from commit **"
+    echo "Commit: ${COMMIT}"
     #Quit if tag already exists
-    git ls-remote --exit-code --tags origin ${TAG} ||exit 1
+    git ls-remote --exit-code --tags origin ${TAG} ||quit "tag ${TAG} already exists"
 
     #Working version ?
-    mvn clean test ||exit 1
+    mvn clean test ||quit "Unstable build"
 
     #Integrate with master and tag
     echo "** Integrate to master **"
@@ -30,9 +35,9 @@ if [ ${BRANCH} = "release" ]; then
     #Javadoc
     ./bin/push_javadoc apidocs.git ${VERSION}
 
-    git tag ${TAG} ||exit 1
-    git push --tags ||exit 1
-    git push origin master ||exit 1
+    git tag ${TAG} ||quit "Unable to tag"
+    git push --tags ||quit "Unable to push the tag"
+    git push origin master ||quit "Unable to push master"
 
     #Set the next development version
     echo "** Prepare develop for the next version **"
@@ -42,14 +47,14 @@ if [ ${BRANCH} = "release" ]; then
     git commit -m "Prepare the code for the next version" -a
 
     #Push changes on develop, with the tag
-    git push origin develop ||exit 1
+    git push origin develop ||quit "Unable to push develop"
 
     #Deploy the artifacts
     echo "** Deploying the artifacts **"
-    ./bin/deploy.sh ||exit 1
+    ./bin/deploy.sh ||quit "Unable to deploy"
 
     #Clean
-    git push origin --delete release
+    #git push origin --delete release
 else
-    ./bin/deploy.sh||exit 1
+    ./bin/deploy.sh||quit "Unable to deploy"
 fi
