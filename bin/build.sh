@@ -52,5 +52,5 @@ if [ ${BRANCH} = "release" ]; then
     git branch -d release
     git push origin --delete release
 else
-    mvn clean test
+    mvn deploy --settings etc/sonatype.xml"
 fi
