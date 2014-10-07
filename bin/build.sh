@@ -43,7 +43,7 @@ if [ ${BRANCH} = "release" ]; then
     git push --tags ||exit 1
 
     #Deploy the artifacts
-    mvn deploy ||exit 1
+    mvn -s etc/sonatype.xml clean javadoc:jar source:jar gpg:sign -Dgpg.secretKeyring=etc/private.key -Dgpg.passphrase="${GPG_PASSPHRASE}" deploy ||exit 1
 
     #Javadoc
     ./bin/push_javadoc apidocs.git ${VERSION}
@@ -52,5 +52,5 @@ if [ ${BRANCH} = "release" ]; then
     git branch -d release
     git push origin --delete release
 else
-    mvn -s etc/sonatype.xml clean javadoc:jar source:jar gpg:sign -Dgpg.secretKeyring=etc/private.key -Dgpg.passphrase="${env.GPG_PASSPHRASE}" deploy
+    mvn -s etc/sonatype.xml clean javadoc:jar source:jar gpg:sign -Dgpg.secretKeyring=etc/private.key -Dgpg.passphrase="${GPG_PASSPHRASE}" deploy ||exit 1
 fi
