@@ -18,7 +18,7 @@ function sedInPlace() {
 	fi
 }
 
-if [ $1 == "--auto" ]; then
+if [ $1 == "--next" ]; then
     VERSION=$(guess $2)
 else
     VERSION=$1

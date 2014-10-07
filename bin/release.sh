@@ -5,11 +5,11 @@ function getVersionToRelease() {
     echo ${CURRENT_VERSION%%-SNAPSHOT}
 }
 
+VERSION=$(getVersionToRelease)
 git checkout -b release || exit 1
 
-VERSION=getVersionToRelease
 #Establish the version, maven side, misc. side
-./bin/set_version.sh --auto ${VERSION}
+./bin/set_version.sh ${VERSION}
 git commit -m "initiate release ${VERSION}" -a
 git push origin release || exit 1
 git checkout -
