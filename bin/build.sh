@@ -15,6 +15,7 @@ if [ ${BRANCH} = "release" ]; then
     #Extract the version
     VERSION=getVersionToRelease
     TAG="btrplace-scheduler-${VERSION}"
+    COMMIT=$(git rev-parse HEAD)
 
     #Quit if tag already exists
     git ls-remote --exit-code --tags origin ${TAG} ||exit 1
@@ -25,31 +26,33 @@ if [ ${BRANCH} = "release" ]; then
     #Working version ?
     mvn clean test ||exit 1
 
-    #Tag the code
-    git tag ${TAG} ||exit 1
-
-    #Integrate with master
+    #Integrate with master and tag
+    echo "** Integrate to master **"
     git checkout master
-    git merge --no-ff ${TAG}
+    git merge --no-ff ${COMMIT}
+
+    #Javadoc
+    ./bin/push_javadoc apidocs.git ${VERSION}
+
+    git tag ${TAG} ||exit 1
+    git push --tags ||exit 1
+    git push origin master ||exit 1
 
     #Set the next development version
+    echo "** Prepare develop for the next version **"
     git checkout develop
     git merge --no-ff ${TAG}
     ./bin/set_version.sh --auto ${VERSION}
     git commit -m "Prepare the code for the next version" -a
 
-    #Push changes, with the tag
-    git push origin master develop ||exit 1
-    git push --tags ||exit 1
+    #Push changes on develop, with the tag
+    git push origin develop ||exit 1
 
     #Deploy the artifacts
+    echo "** Deploying the artifacts **"
     ./bin/deploy.sh ||exit 1
 
-    #Javadoc
-    ./bin/push_javadoc apidocs.git ${VERSION}
-
     #Clean
-    git branch -d release
     git push origin --delete release
 else
     ./bin/deploy.sh||exit 1
