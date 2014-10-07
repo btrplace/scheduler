@@ -7,8 +7,7 @@ env:
   - secure: QJilFw7yL7fxFNm9oqXbsI0385ai73hRYvIQ8VcSiLhqp48wJ8jtjSOaAgkqjcAoMQAm8iX/RfcQhnAVLWLpiFvs6w1IF+smV7NhfDb55tQuXEOqF2GNyFNsowgw2zmKFlS0GQcHWFy0FvZYkdfrLB4TWm4dbZ1B2eAhKtNvzeY=
   - secure: FNlZTSnCq+RDKXWSqId4EoqNZ2H/grEyF97mlvfnsju8RJHJUbfvO3nmLcIwLO+L5EmANVSA5/6Up/aGS3MhcwwpW1/8Lkxc03yTo3K+ZmQtoPNLuFk52LCl7blOdv7XatAGpOdoAphWAKGzPQpOG88zeJN3lhuohKLXJahwNi4=
 before_install:
-- openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv
-  -in etc/private.key.enc -out etc/private.key -d
+- openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in etc/private.key.enc -out etc/private.key -d
 script: ./bin/build.sh
 branches:
   only:
