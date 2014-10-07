@@ -7,14 +7,14 @@ options {
 
 
 @parser::header {
-package btrplace.btrpsl;
+package org.btrplace.btrpsl;
 	
 	import java.util.LinkedList;
 	import java.util.List;
 }
 
 @lexer::header {
-package btrplace.btrpsl;
+package org.btrplace.btrpsl;
 
 import java.util.LinkedList;
 }

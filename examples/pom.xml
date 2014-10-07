@@ -17,7 +17,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>solver</artifactId>
@@ -31,12 +32,12 @@
     <name>solver-examples</name>
     <dependencies>
         <dependency>
-            <groupId>btrplace</groupId>
+            <groupId>org.btrplace</groupId>
             <artifactId>solver-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>btrplace</groupId>
+            <groupId>org.btrplace</groupId>
             <artifactId>solver-choco</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -33,7 +33,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>btrplace</groupId>
+            <groupId>org.btrplace</groupId>
             <artifactId>solver-api</artifactId>
             <version>${project.version}</version>
         </dependency>

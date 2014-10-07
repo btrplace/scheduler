@@ -3,7 +3,10 @@ Release notes
 
 version ?????????
 ----------------------
-- ci made by travis ?
+- groupId changed to org.btrplace, so are the packages.
+  This reflect naming conventions required to be hosted on the central repository
+  (and the new website)
+- ci made by travis
 - Btrplace-solver is now relocated to git@github.com:btrplace/scheduler.git
 - new module 'bench' to easily bench instances in JSON
 - constraint SequentialVMTransitions becomes Seq
