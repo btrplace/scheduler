@@ -1,8 +1,7 @@
 #!/bin/bash
 
-function getVersionToRelease() {
-    CURRENT_VERSION=`mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"`
-    echo ${CURRENT_VERSION%%-SNAPSHOT}
+function getVersion {
+    mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"
 }
 
 if test -z "$TRAVIS_BRANCH"; then
@@ -13,15 +12,12 @@ fi
 
 if [ ${BRANCH} = "release" ]; then
     #Extract the version
-    VERSION=getVersionToRelease
+    VERSION=getVersion
     TAG="btrplace-scheduler-${VERSION}"
     COMMIT=$(git rev-parse HEAD)
 
     #Quit if tag already exists
     git ls-remote --exit-code --tags origin ${TAG} ||exit 1
-
-    #Establish the version, maven side, misc. side
-    ./bin/set_version.sh --auto ${VERSION}
 
     #Working version ?
     mvn clean test ||exit 1
