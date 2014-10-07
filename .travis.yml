@@ -1,18 +1,20 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 env:
   global:
-   - secure: "UaYWeACYzNYKza98jIc35WbQgayjv3F5xxoOxY2Y4Ze0kx9X8VudqxvcjoH6O63nKfKgN/UM/X3vM4fFOS72e3etthbWNp3/dcn/PkPhaYI07k6vGeJkzjWkSxS0jnPaZjMHz2r9sAVIoBXIdsmCpuz6s13a/hmd3M/7eVSqWOg="
-   - secure: "QJilFw7yL7fxFNm9oqXbsI0385ai73hRYvIQ8VcSiLhqp48wJ8jtjSOaAgkqjcAoMQAm8iX/RfcQhnAVLWLpiFvs6w1IF+smV7NhfDb55tQuXEOqF2GNyFNsowgw2zmKFlS0GQcHWFy0FvZYkdfrLB4TWm4dbZ1B2eAhKtNvzeY="
-   - secure: "JHHs5sPEQ3eHwfZah2+jh2CEcgp0jVbc+rCoqGrKHqTZUiSRTMggEchFEuJ7vV2hrH7vRd2zxT0FMxWzDTIBeYgsJGeZ/BN+QzMvW84WT+EkVxEYqciqJLsgKRHyKwHnUWFr1xctRjAutDrRllvE1tB8ywQgrDRmwH1vfiujQzQ="
+  - secure: UaYWeACYzNYKza98jIc35WbQgayjv3F5xxoOxY2Y4Ze0kx9X8VudqxvcjoH6O63nKfKgN/UM/X3vM4fFOS72e3etthbWNp3/dcn/PkPhaYI07k6vGeJkzjWkSxS0jnPaZjMHz2r9sAVIoBXIdsmCpuz6s13a/hmd3M/7eVSqWOg=
+  - secure: QJilFw7yL7fxFNm9oqXbsI0385ai73hRYvIQ8VcSiLhqp48wJ8jtjSOaAgkqjcAoMQAm8iX/RfcQhnAVLWLpiFvs6w1IF+smV7NhfDb55tQuXEOqF2GNyFNsowgw2zmKFlS0GQcHWFy0FvZYkdfrLB4TWm4dbZ1B2eAhKtNvzeY=
+  - secure: JHHs5sPEQ3eHwfZah2+jh2CEcgp0jVbc+rCoqGrKHqTZUiSRTMggEchFEuJ7vV2hrH7vRd2zxT0FMxWzDTIBeYgsJGeZ/BN+QzMvW84WT+EkVxEYqciqJLsgKRHyKwHnUWFr1xctRjAutDrRllvE1tB8ywQgrDRmwH1vfiujQzQ=
+before_install:
+  - openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in etc/private.key.enc -out etc/private.key -d
 script: ./bin/build.sh
 branches:
   only:
-    - develop
+  - develop
 notifications:
   email:
     recipients:
-      - btrplace-ci@googlegroups.com
+    - btrplace-ci@googlegroups.com
     on_success: always
     on_failure: always
