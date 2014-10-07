@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function quit() {
-    echo "ERROR: $1"
+    echo "ERROR: $*"
     exit 1
 }
 function getVersion() {
@@ -19,10 +19,9 @@ if [ ${BRANCH} = "release" ]; then
     VERSION=$(getVersion)
     TAG="btrplace-scheduler-${VERSION}"
     COMMIT=$(git rev-parse HEAD)
-    echo "** Starting the release of ${TAG} from commit **"
-    echo "Commit: ${COMMIT}"
+    echo "** Starting the release of ${TAG} from ${COMMIT} **"
     #Quit if tag already exists
-    git ls-remote --exit-code --tags origin ${TAG} ||quit "tag ${TAG} already exists"
+    git ls-remote --exit-code --tags origin ${TAG} && quit "tag ${TAG} already exists"
 
     #Working version ?
     mvn clean test ||quit "Unstable build"
