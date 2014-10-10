@@ -14,8 +14,6 @@ if [ $? -eq 0 ]; then
     exit 1
 fi
 
-echo "here"
-exit
 VERSION=$(getVersionToRelease)
 git checkout -b release || exit 1
 
