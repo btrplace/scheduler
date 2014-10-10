@@ -24,11 +24,11 @@ function getVersion() {
 
     #Integrate with master and tag
     echo "** Integrate to master **"
-    git checkout master
-    git merge --no-ff ${COMMIT}
+    git checkout master||quit "No master branch"
+    git merge --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
     #Javadoc
-    ./bin/push_javadoc apidocs.git ${VERSION}
+    ./bin/push_javadoc.sh apidocs.git ${VERSION}
 
     git tag ${TAG} ||quit "Unable to tag"
     git push --tags ||quit "Unable to push the tag"
