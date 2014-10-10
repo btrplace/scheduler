@@ -27,7 +27,7 @@
     </parent>
     <name>btrpsl</name>
     <artifactId>btrpsl</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <developers>
         <developer>
             <name>Fabien Hermenier</name>
