@@ -10,13 +10,6 @@ function getVersion() {
     mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"
 }
 
-
-    git config core --global user.email "autobot@btrplace.org"
-    git config core --global user.name "Auto Bot"
-
-    chmod 600 etc/autobot
-    ssh-add etc/autobot
-
     #Extract the version
     VERSION=$(getVersion)
     TAG="btrplace-scheduler-${VERSION}"
