@@ -1,0 +1,31 @@
+namespace test.number;
+
+$x = -3;
+$y = 2 * $x^2; //$y == 18
+$z = (0xff + 5) / 5; //(255 + 5) / 5 == 52
+$a = 077 % 10; //63 % 10 = 3
+$x += 5; // 2
+$y -= 10; //8
+$z /= 0x2; // 26
+$a *= 0xa; //30
+$a %= 7;
+$b = !$a;
+$c = !0;
+//Float stuff
+$f1 = 0.7;
+$f2 = 9^0.5;
+$f3 = 0xff * 3.5; 
+
+export $x,$y,$z,$a,$b,$c,$f1,$f2,$f3 to *;
+
+//No, let's do some comparison
+
+$toto = $a > 7;
+$titi = $a < 7;
+$foo = 15 == 0xf;
+$bar = 8 <= $y;
+$bi = 7 >= $y;
+
+$baz = $f1 < 15;
+$biz = 3 == $f2;
+export $toto, $titi,$foo,$bar,$bi,$baz,$biz to *;

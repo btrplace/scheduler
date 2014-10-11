@@ -1,0 +1,6 @@
+namespace rennes;
+
+import rennes.paravent;
+import rennes.parapide;
+
+capacity({@frontend.rennes.grid5000.fr}, 0);

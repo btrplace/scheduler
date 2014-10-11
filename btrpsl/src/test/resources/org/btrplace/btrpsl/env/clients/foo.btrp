@@ -1,0 +1,31 @@
+namespace clients.foo;
+
+/**
+* Provide an access to any exported variables,
+*/
+import datacenter;
+
+/**
+* 25 VMs of type 'mediumVMs'
+*/
+VM[1..25] : mediumVMs;
+
+/**
+ * 5 VMs of type tinyVMs that are 'volatile'
+ */
+VM[26..30]: tinyVMs<volatile>;
+
+$T1 = VM[1..20];
+$T2 = VM[21..25];
+$T3 = VM[26..30];
+for $t in $T[1..3] {
+    spread($t);
+}
+
+/**
+* new name for latency but same principle.
+* It is just to avoid talking about network when we only manipulate nodes.
+*/
+among($T3, $R[1..4]);
+
+export $me to sysadmin;

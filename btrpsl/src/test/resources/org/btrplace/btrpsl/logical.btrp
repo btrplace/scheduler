@@ -1,0 +1,23 @@
+namespace logical;
+
+$or1 = 0 || 1;
+$or2 = 1 ||1;
+$or3 = 1||0;
+$or4 = 0||0;
+
+$and1 = 0 && 0;
+$and2 = 0 && 1;
+$and3 = 1 && 0;
+$and4 = 1 && 1;
+
+export $or1,$or2,$or3,$or4 to *;
+export $and1,$and2,$and3,$and4 to *;
+
+//Little more complex, just in case
+$x = 7;
+$y = 8;
+$z = 100;
+$h1 = ($x > 7) || ($y*2 == 0x10);
+$h2 = ($z == 10^2) && $h1; 
+
+export $h[1,2] to *;

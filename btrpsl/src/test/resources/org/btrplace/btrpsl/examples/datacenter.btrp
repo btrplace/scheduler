@@ -1,0 +1,14 @@
+namespace datacenter;
+
+@node-[1..250,frontend] : xen<boot=60>;
+
+$nodes = @node-[1..250,frontend];
+runningCapacity($nodes, 2000);
+
+for $n in $nodes {
+  runningCapacity($n, 15);
+}
+
+$R[1..7] = $nodes % 40;
+
+export $nodes,$R[1..7] to *;

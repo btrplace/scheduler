@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2014 University Nice Sophia Antipolis
+  ~
+  ~ This file is part of btrplace.
+  ~ This library is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU Lesser General Public
+  ~ License as published by the Free Software Foundation; either
+  ~ version 3 of the License, or (at your option) any later version.
+  ~
+  ~ This library is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.btrplace</groupId>
+        <artifactId>solver</artifactId>
+        <version>0.39</version>
+    </parent>
+    <name>btrpsl</name>
+    <artifactId>btrpsl</artifactId>
+    <developers>
+        <developer>
+            <name>Fabien Hermenier</name>
+            <email>fabien.hermenier@unice.fr</email>
+        </developer>
+    </developers>
+    <description>
+        The btrplace specification language (btrpsl) allows to express constraints
+        related to the placement of virtual machines in a datacenters.
+
+        This language is dedicated to datacenters administrators and applications administrators
+        that use Btrplace(http://btrp.inria.fr) to manage their nodes and virtual machines.
+    </description>
+    <dependencies>
+        <dependency>
+            <groupId>org.btrplace</groupId>
+            <artifactId>solver-api</artifactId>
+            <version>0.39</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btrplace</groupId>
+            <artifactId>solver-json</artifactId>
+            <version>0.39</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>3.5.2</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9-RC2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.btrplace</groupId>
+            <artifactId>solver-choco</artifactId>
+            <version>0.39</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr3-maven-plugin</artifactId>
+                <version>3.5.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,39 @@
+/**
+* An example to show the usage of the multiple assignments.
+*/
+namespace multipleAssignment;
+
+VM[1..6] : tinyInstance;
+
+$set = VM[1..6];
+
+/**
+* $set is splitted into 3 partitions.
+* There is 3 variables on the left side so this is a perfect mapping:
+* $t1 = VM[1,2]; $t2 = VM[3,4]; $t3 = VM[5,6];
+*/
+{$t1,$t2,$t3} = $set / 3;
+
+/**
+* $set is splitted into partitions of 3 elements, so 2 partitions to match
+* to two elements.
+* '_' is the empty identifier so the first partition is not assigned to any variable
+* while $a is  assigned to VM[3,6];
+*/
+{_,$a} = $set % 3;
+
+/**
+* $set is splitted into 2 partitions but only one variable is given
+* so only the first partition is assigned to $b.
+* This is equivalent to : {$b,_} = $set / 2;
+*/
+{$b} = $set / 2;
+
+/**
+* $set is splitted into 2 partitions but 3 variables are given
+* so only the extra variable is not assigned.
+* This is equivalent to : {$r,$t} = $set / 2;
+*/
+{$r,$t,$f} = $set / 2;
+
+export $t[1..3], $a, $b, $r, $t to *;

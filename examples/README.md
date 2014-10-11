@@ -18,7 +18,7 @@ how to use the application.
 ## Building from sources ##
 
 Requirements:
-* JDK 6+
+* JDK 8+
 * maven 3+
 
 The source of the released versions are directly available in the `Tag` section.
