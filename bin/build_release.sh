@@ -11,6 +11,9 @@ function getVersion() {
 }
 
 
+    git config --global user.email "autobot@btrplace.org"
+    git config --global user.name "Auto Bot"
+
     #Extract the version
     VERSION=$(getVersion)
     TAG="btrplace-scheduler-${VERSION}"
