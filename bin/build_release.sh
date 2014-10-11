@@ -29,7 +29,7 @@ function getVersion() {
     #Integrate with master and tag
     echo "** Integrate to master **"
     git checkout -b master origin/master||quit "No master branch"
-    git merge --no-ff ${COMMIT}||quit "Unable to integrate to master"
+    git merge -s recursive -X theirs --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
     #Javadoc
     ./bin/push_javadoc.sh apidocs.git ${VERSION}
@@ -49,7 +49,7 @@ function getVersion() {
     echo "** Prepare develop for the next version **"
     git fetch origin develop:refs/remotes/origin/develop||quit "Unable to fetch develop"
     git checkout -b develop origin/develop||quit "No develop branch"
-    git merge --no-ff ${TAG}
+    git merge -s recursive -X theirs  ${TAG}
     ./bin/set_version.sh --next ${VERSION}
     git commit -m "Prepare the code for the next version" -a
 
