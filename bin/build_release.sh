@@ -22,6 +22,7 @@ function getVersion() {
     #Working version ?
     mvn clean test ||quit "Unstable build"
 
+    git fetch origin||quit "Unable to fetch all"
     #Integrate with master and tag
     echo "** Integrate to master **"
     git checkout master||quit "No master branch"
