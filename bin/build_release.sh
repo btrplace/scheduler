@@ -25,7 +25,7 @@ function getVersion() {
     #Integrate with master and tag
     echo "** Integrate to master **"
     git checkout -b master origin/master||quit "No master branch"
-    git merge -m "merging with version ${VERSION}" -s recursive -X theirs --no-ff ${COMMIT}||quit "Unable to integrate to master"
+    git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
     git tag ${TAG} ||quit "Unable to tag with ${TAG}"
     git push deploy --tags ||quit "Unable to push the tag ${TAG}"
@@ -40,14 +40,6 @@ function getVersion() {
     #git push origin --delete release
 
     #Set the next development version
-    echo "** Prepare develop for the next version **"
-    git fetch origin develop:refs/remotes/origin/develop||quit "Unable to fetch develop"
-    git checkout -b develop origin/develop||quit "No develop branch"
-    git merge -s recursive -X theirs -m "merging with version ${VERSION}" --no-ff ${TAG}
+    echo "** Prepare master for the next version **"
     ./bin/set_version.sh --next ${VERSION}
     git commit -m "Prepare the code for the next version" -a
-
-
-    #Push changes on develop, with the tag
-    git push origin develop ||echo "/!\ Unable to push develop"
-
