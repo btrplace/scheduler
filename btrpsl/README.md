@@ -30,14 +30,14 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>btrpsl</artifactId>
-   <version>1.4-SNAPSHOT</version>
+   <version><!-- the version you want --></version>
 </dependency>
 ```
 
 ## Building from sources ##
 
 Requirements:
-* JDK 7+
+* JDK 8+
 * maven 3+
 
 The source of the released versions are directly available in the `Tag` section.

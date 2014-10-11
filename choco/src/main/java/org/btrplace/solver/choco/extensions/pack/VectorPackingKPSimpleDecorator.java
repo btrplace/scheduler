@@ -179,13 +179,14 @@ public class VectorPackingKPSimpleDecorator {
     protected void postAssignItem(int item, int bin) throws ContradictionException {
         //checkUpdateWatched(bin, item);
         //if (hasNoCandidate(bin)) return;
-        assert candidate.get(bin).get(item);
-        candidate.get(bin).clear(item);
-        for (int d = 0; d < p.nbDims; d++) {
-            if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
-                assert p.loads[d][bin].isInstantiated();
-                filterFullBin(bin);
-                return;
+        if (candidate.get(bin).get(item)) { //TODO stop the recursive loop without this (see test2DWithUnorderedItems(seed=120))
+            candidate.get(bin).clear(item);
+            for (int d = 0; d < p.nbDims; d++) {
+                if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
+                    assert p.loads[d][bin].isInstantiated();
+                    filterFullBin(bin);
+                    return;
+                }
             }
         }
     }

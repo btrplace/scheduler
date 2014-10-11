@@ -94,23 +94,15 @@ public class VectorPackingTest {
         bins = VF.enumeratedArray("b", nItems, 0, nBins, s);
         Constraint cPack = new VectorPacking(name, loads, sizes, bins, true, true);
         s.post(cPack);
-        //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
 
 
-    public void testPack(boolean isFeasible) {
-        //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
-        //s.generateSearchStrategy();
-        //s.launch();
-        //SMF.log(s, true, false);
-        //SMF.logContradiction(s);
+    public void testPack(boolean isFeasible, String errMsg) {
         s.findSolution();
-        Assert.assertEquals(s.isFeasible(), ESat.eval(isFeasible), "SAT");
+        Assert.assertEquals(s.isFeasible(), ESat.eval(isFeasible), errMsg);
     }
 
     public void testPack(int nbExpectedSols) {
-        //SMF.log(s, true, true);
-        //SMF.logContradiction(s);
         long nbComputedSols = s.findAllSolutions();
 
         Assert.assertEquals(s.isFeasible(), ESat.eval(nbExpectedSols != 0), "SAT");
@@ -122,16 +114,15 @@ public class VectorPackingTest {
 
     @Test
     public void test2DWithUnOrderedItems() {
-        int nItems = 25;
-        int[] height = new int[nItems];
-        Random rnd = new Random();
-        for (int i = 0; i < nItems; i++) {
-            height[i] = rnd.nextInt(4);
-        }
-        modelPack2D(5, 20, height);
-        //s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
-        testPack(true);
-
+            int nItems = 25;
+            int[] height = new int[nItems];
+            Random rnd = new Random(120);
+            for (int i = 0; i < nItems; i++) {
+                height[i] = rnd.nextInt(4);
+            }
+            System.out.println("Test with " + Arrays.toString(height));
+            modelPack2D(5, 20, height);
+            testPack(true, "failed with heights " + Arrays.toString(height));
     }
 
     @Test(sequential = true)
@@ -166,7 +157,7 @@ public class VectorPackingTest {
         }
         modelPack2D(5, 3, height);
         //s.set(IntStrategyFactory.inputOrder_InDomainMin(bins));
-        testPack(true);
+        testPack(true, "failed with " + Arrays.toString(height));
     }
 
     @Test
@@ -177,8 +168,7 @@ public class VectorPackingTest {
         int[] height = new int[]{1, 1};
         modelPack(nBins, capa, nItems, height);
         s.set(ISF.custom(ISF.lexico_var_selector(), ISF.min_value_selector(), bins));
-        testPack(true);
-        //Assert.fail();
+        testPack(true, "failed with " + Arrays.toString(height));
     }
 
 
