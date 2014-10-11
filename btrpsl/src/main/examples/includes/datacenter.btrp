@@ -1,0 +1,12 @@
+namespace datacenter;
+
+$nodes = @node-[1..250,frontend];
+capacity($nodes, 2000);
+
+for $n in $nodes {
+    capacity({$n}, 15);
+}
+capacity(@node-1,15);
+$R[1..7] = $nodes % 40;
+
+export $nodes,$R[1..7] to *;

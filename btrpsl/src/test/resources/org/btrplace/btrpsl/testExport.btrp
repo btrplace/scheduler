@@ -1,0 +1,9 @@
+namespace testExport;
+
+@helios-[1..56].sophia.grid5000.fr : defaultNode;
+$nodes = @helios-[1..56].sophia.grid5000.fr;
+$racks = $nodes % 10;
+
+export $racks to *;
+export $nodes to toto, testExport.*, sysadmin;
+export $me to sysadmin;

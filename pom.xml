@@ -14,15 +14,16 @@
   ~ Lesser General Public License for more details.
   ~
   ~ You should have received a copy of the GNU Lesser General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>btrplace</groupId>
+    <groupId>org.btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.38.2</version>
+    <version>0.39-SNAPSHOT</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <url>http://btrp.inria.fr</url>
@@ -30,37 +31,35 @@
         <module>choco</module>
         <module>json</module>
         <module>api</module>
-        <module>bundle</module>
         <module>examples</module>
+        <module>btrpsl</module>
+        <module>bench</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <developers>
-        <developer>
-            <email>fabien.hermenier@unice.fr</email>
-            <name>Fabien Hermenier</name>
-        </developer>
-    </developers>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License v3</name>
+            <url>LICENSE.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
 
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8.7</version>
+            <version>6.8.8</version>
             <type>jar</type>
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>0.9.24</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.6</version>
+            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -72,45 +71,46 @@
 
     <distributionManagement>
         <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>btrp-releases</id>
-            <name>Corporate Repository</name>
-            <url>scpexe://btrp.inria.fr:/home/maven/repos/releases</url>
-            <layout>default</layout>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
-            <id>btrp-snapshots</id>
-            <name>Corporate Repository</name>
-            <url>scpexe://btrp.inria.fr:/home/maven/repos/snapshot-releases</url>
+            <id>sonatype-snapshots</id>            
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <layout>default</layout>
         </snapshotRepository>
+
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
-        <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
-        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
-        <tag>btrplace-solver-0.38.2-SNAPSHOT</tag>
+        <connection>scm:git:git://github.com/btrplace/scheduler.git</connection>
+        <url>scm:git:git@github.com:btrplace/scheduler</url>
+        <developerConnection>scm:git:git@github.com:btrplace/scheduler.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.4</version>
-            </extension>
-        </extensions>
-
         <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <version>2.3</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -131,10 +131,19 @@
                 <configuration>
                     <doctitle>${project.groupId}-${project.artifactId} ${project.version} API</doctitle>
                     <windowtitle>${project.groupId}-${project.artifactId} ${project.version} API</windowtitle>
-                    <bottom>Copyright © 2013 University of Nice-Sophia Antipolis. All Rights Reserved.</bottom>
+                    <bottom>Copyright © 2014 University of Nice-Sophia Antipolis. All Rights Reserved.</bottom>
                     <!--<excludePackageNames>btrplace:examples</excludePackageNames>-->
                     <!--<quiet />-->
+                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

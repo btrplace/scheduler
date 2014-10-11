@@ -1,0 +1,18 @@
+namespace vappHA;
+
+import datacenter;
+
+VM[1..10] : tinyInstance<migratable,volatile>;
+VM[11..20] : microInstance<preemptible>;
+VM[21..24] : largeMemoryInstance;
+
+$T1 = VM[1..10];
+$T2 = VM[11..20];
+$T3 = VM[21..24];
+
+lonely($T1 + $T2 + $T3);
+for $t in $T[1..3] {
+    spread($t);
+}
+
+among($T3, $R[1..7]);

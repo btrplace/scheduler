@@ -1,0 +1,19 @@
+namespace datacenter;
+
+/**
+* 200 nodes, from @node-1 to node-200.
+*/
+$nodes = @node-[1..200];
+
+/*
+* '%' to divide a set into several partitions by specifying the size
+* of the partitions. The last one may be smaller.
+* Each variable from $R1 to $R4 are then assigned to a partition
+* (multiple assignment, same as in Pelr)
+*/
+$R[1..4] = $nodes % 4;
+
+/**
+* $R1 to $R4 will be available to those who will import this script.
+*/
+export $R[1..4] to *;

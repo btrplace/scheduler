@@ -1,0 +1,17 @@
+namespace sophia.helios;
+
+/*
+* Definition of a sample datacenter.
+*/
+$nodes = @helios-[1..56].sophia.grid5000.fr;
+for $n in $nodes {
+    capacity({$n}, 10);
+}
+$R[1..3] = $nodes % 20; //Racks of 50 elements
+{$R4,_,$R6} = $nodes % 20; //Racks of 50 elements
+export $R4 to *;
+export $R6 to *;
+for $rack in $R[1..3] {
+    capacity($rack, 300); //Maximum 300 VMs per racks
+    export $rack to *; //Racks will be available to others
+}

@@ -1,0 +1,17 @@
+namespace clients.bar;
+
+VM[1..25] : mediumVMs;
+VM[26..30]: tinyVMs<volatile>;
+
+$T1 = VM[1..20];
+$T2 = VM[21..25];
+$T3 = VM[26..30];
+for $t in $T[1..3] {
+    spread($t);
+}
+
+/**
+* VM1 to VM20 can not share nodes with VMs other than VM[1..30].
+* Same principle than EC2 dedicated instances.
+*/
+lonely(VM[1..30]);

@@ -1,0 +1,15 @@
+namespace sysadmin;
+
+import datacenter;
+
+/**
+* As the imported scripts contains VMs,
+* one variable per script ($clients.foo , $clients.bar) is generated and contains the VMs specified in each script.
+* In addition, $clients aggregates $clients.foo and $clients.bar
+*/
+import clients.*;
+
+fence($clients.foo, $R3);
+ban($clients, {@node-1});
+$card = #$clients;
+export $card to *;

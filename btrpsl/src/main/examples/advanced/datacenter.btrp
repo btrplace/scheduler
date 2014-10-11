@@ -1,0 +1,8 @@
+namespace datacenter;
+
+$servers = @srv-[0x1..0xff, frontend];
+
+$racks = $servers % 50;
+
+export $racks to *;
+export $servers to admin.*;

@@ -1,6 +1,26 @@
 Release notes
 ======================
 
+version ?????????
+----------------------
+- groupId changed to org.btrplace, so are the packages.
+  This reflect naming conventions required to be hosted on the central repository
+  (and the new website)
+- ci made by travis
+- Btrplace-solver is now relocated to git@github.com:btrplace/scheduler.git
+- new module 'bench' to easily bench instances in JSON
+- constraint SequentialVMTransitions becomes Seq
+- continuous or discrete restriction mode for state constraints, ban, fence
+- btrpsl joined the repository
+- major performance improvement with a fast Packing constraint made by
+  Sophie Demassey
+- ChocoReconfigurationAlgorithmParams renamed to Parameters
+- bug fixes
+- move to Java 8
+- new constraint NoDelay
+- upgrade to choco-3.2.0
+- remove the logback dependency
+
 version 0.38.2 - 19 Jun 2014
 ----------------------
 - Minor release to fix copyrights

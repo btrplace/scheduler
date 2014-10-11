@@ -1,0 +1,3 @@
+Fabien Hermenier - Univ. Nice Sophia Antipolis <fabien.hermenier@unice.fr>
+Sophie Demassey - Mines Paristech <sophie.demassey@mines-paristech.fr>
+Vincent Kherbache - INRIA <vincent.kherbache@inria.fr>

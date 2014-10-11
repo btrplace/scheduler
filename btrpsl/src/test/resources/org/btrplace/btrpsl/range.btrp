@@ -1,0 +1,13 @@
+namespace range;
+
+VM[1..20] : small;
+VMzip: small;
+VMbaz: small;
+
+$a = 0;
+$b = 20;
+$foo = 5;
+$y = "zip";
+$foo = VM[$foo,baz,7,$y,15,12..9];
+root($foo);
+export $foo to *;
