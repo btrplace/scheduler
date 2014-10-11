@@ -3,7 +3,8 @@ Release notes
 
 version 0.39 - 07 Oct 2014
 ----------------------
-- groupId changed to org.btrplace, so are the packages.
+- btrpsl joined the repository as org.btrplace:btrpsl with version number 0.39
+- groupId changed to org.btrplace, same with the packages
   This reflect naming conventions required to be hosted on the central repository
   (and the new website)
 - ci made by travis
@@ -11,7 +12,6 @@ version 0.39 - 07 Oct 2014
 - new module 'bench' to easily bench instances in JSON
 - constraint SequentialVMTransitions becomes Seq
 - continuous or discrete restriction mode for state constraints, ban, fence
-- btrpsl joined the repository
 - major performance improvement with a fast Packing constraint made by
   Sophie Demassey
 - ChocoReconfigurationAlgorithmParams renamed to Parameters
