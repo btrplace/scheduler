@@ -7,7 +7,9 @@ env:
   - secure: QJilFw7yL7fxFNm9oqXbsI0385ai73hRYvIQ8VcSiLhqp48wJ8jtjSOaAgkqjcAoMQAm8iX/RfcQhnAVLWLpiFvs6w1IF+smV7NhfDb55tQuXEOqF2GNyFNsowgw2zmKFlS0GQcHWFy0FvZYkdfrLB4TWm4dbZ1B2eAhKtNvzeY=
   - secure: hgFZ8xGvrbNZWIexQ6azAtB6ZEw7HJMcoQxbTWOjInFiNYQF+hbxb++d5An2KLnR+8ilyuejx0IdF9uBLzzKHtzmtwbbZVUQcc0KVIaW45fXj6xTQ0xWD61g8YgSzgx95vNuPlvWLgZm8b9up+uHupeWgYN8n4Yhh6gpPCXKQ2c=
 before_install:
- - openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in etc/private.key.enc -out etc/private.key -d
+- git config --global user.name "Build Bot"
+- git config --global user.email "buildbot@btrplace.org"
+- openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in etc/private.key.enc -out etc/private.key -d
 script: ./bin/build.sh
 branches:
   only:
