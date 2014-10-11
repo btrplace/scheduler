@@ -27,8 +27,8 @@ function getVersion() {
     git checkout -b master origin/master||quit "No master branch"
     git merge -m "merging with version ${VERSION}" -s recursive -X theirs --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
-    git tag ${TAG} ||quit "Unable to tag"
-    git push --tags ||quit "Unable to push the tag"
+    git tag ${TAG} ||quit "Unable to tag with ${TAG}"
+    git push --tags ||quit "Unable to push the tag ${TAG}"
     git push origin master ||quit "Unable to push master"
 
     #Deploy the artifacts
