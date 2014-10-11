@@ -7,7 +7,7 @@ function quit() {
 
 
 function getVersion() {
-    mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"
+    mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]"
 }
 
     #Extract the version
@@ -27,16 +27,14 @@ function getVersion() {
     git checkout -b master origin/master||quit "No master branch"
     git merge -m "merging with version ${VERSION}" -s recursive -X theirs --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
-    #Javadoc
-    ./bin/push_javadoc.sh apidocs.git ${VERSION}
-
     git tag ${TAG} ||quit "Unable to tag"
     git push --tags ||quit "Unable to push the tag"
     git push origin master ||quit "Unable to push master"
 
     #Deploy the artifacts
     echo "** Deploying the artifacts **"
-    ./bin/deploy.sh ||quit "Unable to deploy"
+    ./bin/push_javadoc.sh apidocs.git ${VERSION}
+    ./bin/deploy.sh
 
     #Clean
     #git push origin --delete release
