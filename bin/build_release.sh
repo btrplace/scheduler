@@ -11,8 +11,11 @@ function getVersion() {
 }
 
 
-    git config --global user.email "autobot@btrplace.org"
-    git config --global user.name "Auto Bot"
+    git config core --global user.email "autobot@btrplace.org"
+    git config core --global user.name "Auto Bot"
+
+    chmod 600 etc/autobot
+    ssh-add etc/autobot
 
     #Extract the version
     VERSION=$(getVersion)
