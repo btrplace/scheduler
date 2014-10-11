@@ -28,8 +28,8 @@ function getVersion() {
     git merge -m "merging with version ${VERSION}" -s recursive -X theirs --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
     git tag ${TAG} ||quit "Unable to tag with ${TAG}"
-    git push --tags ||quit "Unable to push the tag ${TAG}"
-    git push origin master ||quit "Unable to push master"
+    git push deploy --tags ||quit "Unable to push the tag ${TAG}"
+    git push deploy master ||quit "Unable to push master"
 
     #Deploy the artifacts
     echo "** Deploying the artifacts **"
