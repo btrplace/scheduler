@@ -22,7 +22,7 @@ function getVersion() {
     #Working version ?
     mvn clean test ||quit "Unstable build"
 
-    git fetch origin||quit "Unable to fetch all"
+    git fetch origin master:refs/remotes/origin/master||quit "Unable to fetch master"
     #Integrate with master and tag
     echo "** Integrate to master **"
     git checkout master||quit "No master branch"
@@ -44,6 +44,7 @@ function getVersion() {
 
     #Set the next development version
     echo "** Prepare develop for the next version **"
+    git fetch origin develop:refs/remotes/origin/develop||quit "Unable to fetch develop"
     git checkout develop
     git merge --no-ff ${TAG}
     ./bin/set_version.sh --next ${VERSION}
