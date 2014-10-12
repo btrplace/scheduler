@@ -4,7 +4,7 @@ Release notes
 version 0.39 - 07 Oct 2014
 ----------------------
 - btrpsl joined the repository as org.btrplace:btrpsl with version number 0.39
-- groupId changed to org.btrplace, same with the packages
+- project changed from btrplace:solver to org.btrplace:scheduler
   This reflect naming conventions required to be hosted on the central repository
   (and the new website)
 - ci made by travis

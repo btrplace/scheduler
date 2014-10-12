@@ -23,18 +23,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.btrplace</groupId>
-        <artifactId>solver</artifactId>
+        <artifactId>scheduler</artifactId>
         <version>0.39</version>
     </parent>
 
-    <artifactId>solver-json</artifactId>
-    <name>solver-json</name>
+    <artifactId>scheduler-json</artifactId>
+    <name>scheduler-json</name>
     <description>Read and write model according to the JSON format</description>
 
     <dependencies>
         <dependency>
             <groupId>org.btrplace</groupId>
-            <artifactId>solver-api</artifactId>
+            <artifactId>scheduler-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

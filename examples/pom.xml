@@ -21,24 +21,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.btrplace</groupId>
-        <artifactId>solver</artifactId>
+        <artifactId>scheduler</artifactId>
         <version>0.39</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>
         Tutorials on the usage and the extension of Btrplace.
     </description>
-    <artifactId>solver-examples</artifactId>
-    <name>solver-examples</name>
+    <artifactId>scheduler-examples</artifactId>
+    <name>scheduler-examples</name>
     <dependencies>
         <dependency>
             <groupId>org.btrplace</groupId>
-            <artifactId>solver-api</artifactId>
+            <artifactId>scheduler-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.btrplace</groupId>
-            <artifactId>solver-choco</artifactId>
+            <artifactId>scheduler-choco</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

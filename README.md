@@ -1,4 +1,4 @@
-# Btrplace solver #
+# Btrplace scheduler #
 
 This repository contains the main sources of the flexible VM scheduler BtrPlace (see http://www.btrplace.org)
 
@@ -27,10 +27,10 @@ The maven artifacts are in private repositories so you have first to edit your `
 
 Next, just declare the useful dependencies:
 
-* `btrplace:solver-api`: the API defining a VM scheduler and the element it manipulates
-* `btrplace:solver-choco`: the default implementation of the VM scheduler using the Constraint Programming
+* `btrplace:scheduler-api`: the API defining a VM scheduler and the element it manipulates
+* `btrplace:scheduler-choco`: the default implementation of the VM scheduler using the Constraint Programming
 solver Choco
-* `btrplace:solver-json`: to serialize models using JSON
+* `btrplace:scheduler-json`: to serialize models using JSON
 * `btrplace:btrpsl`: a scripting language to express constraints
 * `btrplace:bench`: a simple CLI to perform benchmarks
 
