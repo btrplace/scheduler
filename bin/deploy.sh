@@ -4,4 +4,4 @@ if [ -e etc/private.key ]; then
 	PASSPHRASE="-Dgpg.passphrase=${GPG_PASSPHRASE}"
 	SETTINGS="-s etc/sonatype.xml"
 fi
-mvn ${SETTINGS} clean javadoc:jar source:jar gpg:sign -Dgpg.keyname=BF1447AC ${PASSPHRASE} install deploy ||exit 1
+mvn ${SETTINGS} -q clean javadoc:jar source:jar -Dgpg.keyname=BF1447AC ${PASSPHRASE} deploy ||exit 1
