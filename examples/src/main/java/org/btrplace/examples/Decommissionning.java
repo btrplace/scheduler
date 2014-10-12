@@ -27,9 +27,9 @@ import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SchedulerException;
-import org.btrplace.solver.choco.ChocoScheduler;
-import org.btrplace.solver.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
 import java.util.List;

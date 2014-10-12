@@ -25,12 +25,12 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.ShutdownVM;
-import org.btrplace.solver.SchedulerException;
-import org.btrplace.solver.choco.ChocoScheduler;
-import org.btrplace.solver.choco.DefaultChocoScheduler;
-import org.btrplace.solver.choco.duration.ConstantActionDuration;
-import org.btrplace.solver.choco.duration.DurationEvaluators;
-import org.btrplace.solver.choco.duration.LinearToAResourceActionDuration;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
+import org.btrplace.scheduler.choco.duration.DurationEvaluators;
+import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ import java.util.List;
  * Tutorial about the basic tuning of a model.
  *
  * @author Fabien Hermenier
- * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Customizing-a-model">btrplace website</a>
+ * @see <a href="https://github.com/btrplace/scheduler/wiki/Customizing-a-model">btrplace website</a>
  */
 public class ModelCustomization implements Example {
 

@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Basic abstract solver-API/JSON objects converter.
+ * Basic abstract scheduler-API/JSON objects converter.
  *
  * @author Fabien Hermenier
  */

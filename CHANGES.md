@@ -8,6 +8,7 @@ version 0.39 - 07 Oct 2014
   This reflect naming conventions required to be hosted on the central repository
   (and the new website)
 - ReconfigurationAlgorithm interface renamed to Scheduler
+- solver package renamed to scheduler
 - ci made by travis
 - Btrplace-solver is now relocated to git@github.com:btrplace/scheduler.git
 - new module 'bench' to easily bench instances in JSON

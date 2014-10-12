@@ -122,7 +122,7 @@ public class EnumElement extends BtrPlaceTree {
                 String id = head + o.toString() + tail;
 
                 if (type == BtrpOperand.Type.node) {
-                    //TODO: 'id' does not contains "@" in the solver NamingService
+                    //TODO: 'id' does not contains "@" in the scheduler NamingService
                     Element el = namingServiceNodes.resolve(id);
                     //Element el = namingServiceNodes.resolve(id.substring(1));
                     if (el == null) {

@@ -24,9 +24,9 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.DependencyBasedPlanApplier;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.TimeBasedPlanApplier;
-import org.btrplace.solver.SchedulerException;
-import org.btrplace.solver.choco.ChocoScheduler;
-import org.btrplace.solver.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import java.util.List;
  * Simple tutorial about the usage of Btrplace.
  *
  * @author Fabien Hermenier
- * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>
+ * @see <a href="https://github.com/btrplace/scheduler/wiki/GettingStarted">btrplace website</a>
  */
 public class GettingStarted implements Example {
 

@@ -2,18 +2,10 @@
 
 This maven modules contains the tutorials related to BtrPlace.
 The complete documentation attached to each tutorial is available on
-the [BtrPlace Wiki](https://github.com/fhermeni/btrplace-solver/wiki/Tutorials).
+the [BtrPlace Wiki](https://github.com/btrplace/scheduler/wiki/Tutorials).
 
 The tutorials can be compiled and executed as a standalone application on your machine.
 The following describe how to compile and how to use the application.
-
-## Download the application ##
-
-The last version of the standalone application is available on the following URL.
-The `tar.gz` archive contains the solver bundle and the tutorial sources. `README.txt` details
-how to use the application.
-
-* http://btrp.inria.fr/repos/releases/btrplace/solver-examples
 
 ## Building from sources ##
 

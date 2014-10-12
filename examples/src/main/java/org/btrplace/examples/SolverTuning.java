@@ -25,18 +25,18 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
-import org.btrplace.solver.SchedulerException;
-import org.btrplace.solver.choco.ChocoScheduler;
-import org.btrplace.solver.choco.DefaultChocoScheduler;
-import org.btrplace.solver.choco.duration.LinearToAResourceActionDuration;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
 
 import java.util.*;
 
 /**
- * Tutorial about the basic tuning of a {@link org.btrplace.solver.choco.ChocoScheduler}.
+ * Tutorial about the basic tuning of a {@link org.btrplace.scheduler.choco.ChocoScheduler}.
  *
  * @author Fabien Hermenier
- * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Tuning-the-Reconfiguration-Algorithm">btrplace website</a>
+ * @see <a href="https://github.com/btrplace/scheduler/wiki/Tuning-the-Reconfiguration-Algorithm">btrplace website</a>
  */
 public class SolverTuning implements Example {
 
