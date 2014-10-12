@@ -18,7 +18,7 @@
 
 package org.btrplace.solver.choco.constraint;
 
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.MisplacedVMsEstimator;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
@@ -34,7 +34,7 @@ public interface ChocoConstraint extends MisplacedVMsEstimator {
      *
      * @param rp the problem
      * @return {@code true} if the injection succeeded, {@code false} if the problem is sure to not have a solution
-     * @throws SolverException if an error occurred while injecting.
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while injecting.
      */
-    boolean inject(ReconfigurationProblem rp) throws SolverException;
+    boolean inject(ReconfigurationProblem rp) throws SchedulerException;
 }

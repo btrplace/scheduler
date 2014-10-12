@@ -23,9 +23,9 @@ import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.Root;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,7 +41,7 @@ import java.util.List;
 public class CRootTest {
 
     @Test
-    public void testBasic() throws SolverException {
+    public void testBasic() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -50,7 +50,7 @@ public class CRootTest {
         Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).ready(vm3).get();
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.doRepair(false);
         Root r1 = new Root(vm1);
         List<SatConstraint> l = new ArrayList<>();

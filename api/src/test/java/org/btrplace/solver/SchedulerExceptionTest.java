@@ -18,46 +18,23 @@
 
 package org.btrplace.solver;
 
+import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * An exception that indicate an error in the reconfiguration algorithm.
+ * Basic test for {@link SchedulerException}.
  *
  * @author Fabien Hermenier
  */
-public class SolverException extends Exception {
+public class SchedulerExceptionTest {
 
-    private Model model;
-
-    /**
-     * Make a new exception.
-     *
-     * @param m   the model that lead to the exception
-     * @param msg the error message
-     */
-    public SolverException(Model m, String msg) {
-        super(msg);
-        model = m;
-    }
-
-    /**
-     * Make a new exception.
-     *
-     * @param m   the model that lead to the exception
-     * @param msg the error message
-     * @param t   the throwable to re-throw
-     */
-    public SolverException(Model m, String msg, Throwable t) {
-        super(msg, t);
-        model = m;
-    }
-
-    /**
-     * Get the model at the source of the exception.
-     *
-     * @return a Model
-     */
-    public Model getModel() {
-        return model;
+    @Test
+    public void testBasic() {
+        Model mo = new DefaultModel();
+        SchedulerException ex = new SchedulerException(mo, "foo");
+        Assert.assertEquals(ex.getModel(), mo);
+        Assert.assertEquals(ex.getMessage(), "foo");
     }
 }

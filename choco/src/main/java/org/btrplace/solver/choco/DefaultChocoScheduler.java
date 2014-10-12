@@ -24,7 +24,7 @@ import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.constraint.ConstraintMapper;
 import org.btrplace.solver.choco.duration.DurationEvaluators;
 import org.btrplace.solver.choco.runner.InstanceResult;
@@ -38,14 +38,14 @@ import org.btrplace.solver.choco.view.SolverViewBuilder;
 import java.util.Collection;
 
 /**
- * Default implementation of {@link ChocoReconfigurationAlgorithm}.
+ * Default implementation of {@link ChocoScheduler}.
  * A same instance cannot be used to solve multiple problems simultaneously.
  * <p>
  * By default, the algorithm relies on a {@link SingleRunner} solver.
  *
  * @author Fabien Hermenier
  */
-public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfigurationAlgorithm {
+public class DefaultChocoScheduler implements ChocoScheduler {
 
     private Parameters params;
 
@@ -58,7 +58,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
      *
      * @param ps the parameters to use to configure the algorithm
      */
-    public DefaultChocoReconfigurationAlgorithm(DefaultParameters ps) {
+    public DefaultChocoScheduler(DefaultParameters ps) {
         params = ps;
         runner = new SingleRunner();
     }
@@ -66,7 +66,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     /**
      * Make a new algorithm with default parameters.
      */
-    public DefaultChocoReconfigurationAlgorithm() {
+    public DefaultChocoScheduler() {
         this(new DefaultParameters());
     }
 
@@ -101,17 +101,17 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
+    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SchedulerException {
         return solve(i, cstrs, new MinMTTR());
     }
 
     @Override
-    public ReconfigurationPlan solve(Instance i) throws SolverException {
+    public ReconfigurationPlan solve(Instance i) throws SchedulerException {
         return solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SolverException {
+    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
         stats = null;
         InstanceResult res = runner.solve(params, new Instance(i, cstrs, opt));
         stats = res.getStatistics();

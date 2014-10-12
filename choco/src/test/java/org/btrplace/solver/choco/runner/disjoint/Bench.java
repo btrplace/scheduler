@@ -24,7 +24,7 @@ import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.model.view.ShareableResource;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.testng.Assert;
 
@@ -151,7 +151,7 @@ public class Bench {
                 long end = System.currentTimeMillis();
                 System.err.println(instances.size() + " " + nbNodes + " " + nbNodes * ratio + " " + inst.getSatConstraints().size() + " " + (end - start));
             }
-        } catch (SolverException ex) {
+        } catch (SchedulerException ex) {
             Assert.fail(ex.getMessage(), ex);
         }
         mo = null;

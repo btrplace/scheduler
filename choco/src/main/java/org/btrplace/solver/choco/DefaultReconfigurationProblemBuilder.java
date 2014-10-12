@@ -22,7 +22,7 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,7 +30,7 @@ import java.util.Set;
 
 
 /**
- * Builder to help at the creation of a reconfiguration algorithm.
+ * Builder to help at the creation of a scheduler.
  * By default:
  * <ul>
  * <li>All the VMs are manageable</li>
@@ -106,9 +106,9 @@ public class DefaultReconfigurationProblemBuilder {
      * Build the problem
      *
      * @return the builder problem
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public DefaultReconfigurationProblem build() throws SolverException {
+    public DefaultReconfigurationProblem build() throws SchedulerException {
 
         if (runs == null) {
             //The others are supposed to be null too as they are set using the same method

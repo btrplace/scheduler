@@ -22,7 +22,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.BootNode;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.extensions.FastImpliesEq;
 import solver.Solver;
@@ -92,9 +92,9 @@ public class BootableNode implements NodeTransition {
      *
      * @param rp  the RP to use as a basis.
      * @param nId the node managed by the action
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public BootableNode(ReconfigurationProblem rp, Node nId) throws SolverException {
+    public BootableNode(ReconfigurationProblem rp, Node nId) throws SchedulerException {
         node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
@@ -198,7 +198,7 @@ public class BootableNode implements NodeTransition {
         }
 
         @Override
-        public NodeTransition build(ReconfigurationProblem r, Node n) throws SolverException {
+        public NodeTransition build(ReconfigurationProblem r, Node n) throws SchedulerException {
             return new BootableNode(r, n);
         }
     }

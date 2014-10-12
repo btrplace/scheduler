@@ -22,7 +22,7 @@ import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.ShutdownNode;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
@@ -45,7 +45,7 @@ import java.util.Collections;
 public class ForgeVMTest {
 
     @Test
-    public void testBasics() throws SolverException {
+    public void testBasics() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -69,8 +69,8 @@ public class ForgeVMTest {
         Assert.assertNull(ma.getDSlice());
     }
 
-    @Test(expectedExceptions = {SolverException.class})
-    public void testWithoutTemplate() throws SolverException {
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testWithoutTemplate() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -86,7 +86,7 @@ public class ForgeVMTest {
     }
 
     @Test
-    public void testResolution() throws SolverException, ContradictionException {
+    public void testResolution() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();

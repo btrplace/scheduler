@@ -19,7 +19,7 @@
 package org.btrplace.solver.choco.runner;
 
 import org.btrplace.model.Instance;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +39,8 @@ public interface InstanceSolver {
      * @param ps the parameters to consider
      * @param i  the instance to solve
      * @return the result of the solving process
-     * @throws SolverException if an error prevent from running a solving process
+     * @throws org.btrplace.solver.SchedulerException if an error prevent from running a solving process
      */
     InstanceResult solve(Parameters ps,
-                         Instance i) throws SolverException;
+                         Instance i) throws SchedulerException;
 }

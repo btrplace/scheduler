@@ -22,7 +22,7 @@ import org.btrplace.model.Instance;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.Parameters;
 import org.btrplace.solver.choco.runner.InstanceResult;
 import org.btrplace.solver.choco.runner.InstanceSolver;
@@ -77,7 +77,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     @Override
-    public InstanceResult solve(Parameters cra, Instance orig) throws SolverException {
+    public InstanceResult solve(Parameters cra, Instance orig) throws SchedulerException {
         long start = System.currentTimeMillis();
         long splitDuration = -System.currentTimeMillis();
         List<Instance> partitions = split(cra, orig);
@@ -105,10 +105,10 @@ public abstract class StaticPartitioning implements InstanceSolver {
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
-                    throw new SolverException(null, cause.getMessage(), ignore);
+                    throw new SchedulerException(null, cause.getMessage(), ignore);
                 }
             } catch (InterruptedException e) {
-                throw new SolverException(orig.getModel(), e.getMessage(), e);
+                throw new SchedulerException(orig.getModel(), e.getMessage(), e);
             }
         }
         duration += System.currentTimeMillis();
@@ -129,14 +129,14 @@ public abstract class StaticPartitioning implements InstanceSolver {
         return res;
     }
 
-    private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SolverException {
+    private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SchedulerException {
         ReconfigurationPlan plan = merged.getPlan();
         //Only if there is a solution
         for (InstanceResult result : results) {
             if (result.getPlan() != null && plan != null) {
                 for (Action a : result.getPlan()) {
                     if (!plan.add(a)) {
-                        throw new SolverException(merged.getPlan().getOrigin(),
+                        throw new SchedulerException(merged.getPlan().getOrigin(),
                                 "Unable to add action '" + a + "' while merging the sub-plans");
                     }
                 }
@@ -152,7 +152,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
      * @param ps the parameters for the solver
      * @param i  the instance to split
      * @return a list of disjoint instances. Cannot be empty.
-     * @throws SolverException if an error prevent the splitting process
+     * @throws org.btrplace.solver.SchedulerException if an error prevent the splitting process
      */
-    public abstract List<Instance> split(Parameters ps, Instance i) throws SolverException;
+    public abstract List<Instance> split(Parameters ps, Instance i) throws SchedulerException;
 }

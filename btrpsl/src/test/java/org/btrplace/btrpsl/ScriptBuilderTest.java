@@ -32,8 +32,8 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.NamingService;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -528,7 +528,7 @@ public class ScriptBuilderTest {
 
         Assert.assertEquals(mo.getMapping().getNbNodes(), 5);
         Assert.assertEquals(mo.getMapping().getNbVMs(), 10);
-        ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler ra = new DefaultChocoScheduler();
         ReconfigurationPlan p = ra.solve(mo, scr.getConstraints());
         ReconfigurationPlanConverter rpc = new ReconfigurationPlanConverter();
         Assert.assertNotNull(p);

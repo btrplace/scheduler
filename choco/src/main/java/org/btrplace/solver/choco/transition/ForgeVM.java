@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.SliceBuilder;
@@ -64,13 +64,13 @@ public class ForgeVM implements VMTransition {
      *
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public ForgeVM(ReconfigurationProblem rp, VM e) throws SolverException {
+    public ForgeVM(ReconfigurationProblem rp, VM e) throws SchedulerException {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, e);
         template = rp.getSourceModel().getAttributes().getString(e, "template");
         if (template == null) {
-            throw new SolverException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
+            throw new SchedulerException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
         }
         Solver s = rp.getSolver();
         duration = VariableFactory.fixed(d, s);
@@ -160,7 +160,7 @@ public class ForgeVM implements VMTransition {
         }
 
         @Override
-        public VMTransition build(ReconfigurationProblem r, VM v) throws SolverException {
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new ForgeVM(r, v);
         }
     }

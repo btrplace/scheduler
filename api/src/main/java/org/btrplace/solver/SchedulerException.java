@@ -18,23 +18,46 @@
 
 package org.btrplace.solver;
 
-import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
- * Basic test for {@link SolverException}.
+ * An exception that indicate an error in the scheduler.
  *
  * @author Fabien Hermenier
  */
-public class SolverExceptionTest {
+public class SchedulerException extends Exception {
 
-    @Test
-    public void testBasic() {
-        Model mo = new DefaultModel();
-        SolverException ex = new SolverException(mo, "foo");
-        Assert.assertEquals(ex.getModel(), mo);
-        Assert.assertEquals(ex.getMessage(), "foo");
+    private Model model;
+
+    /**
+     * Make a new exception.
+     *
+     * @param m   the model that lead to the exception
+     * @param msg the error message
+     */
+    public SchedulerException(Model m, String msg) {
+        super(msg);
+        model = m;
+    }
+
+    /**
+     * Make a new exception.
+     *
+     * @param m   the model that lead to the exception
+     * @param msg the error message
+     * @param t   the throwable to re-throw
+     */
+    public SchedulerException(Model m, String msg, Throwable t) {
+        super(msg, t);
+        model = m;
+    }
+
+    /**
+     * Get the model at the source of the exception.
+     *
+     * @return a Model
+     */
+    public Model getModel() {
+        return model;
     }
 }

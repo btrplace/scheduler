@@ -24,7 +24,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.Parameters;
 import org.btrplace.solver.choco.runner.disjoint.splitter.ConstraintSplitterMapper;
 
@@ -111,7 +111,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     }
 
     @Override
-    public List<Instance> split(Parameters ps, Instance i) throws SolverException {
+    public List<Instance> split(Parameters ps, Instance i) throws SchedulerException {
         Model mo = i.getModel();
 
         SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo);
@@ -146,7 +146,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         int p = 0;
         for (VM v : toLaunch) {
             if (!parts.get(p).getModel().getMapping().addReadyVM(v)) {
-                throw new SolverException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
+                throw new SchedulerException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
             }
             vmPosition.put(v.id(), p);
             p = ((p + 1) % parts.size());
@@ -155,7 +155,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         //Split the constraints
         for (SatConstraint cstr : i.getSatConstraints()) {
             if (!cstrMapper.split(cstr, i, parts, vmPosition, nodePosition)) {
-                throw new SolverException(i.getModel(), "Unable to split " + cstr);
+                throw new SchedulerException(i.getModel(), "Unable to split " + cstr);
             }
         }
 

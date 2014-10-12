@@ -23,9 +23,9 @@ import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -99,7 +99,7 @@ public class CSplitAmongTest {
     }
 
     @Test
-    public void testDiscrete() throws SolverException {
+    public void testDiscrete() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -141,14 +141,14 @@ public class CSplitAmongTest {
         //vg1 and vg2 overlap on n2. The two groups are mis-placed
         map.addRunningVM(vm6, n2);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
     }
 
     @Test
-    public void testContinuousWithAllDiffViolated() throws SolverException {
+    public void testContinuousWithAllDiffViolated() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -190,12 +190,12 @@ public class CSplitAmongTest {
         //vg1 and vg2 overlap on n2.
         map.addRunningVM(vm6, n2);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Assert.assertNull(cra.solve(mo, Collections.<SatConstraint>singleton(s)));
     }
 
     @Test
-    public void testContinuousWithGroupChange() throws SolverException {
+    public void testContinuousWithGroupChange() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -243,12 +243,12 @@ public class CSplitAmongTest {
             cstrs.add(new Fence(v, pg2));
         }
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Assert.assertNull(cra.solve(mo, cstrs));
     }
 
     @Test
-    public void testDiscreteWithGroupChange() throws SolverException {
+    public void testDiscreteWithGroupChange() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -295,7 +295,7 @@ public class CSplitAmongTest {
             cstrs.add(new Fence(v, pg2));
         }
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
     }

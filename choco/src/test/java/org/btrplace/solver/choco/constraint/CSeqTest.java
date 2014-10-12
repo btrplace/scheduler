@@ -21,9 +21,9 @@ package org.btrplace.solver.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,7 +40,7 @@ import java.util.List;
 public class CSeqTest {
 
     @Test
-    public void testWithOnlyTransitions() throws SolverException {
+    public void testWithOnlyTransitions() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -56,7 +56,7 @@ public class CSeqTest {
         cstrs.add(new Running(vm3));
         cstrs.add(new Ready(vm4));
         cstrs.addAll(Online.newOnline(map.getAllNodes()));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new Seq(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
@@ -64,7 +64,7 @@ public class CSeqTest {
     }
 
     @Test
-    public void testWithVMsWithNoTransitions() throws SolverException {
+    public void testWithVMsWithNoTransitions() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -78,7 +78,7 @@ public class CSeqTest {
         cstrs.add(new Running(vm2));
         cstrs.add(new Running(vm3));
         cstrs.add(new Ready(vm4));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new Seq(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);

@@ -24,7 +24,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Quarantine;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import solver.Cause;
 import solver.exception.ContradictionException;
@@ -52,7 +52,7 @@ public class CQuarantine implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();

@@ -20,7 +20,7 @@ package org.btrplace.solver.choco.transition;
 
 import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
@@ -36,7 +36,7 @@ import solver.exception.ContradictionException;
 public class StayAwayVMTest {
 
     @Test
-    public void testBasic() throws SolverException, ContradictionException {
+    public void testBasic() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();

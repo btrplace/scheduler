@@ -26,7 +26,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.ResourceCapacity;
 import org.btrplace.model.view.ShareableResource;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.transition.VMTransition;
@@ -89,11 +89,11 @@ public class CResourceCapacity implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
 
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
-            throw new SolverException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
+            throw new SchedulerException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
         }
 
         if (cstr.getInvolvedNodes().size() == 1) {
@@ -115,7 +115,7 @@ public class CResourceCapacity implements ChocoConstraint {
         return true;
     }
 
-    private boolean injectContinuous(ReconfigurationProblem rp, CShareableResource rcm) throws SolverException {
+    private boolean injectContinuous(ReconfigurationProblem rp, CShareableResource rcm) throws SchedulerException {
         //The constraint must be already satisfied
         if (!cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
@@ -143,7 +143,7 @@ public class CResourceCapacity implements ChocoConstraint {
             }
             ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
             if (v == null) {
-                throw new SolverException(rp.getSourceModel(), "View '" + AliasedCumulatives.VIEW_ID + "' is required but missing");
+                throw new SchedulerException(rp.getSourceModel(), "View '" + AliasedCumulatives.VIEW_ID + "' is required but missing");
             }
             ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
         }

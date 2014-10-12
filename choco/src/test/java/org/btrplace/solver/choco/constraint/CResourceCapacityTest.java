@@ -22,9 +22,9 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -39,7 +39,7 @@ import java.util.*;
 public class CResourceCapacityTest {
 
     @Test
-    public void testWithSatisfiedConstraint() throws SolverException {
+    public void testWithSatisfiedConstraint() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -66,14 +66,14 @@ public class CResourceCapacityTest {
         ResourceCapacity x = new ResourceCapacity(map.getAllNodes(), "cpu", 10);
         x.setContinuous(false);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 0);
     }
 
     @Test
-    public void testDiscreteSatisfaction() throws SolverException {
+    public void testDiscreteSatisfaction() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -101,14 +101,14 @@ public class CResourceCapacityTest {
         ResourceCapacity x = new ResourceCapacity(on, "cpu", 9);
         x.setContinuous(false);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertTrue(plan.getSize() > 0);
     }
 
     @Test
-    public void testFeasibleContinuousResolution() throws SolverException {
+    public void testFeasibleContinuousResolution() throws SchedulerException {
 
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -139,7 +139,7 @@ public class CResourceCapacityTest {
         ResourceCapacity x = new ResourceCapacity(on, "cpu", 10);
         x.setContinuous(true);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         //System.out.println(plan);
@@ -197,7 +197,7 @@ public class CResourceCapacityTest {
     }
 
     @Test
-    public void testDiscreteSolvable() throws SolverException {
+    public void testDiscreteSolvable() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -215,7 +215,7 @@ public class CResourceCapacityTest {
 
         ResourceCapacity s = new ResourceCapacity(n1, "cpu", 4);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, Arrays.asList(s, new Preserve(vm2, "cpu", 3)));
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 1);
@@ -223,7 +223,7 @@ public class CResourceCapacityTest {
     }
 
     @Test
-    public void testDiscreteUnsolvable() throws SolverException {
+    public void testDiscreteUnsolvable() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -241,13 +241,13 @@ public class CResourceCapacityTest {
 
         ResourceCapacity s = new ResourceCapacity(n1, "cpu", 3);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNull(p);
     }
 
     @Test
-    public void testSingleContinuousSolvable() throws SolverException {
+    public void testSingleContinuousSolvable() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -273,7 +273,7 @@ public class CResourceCapacityTest {
         cstrs.add(new Fence(vm4, Collections.singleton(n1)));
         cstrs.add(new Running(vm4));
         cstrs.addAll(Overbook.newOverbooks(map.getAllNodes(), "cpu", 1));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         System.out.println(p);

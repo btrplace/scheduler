@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.duration.ConstantActionDuration;
@@ -46,10 +46,10 @@ public class KillVMTest {
      * Test the action model with different action models.
      *
      * @throws ContradictionException
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testBasics() throws ContradictionException, SolverException {
+    public void testBasics() throws ContradictionException, SchedulerException {
         Model mo = new DefaultModel();
 
         Mapping map = mo.getMapping();

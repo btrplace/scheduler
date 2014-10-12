@@ -23,9 +23,9 @@ import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Quarantine;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,7 +42,7 @@ import java.util.List;
 public class CQuarantineTest {
 
     @Test
-    public void testWithSatisfiedModel() throws SolverException {
+    public void testWithSatisfiedModel() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -53,7 +53,7 @@ public class CQuarantineTest {
         Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
         Quarantine q = new Quarantine(n2);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(q));
         Assert.assertNotNull(p);
     }
@@ -61,10 +61,10 @@ public class CQuarantineTest {
     /**
      * A VM try to come into the quarantine zone.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testWithNoSolution1() throws SolverException {
+    public void testWithNoSolution1() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -79,7 +79,7 @@ public class CQuarantineTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
         cstrs.add(new Fence(vm4, Collections.singleton(n1)));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
     }
@@ -87,10 +87,10 @@ public class CQuarantineTest {
     /**
      * A VM try to leave the quarantine zone.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testWithNoSolution2() throws SolverException {
+    public void testWithNoSolution2() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -105,7 +105,7 @@ public class CQuarantineTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
         cstrs.add(new Fence(vm1, Collections.singleton(n2)));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
     }

@@ -23,8 +23,8 @@ import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.Parameters;
 import org.btrplace.solver.choco.runner.InstanceResult;
 import org.testng.Assert;
@@ -45,7 +45,7 @@ public class StaticPartitioningTest {
     public void testInstantiation() {
         StaticPartitioning st = new StaticPartitioning() {
             @Override
-            public List<Instance> split(Parameters ps, Instance i) throws SolverException {
+            public List<Instance> split(Parameters ps, Instance i) throws SchedulerException {
                 throw new UnsupportedOperationException();
             }
         };
@@ -55,7 +55,7 @@ public class StaticPartitioningTest {
     }
 
     @Test
-    public void testParallelSolve() throws SolverException {
+    public void testParallelSolve() throws SchedulerException {
 
         SynchronizedElementBuilder eb = new SynchronizedElementBuilder(new DefaultElementBuilder());
         Model origin = new DefaultModel(eb);
@@ -84,11 +84,11 @@ public class StaticPartitioningTest {
 
         StaticPartitioning st = new StaticPartitioning() {
             @Override
-            public List<Instance> split(Parameters ps, Instance i) throws SolverException {
+            public List<Instance> split(Parameters ps, Instance i) throws SchedulerException {
                 return Arrays.asList(i1, i2);
             }
         };
-        Parameters p = new DefaultChocoReconfigurationAlgorithm();
+        Parameters p = new DefaultChocoScheduler();
 
         InstanceResult res = st.solve(p, i0);
         ReconfigurationPlan plan = res.getPlan();
@@ -104,8 +104,8 @@ public class StaticPartitioningTest {
         Assert.assertEquals(res.getStatistics().getSolutions().size(), 0);
     }
 
-    @Test(expectedExceptions = {SolverException.class})
-    public void testSolvingIncorrectPartitioning() throws SolverException {
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testSolvingIncorrectPartitioning() throws SchedulerException {
 
         SynchronizedElementBuilder eb = new SynchronizedElementBuilder(new DefaultElementBuilder());
         Model origin = new DefaultModel(eb);
@@ -134,11 +134,11 @@ public class StaticPartitioningTest {
 
         StaticPartitioning st = new StaticPartitioning() {
             @Override
-            public List<Instance> split(Parameters ps, Instance i) throws SolverException {
+            public List<Instance> split(Parameters ps, Instance i) throws SchedulerException {
                 return Arrays.asList(i1, i2);
             }
         };
-        Parameters p = new DefaultChocoReconfigurationAlgorithm();
+        Parameters p = new DefaultChocoScheduler();
         st.solve(p, i0);
     }
 }

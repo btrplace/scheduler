@@ -26,7 +26,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.SubstitutedVMEvent;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.SliceBuilder;
@@ -85,9 +85,9 @@ public class RelocatableVM implements KeepRunningVM {
      *
      * @param p the RP to use as a basis.
      * @param e the VM managed by the action
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public RelocatableVM(ReconfigurationProblem p, VM e) throws SolverException {
+    public RelocatableVM(ReconfigurationProblem p, VM e) throws SchedulerException {
 
         this.vm = e;
         this.rp = p;
@@ -153,7 +153,7 @@ public class RelocatableVM implements KeepRunningVM {
         return "(migration || re-instantiation)";
     }
 
-    private void stayRunning() throws SolverException {
+    private void stayRunning() throws SchedulerException {
         IntVar host = rp.makeCurrentHost(vm, PREFIX_STAY, vm, ").host");
         cSlice = new SliceBuilder(rp, vm, PREFIX_STAY, vm.toString(), ").cSlice")
                 .setHoster(host)
@@ -167,7 +167,7 @@ public class RelocatableVM implements KeepRunningVM {
         manageable = false;
     }
 
-    private void prepareRelocationMethod() throws SolverException {
+    private void prepareRelocationMethod() throws SchedulerException {
         Model mo = rp.getSourceModel();
         Boolean cloneable = mo.getAttributes().getBoolean(vm, "clone");
         DurationEvaluators dev = rp.getDurationEvaluators();
@@ -220,7 +220,7 @@ public class RelocatableVM implements KeepRunningVM {
                     org.btrplace.plan.event.BootVM boot = new org.btrplace.plan.event.BootVM(newVM, dst, endForging, endForging + dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, newVM));
                     boot.addEvent(Action.Hook.PRE, new SubstitutedVMEvent(vm, newVM));
                     return plan.add(boot) && plan.add(new org.btrplace.plan.event.ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getValue()));
-                } catch (SolverException ex) {
+                } catch (SchedulerException ex) {
                     rp.getLogger().error(ex.getMessage());
                     return false;
                 }
@@ -300,7 +300,7 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         @Override
-        public VMTransition build(ReconfigurationProblem r, VM v) throws SolverException {
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new RelocatableVM(r, v);
         }
     }

@@ -25,9 +25,9 @@ import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -51,11 +51,11 @@ public class COnlineTest {
     }
 
     @Test
-    public void testSolvableProblem() throws SolverException {
+    public void testSolvableProblem() throws SchedulerException {
         Model mo = new DefaultModel();
         Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).off(n1).get();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();

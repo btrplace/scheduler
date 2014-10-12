@@ -23,7 +23,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.plan.event.*;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,7 +39,7 @@ public class DurationEvaluatorsTest {
     static Node n1 = mo.newNode();
 
     @Test
-    public void testInstantiateAndIsRegistered() throws SolverException {
+    public void testInstantiateAndIsRegistered() throws SchedulerException {
         DurationEvaluators d = DurationEvaluators.newBundle();
 
         //Juste check an evaluator is registered for every possible action.
@@ -90,7 +90,7 @@ public class DurationEvaluatorsTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
-    public void testEvaluate() throws SolverException {
+    public void testEvaluate() throws SchedulerException {
         DurationEvaluators d = new DurationEvaluators();
         ActionDurationEvaluator ev = new ConstantActionDuration(7);
         d.register(org.btrplace.plan.event.MigrateVM.class, ev);
@@ -98,14 +98,14 @@ public class DurationEvaluatorsTest {
         Assert.assertEquals(d.evaluate(mo, org.btrplace.plan.event.MigrateVM.class, vm1), 7);
     }
 
-    @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
-    public void testEvaluateUnregisteredAction() throws SolverException {
+    @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SchedulerException.class})
+    public void testEvaluateUnregisteredAction() throws SchedulerException {
         DurationEvaluators d = new DurationEvaluators();
         d.evaluate(mo, org.btrplace.plan.event.MigrateVM.class, vm1);
     }
 
-    @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})
-    public void testEvaluateWithError() throws SolverException {
+    @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SchedulerException.class})
+    public void testEvaluateWithError() throws SchedulerException {
         DurationEvaluators d = new DurationEvaluators();
         d.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(-5));
         d.evaluate(mo, org.btrplace.plan.event.MigrateVM.class, vm1);

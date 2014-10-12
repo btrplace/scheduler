@@ -23,9 +23,9 @@ import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Split;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -85,7 +85,7 @@ public class CSplitTest {
     }
 
     @Test
-    public void testSimpleDiscrete() throws SolverException {
+    public void testSimpleDiscrete() throws SchedulerException {
 
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -114,7 +114,7 @@ public class CSplitTest {
         Collection<Collection<VM>> grps = Arrays.asList(g1, g2, g3);
         Split s = new Split(grps);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.labelVariables(true);
         //cra.setVerbosity(3);
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
@@ -124,7 +124,7 @@ public class CSplitTest {
     }
 
     @Test
-    public void testContinuous() throws SolverException {
+    public void testContinuous() throws SchedulerException {
 
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -153,7 +153,7 @@ public class CSplitTest {
 
         s.setContinuous(true);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(s);
         //What is running on n1 goes to n3, so VMs vm3, vm4, vm5 which does not belong to vm1, vm2 must

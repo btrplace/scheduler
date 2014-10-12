@@ -19,7 +19,7 @@
 package org.btrplace.solver.choco.view;
 
 import org.btrplace.model.view.ModelView;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 
 /**
  * The builder that is used by {@link org.btrplace.solver.choco.view.ModelViewMapper} to create
@@ -41,7 +41,7 @@ public interface ChocoModelViewBuilder {
      * identified as key.
      *
      * @param v the model constraint
-     * @throws SolverException if an error occurred while building the view
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while building the view
      */
-    SolverViewBuilder build(ModelView v) throws SolverException;
+    SolverViewBuilder build(ModelView v) throws SchedulerException;
 }

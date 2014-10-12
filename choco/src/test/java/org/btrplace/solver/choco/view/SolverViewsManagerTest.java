@@ -18,7 +18,7 @@
 
 package org.btrplace.solver.choco.view;
 
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class SolverViewsManagerTest {
         }
 
         @Override
-        public ChocoView build(ReconfigurationProblem rp) throws SolverException {
+        public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
             order.add(key);
             return null;
         }
@@ -57,7 +57,7 @@ public class SolverViewsManagerTest {
     }
      /*
     @Test
-    public void test() throws SolverException {
+    public void test() throws SchedulerException {
         List<SolverViewBuilder> b = new ArrayList<>();
         b.add(new MockViewBuilder("a", Collections.<String>emptyList()));
         b.add(new MockViewBuilder("b", Collections.<String>emptyList()));
@@ -68,8 +68,8 @@ public class SolverViewsManagerTest {
         Assert.assertEquals(MockViewBuilder.order, Arrays.asList("a", "b", "c", "d"));
     }
 
-    @Test(expectedExceptions = {SolverException.class})
-    public void testCyclicDependency() throws SolverException {
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testCyclicDependency() throws SchedulerException {
         List<SolverViewBuilder> b = new ArrayList<>();
         b.add(new MockViewBuilder("a", Arrays.asList("c")));
         b.add(new MockViewBuilder("b", Arrays.asList("a")));

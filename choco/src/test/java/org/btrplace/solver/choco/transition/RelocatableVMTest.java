@@ -27,7 +27,7 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.*;
 import org.btrplace.solver.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.solver.choco.duration.ConstantActionDuration;
@@ -52,7 +52,7 @@ import java.util.List;
 public class RelocatableVMTest {
 
     @Test
-    public void testForcedToMove() throws SolverException, ContradictionException {
+    public void testForcedToMove() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -106,7 +106,7 @@ public class RelocatableVMTest {
     }
 
     @Test
-    public void testForcedToStay() throws SolverException, ContradictionException {
+    public void testForcedToStay() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -146,7 +146,7 @@ public class RelocatableVMTest {
     }
 
     @Test
-    public void testRelocateDueToPreserve() throws SolverException {
+    public void testRelocateDueToPreserve() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -168,7 +168,7 @@ public class RelocatableVMTest {
         rc.setConsumption(vm3, 5);
 
         Preserve pr = new Preserve(vm1, "cpu", 5);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnline(map.getAllNodes()));
@@ -181,11 +181,11 @@ public class RelocatableVMTest {
     /**
      * The re-instantiation is possible but will lead in a waste of time.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * @throws ContradictionException
      */
     @Test
-    public void testNotWorthyReInstantiation() throws SolverException, ContradictionException {
+    public void testNotWorthyReInstantiation() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -213,11 +213,11 @@ public class RelocatableVMTest {
     /**
      * The re-instantiation is possible and worthy.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * @throws ContradictionException
      */
     @Test
-    public void testWorthyReInstantiation() throws SolverException, ContradictionException {
+    public void testWorthyReInstantiation() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -265,11 +265,11 @@ public class RelocatableVMTest {
     /**
      * The re-instantiation is possible and worthy.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * @throws ContradictionException
      */
     @Test
-    public void testWorthlessReInstantiation() throws SolverException, ContradictionException {
+    public void testWorthlessReInstantiation() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm10 = mo.newVM();
@@ -310,7 +310,7 @@ public class RelocatableVMTest {
     }
 
     @Test
-    public void testForcedReInstantiation() throws SolverException, ContradictionException {
+    public void testForcedReInstantiation() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -365,7 +365,7 @@ public class RelocatableVMTest {
     }
 
     @Test
-    public void testForcedMigration() throws SolverException, ContradictionException {
+    public void testForcedMigration() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -407,7 +407,7 @@ public class RelocatableVMTest {
     }
 
     @Test
-    public void testReinstantiationWithPreserve() throws SolverException {
+    public void testReinstantiationWithPreserve() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -433,7 +433,7 @@ public class RelocatableVMTest {
             mo.getAttributes().put(vm, "clone", true);
         }
         Preserve pr = new Preserve(vm5, "cpu", 5);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(MigrateVM.class, new ConstantActionDuration(20));
 
         mo.attach(rc);
@@ -451,7 +451,7 @@ public class RelocatableVMTest {
     }
 
     @Test
-    public void testStayRunning() throws SolverException {
+    public void testStayRunning() throws SchedulerException {
 
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();

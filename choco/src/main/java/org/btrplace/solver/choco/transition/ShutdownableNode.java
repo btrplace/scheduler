@@ -22,7 +22,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.ShutdownNode;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.extensions.FastIFFEq;
 import org.btrplace.solver.choco.extensions.FastImpliesEq;
@@ -93,9 +93,9 @@ public class ShutdownableNode implements NodeTransition {
      *
      * @param rp the RP to use as a basis.
      * @param e  the node managed by the action
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SolverException {
+    public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SchedulerException {
         this.node = e;
 
         Solver s = rp.getSolver();
@@ -201,7 +201,7 @@ public class ShutdownableNode implements NodeTransition {
         }
 
         @Override
-        public NodeTransition build(ReconfigurationProblem r, Node n) throws SolverException {
+        public NodeTransition build(ReconfigurationProblem r, Node n) throws SchedulerException {
             return new ShutdownableNode(r, n);
         }
     }

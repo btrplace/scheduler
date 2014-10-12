@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
@@ -50,7 +50,7 @@ public class ResumeVMTest {
      * Just resume a VM on its current node.
      */
     @Test
-    public void testBasics() throws SolverException, ContradictionException {
+    public void testBasics() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -96,7 +96,7 @@ public class ResumeVMTest {
      * In practice, 2 resume actions have to be executed sequentially
      */
     @Test
-    public void testResumeSequence() throws SolverException, ContradictionException {
+    public void testResumeSequence() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         VM vm1 = mo.newVM();

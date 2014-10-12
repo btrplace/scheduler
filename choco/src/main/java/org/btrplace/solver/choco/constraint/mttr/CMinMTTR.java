@@ -22,7 +22,7 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.SliceUtils;
 import org.btrplace.solver.choco.constraint.ChocoConstraintBuilder;
@@ -65,7 +65,7 @@ public class CMinMTTR implements org.btrplace.solver.choco.constraint.CObjective
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem p) throws SolverException {
+    public boolean inject(ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         costActivated = false;
         List<IntVar> mttrs = new ArrayList<>();

@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
@@ -50,7 +50,7 @@ public class BootVMTest {
      * Just boot a VM on a  node.
      */
     @Test
-    public void testBasics() throws SolverException, ContradictionException {
+    public void testBasics() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -94,7 +94,7 @@ public class BootVMTest {
      * In practice, 2 boot actions have to be executed sequentially
      */
     @Test
-    public void testBootSequence() throws SolverException, ContradictionException {
+    public void testBootSequence() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();

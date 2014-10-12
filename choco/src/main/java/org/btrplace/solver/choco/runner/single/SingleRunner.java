@@ -19,7 +19,7 @@
 package org.btrplace.solver.choco.runner.single;
 
 import org.btrplace.model.Instance;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.Parameters;
 import org.btrplace.solver.choco.runner.InstanceResult;
 import org.btrplace.solver.choco.runner.InstanceSolver;
@@ -33,7 +33,7 @@ public class SingleRunner implements InstanceSolver {
 
     @Override
     public InstanceResult solve(Parameters cra,
-                                Instance i) throws SolverException {
+                                Instance i) throws SchedulerException {
         InstanceSolverRunner r = new InstanceSolverRunner(cra, i);
         return r.call();
 

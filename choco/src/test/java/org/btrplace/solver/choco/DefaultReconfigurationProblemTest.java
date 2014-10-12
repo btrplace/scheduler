@@ -22,7 +22,7 @@ import org.btrplace.model.*;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.duration.DurationEvaluators;
 import org.btrplace.solver.choco.transition.*;
 import org.btrplace.solver.choco.view.*;
@@ -117,10 +117,10 @@ public class DefaultReconfigurationProblemTest {
     /**
      * Just test the state definition of the actions.
      *
-     * @throws SolverException should not occur
+     * @throws org.btrplace.solver.SchedulerException should not occur
      */
     @Test
-    public void testSimplestInstantiation() throws SolverException {
+    public void testSimplestInstantiation() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -185,7 +185,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testManageableVMs() throws SolverException {
+    public void testManageableVMs() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -238,7 +238,7 @@ public class DefaultReconfigurationProblemTest {
 
 
     @Test
-    public void testVMToWaiting() throws SolverException {
+    public void testVMToWaiting() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -275,7 +275,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testWaitinVMToRun() throws SolverException {
+    public void testWaitinVMToRun() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -312,7 +312,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testVMStayRunning() throws SolverException {
+    public void testVMStayRunning() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -350,7 +350,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testVMRunningToSleeping() throws SolverException {
+    public void testVMRunningToSleeping() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -388,7 +388,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testVMsToKill() throws SolverException {
+    public void testVMsToKill() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -428,7 +428,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testVMToShutdown() throws SolverException {
+    public void testVMToShutdown() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -467,7 +467,7 @@ public class DefaultReconfigurationProblemTest {
 
 
     @Test
-    public void testVMStaySleeping() throws SolverException {
+    public void testVMStaySleeping() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
@@ -486,7 +486,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testVMSleepToRun() throws SolverException {
+    public void testVMSleepToRun() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -523,7 +523,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testNodeOn() throws SolverException {
+    public void testNodeOn() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         Node n1 = mo.newNode();
@@ -541,7 +541,7 @@ public class DefaultReconfigurationProblemTest {
 
 
     @Test
-    public void testNodeOff() throws SolverException {
+    public void testNodeOff() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -579,7 +579,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testGetResourceMapping() throws SolverException {
+    public void testGetResourceMapping() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -620,7 +620,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testViewMapping() throws SolverException {
+    public void testViewMapping() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -654,10 +654,10 @@ public class DefaultReconfigurationProblemTest {
             }
 
             @Override
-            public SolverViewBuilder build(ModelView v) throws SolverException {
+            public SolverViewBuilder build(ModelView v) throws SchedulerException {
                 return new DelegatedBuilder("cmock", Collections.<String>emptyList()) {
                     @Override
-                    public ChocoView build(ReconfigurationProblem rp) throws SolverException {
+                    public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
                         return new ModelViewMapperTest.CMockView();
                     }
                 };
@@ -676,7 +676,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testNoViewImplementation() throws SolverException {
+    public void testNoViewImplementation() throws SchedulerException {
         Model mo = new DefaultModel();
 
         MockView v = new MockView();
@@ -690,11 +690,11 @@ public class DefaultReconfigurationProblemTest {
      * Check the consistency between the variables counting the number of VMs on
      * each node, and the placement variable.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * @throws ContradictionException
      */
     @Test
-    public void testVMCounting() throws SolverException, ContradictionException {
+    public void testVMCounting() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Node n3 = mo.newNode();
         Node n2 = mo.newNode();
@@ -736,7 +736,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test
-    public void testMaintainState() throws SolverException {
+    public void testMaintainState() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -775,10 +775,10 @@ public class DefaultReconfigurationProblemTest {
     /**
      * Test a minimization problem: use the minimum number of nodes.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testMinimize() throws SolverException {
+    public void testMinimize() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
@@ -804,11 +804,11 @@ public class DefaultReconfigurationProblemTest {
     /**
      * Test a maximization problem: use the maximum number of nodes to host VMs
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * TODO: re-actiate some day
      */
     /*@Test
-    public void testMaximization() throws SolverException {
+    public void testMaximization() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -839,11 +839,11 @@ public class DefaultReconfigurationProblemTest {
      * Test a maximization problem: use the maximum number of nodes to host VMs
      * For a faster optimisation process, the current objective is doubled at each solution
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * TODO: Re-activate some day
      */
     /*@Test
-    public void testMaximizationWithAlterer() throws SolverException {
+    public void testMaximizationWithAlterer() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -881,10 +881,10 @@ public class DefaultReconfigurationProblemTest {
     /**
      * Test an unsolvable optimisation problem with an alterer. No solution
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testUnfeasibleOptimizeWithAlterer() throws SolverException {
+    public void testUnfeasibleOptimizeWithAlterer() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
@@ -913,7 +913,7 @@ public class DefaultReconfigurationProblemTest {
 
 
     @Test
-    public void testViewAddition() throws SolverException {
+    public void testViewAddition() throws SchedulerException {
         Model mo = new DefaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         MockCView view = new MockCView();

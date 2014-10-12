@@ -28,9 +28,9 @@ import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.duration.DurationEvaluators;
 import org.btrplace.solver.choco.duration.LinearToAResourceActionDuration;
 import org.btrplace.solver.choco.runner.SolvingStatistics;
@@ -84,8 +84,8 @@ public class Launcher {
 
     public static void launch(boolean repair, boolean optimize, int timeout, String src, String dst) {
 
-        // Create and customize a reconfiguration algorithm
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        // Create and customize a scheduler
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = null;
 
         // Manage options behaviors
@@ -144,7 +144,7 @@ public class Launcher {
                 System.err.println("No solution !");
                 throw new RuntimeException();
             }
-        } catch (SolverException e) {
+        } catch (SchedulerException e) {
             e.printStackTrace();
         } finally {
             System.out.println(cra.getStatistics());
@@ -203,7 +203,7 @@ public class Launcher {
         writerPlan.close();
     }
 
-    public static void createCSV(String fileName, ReconfigurationPlan plan, ChocoReconfigurationAlgorithm cra) throws IOException {
+    public static void createCSV(String fileName, ReconfigurationPlan plan, ChocoScheduler cra) throws IOException {
 
         FileWriter writer = new FileWriter(fileName);
         SolvingStatistics stats = cra.getStatistics();

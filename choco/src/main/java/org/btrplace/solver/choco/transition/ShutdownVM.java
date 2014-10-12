@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.SliceBuilder;
@@ -60,9 +60,9 @@ public class ShutdownVM implements VMTransition {
      *
      * @param p the RP to use as a basis.
      * @param e the VM managed by the action
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public ShutdownVM(ReconfigurationProblem p, VM e) throws SolverException {
+    public ShutdownVM(ReconfigurationProblem p, VM e) throws SchedulerException {
         this.rp = p;
         this.vm = e;
 
@@ -140,7 +140,7 @@ public class ShutdownVM implements VMTransition {
         }
 
         @Override
-        public VMTransition build(ReconfigurationProblem r, VM v) throws SolverException {
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new ShutdownVM(r, v);
         }
     }

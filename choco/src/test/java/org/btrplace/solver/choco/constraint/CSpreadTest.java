@@ -24,9 +24,9 @@ import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,7 +41,7 @@ import java.util.*;
 public class CSpreadTest {
 
     @Test
-    public void testDiscrete() throws SolverException {
+    public void testDiscrete() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -52,7 +52,7 @@ public class CSpreadTest {
                 .run(n1, vm1).run(n2, vm2).get();
 
         List<SatConstraint> cstr = new ArrayList<>();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Spread s = new Spread(mo.getMapping().getAllVMs());
         s.setContinuous(false);
         cstr.add(s);
@@ -67,7 +67,7 @@ public class CSpreadTest {
     }
 
     @Test
-    public void testContinuous() throws SolverException {
+    public void testContinuous() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -79,7 +79,7 @@ public class CSpreadTest {
                 .run(n1, vm1).run(n2, vm2).get();
 
         List<SatConstraint> cstr = new ArrayList<>();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cstr.add(new Spread(mo.getMapping().getAllVMs(), true));
         cstr.addAll(Online.newOnline(mo.getMapping().getAllNodes()));
         cstr.add(new Fence(vm1, Collections.singleton(n2)));
@@ -117,7 +117,7 @@ public class CSpreadTest {
      * if separation is working in continuous mode
      */
     @Test
-    public void testSeparateWithContinuous() throws SolverException {
+    public void testSeparateWithContinuous() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -126,7 +126,7 @@ public class CSpreadTest {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
 
         List<SatConstraint> cstr = new ArrayList<>();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Spread s = new Spread(mo.getMapping().getAllVMs());
         s.setContinuous(true);
         cstr.add(s);

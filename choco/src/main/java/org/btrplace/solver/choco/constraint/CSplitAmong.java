@@ -25,7 +25,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SplitAmong;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
@@ -55,7 +55,7 @@ public class CSplitAmong implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
 
         if (cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);

@@ -114,7 +114,7 @@ public interface SolvingStatistics {
     int getNbManagedVMs();
 
     /**
-     * Get the parameters of the reconfiguration algorithm.
+     * Get the parameters of the scheduler.
      *
      * @return a set of parameters
      */

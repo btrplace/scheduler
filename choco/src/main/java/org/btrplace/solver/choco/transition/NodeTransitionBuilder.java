@@ -20,7 +20,7 @@ package org.btrplace.solver.choco.transition;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 /**
@@ -54,9 +54,9 @@ public abstract class NodeTransitionBuilder {
      * @param rp the current problem
      * @param n  the manipulated node
      * @return the resulting model
-     * @throws org.btrplace.solver.SolverException if an error occurred while building the model
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while building the model
      */
-    public abstract NodeTransition build(ReconfigurationProblem rp, Node n) throws SolverException;
+    public abstract NodeTransition build(ReconfigurationProblem rp, Node n) throws SchedulerException;
 
     /**
      * Get the initial state of the node.

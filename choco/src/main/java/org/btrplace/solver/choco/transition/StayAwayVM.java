@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import solver.variables.BoolVar;
@@ -110,7 +110,7 @@ public class StayAwayVM implements VMTransition {
         }
 
         @Override
-        public VMTransition build(ReconfigurationProblem r, VM v) throws SolverException {
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new StayAwayVM(r, v);
         }
     }
@@ -128,7 +128,7 @@ public class StayAwayVM implements VMTransition {
         }
 
         @Override
-        public VMTransition build(ReconfigurationProblem r, VM v) throws SolverException {
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new StayAwayVM(r, v);
         }
     }

@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.duration;
 import org.btrplace.model.Element;
 import org.btrplace.model.Model;
 import org.btrplace.plan.event.*;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,14 +121,14 @@ public class DurationEvaluators {
      * @param e  the element identifier
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
-    public int evaluate(Model mo, Class<? extends Action> a, Element e) throws SolverException {
+    public int evaluate(Model mo, Class<? extends Action> a, Element e) throws SchedulerException {
         ActionDurationEvaluator<Element> ev = durations.get(a);
         if (ev == null) {
-            throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
+            throw new SchedulerException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         int d = ev.evaluate(mo, e);
         if (d <= 0) {
-            throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
+            throw new SchedulerException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         return d;
     }

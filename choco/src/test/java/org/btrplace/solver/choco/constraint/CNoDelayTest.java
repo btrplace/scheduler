@@ -24,9 +24,9 @@ import org.btrplace.model.constraint.NoDelay;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +43,7 @@ import java.util.List;
 public class CNoDelayTest {
 
     @Test
-    public void testOk1() throws SolverException {
+    public void testOk1() throws SchedulerException {
         Model model = new DefaultModel();
 
         Node n1 = model.newNode();
@@ -76,7 +76,7 @@ public class CNoDelayTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(nd);
         constraints.add(b);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
@@ -85,7 +85,7 @@ public class CNoDelayTest {
     }
 
     @Test
-    public void testOk2() throws SolverException {
+    public void testOk2() throws SchedulerException {
         Model model = new DefaultModel();
 
         Node n1 = model.newNode();
@@ -118,7 +118,7 @@ public class CNoDelayTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(nd);
         constraints.add(b);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
@@ -127,7 +127,7 @@ public class CNoDelayTest {
     }
 
     @Test
-    public void testKo() throws SolverException {
+    public void testKo() throws SchedulerException {
         Model model = new DefaultModel();
 
         Node n1 = model.newNode();
@@ -160,7 +160,7 @@ public class CNoDelayTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(nd);
         constraints.add(b);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setVerbosity(3);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);

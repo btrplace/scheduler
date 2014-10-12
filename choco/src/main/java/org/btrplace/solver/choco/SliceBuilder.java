@@ -19,7 +19,7 @@
 package org.btrplace.solver.choco;
 
 import org.btrplace.model.VM;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import solver.Solver;
 import solver.constraints.Arithmetic;
 import solver.constraints.Operator;
@@ -65,9 +65,9 @@ public class SliceBuilder {
      * Build the slice.
      *
      * @return the resulting slice
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public Slice build() throws SolverException {
+    public Slice build() throws SchedulerException {
         if (hoster == null) {
             hoster = rp.makeHostVariable(lblPrefix, "_hoster");
         }
@@ -110,7 +110,7 @@ public class SliceBuilder {
     /**
      * Make the duration variable depending on the others.
      */
-    private IntVar makeDuration() throws SolverException {
+    private IntVar makeDuration() throws SchedulerException {
         if (start.isInstantiated() && end.isInstantiated()) {
             int d = end.getValue() - start.getValue();
             return rp.makeDuration(d, d, lblPrefix, "_duration");

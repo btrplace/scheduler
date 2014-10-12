@@ -28,8 +28,8 @@ import java.util.Set;
  * An interface to specify an object that can estimated a supposed
  * set of misplaced VMs in a model.
  * <p>
- * This information will be used by the {@link ChocoReconfigurationAlgorithm}
- * to restrict the amount of VMs to consider in the reconfiguration algorithm
+ * This information will be used by the {@link ChocoScheduler}
+ * to restrict the amount of VMs to consider in the scheduler
  * to a minimum.
  * <p>
  * The set of mis-placed VMs is not necessarily optimal but it must

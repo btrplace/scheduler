@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.runner.disjoint;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.Parameters;
 
 import java.util.*;
@@ -69,7 +69,7 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     }
 
     @Override
-    public List<Instance> split(Parameters ps, Instance i) throws SolverException {
+    public List<Instance> split(Parameters ps, Instance i) throws SchedulerException {
         Mapping map = i.getModel().getMapping();
 
         setPartitions(random ? randomPartitions(map) : linearPartitions(map));

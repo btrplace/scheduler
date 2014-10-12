@@ -25,7 +25,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Split;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.extensions.DisjointMultiple;
@@ -55,7 +55,7 @@ public class CSplit implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         List<List<IntVar>> groups = new ArrayList<>();
         List<List<VM>> vmGroups = new ArrayList<>();
         for (Collection<VM> grp : cstr.getSets()) {

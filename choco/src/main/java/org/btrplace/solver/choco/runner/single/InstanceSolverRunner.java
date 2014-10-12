@@ -26,7 +26,7 @@ import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlanChecker;
 import org.btrplace.plan.ReconfigurationPlanCheckerException;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
 import org.btrplace.solver.choco.ReconfigurationProblem;
@@ -88,7 +88,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     }
 
     @Override
-    public InstanceResult call() throws SolverException {
+    public InstanceResult call() throws SchedulerException {
         rp = null;
         start = System.currentTimeMillis();
         measures = new ArrayList<>();
@@ -145,7 +145,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         return new InstanceResult(p, makeStatistics());
     }
 
-    private ReconfigurationProblem buildRP() throws SolverException {
+    private ReconfigurationProblem buildRP() throws SchedulerException {
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
@@ -200,7 +200,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     /**
      * Inject the constraints inside the problem.
      */
-    private boolean injectConstraints() throws SolverException {
+    private boolean injectConstraints() throws SchedulerException {
         try {
             for (ChocoConstraint cc : cConstraints) {
                 if (!cc.inject(rp)) {
@@ -218,16 +218,16 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      *
      * @param cstr the model-side constraint
      * @return the solver-side constraint
-     * @throws SolverException if the process failed
+     * @throws org.btrplace.solver.SchedulerException if the process failed
      */
-    private ChocoConstraint buildSatConstraint(SatConstraint cstr) throws SolverException {
+    private ChocoConstraint buildSatConstraint(SatConstraint cstr) throws SchedulerException {
         ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(cstr.getClass());
         if (ccBuilder == null) {
-            throw new SolverException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
+            throw new SchedulerException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
         }
         ChocoConstraint cc = ccBuilder.build(cstr);
         if (cc == null) {
-            throw new SolverException(origin, "Error while mapping the constraint '"
+            throw new SchedulerException(origin, "Error while mapping the constraint '"
                     + cstr.getClass().getSimpleName() + "'");
         }
         return cc;
@@ -236,20 +236,20 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     /**
      * Make the optimization constraint
      */
-    private ChocoConstraint buildOptConstraint() throws SolverException {
+    private ChocoConstraint buildOptConstraint() throws SchedulerException {
         ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(obj.getClass());
         if (ccBuilder == null) {
-            throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
+            throw new SchedulerException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
         }
         ChocoConstraint cObj = ccBuilder.build(obj);
         if (cObj == null) {
-            throw new SolverException(origin, "Error while mapping the constraint '"
+            throw new SchedulerException(origin, "Error while mapping the constraint '"
                     + obj.getClass().getSimpleName() + "'");
         }
         return cObj;
     }
 
-    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SolverException {
+    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SchedulerException {
         ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
         for (SatConstraint c : cs) {
             chk.addChecker(c.getChecker());
@@ -257,17 +257,17 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         try {
             chk.check(p);
         } catch (ReconfigurationPlanCheckerException ex) {
-            throw new SolverException(p.getOrigin(), ex.getMessage(), ex);
+            throw new SchedulerException(p.getOrigin(), ex.getMessage(), ex);
         }
     }
 
-    private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
+    private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {
         for (VM v : vms) {
             //This loop prevent from a useless allocation of memory when there is no issue
             if (!m.getMapping().contains(v)) {
                 Set<VM> unknown = new HashSet<>(vms);
                 unknown.removeAll(m.getMapping().getAllVMs());
-                throw new SolverException(m, "Unknown VMs: " + unknown);
+                throw new SchedulerException(m, "Unknown VMs: " + unknown);
             }
         }
     }
@@ -277,12 +277,12 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      *
      * @param mo the model to check
      * @param ns the nodes to check
-     * @throws SolverException if at least one of the given nodes is not in the RP.
+     * @throws org.btrplace.solver.SchedulerException if at least one of the given nodes is not in the RP.
      */
-    private void checkNodesExistence(Model mo, Collection<Node> ns) throws SolverException {
+    private void checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerException {
         for (Node node : ns) {
             if (!mo.getMapping().contains(node)) {
-                throw new SolverException(mo, "Unknown node '" + node + "'");
+                throw new SchedulerException(mo, "Unknown node '" + node + "'");
             }
         }
     }

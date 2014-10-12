@@ -24,9 +24,9 @@ import org.btrplace.model.constraint.Gather;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +43,7 @@ import java.util.List;
 public class CGatherTest {
 
     @Test
-    public void testDiscreteWithoutRunningVM() throws SolverException {
+    public void testDiscreteWithoutRunningVM() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -53,7 +53,7 @@ public class CGatherTest {
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(g));
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 0);
@@ -64,7 +64,7 @@ public class CGatherTest {
     }
 
     @Test
-    public void testDiscreteWithRunningVMs() throws SolverException {
+    public void testDiscreteWithRunningVMs() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -75,7 +75,7 @@ public class CGatherTest {
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
@@ -105,7 +105,7 @@ public class CGatherTest {
     }
 
     @Test
-    public void testContinuousWithPartialRunning() throws SolverException {
+    public void testContinuousWithPartialRunning() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -117,7 +117,7 @@ public class CGatherTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(g);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
     }
@@ -125,10 +125,10 @@ public class CGatherTest {
     /**
      * We try to relocate co-located VMs in continuous mode. Not allowed
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testContinuousWithRelocationOfVMs() throws SolverException {
+    public void testContinuousWithRelocationOfVMs() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -142,13 +142,13 @@ public class CGatherTest {
         cstrs.add(g);
         cstrs.add(new Fence(vm1, Collections.singleton(n1)));
         cstrs.add(new Fence(vm2, Collections.singleton(n1)));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNull(plan);
     }
 
     @Test
-    public void testContinuousWithNoRunningVMs() throws SolverException {
+    public void testContinuousWithNoRunningVMs() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -160,7 +160,7 @@ public class CGatherTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
     }

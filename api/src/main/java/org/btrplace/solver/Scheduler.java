@@ -27,11 +27,11 @@ import org.btrplace.plan.ReconfigurationPlan;
 import java.util.Collection;
 
 /**
- * Basic interface for a reconfiguration algorithm.
+ * Basic interface for a VM scheduler.
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationAlgorithm {
+public interface Scheduler {
 
     /**
      * Compute a reconfiguration plan to reach a solution to the model
@@ -41,9 +41,9 @@ public interface ReconfigurationAlgorithm {
      * @param obj   the optimization-oriented constraint that must be considered
      * @return the plan to execute to reach the new solution or {@code null} if there is no
      * solution.
-     * @throws SolverException if an error occurred while trying to solve the problem
+     * @throws SchedulerException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint obj) throws SolverException;
+    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint obj) throws SchedulerException;
 
     /**
      * Compute a reconfiguration plan to reach a solution to an instance
@@ -51,7 +51,7 @@ public interface ReconfigurationAlgorithm {
      * @param i the instance to solve
      * @return the plan to execute to reach the new solution or {@code null} if there is no
      * solution.
-     * @throws SolverException if an error occurred while trying to solve the problem
+     * @throws SchedulerException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Instance i) throws SolverException;
+    ReconfigurationPlan solve(Instance i) throws SchedulerException;
 }

@@ -23,9 +23,9 @@ import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.ShutdownNode;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.btrplace.solver.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
@@ -54,14 +54,14 @@ public class COfflineTest {
      * Simple test, no VMs.
      */
     @Test
-    public void simpleTest() throws SolverException {
+    public void simpleTest() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
 
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).get();
 
-        DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration(10));
         cra.setTimeLimit(-1);
         List x = Offline.newOffline(map.getAllNodes());
@@ -91,13 +91,13 @@ public class COfflineTest {
     }
 
     @Test
-    public void testSolvableProblem() throws SolverException {
+    public void testSolvableProblem() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).get();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
@@ -105,12 +105,12 @@ public class COfflineTest {
     }
 
     @Test
-    public void testUnsolvableProblem() throws SolverException {
+    public void testUnsolvableProblem() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).get();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
         Assert.assertNull(plan);
     }

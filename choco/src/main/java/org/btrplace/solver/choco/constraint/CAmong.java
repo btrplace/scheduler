@@ -24,7 +24,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.Fence;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
@@ -69,7 +69,7 @@ public class CAmong implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
 
         int nextGrp = -1;
         int curGrp = -1;

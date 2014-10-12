@@ -25,9 +25,9 @@ import org.btrplace.model.constraint.Ready;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -79,7 +79,7 @@ public class CFenceTest {
     }
 
     @Test
-    public void testBasic() throws SolverException {
+    public void testBasic() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -95,7 +95,7 @@ public class CFenceTest {
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(vm2, on);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(f);
         cstrs.addAll(Online.newOnline(map.getAllNodes()));

@@ -24,8 +24,8 @@ import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +43,7 @@ import java.util.Set;
 public class CBanTest {
 
     @Test
-    public void testBasic() throws SolverException {
+    public void testBasic() throws SchedulerException {
         Node[] nodes = new Node[5];
         VM[] vms = new VM[5];
         Model mo = new DefaultModel();
@@ -66,7 +66,7 @@ public class CBanTest {
         s.addAll(Running.newRunning(m.getAllVMs()));
         s.addAll(Online.newOnline(m.getAllNodes()));
 
-        DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertNotNull(p);

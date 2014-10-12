@@ -25,7 +25,7 @@ import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.*;
 import org.btrplace.solver.choco.transition.VMTransition;
 import org.testng.Assert;
@@ -47,10 +47,10 @@ public class CShareableResourceTest {
     /**
      * Test the instantiation and the creation of the variables.
      *
-     * @throws SolverException should not occur
+     * @throws org.btrplace.solver.SchedulerException should not occur
      */
     @Test
-    public void testSimple() throws SolverException {
+    public void testSimple() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
         VM vm1 = mo.newVM();
@@ -95,7 +95,7 @@ public class CShareableResourceTest {
      * Place some VMs and check realNodeUsage is updated accordingly
      */
     @Test
-    public void testRealNodeUsage() throws SolverException, ContradictionException {
+    public void testRealNodeUsage() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
 
@@ -134,7 +134,7 @@ public class CShareableResourceTest {
     }
 
     @Test
-    public void testMaintainResourceUsage() throws SolverException {
+    public void testMaintainResourceUsage() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         VM vm1 = mo.newVM();
@@ -176,7 +176,7 @@ public class CShareableResourceTest {
      * The default overbooking ratio of 1 will make this problem having no solution.
      */
     @Test
-    public void testDefaultOverbookRatio() throws ContradictionException, SolverException {
+    public void testDefaultOverbookRatio() throws ContradictionException, SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -202,7 +202,7 @@ public class CShareableResourceTest {
     }
 
     @Test
-    public void testWithFloat() throws SolverException {
+    public void testWithFloat() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -217,7 +217,7 @@ public class CShareableResourceTest {
         rc.setConsumption(vm2, 2);
         mo.attach(rc);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnline(map.getAllNodes()));
         Overbook o = new Overbook(n1, "foo", 1.5, false);

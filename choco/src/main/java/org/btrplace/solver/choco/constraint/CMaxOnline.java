@@ -24,7 +24,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.view.CPowerView;
 import solver.Solver;
@@ -73,7 +73,7 @@ public class CMaxOnline implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         Solver solver = rp.getSolver();
 
         if (constraint.isContinuous()) {
@@ -81,7 +81,7 @@ public class CMaxOnline implements ChocoConstraint {
             if (view == null) {
                 view = new CPowerView(rp);
                 if (!rp.addView(view)) {
-                    throw new SolverException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
+                    throw new SchedulerException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
                 }
             }
 

@@ -24,7 +24,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.RunningCapacity;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.view.AliasedCumulatives;
 import org.btrplace.solver.choco.view.ChocoView;
@@ -57,7 +57,7 @@ public class CRunningCapacity implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         Solver s = rp.getSolver();
         if (cstr.getInvolvedVMs().size() == 1) {
             return filterWithSingleNode(rp);
@@ -82,7 +82,7 @@ public class CRunningCapacity implements ChocoConstraint {
         return true;
     }
 
-    private boolean injectContinuous(ReconfigurationProblem rp) throws SolverException {
+    private boolean injectContinuous(ReconfigurationProblem rp) throws SchedulerException {
         //The constraint must be already satisfied
         if (!cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
@@ -104,7 +104,7 @@ public class CRunningCapacity implements ChocoConstraint {
 
         ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
         if (v == null) {
-            throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+            throw new SchedulerException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
         ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse, dUse, alias);
         return true;

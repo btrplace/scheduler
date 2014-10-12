@@ -23,7 +23,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.view.ShareableResource;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.view.CShareableResource;
 import solver.Cause;
@@ -53,10 +53,10 @@ public class CPreserve implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         CShareableResource map = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (map == null) {
-            throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
+            throw new SchedulerException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
                     cstr.getResource() + "'");
         }
         VM vm = cstr.getInvolvedVMs().iterator().next();

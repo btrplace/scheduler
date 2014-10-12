@@ -18,7 +18,7 @@
 
 package org.btrplace.solver.choco.view;
 
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.List;
@@ -41,9 +41,9 @@ public abstract class SolverViewBuilder {
      * Build the {@link ChocoView}
      *
      * @param rp the problem to add
-     * @throws org.btrplace.solver.SolverException if an error occurred while building the view
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while building the view
      */
-    public abstract ChocoView build(ReconfigurationProblem rp) throws SolverException;
+    public abstract ChocoView build(ReconfigurationProblem rp) throws SchedulerException;
 
     /**
      * Get the view dependencies.

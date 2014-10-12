@@ -21,9 +21,9 @@ package org.btrplace.solver.choco.runner.disjoint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Running;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.Parameters;
 import org.btrplace.solver.choco.runner.InstanceResult;
@@ -47,7 +47,7 @@ public class FixedSizePartitioningTest {
         f.setWorkersCount(5);
         Assert.assertEquals(f.getWorkersCount(), 5);
         Assert.assertEquals(f.getSize(), 1000);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setInstanceSolver(f);
         Assert.assertEquals(cra.getInstanceSolver(), f);
         f.setSize(300);
@@ -73,7 +73,7 @@ public class FixedSizePartitioningTest {
     }
 
     @Test
-    public void testLinearSplit() throws SolverException {
+    public void testLinearSplit() throws SchedulerException {
         Instance i = makeInstance();
         FixedSizePartitioning f = new FixedSizePartitioning(5);
         List<Instance> partitions = f.split(params, i);
@@ -87,7 +87,7 @@ public class FixedSizePartitioningTest {
     }
 
     @Test
-    public void testRandomSplit() throws SolverException {
+    public void testRandomSplit() throws SchedulerException {
         Instance origin = makeInstance();
         FixedSizePartitioning f = new FixedSizePartitioning(5);
         f.randomPickUp(true);

@@ -24,7 +24,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Offline;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.transition.Transition;
@@ -54,7 +54,7 @@ public class COffline implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
             return false;

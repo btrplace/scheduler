@@ -27,9 +27,9 @@ import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +74,13 @@ public class Decommissionning implements Example {
         MaxOnline m = new MaxOnline(mo.getMapping().getAllNodes(), nbNodes + 1, true);
         cstrs.add(m);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(3);
         cra.setVerbosity(2);
         try {
             ReconfigurationPlan p = cra.solve(mo, cstrs);
             System.out.println(p);
-        } catch (SolverException ex) {
+        } catch (SchedulerException ex) {
             System.err.println(ex.getMessage());
             return false;
         }

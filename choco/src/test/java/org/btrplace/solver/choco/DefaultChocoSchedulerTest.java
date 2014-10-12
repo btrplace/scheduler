@@ -22,7 +22,7 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.constraint.ChocoConstraint;
 import org.btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.solver.choco.runner.SolvingStatistics;
@@ -43,15 +43,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link DefaultChocoReconfigurationAlgorithm}.
+ * Unit tests for {@link DefaultChocoScheduler}.
  *
  * @author Fabien Hermenier
  */
-public class DefaultChocoReconfigurationAlgorithmTest {
+public class DefaultChocoSchedulerTest {
 
     @Test
     public void testGetsAndSets() {
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
 
         cra.setTimeLimit(10);
         Assert.assertEquals(cra.getTimeLimit(), 10);
@@ -75,7 +75,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
     }
 
     @Test
-    public void testGetStatistics() throws SolverException {
+    public void testGetStatistics() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
@@ -83,7 +83,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
             map.addOnlineNode(n);
             map.addRunningVM(mo.newVM(), n);
         }
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.doOptimize(true);
         cra.setTimeLimit(0);
 
@@ -105,7 +105,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
             @Override
             public ChocoConstraint build(Constraint cstr) {
                 return new ChocoConstraint() {
-                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
                         Mapping map = rp.getSourceModel().getMapping();
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
@@ -138,7 +138,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
     }
 
     @Test
-    public void testSolvableRepair() throws SolverException {
+    public void testSolvableRepair() throws SchedulerException {
         Model mo = new DefaultModel();
         final VM vm1 = mo.newVM();
         final VM vm2 = mo.newVM();
@@ -161,7 +161,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
         mo = new DefaultModel();
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         class Foo extends OptConstraint {
             @Override
             public String id() {
@@ -178,7 +178,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
             @Override
             public ChocoConstraint build(Constraint cstr) {
                 return new ChocoConstraint() {
-                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
                         return true;
                     }
 
@@ -198,8 +198,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }
 
-    @Test(expectedExceptions = {SolverException.class})
-    public void testWithUnknownVMs() throws SolverException {
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testWithUnknownVMs() throws SchedulerException {
         Model mo = new DefaultModel();
         final VM vm1 = mo.newVM();
         final VM vm2 = mo.newVM();
@@ -216,17 +216,17 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         SatConstraint cstr = mock(SatConstraint.class);
         when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
         when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, n4));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.solve(mo, Collections.singleton(cstr));
     }
 
     /**
      * Issue #14
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testNonHomogeneousIncrease() throws SolverException {
+    public void testNonHomogeneousIncrease() throws SchedulerException {
         ShareableResource cpu = new ShareableResource("cpu");
         ShareableResource mem = new ShareableResource("mem");
         Model mo = new DefaultModel();
@@ -268,7 +268,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         mo.attach(cpu);
         mo.attach(mem);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(5);
         ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem,
                 new Online(n1),
@@ -280,11 +280,11 @@ public class DefaultChocoReconfigurationAlgorithmTest {
     /**
      * Remove the ready->running transition so the solving process will fail
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
-    @Test(expectedExceptions = {SolverException.class})
-    public void testTransitionFactoryCustomisation() throws SolverException {
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testTransitionFactoryCustomisation() throws SchedulerException {
+        ChocoScheduler cra = new DefaultChocoScheduler();
         TransitionFactory tf = cra.getTransitionFactory();
         List<VMTransitionBuilder> b = tf.getBuilder(VMState.READY, VMState.RUNNING);
         Assert.assertTrue(tf.remove(b.get(0)));

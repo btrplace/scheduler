@@ -56,7 +56,7 @@ public class CKilledTest {
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         mo.getMapping().addReadyVM(v);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
     }
 
@@ -67,7 +67,7 @@ public class CKilledTest {
         Node n = mo.newNode();
         mo.getMapping().addOnlineNode(n);
         mo.getMapping().addRunningVM(v, n);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
     }
 
@@ -78,7 +78,7 @@ public class CKilledTest {
         Node n = mo.newNode();
         mo.getMapping().addOnlineNode(n);
         mo.getMapping().addSleepingVM(v, n);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
     }     */
 }

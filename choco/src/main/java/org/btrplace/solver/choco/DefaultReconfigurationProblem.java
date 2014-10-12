@@ -25,7 +25,7 @@ import org.btrplace.model.*;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.duration.DurationEvaluators;
 import org.btrplace.solver.choco.transition.*;
 import org.btrplace.solver.choco.view.*;
@@ -115,7 +115,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param sleeping  the VMs that must be in the sleeping state
      * @param killed    the VMs that must be killed
      * @param preRooted the VMs that can be managed by the solver when they are already running and they must keep running
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
@@ -124,7 +124,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<VM> running,
                                          Set<VM> sleeping,
                                          Set<VM> killed,
-                                         Set<VM> preRooted) throws SolverException {
+                                         Set<VM> preRooted) throws SchedulerException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
@@ -156,7 +156,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     }
 
-    private void makeViews(Parameters ps) throws SolverException {
+    private void makeViews(Parameters ps) throws SchedulerException {
         List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
         ModelViewMapper vm = ps.getViewMapper();
         for (ModelView v : model.getViews()) {
@@ -171,7 +171,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
+    public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
 
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
@@ -205,7 +205,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return makeResultingPlan();
     }
 
-    private ReconfigurationPlan makeResultingPlan() throws SolverException {
+    private ReconfigurationPlan makeResultingPlan() throws SchedulerException {
 
         //Check for the solution
         ESat status = solver.isFeasible();
@@ -214,7 +214,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             return null;
         } else if (solver.isFeasible() == ESat.UNDEFINED) {
             //We don't know if the CSP has a solution
-            throw new SolverException(model, "Unable to state about the problem feasibility.");
+            throw new SchedulerException(model, "Unable to state about the problem feasibility.");
         }
 
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
@@ -263,7 +263,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.set(seq);
     }
 
-    private void addContinuousResourceCapacities() throws SolverException {
+    private void addContinuousResourceCapacities() throws SchedulerException {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().length; j++) {
@@ -278,7 +278,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         ChocoView v = getView(Cumulatives.VIEW_ID);
         if (v == null) {
-            throw new SolverException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+            throw new SchedulerException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
@@ -294,7 +294,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void linkCardinalityWithSlices() throws SolverException {
+    private void linkCardinalityWithSlices() throws SchedulerException {
         IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
@@ -302,7 +302,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         ChocoView v = getView(Packing.VIEW_ID);
         if (v == null) {
-            throw new SolverException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
+            throw new SchedulerException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
         }
         ((Packing) v).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
@@ -352,7 +352,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void makeVMTransitions() throws SolverException {
+    private void makeVMTransitions() throws SchedulerException {
         Mapping map = model.getMapping();
         vmActions = new VMTransition[vms.length];
         for (int i = 0; i < vms.length; i++) {
@@ -382,10 +382,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
             List<VMTransitionBuilder> am = amFactory.getBuilder(curState, nextState);
             if (am.isEmpty()) {
-                throw new SolverException(model, "No model available for VM transition " + curState + " -> " + nextState);
+                throw new SchedulerException(model, "No model available for VM transition " + curState + " -> " + nextState);
             }
             if (am.size() > 1) {
-                throw new SolverException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
+                throw new SchedulerException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
             }
             vmActions[i] = am.get(0).build(this, vmId);
             if (vmActions[i].isManaged()) {
@@ -394,7 +394,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void makeNodeTransitions() throws SolverException {
+    private void makeNodeTransitions() throws SchedulerException {
 
         Mapping m = model.getMapping();
         nodeActions = new NodeTransition[nodes.length];
@@ -403,7 +403,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
             NodeTransitionBuilder b = amFactory.getBuilder(state);
             if (b == null) {
-                throw new SolverException(model, "No model available for a node transition " + state + " -> (offline|online)");
+                throw new SchedulerException(model, "No model available for a node transition " + state + " -> (offline|online)");
             }
             nodeActions[i] = b.build(this, nId);
         }
@@ -458,19 +458,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntVar makeCurrentHost(VM vmId, Object... n) throws SolverException {
+    public IntVar makeCurrentHost(VM vmId, Object... n) throws SchedulerException {
         int idx = getVM(vmId);
         if (idx < 0) {
-            throw new SolverException(model, "Unknown VM '" + vmId + "'");
+            throw new SchedulerException(model, "Unknown VM '" + vmId + "'");
         }
         return makeCurrentNode(model.getMapping().getVMLocation(vmId), useLabels ? n : "");
     }
 
     @Override
-    public IntVar makeCurrentNode(Node nId, Object... n) throws SolverException {
+    public IntVar makeCurrentNode(Node nId, Object... n) throws SchedulerException {
         int idx = getNode(nId);
         if (idx < 0) {
-            throw new SolverException(model, "Unknown node '" + nId + "'");
+            throw new SchedulerException(model, "Unknown node '" + nId + "'");
         }
         if (useLabels) {
             return VariableFactory.fixed(makeVarLabel(n), idx, solver);
@@ -484,7 +484,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntVar makeDuration(int ub, int lb, Object... n) throws SolverException {
+    public IntVar makeDuration(int ub, int lb, Object... n) throws SchedulerException {
         return VariableFactory.bounded(makeVarLabel(n), lb, ub, solver);
     }
 

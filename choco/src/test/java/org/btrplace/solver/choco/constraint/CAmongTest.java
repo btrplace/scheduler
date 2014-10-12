@@ -24,9 +24,9 @@ import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,7 +41,7 @@ import java.util.*;
 public class CAmongTest {
 
     @Test
-    public void testWithOnGroup() throws SolverException {
+    public void testWithOnGroup() throws SchedulerException {
 
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -68,7 +68,7 @@ public class CAmongTest {
         pGrps.add(s);
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(a);
@@ -80,7 +80,7 @@ public class CAmongTest {
     }
 
     @Test
-    public void testWithGroupChange() throws SolverException {
+    public void testWithGroupChange() throws SchedulerException {
 
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -104,7 +104,7 @@ public class CAmongTest {
         Collection<Collection<Node>> pGrps = Arrays.asList(s1, s2);
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(new Fence(vm2, s2));
@@ -119,10 +119,10 @@ public class CAmongTest {
     /**
      * No solution because constraints force to spread the VMs among 2 groups.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testWithNoSolution() throws SolverException {
+    public void testWithNoSolution() throws SchedulerException {
 
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -149,7 +149,7 @@ public class CAmongTest {
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(new Fence(vm2, Collections.singleton(n3)));
@@ -193,7 +193,7 @@ public class CAmongTest {
     }
 
     @Test
-    public void testContinuousWithAlreadySatisfied() throws SolverException {
+    public void testContinuousWithAlreadySatisfied() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -222,13 +222,13 @@ public class CAmongTest {
         cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(a);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
     }
 
     @Test
-    public void testContinuousWithNotAlreadySatisfied() throws SolverException {
+    public void testContinuousWithNotAlreadySatisfied() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -259,14 +259,14 @@ public class CAmongTest {
         cstrs.add(new Fence(vm2, Collections.singleton(n3)));
         cstrs.add(a);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
     }
 
     /*
     @Test
-    public void testContinuousWithOneRunningAndChange() throws SolverException {
+    public void testContinuousWithOneRunningAndChange() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -292,7 +292,7 @@ public class CAmongTest {
         cstrs.add(new Fence(vm1, Collections.singleton(n2)));
         cstrs.add(a);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.doRepair(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

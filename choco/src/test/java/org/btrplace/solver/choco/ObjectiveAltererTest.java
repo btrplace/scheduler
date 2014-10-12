@@ -20,7 +20,7 @@ package org.btrplace.solver.choco;
 
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.variables.IntVar;
@@ -34,7 +34,7 @@ import solver.variables.VF;
 public class ObjectiveAltererTest {
 
     @Test
-    public void testBasic() throws SolverException {
+    public void testBasic() throws SchedulerException {
         Model mo = new DefaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         IntVar obj = VF.bounded("obj", 10, 1000, rp.getSolver());

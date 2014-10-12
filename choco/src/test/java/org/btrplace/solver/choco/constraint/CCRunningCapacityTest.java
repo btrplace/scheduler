@@ -24,9 +24,9 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownVM;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.btrplace.solver.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
@@ -42,7 +42,7 @@ import java.util.*;
 public class CCRunningCapacityTest {
 
     @Test
-    public void testWithSatisfiedConstraint() throws SolverException {
+    public void testWithSatisfiedConstraint() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -60,14 +60,14 @@ public class CCRunningCapacityTest {
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(plan.getSize(), 0);
     }
 
     @Test
-    public void testDiscreteSatisfaction() throws SolverException {
+    public void testDiscreteSatisfaction() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -85,7 +85,7 @@ public class CCRunningCapacityTest {
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 4);
         x.setContinuous(false);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
@@ -94,7 +94,7 @@ public class CCRunningCapacityTest {
 
 
     @Test
-    public void testFeasibleContinuousResolution() throws SolverException {
+    public void testFeasibleContinuousResolution() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -114,7 +114,7 @@ public class CCRunningCapacityTest {
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 4);
         x.setContinuous(true);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         for (SatConstraint c : l) {
             System.out.println(c);
         }
@@ -125,7 +125,7 @@ public class CCRunningCapacityTest {
     }
 
     @Test
-    public void testUnFeasibleContinuousResolution() throws SolverException {
+    public void testUnFeasibleContinuousResolution() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -156,7 +156,7 @@ public class CCRunningCapacityTest {
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(5);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
@@ -188,7 +188,7 @@ public class CCRunningCapacityTest {
     }
 
     @Test
-    public void testUnfeasible() throws SolverException {
+    public void testUnfeasible() throws SchedulerException {
 
         Model model = new DefaultModel();
         VM vm1 = model.newVM();
@@ -206,13 +206,13 @@ public class CCRunningCapacityTest {
         Collection<SatConstraint> ctrs = new HashSet<>();
         ctrs.add(new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 2));
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(model, ctrs);
         Assert.assertNull(plan);
     }
 
     @Test
-    public void testSingleDiscreteResolution() throws SolverException {
+    public void testSingleDiscreteResolution() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -227,14 +227,14 @@ public class CCRunningCapacityTest {
         RunningCapacity x = new RunningCapacity(Collections.singleton(n1), 2);
         x.setContinuous(false);
         l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(2, plan.getSize());
     }
 
     @Test
-    public void testSingleContinuousResolution() throws SolverException {
+    public void testSingleContinuousResolution() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -249,7 +249,7 @@ public class CCRunningCapacityTest {
         RunningCapacity sc = new RunningCapacity(Collections.singleton(n1), 2);
         sc.setContinuous(true);
         l.add(sc);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);

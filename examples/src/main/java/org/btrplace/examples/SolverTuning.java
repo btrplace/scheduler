@@ -25,15 +25,15 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.duration.LinearToAResourceActionDuration;
 
 import java.util.*;
 
 /**
- * Tutorial about the basic tuning of a {@link org.btrplace.solver.choco.ChocoReconfigurationAlgorithm}.
+ * Tutorial about the basic tuning of a {@link org.btrplace.solver.choco.ChocoScheduler}.
  *
  * @author Fabien Hermenier
  * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Tuning-the-Reconfiguration-Algorithm">btrplace website</a>
@@ -71,7 +71,7 @@ public class SolverTuning implements Example {
             }
         }
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
 
         //Customize the estimated duration of actions
         cra.getDurationEvaluators().register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 1, 3));
@@ -90,14 +90,14 @@ public class SolverTuning implements Example {
         return true;
     }
 
-    private void solve(ChocoReconfigurationAlgorithm cra, Model model, Set<SatConstraint> constraints) {
+    private void solve(ChocoScheduler cra, Model model, Set<SatConstraint> constraints) {
         try {
             ReconfigurationPlan p = cra.solve(model, constraints);
             if (p != null) {
                 System.out.println("--- Solving using repair : " + cra.doRepair());
                 System.out.println(cra.getStatistics());
             }
-        } catch (SolverException e) {
+        } catch (SchedulerException e) {
             System.err.println("--- Solving using repair : " + cra.doRepair() + "; Error: " + e.getMessage());
             System.err.flush();
         }

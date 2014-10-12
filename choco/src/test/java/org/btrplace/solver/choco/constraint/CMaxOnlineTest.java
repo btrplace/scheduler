@@ -24,9 +24,9 @@ import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -39,7 +39,7 @@ import java.util.*;
 public class CMaxOnlineTest {
 
     @Test
-    public void discreteMaxOnlineTest() throws SolverException {
+    public void discreteMaxOnlineTest() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -54,7 +54,7 @@ public class CMaxOnlineTest {
         MappingUtils.fill(map, model.getMapping());
         Set<Node> nodes = map.getAllNodes();
         MaxOnline maxon = new MaxOnline(nodes, 1);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(3);
         //cra.setTimeLimit(3);
         ReconfigurationPlan plan = cra.solve(model, Collections.<SatConstraint>singleton(maxon));
@@ -62,7 +62,7 @@ public class CMaxOnlineTest {
     }
 
     @Test
-    public void discreteMaxOnlineTest2() throws SolverException {
+    public void discreteMaxOnlineTest2() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -90,7 +90,7 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxon);
         constraints.add(maxon2);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
@@ -98,7 +98,7 @@ public class CMaxOnlineTest {
     }
 
     @Test
-    public void testSimpleContinuousCase() throws SolverException {
+    public void testSimpleContinuousCase() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -108,7 +108,7 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxOnline);
         constraints.add(new Online(n2));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.setTimeLimit(5);
         cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
@@ -119,7 +119,7 @@ public class CMaxOnlineTest {
     }
 
     @Test
-    public void testContinuousRestrictionSimpleCase() throws SolverException {
+    public void testContinuousRestrictionSimpleCase() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -139,7 +139,7 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxon);
         constraints.add(new Online(n2));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.setTimeLimit(3);
         cra.setMaxEnd(3);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
@@ -149,7 +149,7 @@ public class CMaxOnlineTest {
     }
 
     @Test
-    public void complexContinuousTest2() throws SolverException {
+    public void complexContinuousTest2() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode(1);
         Node n2 = model.newNode(2);
@@ -178,7 +178,7 @@ public class CMaxOnlineTest {
         constraints.add(maxOn2);
         constraints.addAll(Online.newOnline(Arrays.asList(n4, n5)));
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
         cra.setMaxEnd(10);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());

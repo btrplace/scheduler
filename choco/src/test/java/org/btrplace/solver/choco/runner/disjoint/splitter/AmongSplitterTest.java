@@ -23,7 +23,7 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.MappingFiller;
 import org.btrplace.solver.choco.runner.disjoint.FixedNodeSetsPartitioning;
@@ -63,7 +63,7 @@ public class AmongSplitterTest {
             .run(n4, vm5).get();
 
     @Test
-    public void testSplittable() throws SolverException {
+    public void testSplittable() throws SchedulerException {
 
         List<VM> vms = Arrays.asList(vm1, vm2, vm3);
         Collection<Collection<Node>> parts = new ArrayList<>();

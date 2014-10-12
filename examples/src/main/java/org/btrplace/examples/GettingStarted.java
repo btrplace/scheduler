@@ -24,9 +24,9 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.DependencyBasedPlanApplier;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.TimeBasedPlanApplier;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +129,7 @@ public class GettingStarted implements Example {
         Model model = makeModel();
         List<SatConstraint> cstrs = makeConstraints();
 
-        ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler ra = new DefaultChocoScheduler();
         try {
             ReconfigurationPlan plan = ra.solve(model, cstrs);
             System.out.println("Time-based plan:");
@@ -137,7 +137,7 @@ public class GettingStarted implements Example {
             System.out.println("\nDependency based plan:");
             System.out.println(new DependencyBasedPlanApplier().toString(plan));
             return (plan != null);
-        } catch (SolverException ex) {
+        } catch (SchedulerException ex) {
             System.err.println(ex.getMessage());
             return false;
         }

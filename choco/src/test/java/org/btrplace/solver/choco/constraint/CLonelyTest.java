@@ -23,9 +23,9 @@ import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Lonely;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +43,7 @@ import java.util.Set;
 public class CLonelyTest {
 
     @Test
-    public void testFeasibleDiscrete() throws SolverException {
+    public void testFeasibleDiscrete() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -58,7 +58,7 @@ public class CLonelyTest {
                 .run(n2, vm3, vm4, vm5).get();
 
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
@@ -71,10 +71,10 @@ public class CLonelyTest {
      * vm3 needs to go to n2 . vm1, vm2, vm3 must be lonely. n2 is occupied by "other" VMs, so
      * they have to go away before receiving vm3
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testFeasibleContinuous() throws SolverException {
+    public void testFeasibleContinuous() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -88,7 +88,7 @@ public class CLonelyTest {
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).get();
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
         l.setContinuous(true);
         Set<SatConstraint> cstrs = new HashSet<>();

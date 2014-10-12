@@ -20,7 +20,7 @@ package org.btrplace.solver.choco.view;
 
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.*;
@@ -54,9 +54,9 @@ public class SolverViewsManager {
      * The building is done according to the dependencies between the constraints.
      *
      * @param vs the builders to call
-     * @throws SolverException if an error occurred while building a constraint or if there is a cycle of dependencies.
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while building a constraint or if there is a cycle of dependencies.
      */
-    public void build(List<SolverViewBuilder> vs) throws SolverException {
+    public void build(List<SolverViewBuilder> vs) throws SchedulerException {
         Set<String> done = new HashSet<>();
         List<SolverViewBuilder> remaining = new ArrayList<>(vs);
 
@@ -75,7 +75,7 @@ public class SolverViewsManager {
                 }
             }
             if (blocked) {
-                throw new SolverException(rp.getSourceModel(), "Cyclic dependencies among the following views: " + remaining);
+                throw new SchedulerException(rp.getSourceModel(), "Cyclic dependencies among the following views: " + remaining);
             }
         }
     }
@@ -85,9 +85,9 @@ public class SolverViewsManager {
      * on each of the views in the <b>reverse order</b> of their dependencies.
      *
      * @return {@code false} if it is sure the problem does not have a solution
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public boolean beforeSolve() throws SolverException {
+    public boolean beforeSolve() throws SchedulerException {
         ListIterator<ChocoView> l = workflow.listIterator(workflow.size());
         while (l.hasPrevious()) {
             ChocoView v = l.previous();
@@ -103,9 +103,9 @@ public class SolverViewsManager {
      * on each of the views in the <b>order</b> of their dependencies.
      *
      * @return {@code true}
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public boolean insertActions(ReconfigurationPlan p) throws SolverException {
+    public boolean insertActions(ReconfigurationPlan p) throws SchedulerException {
         for (ChocoView v : workflow) {
             v.insertActions(rp, p);
         }

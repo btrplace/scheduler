@@ -21,19 +21,19 @@ package org.btrplace.solver.choco;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.ReconfigurationAlgorithm;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.Scheduler;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.runner.InstanceSolver;
 import org.btrplace.solver.choco.runner.SolvingStatistics;
 
 import java.util.Collection;
 
 /**
- * A reconfiguration algorithm based on the Choco constraint solver.
+ * A scheduler based on the Choco constraint solver.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm, Parameters {
+public interface ChocoScheduler extends Scheduler, Parameters {
 
     /**
      * Get statistics about the last solved problem.
@@ -50,9 +50,9 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm,
      * @param cstrs the satisfaction-oriented constraints that must be considered
      * @return the plan to execute to reach the new solution or {@code null} if there is no
      * solution.
-     * @throws SolverException if an error occurred while trying to solve the problem
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException;
+    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SchedulerException;
 
     /**
      * Get the solver used to solve a problem.

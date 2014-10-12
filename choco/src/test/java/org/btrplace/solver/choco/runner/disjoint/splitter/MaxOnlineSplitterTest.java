@@ -26,7 +26,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.runner.disjoint.FixedNodeSetsPartitioning;
 import org.btrplace.solver.choco.runner.disjoint.FixedSizePartitioning;
@@ -46,7 +46,7 @@ import java.util.List;
 public class MaxOnlineSplitterTest {
 
     @Test
-    public void testSplit() throws SolverException {
+    public void testSplit() throws SchedulerException {
         MaxOnlineSplitter splitter = new MaxOnlineSplitter();
 
         Model mo = new DefaultModel();

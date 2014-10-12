@@ -22,7 +22,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Root;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.transition.VMTransition;
@@ -52,7 +52,7 @@ public class CRoot implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         Solver s = rp.getSolver();
         VM vm = cstr.getInvolvedVMs().iterator().next();
         VMTransition m = rp.getVMAction(vm);

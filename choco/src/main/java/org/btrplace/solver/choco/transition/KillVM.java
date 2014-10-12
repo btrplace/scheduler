@@ -23,7 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.Slice;
 import org.btrplace.solver.choco.SliceBuilder;
@@ -67,9 +67,9 @@ public class KillVM implements VMTransition {
      *
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
-     * @throws SolverException if an error occurred
+     * @throws org.btrplace.solver.SchedulerException if an error occurred
      */
-    public KillVM(ReconfigurationProblem rp, VM e) throws SolverException {
+    public KillVM(ReconfigurationProblem rp, VM e) throws SchedulerException {
         vm = e;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
@@ -149,7 +149,7 @@ public class KillVM implements VMTransition {
         }
 
         @Override
-        public VMTransition build(ReconfigurationProblem r, VM v) throws SolverException {
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new KillVM(r, v);
         }
     }

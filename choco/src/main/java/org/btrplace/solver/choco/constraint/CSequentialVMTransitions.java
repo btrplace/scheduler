@@ -22,7 +22,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Seq;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.btrplace.solver.choco.transition.RelocatableVM;
 import org.btrplace.solver.choco.transition.StayAwayVM;
@@ -56,7 +56,7 @@ public class CSequentialVMTransitions implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         List<VM> seq = cstr.getInvolvedVMs();
 
         List<Transition> ams = new ArrayList<>();

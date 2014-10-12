@@ -23,7 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.duration.DurationEvaluators;
 import org.btrplace.solver.choco.transition.NodeTransition;
 import org.btrplace.solver.choco.transition.VMTransition;
@@ -212,9 +212,9 @@ public interface ReconfigurationProblem {
      * @param optimize  {@code true} to make the solver try to improve the first computed solution.
      * @return a plan if the solving process succeeded, {@code null} if the solver was not able to compute
      * a solution.
-     * @throws SolverException if an error occurs
+     * @throws org.btrplace.solver.SchedulerException if an error occurs
      */
-    ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException;
+    ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException;
 
     /**
      * Get the Solver used to model this problem.
@@ -238,9 +238,9 @@ public interface ReconfigurationProblem {
      * @param vmId the VM identifier
      * @param n    the variable label
      * @return the created variable
-     * @throws SolverException if an error occurred while creating the variable
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while creating the variable
      */
-    IntVar makeCurrentHost(VM vmId, Object... n) throws SolverException;
+    IntVar makeCurrentHost(VM vmId, Object... n) throws SchedulerException;
 
     /**
      * Create a variable that indicate a given node.
@@ -249,9 +249,9 @@ public interface ReconfigurationProblem {
      * @param nId the node identifier
      * @param n   the variable label
      * @return the created variable
-     * @throws SolverException if an error occurred while creating the variable
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while creating the variable
      */
-    IntVar makeCurrentNode(Node nId, Object... n) throws SolverException;
+    IntVar makeCurrentNode(Node nId, Object... n) throws SchedulerException;
 
     /**
      * Create a variable denoting a duration.
@@ -268,9 +268,9 @@ public interface ReconfigurationProblem {
      * @param lb the variable lower bound
      * @param n  the variable label. The toString() representation of the objects will be used
      * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getUB()}
-     * @throws SolverException if the bounds are not valid
+     * @throws org.btrplace.solver.SchedulerException if the bounds are not valid
      */
-    IntVar makeDuration(int ub, int lb, Object... n) throws SolverException;
+    IntVar makeDuration(int ub, int lb, Object... n) throws SchedulerException;
 
     /**
      * Get the view associated to a given identifier.

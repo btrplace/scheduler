@@ -17,6 +17,6 @@
  */
 
 /**
- * API to define a {@link org.btrplace.solver.ReconfigurationAlgorithm}.
+ * API to define a {@link org.btrplace.solver.Scheduler}.
  */
 package org.btrplace.solver;

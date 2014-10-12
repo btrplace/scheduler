@@ -21,7 +21,7 @@ package org.btrplace.solver.choco.transition;
 import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
@@ -47,7 +47,7 @@ import java.util.Iterator;
 public class SuspendVMTest {
 
     @Test
-    public void testBasic() throws ContradictionException, SolverException {
+    public void testBasic() throws ContradictionException, SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
@@ -84,7 +84,7 @@ public class SuspendVMTest {
      * In practice, for this test, 2 suspend actions have to be executed sequentially
      */
     @Test
-    public void testSuspendSequences() throws SolverException, ContradictionException {
+    public void testSuspendSequences() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();

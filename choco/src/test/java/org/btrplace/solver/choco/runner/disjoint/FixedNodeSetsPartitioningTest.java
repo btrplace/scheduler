@@ -23,8 +23,8 @@ import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -71,7 +71,7 @@ public class FixedNodeSetsPartitioningTest {
     }
 
     @Test
-    public void testInstantiation() throws SolverException {
+    public void testInstantiation() throws SchedulerException {
         Instance origin = makeInstance();
 
         List<Collection<Node>> parts = splitIn(origin.getModel().getMapping().getAllNodes(), 3);
@@ -87,7 +87,7 @@ public class FixedNodeSetsPartitioningTest {
     }
 
     @Test
-    public void testSplit() throws SolverException {
+    public void testSplit() throws SchedulerException {
 
         Instance origin = makeInstance();
 
@@ -104,7 +104,7 @@ public class FixedNodeSetsPartitioningTest {
         Assert.assertEquals(allReady.size(), 30);
 
         //Quick solve
-        DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.setInstanceSolver(f);
         ReconfigurationPlan plan = cra.solve(origin);
         Assert.assertEquals(plan.getSize(), 30); //all the VMs to launch have been booted
@@ -112,8 +112,8 @@ public class FixedNodeSetsPartitioningTest {
         System.out.flush();
     }
 
-    @Test(expectedExceptions = {SolverException.class})
-    public void testSplitWithUnsplittableConstraint() throws SolverException {
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testSplitWithUnsplittableConstraint() throws SchedulerException {
         Instance orig = makeInstance();
         orig.getSatConstraints().add(new MaxOnline(orig.getModel().getMapping().getAllNodes(), 5));
         List<Collection<Node>> parts = splitIn(orig.getModel().getMapping().getAllNodes(), 3);

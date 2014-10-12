@@ -18,7 +18,7 @@
 
 package org.btrplace.solver.choco.view;
 
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public abstract class DelegatedBuilder extends SolverViewBuilder {
     }
 
     @Override
-    public abstract ChocoView build(ReconfigurationProblem rp) throws SolverException;
+    public abstract ChocoView build(ReconfigurationProblem rp) throws SchedulerException;
 
     @Override
     public List<String> getDependencies() {

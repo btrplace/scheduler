@@ -25,9 +25,9 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.ShutdownVM;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.duration.ConstantActionDuration;
 import org.btrplace.solver.choco.duration.DurationEvaluators;
 import org.btrplace.solver.choco.duration.LinearToAResourceActionDuration;
@@ -124,7 +124,7 @@ public class ModelCustomization implements Example {
         }
 
         //Change the duration evaluator for MigrateVM action
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         DurationEvaluators dev = cra.getDurationEvaluators();
         dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
         dev.register(BootVM.class, new ConstantActionDuration(1));
@@ -141,7 +141,7 @@ public class ModelCustomization implements Example {
             cra.doOptimize(true);
             ReconfigurationPlan plan = cra.solve(model, cstrs);
             System.out.println(plan);
-        } catch (SolverException ex) {
+        } catch (SchedulerException ex) {
             System.err.println(ex.getMessage());
             return false;
         }

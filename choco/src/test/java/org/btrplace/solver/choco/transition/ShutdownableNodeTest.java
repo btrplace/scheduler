@@ -23,7 +23,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.BootNode;
 import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.plan.event.ShutdownVM;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
@@ -48,7 +48,7 @@ import java.util.Collections;
 public class ShutdownableNodeTest {
 
     @Test
-    public void testBasics() throws SolverException {
+    public void testBasics() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -62,7 +62,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testForcedOnline() throws SolverException, ContradictionException {
+    public void testForcedOnline() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -100,7 +100,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testForcedOffline() throws SolverException, ContradictionException {
+    public void testForcedOffline() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -130,7 +130,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testScheduledShutdown() throws SolverException, ContradictionException {
+    public void testScheduledShutdown() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -166,11 +166,11 @@ public class ShutdownableNodeTest {
     /**
      * The 2 nodes are set offline but n2 will consume being offline after n1
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * @throws ContradictionException
      */
     @Test
-    public void testCascadedShutdown() throws SolverException, ContradictionException {
+    public void testCascadedShutdown() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -204,7 +204,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testShutdownBeforeVMsLeave() throws SolverException, ContradictionException {
+    public void testShutdownBeforeVMsLeave() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         final VM vm1 = mo.newVM();
@@ -230,7 +230,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testSwitchState() throws ContradictionException, SolverException {
+    public void testSwitchState() throws ContradictionException, SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -261,11 +261,11 @@ public class ShutdownableNodeTest {
     /**
      * Issue #2 about NodeTransition.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      * @throws ContradictionException
      */
     @Test
-    public void testNodeHostingEnd() throws SolverException, ContradictionException {
+    public void testNodeHostingEnd() throws SchedulerException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
         Node n1 = model.newNode();
@@ -318,7 +318,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testActionDurationSimple() throws SolverException, ContradictionException {
+    public void testActionDurationSimple() throws SchedulerException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
 
@@ -357,7 +357,7 @@ public class ShutdownableNodeTest {
     }
 
     @Test
-    public void testShutdownable() throws SolverException, ContradictionException {
+    public void testShutdownable() throws SchedulerException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
 

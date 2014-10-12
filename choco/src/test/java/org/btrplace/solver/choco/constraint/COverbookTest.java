@@ -26,9 +26,9 @@ import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.Allocate;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownVM;
-import org.btrplace.solver.SolverException;
-import org.btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import org.btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import org.btrplace.solver.SchedulerException;
+import org.btrplace.solver.choco.ChocoScheduler;
+import org.btrplace.solver.choco.DefaultChocoScheduler;
 import org.btrplace.solver.choco.MappingFiller;
 import org.btrplace.solver.choco.duration.LinearToAResourceActionDuration;
 import org.testng.Assert;
@@ -48,7 +48,7 @@ import java.util.List;
 public class COverbookTest {
 
     @Test
-    public void testBasic() throws SolverException {
+    public void testBasic() throws SchedulerException {
         Node[] nodes = new Node[2];
         VM[] vms = new VM[3];
         Model mo = new DefaultModel();
@@ -74,7 +74,7 @@ public class COverbookTest {
         c.addAll(Running.newRunning(m.getAllVMs()));
         c.add(new Preserve(vms[0], "cpu", 1));
         c.addAll(Online.newOnline(m.getAllNodes()));
-        DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.getConstraintMapper().register(new COverbook.Builder());
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
@@ -83,10 +83,10 @@ public class COverbookTest {
     /**
      * One overbook factor per node.
      *
-     * @throws SolverException should not occur
+     * @throws org.btrplace.solver.SchedulerException should not occur
      */
     @Test
-    public void testMultipleOverbook() throws SolverException {
+    public void testMultipleOverbook() throws SchedulerException {
         Node[] nodes = new Node[3];
         VM[] vms = new VM[11];
         Model mo = new DefaultModel();
@@ -110,7 +110,7 @@ public class COverbookTest {
         c.add(new Overbook(nodes[2], "cpu", 3));
         c.addAll(Running.newRunning(m.getAllVMs()));
         c.add(new Preserve(vms[0], "cpu", 1));
-        DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
@@ -120,7 +120,7 @@ public class COverbookTest {
     }
 
     @Test
-    public void testNoSolution() throws SolverException {
+    public void testNoSolution() throws SchedulerException {
         Node[] nodes = new Node[2];
         VM[] vms = new VM[7];
         Model mo = new DefaultModel();
@@ -145,13 +145,13 @@ public class COverbookTest {
             c.add(new Preserve(v, "mem", 1));
         }
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
         Assert.assertNull(cra.solve(mo, c));
     }
 
     @Test
-    public void testGetMisplaced() throws SolverException {
+    public void testGetMisplaced() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -181,7 +181,7 @@ public class COverbookTest {
 
 
     @Test
-    public void testWithScheduling1() throws SolverException {
+    public void testWithScheduling1() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm3 = mo.newVM();
@@ -199,7 +199,7 @@ public class COverbookTest {
         cstrs.add(new Preserve(vm3, "cpu", 2));
         mo.attach(rcCPU);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
 
@@ -211,7 +211,7 @@ public class COverbookTest {
      * to get the resources immediately
      */
     @Test
-    public void testWithIncrease() throws SolverException, ContradictionException {
+    public void testWithIncrease() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -224,7 +224,7 @@ public class COverbookTest {
         rc.setConsumption(vm2, 2);
         mo.attach(rc);
 
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnline(map.getAllNodes()));
         Overbook o = new Overbook(n1, "foo", 1);

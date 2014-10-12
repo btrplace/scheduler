@@ -23,7 +23,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.BootNode;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownNode;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.DefaultParameters;
 import org.btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.solver.choco.Parameters;
@@ -48,7 +48,7 @@ import java.util.Collections;
 public class BootableNodeTest {
 
     @Test
-    public void testBasic() throws SolverException {
+    public void testBasic() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -61,7 +61,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testForcingBoot() throws SolverException, ContradictionException {
+    public void testForcingBoot() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -92,7 +92,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testForcingOffline() throws SolverException, ContradictionException {
+    public void testForcingOffline() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -121,7 +121,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testRequiredOnline() throws SolverException, ContradictionException {
+    public void testRequiredOnline() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         VM vm1 = mo.newVM();
@@ -148,7 +148,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testBootCascade() throws SolverException, ContradictionException {
+    public void testBootCascade() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -173,7 +173,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testDelayedBooting() throws ContradictionException, SolverException {
+    public void testDelayedBooting() throws ContradictionException, SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n2 = mo.newNode();
@@ -199,7 +199,7 @@ public class BootableNodeTest {
      * Unit test for issue #3
      */
     @Test
-    public void testActionDurationSimple() throws SolverException, ContradictionException {
+    public void testActionDurationSimple() throws SchedulerException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
         Node n1 = model.newNode();

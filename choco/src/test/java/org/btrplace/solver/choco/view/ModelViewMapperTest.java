@@ -22,7 +22,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -88,10 +88,10 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public SolverViewBuilder build(ModelView v) throws SolverException {
+        public SolverViewBuilder build(ModelView v) throws SchedulerException {
             return new DelegatedBuilder("mock", Collections.<String>emptyList()) {
                 @Override
-                public ChocoView build(ReconfigurationProblem rp) throws SolverException {
+                public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
                     return new CMockView();
                 }
             };

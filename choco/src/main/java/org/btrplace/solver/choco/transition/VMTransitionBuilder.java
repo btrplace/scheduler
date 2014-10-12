@@ -20,7 +20,7 @@ package org.btrplace.solver.choco.transition;
 
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.EnumSet;
@@ -74,9 +74,9 @@ public abstract class VMTransitionBuilder {
      * @param rp the current problem
      * @param v  the manipulated VM
      * @return the resulting model
-     * @throws SolverException if an error occurred while building the model
+     * @throws org.btrplace.solver.SchedulerException if an error occurred while building the model
      */
-    public abstract VMTransition build(ReconfigurationProblem rp, VM v) throws SolverException;
+    public abstract VMTransition build(ReconfigurationProblem rp, VM v) throws SchedulerException;
 
     /**
      * Get the initial state of the VM.

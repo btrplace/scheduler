@@ -25,7 +25,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.solver.choco.extensions.ChocoUtils;
 import org.btrplace.solver.choco.transition.NodeTransition;
@@ -53,10 +53,10 @@ public class Issues {
     /**
      * Another test related to issue #5.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void testIssue5a() throws SolverException, ContradictionException {
+    public void testIssue5a() throws SchedulerException, ContradictionException {
 
         Model model = new DefaultModel();
         Node n1 = model.newNode();
@@ -136,7 +136,7 @@ public class Issues {
      * Test a suspicious bug in issue #5
      */
     @Test
-    public void testIssue5b() throws SolverException {
+    public void testIssue5b() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -176,7 +176,7 @@ public class Issues {
      * Test a suspicious bug in issue #5
      */
     @Test
-    public void testIssue5c() throws SolverException, ContradictionException {
+    public void testIssue5c() throws SchedulerException, ContradictionException {
 
         Model model = new DefaultModel();
         Node n1 = model.newNode();
@@ -213,7 +213,7 @@ public class Issues {
     }
 
     @Test
-    public void testIssue10() throws SolverException, ContradictionException {
+    public void testIssue10() throws SchedulerException, ContradictionException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -269,10 +269,10 @@ public class Issues {
     /**
      * Unit test derived from Issue 16.
      *
-     * @throws SolverException
+     * @throws org.btrplace.solver.SchedulerException
      */
     @Test
-    public void test16b() throws SolverException {
+    public void test16b() throws SchedulerException {
         Model model = new DefaultModel();
         Node n1 = model.newNode();
         Node n2 = model.newNode();
@@ -302,7 +302,7 @@ public class Issues {
 
         Offline off = new Offline(n2);
         ctrsC.add(off);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan dp = cra.solve(model, ctrsC);
     }
 
@@ -317,7 +317,7 @@ public class Issues {
     }
 
     @Test
-    public void issue33() throws SolverException, ContradictionException {
+    public void issue33() throws SchedulerException, ContradictionException {
         Model mo = new DefaultModel();
         Node n = mo.newNode();
         VM v = mo.newVM();

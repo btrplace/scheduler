@@ -27,7 +27,7 @@ import org.btrplace.solver.choco.view.SolverViewBuilder;
 import java.util.Collection;
 
 /**
- * Parameters for a {@link ChocoReconfigurationAlgorithm}.
+ * Parameters for a {@link ChocoScheduler}.
  *
  * @author Fabien Hermenier
  */

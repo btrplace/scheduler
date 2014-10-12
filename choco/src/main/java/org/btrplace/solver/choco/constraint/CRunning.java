@@ -23,7 +23,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Running;
-import org.btrplace.solver.SolverException;
+import org.btrplace.solver.SchedulerException;
 import org.btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.Collections;
@@ -51,7 +51,7 @@ public class CRunning implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
             return false;
