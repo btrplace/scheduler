@@ -24,6 +24,7 @@
     <groupId>org.btrplace</groupId>
     <artifactId>solver</artifactId>
     <version>0.39</version>
+    <name>BtrPlace VM scheduler</name>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <url>http://btrp.inria.fr</url>
@@ -92,6 +93,20 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
@@ -189,6 +204,15 @@
         <repository>
             <id>btrp-snapshots</id>
             <url>http://btrp.inria.fr/repos/snapshot-releases</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <layout>default</layout>
         </repository>
     </repositories>
 </project>

@@ -11,7 +11,7 @@ git -C ${LOCAL} checkout gh-pages || exit 1
 
 
 #Generate and copy
-mvn install -DskipTests javadoc:aggregate
+mvn -q install -DskipTests javadoc:aggregate
 cp -r target/site/apidocs/* ${LOCAL}/
 
 #Publish
