@@ -16,7 +16,9 @@ mvn -q install -DskipTests javadoc:aggregate
 cp -r target/site/apidocs/* ${LOCAL}/
 
 #Publish
-git -C ${LOCAL} add *|| exit 1
+cd ${LOCAL}
+git add *|| exit 1
+cd -
 git -C ${LOCAL} commit -m "apidoc for version ${VERSION}" -a || exit 1
 git -C ${LOCAL} push || exit 1
 rm -rf ${LOCAL}
