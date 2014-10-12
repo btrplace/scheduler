@@ -27,7 +27,14 @@
     <name>scheduler</name>
     <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
-    <url>http://btrp.inria.fr</url>
+    <url>http://www.btrplace.org</url>
+    <developers>
+        <developer>
+            <name>Fabien Hermenier</name>
+            <email>fabien.hermenier@unice.fr</email>
+            <organization>University Nice Sophia Antipolis</organization>
+        </developer>
+    </developers>
     <modules>
         <module>choco</module>
         <module>json</module>
