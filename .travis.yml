@@ -24,7 +24,7 @@ install:
 script: ./bin/build.sh
 branches:
   only:
-  - develop
+  - master
   - release
 notifications:
   email:

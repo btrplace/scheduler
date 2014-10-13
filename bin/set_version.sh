@@ -1,6 +1,10 @@
 #!/bin/bash
 #Script to notify the website about a release
 
+function getVersion() {
+    mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
+}
+
 function guess() {
     v=$1
     if [[ $v == *-SNAPSHOT ]]; then
@@ -19,7 +23,8 @@ function sedInPlace() {
 }
 
 if [ $1 == "--next" ]; then
-    VERSION=$(guess $2)
+    CUR=$(getVersion)
+    VERSION=$(guess ${CUR})
 else
     VERSION=$1
 fi
