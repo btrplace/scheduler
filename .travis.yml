@@ -14,7 +14,7 @@ before_install:
   - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy_apidocs.enc -out etc/deploy_apidocs -d
   - gpg --import etc/gpg
   - eval "$(ssh-agent)"
-  - chmod 600 etc/deploy
+  - chmod 600 etc/deploy etc/deploy_apidocs
   - ssh-add etc/deploy
   - ssh-add etc/deploy_apidocs
   - git config --global user.name "Build Bot"
