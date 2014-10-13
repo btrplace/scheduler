@@ -22,7 +22,7 @@ before_install:
   - git remote add deploy git@github.com:btrplace/scheduler.git
   - export MAVEN_OPTS=-Xmx512m
 install:
-- mvn -q install -DskipTests
+- mvn -s etc/sonatype.xml -q install -DskipTests
 jdk:
 - oraclejdk8
 language: java
