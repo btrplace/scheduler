@@ -27,6 +27,7 @@ before_install:
   - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/gpg.enc -out etc/gpg -d
   - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy.enc -out etc/deploy -d
   - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy_apidocs.enc -out etc/deploy_apidocs -d
+  - gpg --import etc/gpg
 install:
 - mvn -q install -DskipTests
 jdk:
