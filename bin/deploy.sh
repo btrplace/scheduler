@@ -1,6 +1,5 @@
 #!/bin/bash
-if [ -e etc/private.key ]; then
-	gpg --allow-secret-key-import --import etc/private.key
+if [ -e etc/gpg ]; then
 	PASSPHRASE="-Dgpg.passphrase=${GPG_PASSPHRASE}"
 	SETTINGS="-q -s etc/sonatype.xml"
 fi
