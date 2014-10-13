@@ -1,7 +1,5 @@
 before_install: 
   - "openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in gpg.enc -out etc/gpg -d"
-  - "openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in deploy_apidocs.enc -out etc/deploy_apidocs -d"
-  - "openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in deploy.enc -out etc/deploy -d"
   - "chmod 600 etc/deploy"
   - "eval \"$(ssh-agent)\""
   - "ssh-add etc/deploy"
