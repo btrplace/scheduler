@@ -10,16 +10,12 @@ Contact: fabien.hermenier@unice.fr
 
 ### Inside a maven project ###
 
-Artifacts are available via the Maven Central repositories. However, there is still a delay
-between the initial deployment and their availability.
-To declare the staging area, declare the following repositories in you `pom.xml`:
+Releases are available via Maven Central (see http://search.maven.org/#search%7Cga%7C1%7Corg.btrplace).
+Snapshot versions however are only available through a dedicated repository.
+Add the following entry in your `pom.xml` to be able to get them:
 
 ```xml
 <repositories>
-        <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
         <repository>
             <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
