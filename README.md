@@ -11,8 +11,9 @@ Contact: fabien.hermenier@unice.fr
 ### Inside a maven project ###
 
 Releases are available via Maven Central (see http://search.maven.org/#search%7Cga%7C1%7Corg.btrplace).
-Snapshot versions however are only available through a dedicated repository.
-Add the following entry in your `pom.xml` to be able to get them:
+
+Snapshot versions are only available through a dedicated repository.
+Add the following entry in your `pom.xml` to get them:
 
 ```xml
 <repositories>

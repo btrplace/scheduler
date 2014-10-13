@@ -93,11 +93,6 @@ for $t in $T[1..3] {
 among($T3, $datacenter.R[1..7]);
 ```
 
-## Documentation ##
-
-* releases: http://btrp.inria.fr/btrpsl/ (`apidocs` always refers to the last release)
-* snapshot-releases: http://btrp.inria.fr/btrpsl/apidocs-snapshot
-
 ### Read a script ###
 
 The following example parse a script, decorate a model and solve a problem with regards
