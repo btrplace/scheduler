@@ -10,29 +10,32 @@ Contact: fabien.hermenier@unice.fr
 
 ### Inside a maven project ###
 
-The maven artifacts are in private repositories so you have first to edit your `pom.xml` to declare them:
+Artifacts are available via the Maven Central repositories. However, there is still a delay
+between the initial deployment and their availability.
+To declare the staging area, declare the following repositories in you `pom.xml`:
 
 ```xml
 <repositories>
-    <repository>
-        <id>btrp-releases</id>
-        <url>http://btrp.inria.fr/repos/releases</url>
-    </repository>
-    <repository>
-        <id>btrp-snapshots</id>
-        <url>http://btrp.inria.fr/repos/snapshot-releases</url>
-    </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <layout>default</layout>
+        </repository>
 </repositories>
 ```
 
 Next, just declare the useful dependencies:
 
-* `btrplace:scheduler-api`: the API defining a VM scheduler and the element it manipulates
-* `btrplace:scheduler-choco`: the default implementation of the VM scheduler using the Constraint Programming
+* `org.btrplace:scheduler-api`: the API defining a VM scheduler and the element it manipulates
+* `org.btrplace:scheduler-choco`: the default implementation of the VM scheduler using the Constraint Programming
 solver Choco
-* `btrplace:scheduler-json`: to serialize models using JSON
-* `btrplace:btrpsl`: a scripting language to express constraints
-* `btrplace:bench`: a simple CLI to perform benchmarks
+* `org.btrplace:scheduler-json`: to serialize models using JSON
+* `org.btrplace:btrpsl`: a scripting language to express constraints
+* `org.btrplace:bench`: a simple CLI to perform benchmarks
 
 ## Documentation ##
 

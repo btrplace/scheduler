@@ -9,26 +9,10 @@ that use [Btrplace](http://btrp.inria.fr) to manage their nodes and virtual mach
 
 ## Integration ##
 
-The maven artifacts are in private repositories so you have first to edit your `pom.xml` to declare them:
-
-```xml
-<repositories>
-    <repository>
-        <id>btrp-releases</id>
-        <url>http://btrp.inria.fr/repos/releases</url>
-    </repository>
-    <repository>
-        <id>btrp-snapshots</id>
-        <url>http://btrp.inria.fr/repos/snapshot-releases</url>
-    </repository>
-</repositories>
-```
-
-Next, just declare the dependency:
-
+Add the following dependency in your `pom.xml`:
 ```xml
 <dependency>
-   <groupId>btrplace</groupId>
+   <groupId>org.btrplace</groupId>
    <artifactId>btrpsl</artifactId>
    <version><!-- the version you want --></version>
 </dependency>
