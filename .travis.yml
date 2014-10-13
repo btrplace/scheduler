@@ -1,11 +1,6 @@
 language: java
 jdk:
 - oraclejdk8
-env:
-  global:
-  - secure: JBVFH+9DpoDcxdKapZWk3UzAN6JxeOwe0y6G6CvvuAmQmI06YuEZpT9os3M1fAz6gnhtlj2JelsqZlrgX5Tr4BvAqwRFz35zcAnkz1r3YDy9RV6j013qcikrw/nV3HJTDCghx1LxET/akpGPqbWEzCToebxI5S8wJ+pkq9QkAZU=
-  - secure: PrZBfWtKBgxbZRGlXqtz54XJhf0XiirbBz7YQkCaI94jM9QMPERaW25igigW7kx9+t1TuOym/3YoYiGxgArqnMkXByM2bYUbY6DkG7rdE/xH8RMrbuq0A3WGuCWMH38WsCMt3AA1nOpdpjLWfMX0m1Vuy5nca+8B1xVoShh5WVs=
-  - secure: rybuxazOQlxERPG0pem4SwlKU8jefe77nt+nUi8RqZKbWflYQ/sDSs9g+g3MZn2A7hFK5NbdO3Jg4JqzMoR+GiLqO3w7J21nEsslmDoJW3V/ixTa8vN/yVEwZ6qwvXQaJVn756MywrHQwZ/Cd/4CaB7UmcIq80NgUiN/9MxE8Mw=
 before_install:
 - openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv
   -in gpg.enc -out etc/gpg -d
@@ -34,3 +29,8 @@ notifications:
     - btrplace-ci@googlegroups.com
     on_success: always
     on_failure: always
+env:
+  global:
+  - secure: x3w6r2K3IrkOwyLIibBbct3xg+Ldui7w9Pi9YrcTLas4A3eTqkfBbpViWjoiKoxTFXJS49w+mIti+GTvEkaAZ/ibWQXCBYVGKs9wgnI9tPmautOtBtZY6fDkMVHOkqJwyl/XyDkOe4DDxBYFJMoUCr1YRoB2B1/qCIOq/kobyXI=
+  - secure: WVZm7zYcsnk15k7nCNvHC77315YZDyQbGX/I6wQtlITB5200w/Lg2rgWhsWnc6f56N0KI1dTkk/4rUHsZIgQQo3/LoLTGN35TJv6MDf/n8WxzP/sPFqozuEnA0rqi8sGlV2XJ1IPX9T9rP87PjYQ9KC4WpdndOxRzAPGLagMP4I=
+  - secure: usqmiOCjbl04017f9Ts1+dokfojhoExjCUJhSfutQrdrpzzsiw4PKA2gFKL7AMs+yT1q7tOCkDzRcIsEy/QD32lxp+A8VAZ0PaZWSCOHoY2DoD4L32F7D9gOTZXmBby0U3o2DLIYnLaH3qz0mDuaifCB5cxtsUHUY8RRwxThRgU=
