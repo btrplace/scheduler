@@ -1,33 +1,36 @@
+before_install: 
+  - "openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in gpg.enc -out etc/gpg -d"
+  - "openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in deploy_apidocs.enc -out etc/deploy_apidocs -d"
+  - "openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in deploy.enc -out etc/deploy -d"
+  - "chmod 600 etc/deploy"
+  - "eval \"$(ssh-agent)\""
+  - "ssh-add etc/deploy"
+  - "ssh-add etc/deploy_apidocs"
+  - "git config --global user.name \"Build Bot\""
+  - "git config --global user.email \"buildbot@btrplace.org\""
+  - "git remote add deploy git@github.com:btrplace/scheduler.git"
+  - "export MAVEN_OPTS=-Xmx512m"
+branches: 
+  only: 
+    - master
+    - release
+env: 
+  global: 
+    - 
+      secure: x3w6r2K3IrkOwyLIibBbct3xg+Ldui7w9Pi9YrcTLas4A3eTqkfBbpViWjoiKoxTFXJS49w+mIti+GTvEkaAZ/ibWQXCBYVGKs9wgnI9tPmautOtBtZY6fDkMVHOkqJwyl/XyDkOe4DDxBYFJMoUCr1YRoB2B1/qCIOq/kobyXI=
+    - 
+      secure: WVZm7zYcsnk15k7nCNvHC77315YZDyQbGX/I6wQtlITB5200w/Lg2rgWhsWnc6f56N0KI1dTkk/4rUHsZIgQQo3/LoLTGN35TJv6MDf/n8WxzP/sPFqozuEnA0rqi8sGlV2XJ1IPX9T9rP87PjYQ9KC4WpdndOxRzAPGLagMP4I=
+    - 
+      secure: usqmiOCjbl04017f9Ts1+dokfojhoExjCUJhSfutQrdrpzzsiw4PKA2gFKL7AMs+yT1q7tOCkDzRcIsEy/QD32lxp+A8VAZ0PaZWSCOHoY2DoD4L32F7D9gOTZXmBby0U3o2DLIYnLaH3qz0mDuaifCB5cxtsUHUY8RRwxThRgU=
+install: 
+  - "mvn -q install -DskipTests"
+jdk: 
+  - oraclejdk8
 language: java
-jdk:
- - oraclejdk8
-before_install:
- - openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in gpg.enc -out etc/gpg -d
- - openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in deploy_apidocs.enc -out etc/deploy_apidocs -d
- - openssl aes-256-cbc -K $encrypted_5a7f2daf798b_key -iv $encrypted_5a7f2daf798b_iv -in deploy.enc -out etc/deploy -d
- - chmod 600 etc/deploy
- - eval "$(ssh-agent)"
- - ssh-add etc/deploy
- - ssh-add etc/deploy_apidocs
- - git config --global user.name "Build Bot"
- - git config --global user.email "buildbot@btrplace.org"
- - git remote add deploy git@github.com:btrplace/scheduler.git
- - export MAVEN_OPTS=-Xmx512m
-install:
- - mvn -q install -DskipTests
-script: ./bin/build.sh
-branches:
-  only:
-   - master
-   - release
-notifications:
-  email:
-    recipients:
-     - btrplace-ci@googlegroups.com
-    on_success: always
+notifications: 
+  email: 
     on_failure: always
-env:
-  global:
-   - secure: x3w6r2K3IrkOwyLIibBbct3xg+Ldui7w9Pi9YrcTLas4A3eTqkfBbpViWjoiKoxTFXJS49w+mIti+GTvEkaAZ/ibWQXCBYVGKs9wgnI9tPmautOtBtZY6fDkMVHOkqJwyl/XyDkOe4DDxBYFJMoUCr1YRoB2B1/qCIOq/kobyXI=
-   - secure: WVZm7zYcsnk15k7nCNvHC77315YZDyQbGX/I6wQtlITB5200w/Lg2rgWhsWnc6f56N0KI1dTkk/4rUHsZIgQQo3/LoLTGN35TJv6MDf/n8WxzP/sPFqozuEnA0rqi8sGlV2XJ1IPX9T9rP87PjYQ9KC4WpdndOxRzAPGLagMP4I=
-   - secure: usqmiOCjbl04017f9Ts1+dokfojhoExjCUJhSfutQrdrpzzsiw4PKA2gFKL7AMs+yT1q7tOCkDzRcIsEy/QD32lxp+A8VAZ0PaZWSCOHoY2DoD4L32F7D9gOTZXmBby0U3o2DLIYnLaH3qz0mDuaifCB5cxtsUHUY8RRwxThRgU=
+    on_success: always
+    recipients: 
+      - btrplace-ci@googlegroups.com
+script: ./bin/build.sh
