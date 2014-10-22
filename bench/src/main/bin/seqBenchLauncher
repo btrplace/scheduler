@@ -8,4 +8,4 @@ for JAR in $JARS; do
  CLASSPATH=$JAR:$CLASSPATH
 done
 
-java $JAVA_OPTS -cp $CLASSPATH btrplace.bench.SeqLauncher $*
+java $JAVA_OPTS -cp $CLASSPATH org.btrplace.bench.SeqLauncher $*
