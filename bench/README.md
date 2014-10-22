@@ -1,4 +1,4 @@
-Entropy to Btrplace
+Btrplace Benchmarks Launcher
 ===============================
 
 This module allows to execute and get the statistics of the btrplace solving process
@@ -7,6 +7,7 @@ by taking one or more btrplace instance json files as input.
 It can be used through an API or a standalone application.
 
 Examples of benchmarks can be found at https://github.com/btrplace/workloads-tdsc.
+
 
 ## Usage as a standalone application ##
 
@@ -30,46 +31,31 @@ solve sequentially:
 	-r (--repair)         : Enable the 'repair' feature
 	-t (--timeout) N      : Set a timeout for each bench (in sec)
 
-## Embedding ##
 
-The maven artifact `btrplace:bench` is available through a private repository
-so you have first to edit your `pom.xml` to declare it:
+## Integration ##
 
-```xml
-<repositories>
-    <repository>
-        <id>btrp-releases</id>
-        <url>http://btrp.inria.fr:8080/repos/releases</url>
-    </repository>
-    <repository>
-        <id>btrp-snapshots</id>
-        <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
-    </repository>
-</repositories>
-```
-
-Next, just declare the dependency:
-
+Add the following dependency in your `pom.xml`:
 ```xml
 <dependency>
-   <groupId>btrplace</groupId>
-   <artifactId>bench</artifactId>
-   <version>1.1</version>
+	<groupId>org.btrplace</groupId>
+	<artifactId>bench</artifactId>
+	<version><!-- the version you want --></version>
 </dependency>
 ```
-
-The API documentation is directly available online:
-
-* Last snapshot version: http://btrp.inria.fr:8080/apidocs/snapshots/from-entropy
-* Released versions: http://btrp.inria.fr:8080/apidocs/releases/btrplace/from-entropy
 
 ## Building from sources ##
 
 Requirements:
-* JDK 6+
+* JDK 8+
 * maven 3+
 
-The source of the released versions are directly available in the `Tag` section.
+```xml
+<dependency>
+   <groupId>org.btrplace</groupId>
+   <artifactId>bench</artifactId>
+   <version>0.40-SNAPSHOT</version>
+</dependency>
+```
 You can also download them using github features.
 Once downloaded, move to the source directory then execute the following command
 to make the jar:
@@ -81,4 +67,4 @@ installed in your local maven repository and available in the `target` sub-folde
 
 Copyright
 -------------------------------
-Copyright (c) 2013 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
+Copyright (c) 2014 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
