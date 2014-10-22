@@ -43,7 +43,7 @@ public class ExamplesTest {
 
         //Make the builder and add the sources location to the include path
         ScriptBuilder scrBuilder = new ScriptBuilder(mo);
-        ((PathBasedIncludes) scrBuilder.getIncludes()).addPath(new File("src/test/resources/org/btrplace/btrpsl/examples"));
+        ((PathBasedIncludes) scrBuilder.getIncludes()).addPath(new File("btrpsl/src/test/resources/org/btrplace/btrpsl/examples"));
 
         //Parse myApp.btrp
         Script myApp = scrBuilder.build(new File("src/test/resources/org/btrplace/btrpsl/examples/myApp.btrp"));

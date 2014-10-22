@@ -48,7 +48,7 @@ import java.io.File;
 @Test(sequential = true)
 public class ScriptBuilderTest {
 
-    private static final String RC_ROOT = "src/test/resources/org/btrplace/btrpsl/";
+    private static final String RC_ROOT = "btrpsl/src/test/resources/org/btrplace/btrpsl/";
 
     public void testNumberComputation() {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
