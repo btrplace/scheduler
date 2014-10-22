@@ -9,6 +9,34 @@ It can be used through an API or a standalone application.
 Examples of benchmarks can be found at https://github.com/btrplace/workloads-tdsc.
 
 
+## Integration ##
+
+Add the following dependency in your `pom.xml`:
+```xml
+<dependency>
+	<groupId>org.btrplace</groupId>
+	<artifactId>bench</artifactId>
+	<version><!-- the version you want --></version>
+</dependency>
+```
+
+## Building from sources ##
+
+Requirements:
+* JDK 8+
+* maven 3+
+
+The source of the released versions are directly available in the `Tag` section.
+You can also download them using github features.
+Once downloaded, move to the source directory then execute the following command
+to make the jar:
+
+    $ mvn clean install
+
+If the build succeeded, the resulting jar will be automatically
+installed in your local maven repository and available in the `target` sub-folder.
+
+
 ## Usage as a standalone application ##
 
 Download the last release of the application, and uncompress it.
@@ -31,39 +59,6 @@ solve sequentially:
 	-r (--repair)         : Enable the 'repair' feature
 	-t (--timeout) N      : Set a timeout for each bench (in sec)
 
-
-## Integration ##
-
-Add the following dependency in your `pom.xml`:
-```xml
-<dependency>
-	<groupId>org.btrplace</groupId>
-	<artifactId>bench</artifactId>
-	<version><!-- the version you want --></version>
-</dependency>
-```
-
-## Building from sources ##
-
-Requirements:
-* JDK 8+
-* maven 3+
-
-```xml
-<dependency>
-   <groupId>org.btrplace</groupId>
-   <artifactId>bench</artifactId>
-   <version>0.40-SNAPSHOT</version>
-</dependency>
-```
-You can also download them using github features.
-Once downloaded, move to the source directory then execute the following command
-to make the jar:
-
-    $ mvn clean install
-
-If the build succeeded, the resulting jar will be automatically
-installed in your local maven repository and available in the `target` sub-folder.
 
 Copyright
 -------------------------------
