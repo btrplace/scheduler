@@ -1,26 +1,38 @@
 Entropy to Btrplace
 ===============================
 
-This module allows to convert configurations in the entropy protobuf format
-to models and constraints that can be used by btrplace.
+This module allows to execute and get the statistics of the btrplace solving process
+by taking one or more btrplace instance json files as input.
 
 It can be used through an API or a standalone application.
+
+Examples of benchmarks can be found at https://github.com/btrplace/workloads-tdsc.
 
 ## Usage as a standalone application ##
 
 Download the last release of the application, and uncompress it.
-The `entroPlace` script can then be used to convert entropy configurations
-into btrplace instances:
+The `benchLauncher` script can then be used to launch a single bench from a
+btrplace instance json file:
 
-    $ ./entroPlace
-    Usage: converter src [dst] -o output
-        src: the configuration in protobuf format to convert
-  	    dst: an optional configuration that will be used to get the VMs and nodes state change
-  	    output: the output JSON file. Ends with '.gz' for an automatic compression
+    $ ./benchLauncher [-r] [-m] [-t n_sec] -i file_name -o file_name
+	-i (--input-json) VAL : the json instance file to read (can be a .gz)
+	-m (--optimize)       : Enable the 'optimize' feature
+	-o (--output) VAL     : Output to this file
+	-r (--repair)         : Enable the 'repair' feature
+	-t (--timeout) N      : Set a timeout (in sec)
+
+The `seqBenchLauncher` script take as input a list of btrplace instances to
+solve sequentially:
+
+    $ ./seqBenchLauncher [-r] [-m] [-t n_sec] -i file_name
+	-i (--input-list) VAL : the list of benchmarks file name
+	-m (--optimize)       : Enable the 'optimize' feature
+	-r (--repair)         : Enable the 'repair' feature
+	-t (--timeout) N      : Set a timeout for each bench (in sec)
 
 ## Embedding ##
 
-The maven artifact `btrplace:fromEntropy` is available through a private repository
+The maven artifact `btrplace:bench` is available through a private repository
 so you have first to edit your `pom.xml` to declare it:
 
 ```xml
@@ -41,7 +53,7 @@ Next, just declare the dependency:
 ```xml
 <dependency>
    <groupId>btrplace</groupId>
-   <artifactId>from-entropy</artifactId>
+   <artifactId>bench</artifactId>
    <version>1.1</version>
 </dependency>
 ```
