@@ -51,7 +51,8 @@ btrplace instance json file:
 	-t (--timeout) N      : Set a timeout (in sec)
 
 The `seqBenchLauncher` script take as input a list of btrplace instances to
-solve sequentially:
+solve sequentially, the output files are generated in the same folder than the
+input json file:
 
     $ ./seqBenchLauncher [-r] [-m] [-t n_sec] -i file_name
 	-i (--input-list) VAL : the list of benchmarks file name
@@ -59,16 +60,14 @@ solve sequentially:
 	-r (--repair)         : Enable the 'repair' feature
 	-t (--timeout) N      : Set a timeout for each bench (in sec)
 
-The output consists in a .csv file, containing the following informations:
+The main output consists of a .csv file, containing the following informations:
 
 Informations about the computed plan:
-
 * planDuration
 * planSize
 * planActionsSize
 
 Informations about the reconfiguration algorithm:
-
 * craStart
 * craNbSolutions
 * craSolutionTime
@@ -82,7 +81,7 @@ Informations about the reconfiguration algorithm:
 * craNbSearchNodes
 * craNbVMs
 
-Also, the full reconfiguration plan is written to a .plan file.
+Also, the full reconfiguration plan including all actions is written to a .plan file.
 
 
 Copyright
