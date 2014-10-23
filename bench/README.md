@@ -39,7 +39,7 @@ installed in your local maven repository and available in the `target` sub-folde
 
 ## Usage as a standalone application ##
 
-Download the last release of the application, and uncompress it.
+Download or build the last release of the application, and uncompress it.
 The `benchLauncher` script can then be used to launch a single bench from a
 btrplace instance json file:
 
@@ -58,6 +58,31 @@ solve sequentially:
 	-m (--optimize)       : Enable the 'optimize' feature
 	-r (--repair)         : Enable the 'repair' feature
 	-t (--timeout) N      : Set a timeout for each bench (in sec)
+
+The output consists in a .csv file, containing the following informations:
+
+Informations about the computed plan:
+
+* planDuration
+* planSize
+* planActionsSize
+
+Informations about the reconfiguration algorithm:
+
+* craStart
+* craNbSolutions
+* craSolutionTime
+* craCoreRPBuildDuration
+* craSpeRPDuration
+* craSolvingDuration
+* craNbBacktracks
+* craNbConstraints
+* craNbManagedVMs
+* craNbNodes
+* craNbSearchNodes
+* craNbVMs
+
+Also, the full reconfiguration plan is written to a .plan file.
 
 
 Copyright
