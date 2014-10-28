@@ -25,9 +25,10 @@ import solver.ICause;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.variables.EventType;
 import solver.variables.IntVar;
 import solver.variables.delta.IIntDeltaMonitor;
+import solver.variables.events.IntEventType;
+import solver.variables.events.PropagatorEventType;
 import util.ESat;
 import util.iterators.DisposableValueIterator;
 import util.procedure.UnaryIntProcedure;
@@ -192,7 +193,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     @Override
     public int getPropagationConditions(int idx) {
-        return (idx < bins.length ? EventType.INT_ALL_MASK() : EventType.BOUND.mask + EventType.INSTANTIATE.mask);
+        return (idx < bins.length ? IntEventType.all() : IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask());
     }
 
     /**
@@ -217,7 +218,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     @Override
     public void propagate(int evtMask) throws ContradictionException {
         boolean recomputeLoads;
-        if ((evtMask & EventType.FULL_PROPAGATION.mask) != 0) {
+        if ((evtMask & PropagatorEventType.FULL_PROPAGATION.getMask()) != 0) {
             initialize();
             recomputeLoads = true;
         } else {
@@ -338,7 +339,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     public void propagate(int idx, int mask) throws ContradictionException {
         if (idx < bins.length) {
             deltaMonitor[idx].freeze();
-            deltaMonitor[idx].forEach(remProc.set(idx), EventType.REMOVE);
+            deltaMonitor[idx].forEachRemVal(remProc.set(idx));
             deltaMonitor[idx].unfreeze();
             if (vars[idx].isInstantiated()) {
                 assignItem(idx, vars[idx].getValue());
@@ -346,7 +347,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         } else {
             loadsHaveChanged.set(true);
         }
-        forcePropagate(EventType.CUSTOM_PROPAGATION);
+        forcePropagate(PropagatorEventType.CUSTOM_PROPAGATION);
     }
 
     /**

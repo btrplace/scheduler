@@ -25,9 +25,9 @@ import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.variables.EventType;
 import solver.variables.IntVar;
 import solver.variables.delta.IIntDeltaMonitor;
+import solver.variables.events.IntEventType;
 import util.ESat;
 import util.iterators.DisposableValueIterator;
 import util.procedure.UnaryIntProcedure;
@@ -118,7 +118,7 @@ public class DisjointMultiple extends Constraint {
 
         @Override
         protected int getPropagationConditions(int vIdx) {
-            return EventType.REMOVE.mask + EventType.INSTANTIATE.mask;
+            return IntEventType.REMOVE.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
         @Override
@@ -188,12 +188,12 @@ public class DisjointMultiple extends Constraint {
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (EventType.isRemove(mask)) {
+            if (IntEventType.isRemove(mask)) {
                 idms[idx].freeze();
-                idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
+                idms[idx].forEachRemVal(remProc.set(idx));
                 idms[idx].unfreeze();
             }
-            if (EventType.isInstantiate(mask)) {
+            if (IntEventType.isInstantiate(mask)) {
                 int group = getGroup(idx);
                 if (!required[group].get(vars[idx].getValue())) {
                     setRequired(vars[idx].getValue(), group);

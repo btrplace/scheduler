@@ -28,8 +28,8 @@ import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.variables.EventType;
 import solver.variables.IntVar;
+import solver.variables.events.IntEventType;
 import util.ESat;
 import util.iterators.DisposableValueIterator;
 import util.tools.ArrayUtils;
@@ -89,9 +89,9 @@ public class Precedences extends Constraint {
         protected int getPropagationConditions(int idx) {
             switch (idx) {
                 case 0:
-                    return EventType.INSTANTIATE.mask;
+                    return IntEventType.INSTANTIATE.getMask();
                 default:
-                    return EventType.INCLOW.mask + EventType.DECUPP.mask + EventType.INSTANTIATE.mask;
+                    return IntEventType.INCLOW.getMask() + IntEventType.DECUPP.getMask() + IntEventType.INSTANTIATE.getMask();
             }
         }
 
@@ -103,13 +103,13 @@ public class Precedences extends Constraint {
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (EventType.isInstantiate(mask)) {
+            if (IntEventType.isInstantiate(mask)) {
                 awakeOnInst(idx);
             }
-            if (EventType.isDecupp(mask)) {
+            if (IntEventType.isDecupp(mask)) {
                 awakeOnSup(idx);
             }
-            if (EventType.isInclow(mask)) {
+            if (IntEventType.isInclow(mask)) {
                 awakeOnInf(idx);
             }
 

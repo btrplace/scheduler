@@ -26,8 +26,9 @@ import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.variables.EventType;
 import solver.variables.IntVar;
+import solver.variables.events.IntEventType;
+import solver.variables.events.PropagatorEventType;
 import util.ESat;
 import util.tools.ArrayUtils;
 
@@ -101,8 +102,6 @@ public class AliasedCumulatives extends Constraint {
         private TIntHashSet alias;
 
         private IStateInt toInstantiate;
-
-        private boolean first = true;
 
         public AliasedCumulativesPropagator(int[] alias,
                                             int[] capas,
@@ -228,34 +227,25 @@ public class AliasedCumulatives extends Constraint {
 
         @Override
         public int getPropagationConditions(int idx) {
-            return EventType.INSTANTIATE.mask;
-        }
-
-
-        public void awake() {
-            if (!first) {
-                return;
-            }
-            first = false;
-            this.toInstantiate = cHosters[0].getSolver().getEnvironment().makeInt(dHosters.length);
-
-            //Check whether some hosting variable are already instantiated
-            for (int i = 0; i < dHosters.length; i++) {
-                if (dHosters[i].isInstantiated()) {
-                    int nIdx = dHosters[i].getValue();
-                    if (isIn(nIdx)) {
-                        toInstantiate.add(-1);
-                        vIns.add(i);
-                    }
-                }
-            }
+            return IntEventType.INSTANTIATE.getMask();
         }
 
         @Override
-        public void propagate(int m) throws ContradictionException {
+        public void propagate(int evtmask) throws ContradictionException {
+            if (PropagatorEventType.isFullPropagation(evtmask)) {
+                this.toInstantiate = cHosters[0].getSolver().getEnvironment().makeInt(dHosters.length);
 
-            awake();
-            if (!first) {
+                //Check whether some hosting variable are already instantiated
+                for (int i = 0; i < dHosters.length; i++) {
+                    if (dHosters[i].isInstantiated()) {
+                        int nIdx = dHosters[i].getValue();
+                        if (isIn(nIdx)) {
+                            toInstantiate.add(-1);
+                            vIns.add(i);
+                        }
+                    }
+                }
+            } else {
                 long size;
                 do {
                     size = 0;
@@ -288,7 +278,7 @@ public class AliasedCumulatives extends Constraint {
                     vIns.add(idx);
                 }
             }
-            forcePropagate(EventType.INSTANTIATE);
+            forcePropagate(PropagatorEventType.CUSTOM_PROPAGATION);
         }
 
         public ESat isSatisfied(int[] vals) {

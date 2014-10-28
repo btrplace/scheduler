@@ -24,8 +24,8 @@ import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
 import solver.variables.BoolVar;
-import solver.variables.EventType;
 import solver.variables.IntVar;
+import solver.variables.events.IntEventType;
 import util.ESat;
 
 /**
@@ -71,12 +71,12 @@ public class FastImpliesEq extends Constraint {
         @Override
         public int getPropagationConditions(int idx) {
             if (idx == 0) {
-                return EventType.INSTANTIATE.mask;
+                return IntEventType.INSTANTIATE.getMask();
             } else {
                 if (vars[1].hasEnumeratedDomain()) {
-                    return EventType.INSTANTIATE.mask + EventType.BOUND.mask + EventType.REMOVE.mask;
+                    return IntEventType.INSTANTIATE.getMask() + IntEventType.BOUND.getMask() + IntEventType.REMOVE.getMask();
                 }
-                return EventType.INSTANTIATE.mask + EventType.BOUND.mask;
+                return IntEventType.INSTANTIATE.getMask() + IntEventType.BOUND.getMask();
             }
         }
 
@@ -96,7 +96,7 @@ public class FastImpliesEq extends Constraint {
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
             if (idx == 0) {
-                assert EventType.isInstantiate(mask);
+                assert IntEventType.isInstantiate(mask);
                 if (vars[0].contains(1)) {
                     vars[1].instantiateTo(constant, aCause);
                 }

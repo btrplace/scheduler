@@ -23,8 +23,8 @@ import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.variables.EventType;
 import solver.variables.IntVar;
+import solver.variables.events.IntEventType;
 import util.ESat;
 
 /**
@@ -71,7 +71,7 @@ public class RoundedUpDivision extends Constraint {
 
         @Override
         protected int getPropagationConditions(int vIdx) {
-            return EventType.DECUPP.mask + EventType.INCLOW.mask + EventType.INSTANTIATE.mask;
+            return IntEventType.DECUPP.getMask() + IntEventType.INCLOW.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
         @Override

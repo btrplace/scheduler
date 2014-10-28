@@ -25,9 +25,9 @@ import solver.constraints.Constraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.variables.EventType;
 import solver.variables.IntVar;
 import solver.variables.delta.IIntDeltaMonitor;
+import solver.variables.events.IntEventType;
 import util.ESat;
 import util.iterators.DisposableValueIterator;
 import util.procedure.UnaryIntProcedure;
@@ -113,7 +113,7 @@ public class Disjoint extends Constraint {
 
         @Override
         protected int getPropagationConditions(int vIdx) {
-            return EventType.BOUND.mask + EventType.INSTANTIATE.mask;
+            return IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
         @Override
@@ -156,18 +156,18 @@ public class Disjoint extends Constraint {
             }
             //remove the candidates for the delta domain
             idms[idx + g * nbX].freeze();
-            idms[idx + g * nbX].forEach(remProc.set(idx + g * nbX), EventType.REMOVE);
+            idms[idx + g * nbX].forEachRemVal(remProc.set(idx + g * nbX));
             idms[idx + g * nbX].unfreeze();
         }
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (EventType.isInstantiate(mask)) {
+            if (IntEventType.isInstantiate(mask)) {
                 int group = (idx < nbX) ? 0 : 1;
                 filterInst(idx - group * nbX, group);
-            } else if (EventType.isBound(mask)) {
+            } else if (IntEventType.isBound(mask)) {
                 idms[idx].freeze();
-                idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
+                idms[idx].forEachRemVal(remProc.set(idx));
                 idms[idx].unfreeze();
             }
         }

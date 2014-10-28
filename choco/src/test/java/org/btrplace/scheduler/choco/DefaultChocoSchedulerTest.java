@@ -110,7 +110,7 @@ public class DefaultChocoSchedulerTest {
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
                         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
+                        s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
                         rp.setObjective(true, nbNodes);
                         return true;
                     }

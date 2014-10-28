@@ -1,6 +1,10 @@
 Release notes
 ======================
 
+version ????????
+----------------------
+- update to choco 3.2.1
+
 version 0.39 - 07 Oct 2014
 ----------------------
 - btrpsl joined the repository as org.btrplace:btrpsl with version number 0.39

@@ -791,7 +791,7 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-        s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
+        s.post(ICF.atmost_nvalues(hosters, nbNodes, true));
 
         rp.setObjective(true, nbNodes);
         ReconfigurationPlan plan = rp.solve(-1, true);
@@ -897,7 +897,7 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
+        s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override

@@ -43,7 +43,7 @@ import solver.search.strategy.selectors.values.SetDomainMin;
 import solver.search.strategy.selectors.variables.InputOrder;
 import solver.search.strategy.selectors.variables.Occurrence;
 import solver.search.strategy.strategy.RealStrategy;
-import solver.search.strategy.strategy.SetSearchStrategy;
+import solver.search.strategy.strategy.SetStrategy;
 import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.RealVar;
@@ -258,7 +258,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (sv != null && sv.length > 0) {
             seq = new StrategiesSequencer(
                     seq,
-                    new SetSearchStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
+                    new SetStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
         }
         solver.set(seq);
     }
