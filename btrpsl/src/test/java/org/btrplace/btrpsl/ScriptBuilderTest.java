@@ -48,7 +48,7 @@ import java.io.File;
 @Test(sequential = true)
 public class ScriptBuilderTest {
 
-    private static final String RC_ROOT = "btrpsl/src/test/resources/org/btrplace/btrpsl/";
+    private static final String RC_ROOT = "src/test/resources/org/btrplace/btrpsl/";
 
     public void testNumberComputation() {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
@@ -197,8 +197,8 @@ public class ScriptBuilderTest {
         ScriptBuilder b = new ScriptBuilder(mo);
         Script v = b.build("namespace test.template;\nVM[1..5] : tinyVMs;\nfrontend : mediumVMs; @N[1..12] : defaultNodes;\n");
         Assert.assertEquals(v.getVMs().size(), 6);
-        NamingService srvNodes = (NamingService) mo.getView(NamingService.ID + "node");
-        NamingService srvVMs = (NamingService) mo.getView(NamingService.ID + "vm");
+        NamingService<Node> srvNodes = (NamingService<Node>) mo.getView(NamingService.ID + "node");
+        NamingService<VM> srvVMs = (NamingService<VM>) mo.getView(NamingService.ID + "vm");
         for (VM el : v.getVMs()) {
             String name = srvVMs.resolve(el);
             if (name.endsWith("frontend")) {
@@ -476,8 +476,8 @@ public class ScriptBuilderTest {
         mo.getMapping().addReadyVM(v2);
         mo.getAttributes().put(v, "template", "t1");
         mo.getAttributes().put(v2, "template", "tiny");
-        NamingService nsNodes = NamingService.newNodeNS();
-        NamingService nsVMs = NamingService.newVMNS();
+        NamingService<Node> nsNodes = NamingService.newNodeNS();
+        NamingService<VM> nsVMs = NamingService.newVMNS();
         mo.attach(nsNodes);
         mo.attach(nsVMs);
         nsVMs.register(v, "foo.VM1");
@@ -502,8 +502,8 @@ public class ScriptBuilderTest {
     public void testResolution() throws Exception {
         Model mo = new DefaultModel();
         ScriptBuilder b = new ScriptBuilder(mo);
-        NamingService nsNodes = b.getNamingServiceNodes();
-        NamingService nsVMs = b.getNamingServiceVMs();
+        NamingService<Node> nsNodes = b.getNamingServiceNodes();
+        NamingService<VM> nsVMs = b.getNamingServiceVMs();
 
         for (int i = 1; i < 10; i++) {
             if (i <= 5) {

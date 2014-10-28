@@ -21,9 +21,7 @@ package org.btrplace.btrpsl.template;
 import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Element;
-import org.btrplace.model.Model;
+import org.btrplace.model.*;
 import org.btrplace.model.view.NamingService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -64,12 +62,12 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public void setNamingServiceNodes(NamingService srvNodes) {
+        public void setNamingServiceNodes(NamingService<Node> srvNodes) {
             this.srvNodes = srvNodes;
         }
 
         @Override
-        public void setNamingServiceVMs(NamingService srvVMs) {
+        public void setNamingServiceVMs(NamingService<VM> srvVMs) {
             this.srvVMs = srvVMs;
         }
     }
@@ -78,8 +76,8 @@ public class DefaultTemplateFactoryTest {
 
         String tplName;
 
-        private NamingService srvNodes;
-        private NamingService srvVMs;
+        private NamingService<Node> srvNodes;
+        private NamingService<VM> srvVMs;
 
         public Model mo;
 
@@ -105,12 +103,12 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public void setNamingServiceVMs(NamingService srvVMs) {
+        public void setNamingServiceVMs(NamingService<VM> srvVMs) {
             this.srvVMs = srvVMs;
         }
 
         @Override
-        public void setNamingServiceNodes(NamingService srvNodes) {
+        public void setNamingServiceNodes(NamingService<Node> srvNodes) {
             this.srvNodes = srvNodes;
         }
     }

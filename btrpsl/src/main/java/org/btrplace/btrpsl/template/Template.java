@@ -22,6 +22,8 @@ import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.model.Element;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 import java.util.Map;
@@ -63,13 +65,13 @@ public interface Template {
      *
      * @param srvNodes the service to use
      */
-    void setNamingServiceNodes(NamingService srvNodes);
+    void setNamingServiceNodes(NamingService<Node> srvNodes);
 
     /**
      * Set the vm naming service to use for that template.
      *
      * @param srvVMs the service to use
      */
-    void setNamingServiceVMs(NamingService srvVMs);
+    void setNamingServiceVMs(NamingService<VM> srvVMs);
 
 }

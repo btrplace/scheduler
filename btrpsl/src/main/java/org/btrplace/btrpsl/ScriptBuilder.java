@@ -28,6 +28,8 @@ import org.btrplace.btrpsl.template.TemplateFactory;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.btrpsl.tree.BtrPlaceTreeAdaptor;
 import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +74,8 @@ public class ScriptBuilder {
      */
     private ErrorReporterBuilder errBuilder = new PlainTextErrorReporterBuilder();
 
-    private NamingService namingServiceNodes;
-    private NamingService namingServiceVMs;
+    private NamingService<Node> namingServiceNodes;
+    private NamingService<VM> namingServiceVMs;
 
     /**
      * Make a new builder with a default cache size.
@@ -251,7 +253,7 @@ public class ScriptBuilder {
      *
      * @return the naming service provided at instantiation
      */
-    public NamingService getNamingServiceVMs() {
+    public NamingService<VM> getNamingServiceVMs() {
         return this.namingServiceVMs;
     }
 
@@ -260,7 +262,7 @@ public class ScriptBuilder {
      *
      * @return the naming service provided at instantiation
      */
-    public NamingService getNamingServiceNodes() {
+    public NamingService<Node> getNamingServiceNodes() {
         return this.namingServiceNodes;
     }
 
