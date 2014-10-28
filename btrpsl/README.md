@@ -3,10 +3,6 @@
 The btrplace specification language (btrpsl) allows to express constraints
 related to the placement of virtual machines in a datacenters.
 
-This language is dedicated to datacenters administrators and applications administrators
-that use [Btrplace](http://btrp.inria.fr) to manage their nodes and virtual machines.
-
-
 ## Integration ##
 
 Add the following dependency in your `pom.xml`:
@@ -17,23 +13,6 @@ Add the following dependency in your `pom.xml`:
    <version><!-- the version you want --></version>
 </dependency>
 ```
-
-## Building from sources ##
-
-Requirements:
-* JDK 8+
-* maven 3+
-
-The source of the released versions are directly available in the `Tag` section.
-You can also download them using github features.
-Once downloaded, move to the source directory then execute the following command
-to make the jar:
-
-    $ mvn clean install
-
-If the build succeeded, the resulting jar will be automatically
-installed in your local maven repository and available in the `target` sub-folder.
-
 
 ## Basic examples ##
 
@@ -108,7 +87,7 @@ ScriptBuilder scrBuilder = new ScriptBuilder(mo);
 //Build the script
 Script myScript = scrBuilder.build(...);
 
-ReconfigurationAlgorithm ra = ...
+Scheduler ra = ...
 ra.solve(mo, myApp.getConstraints());
 ```
 
