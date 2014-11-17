@@ -3,7 +3,7 @@ Release notes
 
 version ????????
 ----------------------
-- update to choco 3.2.1
+- update to choco 3.2.2
 
 version 0.39 - 07 Oct 2014
 ----------------------
