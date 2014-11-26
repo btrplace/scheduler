@@ -1,0 +1,11 @@
+#!/bin/sh
+
+JAVA_OPTS="-server -da -Xmx10G -Xms10G"
+#Define the classpath
+JARS=`ls jar/*.jar`
+
+for JAR in $JARS; do
+ CLASSPATH=$JAR:$CLASSPATH
+done
+
+java $JAVA_OPTS -cp $CLASSPATH org.btrplace.bench.Launcher $*

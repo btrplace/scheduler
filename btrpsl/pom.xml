@@ -21,13 +21,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>btrplace</groupId>
-        <artifactId>solver</artifactId>
-        <version>0.39-SNAPSHOT</version>
+        <groupId>org.btrplace</groupId>
+        <artifactId>scheduler</artifactId>
+        <version>0.40-SNAPSHOT</version>
     </parent>
     <name>btrpsl</name>
     <artifactId>btrpsl</artifactId>
-    <version>1.5-SNAPSHOT</version>
     <developers>
         <developer>
             <name>Fabien Hermenier</name>
@@ -43,14 +42,14 @@
     </description>
     <dependencies>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-api</artifactId>
-            <version>0.39-SNAPSHOT</version>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-api</artifactId>
+            <version>0.40-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-json</artifactId>
-            <version>0.39-SNAPSHOT</version>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-json</artifactId>
+            <version>0.40-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -66,9 +65,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-choco</artifactId>
-            <version>0.39-SNAPSHOT</version>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-choco</artifactId>
+            <version>0.40-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

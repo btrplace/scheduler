@@ -1,11 +1,23 @@
 Release notes
 ======================
 
-version ?????????
+version ????????
 ----------------------
+- update to choco 3.2.2
+
+version 0.39 - 07 Oct 2014
+----------------------
+- btrpsl joined the repository as org.btrplace:btrpsl with version number 0.39
+- project changed from btrplace:solver to org.btrplace:scheduler
+  This reflect naming conventions required to be hosted on the central repository
+  (and the new website)
+- ReconfigurationAlgorithm interface renamed to Scheduler
+- solver package renamed to scheduler
+- ci made by travis
+- Btrplace-solver is now relocated to git@github.com:btrplace/scheduler.git
+- new module 'bench' to easily bench instances in JSON
 - constraint SequentialVMTransitions becomes Seq
 - continuous or discrete restriction mode for state constraints, ban, fence
-- btrpsl joined the repository
 - major performance improvement with a fast Packing constraint made by
   Sophie Demassey
 - ChocoReconfigurationAlgorithmParams renamed to Parameters

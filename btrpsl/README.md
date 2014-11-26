@@ -3,53 +3,16 @@
 The btrplace specification language (btrpsl) allows to express constraints
 related to the placement of virtual machines in a datacenters.
 
-This language is dedicated to datacenters administrators and applications administrators
-that use [Btrplace](http://btrp.inria.fr) to manage their nodes and virtual machines.
-
-
 ## Integration ##
 
-The maven artifacts are in private repositories so you have first to edit your `pom.xml` to declare them:
-
-```xml
-<repositories>
-    <repository>
-        <id>btrp-releases</id>
-        <url>http://btrp.inria.fr/repos/releases</url>
-    </repository>
-    <repository>
-        <id>btrp-snapshots</id>
-        <url>http://btrp.inria.fr/repos/snapshot-releases</url>
-    </repository>
-</repositories>
-```
-
-Next, just declare the dependency:
-
+Add the following dependency in your `pom.xml`:
 ```xml
 <dependency>
-   <groupId>btrplace</groupId>
+   <groupId>org.btrplace</groupId>
    <artifactId>btrpsl</artifactId>
-   <version>1.4-SNAPSHOT</version>
+   <version><!-- the version you want --></version>
 </dependency>
 ```
-
-## Building from sources ##
-
-Requirements:
-* JDK 7+
-* maven 3+
-
-The source of the released versions are directly available in the `Tag` section.
-You can also download them using github features.
-Once downloaded, move to the source directory then execute the following command
-to make the jar:
-
-    $ mvn clean install
-
-If the build succeeded, the resulting jar will be automatically
-installed in your local maven repository and available in the `target` sub-folder.
-
 
 ## Basic examples ##
 
@@ -109,11 +72,6 @@ for $t in $T[1..3] {
 among($T3, $datacenter.R[1..7]);
 ```
 
-## Documentation ##
-
-* releases: http://btrp.inria.fr/btrpsl/ (`apidocs` always refers to the last release)
-* snapshot-releases: http://btrp.inria.fr/btrpsl/apidocs-snapshot
-
 ### Read a script ###
 
 The following example parse a script, decorate a model and solve a problem with regards
@@ -129,7 +87,7 @@ ScriptBuilder scrBuilder = new ScriptBuilder(mo);
 //Build the script
 Script myScript = scrBuilder.build(...);
 
-ReconfigurationAlgorithm ra = ...
+Scheduler ra = ...
 ra.solve(mo, myApp.getConstraints());
 ```
 

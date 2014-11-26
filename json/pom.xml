@@ -22,19 +22,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>btrplace</groupId>
-        <artifactId>solver</artifactId>
-        <version>0.39-SNAPSHOT</version>
+        <groupId>org.btrplace</groupId>
+        <artifactId>scheduler</artifactId>
+        <version>0.40-SNAPSHOT</version>
     </parent>
 
-    <artifactId>solver-json</artifactId>
-    <name>solver-json</name>
+    <artifactId>scheduler-json</artifactId>
+    <name>scheduler-json</name>
     <description>Read and write model according to the JSON format</description>
 
     <dependencies>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-api</artifactId>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

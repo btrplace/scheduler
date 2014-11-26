@@ -17,24 +17,25 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>btrplace</groupId>
-        <artifactId>solver</artifactId>
-        <version>0.39-SNAPSHOT</version>
+        <groupId>org.btrplace</groupId>
+        <artifactId>scheduler</artifactId>
+        <version>0.40-SNAPSHOT</version>
     </parent>
-    <artifactId>solver-choco</artifactId>
-    <name>solver-choco</name>
-    <description>Implementation of a reconfiguration algorithm that use
+    <artifactId>scheduler-choco</artifactId>
+    <name>scheduler-choco</name>
+    <description>Implementation of the VM scheduler that use
         the Constraint Programming solver CHOCO to compute solutions.
     </description>
 
     <dependencies>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-api</artifactId>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -45,7 +46,15 @@
         <dependency>
             <groupId>choco</groupId>
             <artifactId>choco-solver</artifactId>
-            <version>3.2.0</version>
+            <version>3.2.2</version>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>choco.repos</id>
+            <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
+        </repository>
+    </repositories>
+
 </project>

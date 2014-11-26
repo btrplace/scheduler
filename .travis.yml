@@ -1,0 +1,35 @@
+branches:
+  only:
+  - master
+  - release
+env:
+  global:
+  - secure: H6IEzoVUbDR8P9aXqVvUobZ4u/iLZSLO1G4g5kWa6a/53shNvbrNRyc07pDO17DaBh/WKvD+APFYbSmLIdn4m0e8g2J6sr5DgCZJNh2YoTCW3X+c+M9EVIdXP40Ql76NK2XqkSHA9RK8s3FF/ZIEhpE8bav/LkT6gowTTGdQPXU=
+  - secure: Gr84rSDC9AhOhbrZ4o1pXo5kvHmyYevjPzEC426hoGrj8/ROHBKTu5/94DHFjYp7YhuPUuKZFjikrvyCKMWg9f+kXlRvra2grQ+xMtqGBsOflcjDzP0g3XebleQ+9h700FjCdx9wFMmMQrW1DOXL22K3yCvznjIaQNhl5dqDbOs=
+  - secure: vKK3GJPY9o8L6iueZvdEZh/CEPQFb8L5dEiMNUm7YLLzTm3tT5v71evnvDSPbkxadcYsUGfpTGvOyhDbOmRZXaAIkYGTR1zsQ0ol5VFnqaQpJRrjMTthfBIqXKWeHuwmDftqWqOjPM12hoBnGn2HGeiMey3yn8cfIMEDsfm+J7w=
+  - secure: nagaQGJNVigSiEFCzC9IsDe/fzJ2hYcn3ryKOLrt5YWVe6pxyQ6BPXM6i8RbySiayOVIRBtF4Kc670AGRnZkVBIfu23OiEqVO7neb88mN0/FsufDKnz2elU85TSzmep7/g5mJP0AfSSdd9kNN6EeF9SC+xF6QHFoyFgLivRQuo0=
+before_install:
+  - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/gpg.enc -out etc/gpg -d
+  - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy.enc -out etc/deploy -d
+  - openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy_apidocs.enc -out etc/deploy_apidocs -d
+  - gpg --import etc/gpg
+  - eval "$(ssh-agent)"
+  - chmod 600 etc/deploy etc/deploy_apidocs
+  - ssh-add etc/deploy
+  - ssh-add etc/deploy_apidocs
+  - git config --global user.name "Build Bot"
+  - git config --global user.email "buildbot@btrplace.org"
+  - git remote add deploy git@github.com:btrplace/scheduler.git
+  - export MAVEN_OPTS=-Xmx512m
+install:
+- mvn -Dgpg.passphrase=${GPG_PASSPHRASE} -q install -DskipTests
+jdk:
+- oraclejdk8
+language: java
+notifications:
+  email:
+    on_failure: always
+    on_success: always
+    recipients:
+    - btrplace-ci@googlegroups.com
+script: ./bin/build.sh
