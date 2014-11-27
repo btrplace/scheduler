@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Overbook.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Overbook.java
 
 import java.util.*;
 
@@ -33,17 +27,10 @@ import java.util.*;
  * A constraint to specify and overbooking factor between
  * the physical resources offered by a node and the virtual resources
  * that are consumed by the VMs it hosts.
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Overbook.java
- *
- * To compute the virtual capacity of a server, its physical capacity is multiplied
- * by the overbooking factor. The result is then truncated.
- *
-=======
  * <p>
  * To compute the virtual capacity of a server, its physical capacity is multiplied
  * by the overbooking factor. The result is then truncated.
  * <p>
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Overbook.java
  * The restriction provided by the constraint can be either discrete or continuous.
  * If the restriction is discrete, then the constraint imposes the restriction
  * only on the end of the reconfiguration process (the resulting model).

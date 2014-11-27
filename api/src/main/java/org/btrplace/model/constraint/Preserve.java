@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Preserve.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Preserve.java
 
 import java.util.*;
 
@@ -34,7 +28,7 @@ import java.util.*;
  * the given VM. If it is not running, the constraint ignores it.
  * The amount to allocate must be specified as a minimum or an exact value.
  * At most, the VM will have an allocation of resources equals to the maximum allowed
- *
+ * <p>
  * The restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier

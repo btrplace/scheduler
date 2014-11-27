@@ -18,20 +18,12 @@
 
 package org.btrplace.scheduler;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/solver/ReconfigurationAlgorithm.java
-import btrplace.CoreConstraint;
-import btrplace.model.Instance;
-import btrplace.model.Model;
-import btrplace.model.constraint.OptConstraint;
-import btrplace.model.constraint.SatConstraint;
-import btrplace.plan.ReconfigurationPlan;
-=======
+import org.btrplace.model.CoreConstraint;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
->>>>>>> master:api/src/main/java/org/btrplace/scheduler/Scheduler.java
 
 import java.util.Collection;
 
@@ -40,16 +32,12 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-<<<<<<< HEAD:api/src/main/java/btrplace/solver/ReconfigurationAlgorithm.java
 @CoreConstraint(name = "noVMsOnOfflineNodes", inv = "!(n : nodes) nodeState(n) /= online --> card(hosted(n)) = 0")
 @CoreConstraint(name = "toRunning", inv = "!(v : vms) vmState(v) = running --> ^vmState(v) : {ready, running, sleeping}")
 @CoreConstraint(name = "toReady", inv = "!(v : vms) vmState(v) = ready --> ^vmState(v) : {ready, running}")
 @CoreConstraint(name = "toSleeping", inv = "!(v : vms) vmState(v) = sleeping --> ^vmState(v) : {running, sleeping}")
-public interface ReconfigurationAlgorithm {
-=======
 public interface Scheduler {
 
->>>>>>> master:api/src/main/java/org/btrplace/scheduler/Scheduler.java
     /**
      * Compute a reconfiguration plan to reach a solution to the model
      *

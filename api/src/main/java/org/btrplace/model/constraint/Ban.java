@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Ban.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Ban.java
 
 import java.util.ArrayList;
 import java.util.Collection;

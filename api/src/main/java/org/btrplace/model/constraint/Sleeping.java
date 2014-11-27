@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Sleeping.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Sleeping.java
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,12 +60,13 @@ public class Sleeping extends SatConstraint {
 
     /**
      * Make a new discrete constraint.
+     * <p>
+     * <<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Sleeping.java
      *
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Sleeping.java
-     * @param vm the VM to make sleeping
-=======
+     * @param vm         the VM to make sleeping
+     *                   =======
      * @param vm         the VMs to make sleeping
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Sleeping.java
+     *                   >>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Sleeping.java
      * @param continuous {@code true} for a continuous restriction
      */
     public Sleeping(VM vm, boolean continuous) {

@@ -10,4 +10,4 @@ for JAR in $JARS; do
  CLASSPATH=$JAR:$CLASSPATH
 done
 
-java $JAVA_OPTS -cp $CLASSPATH btrplace.safeplace.BenchSpeed $*
+java $JAVA_OPTS -cp $CLASSPATH BenchSpeed $*

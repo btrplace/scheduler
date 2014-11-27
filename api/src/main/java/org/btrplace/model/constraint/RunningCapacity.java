@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/RunningCapacity.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/RunningCapacity.java
 
 import java.util.Collections;
 import java.util.Objects;
@@ -34,11 +28,11 @@ import java.util.Set;
 /**
  * Restrict to a given value, the total amount of VMs running
  * on the given set of nodes.
- *
+ * <p>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
- *
+ * <p>
  * If the restriction is continuous, then the total usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *

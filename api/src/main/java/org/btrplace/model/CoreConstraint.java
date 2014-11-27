@@ -23,6 +23,7 @@ import java.lang.annotation.Repeatable;
 
 /**
  * Annotation to provide the specification of a core constraint.
+ *
  * @author Fabien Hermenier
  */
 @Documented

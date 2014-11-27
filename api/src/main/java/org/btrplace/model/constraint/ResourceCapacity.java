@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/ResourceCapacity.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/ResourceCapacity.java
 
 import java.util.Collections;
 import java.util.Objects;
@@ -34,19 +28,19 @@ import java.util.Set;
 /**
  * Restrict the total amount of virtual resources consumed by
  * the VMs hosted on the given nodes.
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/ResourceCapacity.java
- *
- * The restriction provided by the constraint can be either discrete or continuous.
- * If it is discrete, the constraint only considers the model obtained as the end
- * of the reconfiguration process.
- *
-=======
+ * <<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/ResourceCapacity.java
  * <p>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
  * <p>
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/ResourceCapacity.java
+ * =======
+ * <p>
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If it is discrete, the constraint only considers the model obtained as the end
+ * of the reconfiguration process.
+ * <p>
+ * >>>>>>> master:api/src/main/java/org/btrplace/model/constraint/ResourceCapacity.java
  * If the restriction is continuous, then the total resource usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *

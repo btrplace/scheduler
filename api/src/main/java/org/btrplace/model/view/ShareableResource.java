@@ -36,17 +36,17 @@ import java.util.*;
  * <li>{@link org.btrplace.model.constraint.Overbook} to specify a mapping between the virtual and the physical resources.</li>
  * </ul>
  * <p>
-<<<<<<< HEAD:api/src/main/java/btrplace/model/view/ShareableResource.java
+ * <<<<<<< HEAD:api/src/main/java/btrplace/model/view/ShareableResource.java
  * By default, if there is no {@link btrplace.model.constraint.Preserve} constraint for a VM, it is considered the VM requires
  * the same amount of virtual resources it is currently consuming.
  * <p>
  * By default, if there is no {@link btrplace.model.constraint.Overbook} constraint for a node, a conservative ratio
-=======
+ * =======
  * By default, if there is no {@link org.btrplace.model.constraint.Preserve} constraint for a VM, it is considered the VM requires
  * the same amount of virtual resources it is currently consuming.
  * <p>
  * By default, if there is no {@link org.btrplace.model.constraint.Overbook} constraint for a node, a conservative ratio
->>>>>>> master:api/src/main/java/org/btrplace/model/view/ShareableResource.java
+ * >>>>>>> master:api/src/main/java/org/btrplace/model/view/ShareableResource.java
  * of <b>1</b> is used. This means one unit of virtual resources consumes one unit of physical resources.
  *
  * @author Fabien Hermenier

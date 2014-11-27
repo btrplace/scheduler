@@ -22,6 +22,7 @@ import java.lang.annotation.*;
 
 /**
  * A simple collection of {@link CoreConstraint}.
+ *
  * @author Fabien Hermenier
  */
 @Target({ElementType.TYPE})

@@ -41,11 +41,8 @@
         <module>api</module>
         <module>examples</module>
         <module>btrpsl</module>
-<<<<<<< HEAD
         <module>safeplace</module>
-=======
         <module>bench</module>
->>>>>>> master
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

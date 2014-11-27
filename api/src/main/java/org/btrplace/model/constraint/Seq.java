@@ -18,14 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-<<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Seq.java
-import btrplace.SideConstraint;
-import btrplace.model.Node;
-import btrplace.model.VM;
-=======
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
->>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Seq.java
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,7 +29,7 @@ import java.util.Set;
 /**
  * A constraint to force the actions that change the given VMs state
  * to be executed in the given order.
- *
+ * <p>
  * The restriction provided by the constraint is only continuous.
  *
  * @author Fabien Hermenier

@@ -29,6 +29,7 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import solver.Solver;
+import solver.constraints.Arithmetic;
 import solver.constraints.IntConstraintFactory;
 import solver.constraints.Operator;
 import solver.variables.BoolVar;
