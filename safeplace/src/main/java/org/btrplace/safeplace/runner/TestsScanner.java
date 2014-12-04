@@ -21,6 +21,7 @@ package org.btrplace.safeplace.runner;
 import eu.infomas.annotation.AnnotationDetector;
 import org.btrplace.safeplace.Specification;
 import org.btrplace.safeplace.annotations.CstrTest;
+import org.btrplace.safeplace.fuzzer.ReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.fuzzer.ReconfigurationPlanFuzzer2;
 import org.btrplace.safeplace.spec.SpecExtractor;
 
@@ -37,10 +38,10 @@ import java.util.Map;
 public class TestsScanner implements AnnotationDetector.MethodReporter {
 
 
-    private Map<String, ReconfigurationPlanFuzzer2> fuzzerCache;
+    private Map<String, ReconfigurationPlanFuzzer> fuzzerCache;
     private List<String> tests, grps;
 
-    private static final ReconfigurationPlanFuzzer2 DEFAULT_FUZZER = new ReconfigurationPlanFuzzer2();
+    private static final ReconfigurationPlanFuzzer DEFAULT_FUZZER = new ReconfigurationPlanFuzzer2();
     private List<CTestCasesRunner> runners;
 
     private Specification spec;
@@ -77,6 +78,7 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
             CstrTest cc = m.getAnnotation(CstrTest.class);
             cstr = cc.constraint();
             if (!match(cl, cc)) {
+                System.out.println(cl);
                 return;
             }
             runner = new CTestCasesRunner(spec, cl, methodName, cstr);
@@ -116,17 +118,17 @@ public class TestsScanner implements AnnotationDetector.MethodReporter {
         return tests.isEmpty();
     }
 
-    private ReconfigurationPlanFuzzer2 getProvider(Object o, String lbl) throws Exception {
+    private ReconfigurationPlanFuzzer getProvider(Object o, String lbl) throws Exception {
 
-        ReconfigurationPlanFuzzer2 f = fuzzerCache.get(lbl);
+        ReconfigurationPlanFuzzer f = fuzzerCache.get(lbl);
         if (f != null) {
             return f;
         }
         try {
             Method m = o.getClass().getMethod(lbl);
-            f = (ReconfigurationPlanFuzzer2) m.invoke(o);
+            f = (ReconfigurationPlanFuzzer) m.invoke(o);
             fuzzerCache.put(lbl, f);
-            return (ReconfigurationPlanFuzzer2) m.invoke(o);
+            return (ReconfigurationPlanFuzzer) m.invoke(o);
         } catch (NoSuchMethodException ex) {
             throw new Exception("Unknown provider '" + lbl + "'");
         }

@@ -38,7 +38,7 @@ import java.util.*;
 /**
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanFuzzer2 implements Iterable<ReconfigurationPlan>, Iterator<ReconfigurationPlan> {
+public class ReconfigurationPlanFuzzer2 implements ReconfigurationPlanFuzzer {
 
     private Random rnd = new Random();
 
