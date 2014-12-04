@@ -20,13 +20,13 @@ package org.btrplace.scheduler.choco.extensions;
 
 
 import gnu.trove.map.hash.TIntIntHashMap;
-import memory.IStateInt;
-import memory.IStateIntVector;
+import org.chocosolver.memory.IStateInt;
+import org.chocosolver.memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.constraints.Propagator;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.Arrays;
 import java.util.BitSet;

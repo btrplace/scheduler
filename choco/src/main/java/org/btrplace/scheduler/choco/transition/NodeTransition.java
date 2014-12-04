@@ -19,7 +19,7 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.model.Node;
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 
 /**

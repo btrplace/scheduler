@@ -21,7 +21,7 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -20,10 +20,10 @@ package org.btrplace.scheduler.choco.extensions;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Solver;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 /*
  * Created on 18/09/14.

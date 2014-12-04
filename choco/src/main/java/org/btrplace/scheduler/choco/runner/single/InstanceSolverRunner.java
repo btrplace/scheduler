@@ -34,11 +34,10 @@ import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
-import solver.Cause;
-import solver.exception.ContradictionException;
-import solver.search.loop.monitors.IMonitorSolution;
-import solver.search.loop.monitors.SMF;
-import solver.search.measure.IMeasures;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
+import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -138,7 +137,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         });
 
         //State the logging level for the solver
-        SMF.log(rp.getSolver(), params.getVerbosity() >= 2, params.getVerbosity() >= 3);
+        //TODO: log stuff
+        //SMF.log(rp.getSolver(), params.getVerbosity() >= 2, params.getVerbosity() >= 3);
 
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());

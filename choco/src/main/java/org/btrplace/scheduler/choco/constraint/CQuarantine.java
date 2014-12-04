@@ -26,9 +26,9 @@ import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Quarantine;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import solver.Cause;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.Collections;
 import java.util.Set;

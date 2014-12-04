@@ -27,14 +27,14 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.Cause;
-import solver.Solver;
-import solver.constraints.Arithmetic;
-import solver.constraints.Operator;
-import solver.exception.ContradictionException;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 import java.util.Collections;
 import java.util.Set;
@@ -102,7 +102,7 @@ public class CNoDelay implements ChocoConstraint {
                 return false;
             }
         } else {
-            solver.constraints.Constraint c = new Arithmetic(d.getStart(), Operator.EQ, 0);
+            Arithmetic c = new Arithmetic(d.getStart(), Operator.EQ, 0);
             BoolVar move = VF.not(((RelocatableVM) vt).isStaying());
             ChocoUtils.postImplies(s, move, c);
         }

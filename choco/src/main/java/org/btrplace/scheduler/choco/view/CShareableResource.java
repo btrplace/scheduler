@@ -32,13 +32,13 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.RoundedUpDivision;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.Cause;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import solver.variables.RealVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.RealVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 

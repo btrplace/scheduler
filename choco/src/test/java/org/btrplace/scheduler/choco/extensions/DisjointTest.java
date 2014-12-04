@@ -19,11 +19,11 @@
 package org.btrplace.scheduler.choco.extensions;
 
 import org.testng.annotations.Test;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.search.loop.monitors.SMF;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.loop.monitors.SMF;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 /**
  * @author Fabien Hermenier

@@ -19,15 +19,15 @@
 package org.btrplace.scheduler.choco.extensions;
 
 
-import solver.Solver;
-import solver.constraints.Arithmetic;
-import solver.constraints.Constraint;
-import solver.constraints.Operator;
-import solver.variables.BoolVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
-import static solver.constraints.LogicalConstraintFactory.and;
-import static solver.constraints.LogicalConstraintFactory.or;
+import static org.chocosolver.solver.constraints.LogicalConstraintFactory.and;
+import static org.chocosolver.solver.constraints.LogicalConstraintFactory.or;
 
 /**
  * Utility class to ease the creation of some constraints on Choco.

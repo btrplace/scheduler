@@ -23,8 +23,8 @@ import org.btrplace.model.Model;
 import org.btrplace.scheduler.SchedulerException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 /**
  * Unit tests for {@link org.btrplace.scheduler.choco.ObjectiveAlterer}.

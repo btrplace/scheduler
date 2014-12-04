@@ -19,8 +19,8 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.plan.ReconfigurationPlan;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
 
 
 /**

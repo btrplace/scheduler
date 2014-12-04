@@ -32,10 +32,10 @@ import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
 import org.btrplace.scheduler.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 import java.util.*;
 

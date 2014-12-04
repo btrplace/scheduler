@@ -32,14 +32,14 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.extensions.FastIFFEq;
-import solver.Solver;
-import solver.constraints.Arithmetic;
-import solver.constraints.IntConstraintFactory;
-import solver.constraints.Operator;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VF;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
+import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**

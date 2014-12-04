@@ -22,7 +22,7 @@ import org.btrplace.model.Node;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
 

@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.view;
 
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 /**
  * An abstract constraint to create vector packing constraints.

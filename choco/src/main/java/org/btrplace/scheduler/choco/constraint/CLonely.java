@@ -29,8 +29,8 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.Disjoint;
 import org.btrplace.scheduler.choco.extensions.Precedences;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.Solver;
-import solver.variables.IntVar;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
 

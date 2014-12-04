@@ -20,19 +20,19 @@ package org.btrplace.scheduler.choco.extensions;
 
 
 import gnu.trove.list.array.TIntArrayList;
-import memory.IEnvironment;
-import memory.IStateInt;
+import org.chocosolver.memory.IEnvironment;
+import org.chocosolver.memory.IStateInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.constraints.Constraint;
-import solver.constraints.Propagator;
-import solver.constraints.PropagatorPriority;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import solver.variables.events.IntEventType;
-import util.ESat;
-import util.iterators.DisposableValueIterator;
-import util.tools.ArrayUtils;
+import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.constraints.PropagatorPriority;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.events.IntEventType;
+import org.chocosolver.util.ESat;
+import org.chocosolver.util.iterators.DisposableValueIterator;
+import org.chocosolver.util.tools.ArrayUtils;
 
 /**
  * Kind of a precedence constraint when there is multiple resources.

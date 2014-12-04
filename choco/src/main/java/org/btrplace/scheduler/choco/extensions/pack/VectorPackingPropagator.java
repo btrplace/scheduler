@@ -19,20 +19,20 @@
 package org.btrplace.scheduler.choco.extensions.pack;
 
 
-import memory.IStateBool;
-import memory.IStateInt;
-import solver.ICause;
-import solver.constraints.Propagator;
-import solver.constraints.PropagatorPriority;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import solver.variables.delta.IIntDeltaMonitor;
-import solver.variables.events.IntEventType;
-import solver.variables.events.PropagatorEventType;
-import util.ESat;
-import util.iterators.DisposableValueIterator;
-import util.procedure.UnaryIntProcedure;
-import util.tools.ArrayUtils;
+import org.chocosolver.memory.IStateBool;
+import org.chocosolver.memory.IStateInt;
+import org.chocosolver.solver.ICause;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.constraints.PropagatorPriority;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.delta.IIntDeltaMonitor;
+import org.chocosolver.solver.variables.events.IntEventType;
+import org.chocosolver.solver.variables.events.PropagatorEventType;
+import org.chocosolver.util.ESat;
+import org.chocosolver.util.iterators.DisposableValueIterator;
+import org.chocosolver.util.procedure.UnaryIntProcedure;
+import org.chocosolver.util.tools.ArrayUtils;
 
 import java.util.Arrays;
 

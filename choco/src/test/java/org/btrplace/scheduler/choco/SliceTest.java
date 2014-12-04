@@ -23,9 +23,9 @@ import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Solver;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 /**
  * Unit tests for {@link Slice}.

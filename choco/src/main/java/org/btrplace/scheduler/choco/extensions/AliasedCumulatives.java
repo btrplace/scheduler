@@ -20,17 +20,17 @@ package org.btrplace.scheduler.choco.extensions;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
-import memory.IStateInt;
-import memory.IStateIntVector;
-import solver.constraints.Constraint;
-import solver.constraints.Propagator;
-import solver.constraints.PropagatorPriority;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import solver.variables.events.IntEventType;
-import solver.variables.events.PropagatorEventType;
-import util.ESat;
-import util.tools.ArrayUtils;
+import org.chocosolver.memory.IStateInt;
+import org.chocosolver.memory.IStateIntVector;
+import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.constraints.PropagatorPriority;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.events.IntEventType;
+import org.chocosolver.solver.variables.events.PropagatorEventType;
+import org.chocosolver.util.ESat;
+import org.chocosolver.util.tools.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.BitSet;

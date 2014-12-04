@@ -26,8 +26,8 @@ import org.btrplace.model.constraint.Ban;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import solver.Cause;
-import solver.exception.ContradictionException;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.Collection;
 import java.util.Collections;
