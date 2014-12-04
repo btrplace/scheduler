@@ -26,9 +26,9 @@
     <artifactId>safeplace</artifactId>
 
     <parent>
-        <groupId>btrplace</groupId>
-        <artifactId>solver</artifactId>
-        <version>0.39-SNAPSHOT</version>
+        <groupId>org.btrplace</groupId>
+        <artifactId>scheduler</artifactId>
+        <version>0.40-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -49,13 +49,13 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-api</artifactId>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-json</artifactId>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-json</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -64,8 +64,8 @@
             <version>2.2.4</version>
         </dependency>
         <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-choco</artifactId>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-choco</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
