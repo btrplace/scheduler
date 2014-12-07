@@ -18,12 +18,11 @@
 
 package org.btrplace.scheduler.choco.extensions;
 
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.loop.monitors.SMF;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.annotations.Test;
 
 /**
  * @author Fabien Hermenier
@@ -57,7 +56,7 @@ public class DisjointTest {
         for (int g = 1; g < groups.length; g++) {
             s.post(IntConstraintFactory.arithm(groups[g - 1][2], "<=", groups[g][2]));
         }
-        SMF.log(s, true, true);
+        //SMF.log(s, true, true);
         //SMF.logContradiction(s);
         s.findAllSolutions();
 
