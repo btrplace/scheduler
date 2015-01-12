@@ -159,7 +159,13 @@ public interface Parameters {
 
     /**
      * Get the verbosity level of the solver.
-     *
+     * <ul>
+     *     <li>at {@code 0}: no output</li>
+     *     <li>at {@code 1}: variables are labeled to ease debugging. Every solutions are printed out</li>
+     *     <li>at {@code 2}: statistics are printed out every second</li>
+     *     <li>at {@code 3}: decisions are printed out</li>
+     *     <li>at {@code 4}: contradictions are printed out</li>
+     * </ul>
      * @return the verbosity level.
      * @see #setVerbosity(int)
      */
