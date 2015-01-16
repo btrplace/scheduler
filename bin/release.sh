@@ -11,12 +11,12 @@ function getVersionToRelease() {
 }
 
 echo "Check for a competing release"
-git ls-remote --exit-code --heads origin release > /dev/null
+git ls-remote --exit-code --heads origin release
 if [ $? -eq 0 ]; then
     echo "Error: A release is already under progress"
     exit 1
 fi
-
+echo "Ok"
 VERSION=$(getVersionToRelease)
 echo "Version to release: ${VERSION}"
 git checkout -b release || exit 1
