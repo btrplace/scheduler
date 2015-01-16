@@ -33,18 +33,18 @@ function getVersion() {
     fi
 
     #Deploy the artifacts    
-    echo "** Deploying the javadoc **"
-    ./bin/push_javadoc.sh apidocs.git ${VERSION}
+    #echo "** Deploying the javadoc **"
+    #./bin/push_javadoc.sh apidocs.git ${VERSION}
     echo "** Deploying artifacts to sonatype **"
     ./bin/deploy.sh
 
     #Clean    
-    git push origin --delete release
+    git push deploy --delete release
 
     #Set the next development version
     echo "** Prepare master for the next version **"
-    git fetch origin master:refs/remotes/origin/master||warn "Unable to fetch master"
-    git checkout -b master origin/master||warn "No master branch"
+    git fetch deploy master:refs/remotes/deploy/master||warn "Unable to fetch master"
+    git checkout -b master deploy/master||warn "No master branch"
     git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT}||warn "Unable to integrate to master"
     ./bin/set_version.sh --next ${VERSION}
     git commit -m "Prepare the code for the next version" -a
