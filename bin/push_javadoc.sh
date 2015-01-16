@@ -13,7 +13,7 @@ git -C ${LOCAL} commit -m "clean" -a || exit 1
 
 #Generate and copy
 echo "Generate the new javadoc"
-mvn -q install -DskipTests javadoc:aggregate
+mvn -q compile -DskipTests javadoc:aggregate
 cp -r target/site/apidocs/* ${LOCAL}/
 
 #Publish
