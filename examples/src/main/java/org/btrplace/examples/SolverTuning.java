@@ -79,7 +79,6 @@ public class SolverTuning implements Example {
         //We want the best possible solution, computed in up to 5 sec.
         cra.doOptimize(true);
         cra.setTimeLimit(5);
-        cra.setVerbosity(4);
         //We solve without the repair mode
         cra.doRepair(false);
         solve(cra, model, constraints);
