@@ -5,7 +5,7 @@
 
 function getVersionToRelease() {
 	#blank execution as this command is very fragile and bug if there is sth to download
-	mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
+mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate
     CURRENT_VERSION=`mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"`
     echo ${CURRENT_VERSION%%-SNAPSHOT}
 }
