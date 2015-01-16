@@ -10,6 +10,7 @@ function getVersionToRelease() {
     echo ${CURRENT_VERSION%%-SNAPSHOT}
 }
 
+echo "Check for a competing release"
 git ls-remote --exit-code --heads origin release > /dev/null
 if [ $? -eq 0 ]; then
     echo "Error: A release is already under progress"
@@ -17,6 +18,7 @@ if [ $? -eq 0 ]; then
 fi
 
 VERSION=$(getVersionToRelease)
+echo "Version to release: ${VERSION}"
 git checkout -b release || exit 1
 
 #Establish the version, maven side, misc. side
