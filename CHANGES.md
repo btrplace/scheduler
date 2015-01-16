@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ????????
+version 0.40 - 16 Jan 2015
 ----------------------
 - update to choco 3.3.0
 - fix #53
