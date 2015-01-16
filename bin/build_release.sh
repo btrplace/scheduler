@@ -33,10 +33,10 @@ function getVersion() {
     fi
 
     #Deploy the artifacts    
-    #echo "** Deploying the javadoc **"
-    #./bin/push_javadoc.sh apidocs.git ${VERSION}
     echo "** Deploying artifacts to sonatype **"
     ./bin/deploy.sh||quit "Unable to release"
+    echo "** Deploying the javadoc **"
+    ./bin/push_javadoc.sh apidocs.git ${VERSION}
 
     #Clean    
     git push deploy --delete release
