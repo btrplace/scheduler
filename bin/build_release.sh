@@ -45,6 +45,9 @@ function getVersion() {
     git push origin --delete release
 
     #Set the next development version
+    git checkout master
+    git pull    
     echo "** Prepare master for the next version **"
     ./bin/set_version.sh --next ${VERSION}
     git commit -m "Prepare the code for the next version" -a
+    git push origin master
