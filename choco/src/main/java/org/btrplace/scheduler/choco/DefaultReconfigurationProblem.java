@@ -380,14 +380,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 }
             }
 
-            List<VMTransitionBuilder> am = amFactory.getBuilder(curState, nextState);
-            if (am.isEmpty()) {
+            VMTransitionBuilder am = amFactory.getBuilder(curState, nextState);
+            if (am == null) {
                 throw new SchedulerException(model, "No model available for VM transition " + curState + " -> " + nextState);
             }
-            if (am.size() > 1) {
-                throw new SchedulerException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
-            }
-            vmActions[i] = am.get(0).build(this, vmId);
+            vmActions[i] = am.build(this, vmId);
             if (vmActions[i].isManaged()) {
                 manageable.add(vmId);
             }

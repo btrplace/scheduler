@@ -297,7 +297,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private SingleRunnerStatistics makeStatistics() {
+    private SingleRunnerStatistics  makeStatistics() {
         if (rp == null) {
             return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
