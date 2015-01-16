@@ -12,10 +12,12 @@ cd -
 git -C ${LOCAL} commit -m "clean" -a || exit 1
 
 #Generate and copy
+echo "Generate the new javadoc"
 mvn -q install -DskipTests javadoc:aggregate
 cp -r target/site/apidocs/* ${LOCAL}/
 
 #Publish
+echo "Publishing"
 cd ${LOCAL}
 git add *|| exit 1
 cd -
