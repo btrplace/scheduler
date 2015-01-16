@@ -16,28 +16,33 @@ function getVersion() {
     COMMIT=$(git rev-parse HEAD)
     echo "** Starting the release of ${TAG} from ${COMMIT} **"
     #Quit if tag already exists
-    git ls-remote --exit-code --tags origin ${TAG} && quit "tag ${TAG} already exists"
+    git ls-remote --exit-code --tags origin ${TAG} 
+    if [ $? -ne 0 ]; then
+        echo "The tag does not exist. Maybe we continue a breaking release"        
+        #Working version ?
+        mvn clean test ||quit "Unstable build"
 
-    #Working version ?
-    mvn clean test ||quit "Unstable build"
+        git fetch origin master:refs/remotes/origin/master||quit "Unable to fetch master"
+        #Integrate with master and tag
+        echo "** Integrate to master **"
+        git checkout -b master origin/master||quit "No master branch"
+        git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT}||quit "Unable to integrate to master"
 
-    git fetch origin master:refs/remotes/origin/master||quit "Unable to fetch master"
-    #Integrate with master and tag
-    echo "** Integrate to master **"
-    git checkout -b master origin/master||quit "No master branch"
-    git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT}||quit "Unable to integrate to master"
-
-    git tag ${TAG} ||quit "Unable to tag with ${TAG}"
-    git push deploy --tags ||quit "Unable to push the tag ${TAG}"
-    git push deploy master ||quit "Unable to push master"
+        git tag ${TAG} ||quit "Unable to tag with ${TAG}"
+        git push deploy --tags ||quit "Unable to push the tag ${TAG}"
+        git push deploy master ||quit "Unable to push master"
+    else
+        echo "Tag already exists. Maybe the releasing process is still not complete"
+    fi
 
     #Deploy the artifacts
-    echo "** Deploying the artifacts **"
+    echo "** Deploying the javadoc **"
     ./bin/push_javadoc.sh apidocs.git ${VERSION}
+    echo "** Deploying artifacts to sonatype **"
     ./bin/deploy.sh
 
     #Clean
-    #git push origin --delete release
+    git push origin --delete release
 
     #Set the next development version
     echo "** Prepare master for the next version **"
