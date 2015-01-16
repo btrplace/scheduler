@@ -4,12 +4,17 @@ branches:
   - release
 env:
   global:
+  - secure: VhKXa/vU5AZEa4NmHpu2nR+/5G2I3epnabhAMGPVWtWQ2+NwSKos0MV1z8SeJPp0d2yPDAadeYbor6Wf1QNEA93YDGWAV2MJvBNc8p3aw+5os1n4xvRVusmHCke52PCdhNP6TNXdqiNgbU0wHiv5daUjFF6x7YVWn9MZ8yIqLiM=
+  - secure: bdsiQTi3h248+9Yj3S28paTDTvkNe+JcriYffchOxFJ05Oq0mv1AloUHxK6RqTLnyLtAmUingQLWWAMAxzoMYVyUrTdPE19/aiwIewrUbe1Q4KEOEoWOC2fTbkh4ISARGi0oHrjUKOevWerpv8TK40ozr1rqSrK9xU/8vtuiecY=
+  - secure: gLGlJ0MdUEAUWY1mv/b5H6kh1UPFL30QYuTofBMOt9ewadNpep/LnZYQ4kcfopzr2ZlCA8MaQNH/lh1c6D8YKuoqGVW45LMPbbLaGOvPnAyivueSbmK+74NHm1DkTdOiA8vWjE9e84q1MAFbB73NKDbaIl16xHE3jYwYASXhFC0=
+  - secure: mApNjQHkYsyguVnUep3SowBVX5PzIJtvIgWEJERlSFCweKumQTDaZdNAlTz24W21Lpr1JCJswK5SWzBD7cbC5W5Kmf3hPmwkHM26JgbUd8RIkunSsgmXQdeL4LoTN4jdjTZpobY+pZPEVLbjVjwQ52T7BKuK+fRwpI2Oi3J4yUo=
 before_install:
-- openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/gpg.enc -out etc/gpg -d
-- openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy.enc -out etc/deploy
-  -d
-- openssl aes-256-cbc -k "${DEPLOY_PASSPHRASE}" -in etc/deploy_apidocs.enc -out etc/deploy_apidocs
-  -d
+- openssl aes-256-cbc -K $encrypted_5053b78ff3fb_key -iv $encrypted_5053b78ff3fb_iv
+  -in gpg.enc -out gpg -d
+- openssl aes-256-cbc -K $encrypted_5053b78ff3fb_key -iv $encrypted_5053b78ff3fb_iv
+  -in deploy_apidocs.enc -out deploy_apidocs -d
+- openssl aes-256-cbc -K $encrypted_5053b78ff3fb_key -iv $encrypted_5053b78ff3fb_iv
+  -in deploy.enc -out deploy -d
 - gpg --import etc/gpg
 - eval "$(ssh-agent)"
 - chmod 600 etc/deploy etc/deploy_apidocs
