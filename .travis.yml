@@ -10,11 +10,11 @@ env:
   - secure: mApNjQHkYsyguVnUep3SowBVX5PzIJtvIgWEJERlSFCweKumQTDaZdNAlTz24W21Lpr1JCJswK5SWzBD7cbC5W5Kmf3hPmwkHM26JgbUd8RIkunSsgmXQdeL4LoTN4jdjTZpobY+pZPEVLbjVjwQ52T7BKuK+fRwpI2Oi3J4yUo=
 before_install:
 - openssl aes-256-cbc -K $encrypted_5053b78ff3fb_key -iv $encrypted_5053b78ff3fb_iv
-  -in gpg.enc -out gpg -d
+  -in etc/gpg.enc -out etc/gpg -d
 - openssl aes-256-cbc -K $encrypted_5053b78ff3fb_key -iv $encrypted_5053b78ff3fb_iv
-  -in deploy_apidocs.enc -out deploy_apidocs -d
+  -in etc/deploy_apidocs.enc -out etc/deploy_apidocs -d
 - openssl aes-256-cbc -K $encrypted_5053b78ff3fb_key -iv $encrypted_5053b78ff3fb_iv
-  -in deploy.enc -out deploy -d
+  -in etc/deploy.enc -out etc/deploy -d
 - gpg --import etc/gpg
 - eval "$(ssh-agent)"
 - chmod 600 etc/deploy etc/deploy_apidocs
