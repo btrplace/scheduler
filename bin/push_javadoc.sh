@@ -22,5 +22,5 @@ cd ${LOCAL}
 git add *|| exit 1
 cd -
 git -C ${LOCAL} commit -m "apidoc for version ${VERSION}" -a || exit 1
-git -C ${LOCAL} push || exit 1
+git -C ${LOCAL} push origin gh-pages|| exit 1
 rm -rf ${LOCAL}
