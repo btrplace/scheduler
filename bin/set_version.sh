@@ -30,7 +30,7 @@ else
 fi
 echo "New version is ${VERSION}"
 #Update the poms
-mvn versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false|grep -v
+mvn versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false||exit 1
 
 sedInPlace "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
 
