@@ -6,20 +6,14 @@ git -C ${LOCAL} init
 git -C ${LOCAL} remote add origin git@github.com:btrplace/${REMOTE} || exit 1
 git -C ${LOCAL} pull origin gh-pages||exit 1
 git -C ${LOCAL} checkout gh-pages || exit 1
-cd ${LOCAL}
-rm -rf *
-cd -
-git -C ${LOCAL} commit -m "clean" -a > /dev/null || exit 1
 
 #Generate and copy
-echo "Generate the new javadoc"
-mvn -q compile -DskipTests javadoc:aggregate
+mvn -q compile -DskipTests javadoc:aggregate || exit 1
 cp -r target/site/apidocs/* ${LOCAL}/
 
 #Publish
-echo "Publishing"
 cd ${LOCAL}
-git add * > /dev/null|| exit 1
+git add *
 cd -
 git -C ${LOCAL} commit -m "apidoc for version ${VERSION}" -a || exit 1
 git -C ${LOCAL} push origin gh-pages|| exit 1
