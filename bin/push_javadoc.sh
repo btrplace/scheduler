@@ -6,7 +6,7 @@ fi
 LOCAL=`mktemp -d -t btrplace.XXX`
 REMOTE=$1
 VERSION=$2
-
+set -x
 git -C ${LOCAL} init
 git -C ${LOCAL} remote add origin git@github.com:btrplace/${REMOTE}||exit 1
 git -C ${LOCAL} pull origin gh-pages||exit 1

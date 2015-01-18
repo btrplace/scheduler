@@ -14,7 +14,7 @@ master)
 	./bin/build_snapshot.sh || exit 1
 	;;
 travis_dbg)
-	./bin/push_javadoc.sh scheduler 0.40|| exit 1
+	./bin/push_javadoc.sh apidocs 0.40|| exit 1
 	;;
 *)
 	echo "No CI for branch ${BRANCH}"
