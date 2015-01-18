@@ -1,5 +1,8 @@
 Release notes
 ======================
+???????????
+----------------------
+- fix #59
 
 version 0.40 - 16 Jan 2015
 ----------------------
@@ -38,7 +41,7 @@ version 0.38.1 - 06 May 2014
 - the javadoc is now deployed according to the maven conventions
 - fix copyright headers (Issue #41)
 
-0.37 - 14 Apr 2014
+version 0.37 - 14 Apr 2014
 ----------------------
 - minor bug fixes
 - refactor choco.actionModel to choco.transition. Now xActionModel classes are xTransition classes.
@@ -54,7 +57,7 @@ version 0.38.1 - 06 May 2014
     considered at building time in the solver
 - improve the overall code quality a bit when possible and needed
 
-0.36 - 28 Mar 2014
+version 0.36 - 28 Mar 2014
 ----------------------
 - Homogenize constraints signature in API
 - fix #32, #33
@@ -98,7 +101,6 @@ version 0.31 - 16 Jul 2013
 - It is possible to specify a dedicated solving method using InstanceSolver.
   This will be used later to integrate the parallel resolution of partitioned
   instances.
-
 
 version 0.30 - 04 Jun 2013
 ----------------------
