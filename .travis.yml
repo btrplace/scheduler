@@ -2,6 +2,7 @@ branches:
   only:
   - master
   - release
+  - travis_dbg
 env:
   global:
   - secure: VhKXa/vU5AZEa4NmHpu2nR+/5G2I3epnabhAMGPVWtWQ2+NwSKos0MV1z8SeJPp0d2yPDAadeYbor6Wf1QNEA93YDGWAV2MJvBNc8p3aw+5os1n4xvRVusmHCke52PCdhNP6TNXdqiNgbU0wHiv5daUjFF6x7YVWn9MZ8yIqLiM=
