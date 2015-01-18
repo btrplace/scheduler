@@ -6,7 +6,7 @@ else
     BRANCH=${TRAVIS_BRANCH}
 fi
 
-case ${BRANCH} in;
+case ${BRANCH} in
 release)
 	./bin/build_release.sh || exit 1
 	;;
