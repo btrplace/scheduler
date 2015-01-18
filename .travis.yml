@@ -10,16 +10,16 @@ env:
   - secure: X53nh1b3zjN/wA1M2pag+OvRy7Na3JhwtOf+XFd+byZGZDcYSJnmmwhcE7KycK5+OGcN87iJB3f3gqdeiX3fiEJnrSQc22sexMKDjdn5l6uBgDE+4Cequh3n4V8kA5ODcpWhpA+/QRIKyN0afbhPLygVPO9mVyFyTTCLpPuc68I=
   - secure: apZzObcTKp1Hqbs5lL8pKXsUDyy8xl9kG+LRREVOGcWQ33/qVF9DYljvvFHeOrH7nUghAGmEUwuhlLG0GYMy4zrGvM7DGAq0Sy/GwLTRgDC1LWQtyN9S92aqrwZmuwaUVW+U0EmBCcxvVKXY6hfpRCFAQJO+Emc3ophmBBEa4uI=
 before_install:
+- eval "$(ssh-agent)"
+- gpg --import etc/gpg
 - openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
   -in etc/gpg.enc -out etc/gpg -d
 - openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
   -in etc/deploy_apidocs.enc -out etc/deploy_apidocs -d
 - openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
   -in etc/deploy_scheduler.enc -out etc/deploy_scheduler -d
-- eval "$(ssh-agent)"
 - chmod 600 etc/deploy*
 - ssh-add etc/deploy*
-- gpg --import etc/gpg
 - git config --global user.name "Build Bot"
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
