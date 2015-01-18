@@ -1,13 +1,15 @@
 Release notes
 ======================
+
 ???????????
 ----------------------
-- fix #59
+- Refer to the associated [issue tracker](https://github.com/btrplace/scheduler/issues?q=milestone%3A%22release+0.41%22+is%3Aclosed) to get the closed issues
 
 version 0.40 - 16 Jan 2015
 ----------------------
 - update to choco 3.3.0
 - fix #53
+- Refer to the associated [issue tracker](https://github.com/btrplace/scheduler/issues?q=milestone%3A%22release+0.40%22+is%3Aclosed) to get the closed issues
 
 version 0.39 - 07 Oct 2014
 ----------------------
