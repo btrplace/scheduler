@@ -30,7 +30,8 @@ function getVersion() {
         git tag ${TAG} >tag.out 2>&1 ||err "Unable to tag with ${TAG}" tag.out        
         echo "Tagged locally"
         git push deploy --tags >push.out 2>&1 ||err "Unable to push the tag ${TAG}" push.out
-        echo "Tag pushed"        
+        echo "Tag pushed"
+        bin/github_release.pl        
     else
         echo "Already done"
     fi
