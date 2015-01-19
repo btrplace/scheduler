@@ -1,20 +1,30 @@
 #!/bin/bash
-if [ $# -ne 2 ]; then
-	echo "Usage: $0 remote version"
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 repos"
 	exit 1
 fi
 LOCAL=`mktemp -d -t btrplace.XXX`
-REMOTE=$1
-VERSION=$2
+REPOS=$1
+HEAD=$(git rev-parse HEAD)
 set -x
 git -C ${LOCAL} init
-git -C ${LOCAL} remote add origin git@github.com:btrplace/${REMOTE}||exit 1
+git -C ${LOCAL} remote add origin git@github.com:${REPOS}||exit 1
 git -C ${LOCAL} pull origin gh-pages||exit 1
 git -C ${LOCAL} checkout gh-pages||exit 1
+
+#Don't generate if not needed
+if [ -f ${LOCAL}/.commit ]; then
+	IN=`cat .commit`	
+	if [ ${HEAD} = ${IN} ]; then 
+		echo "Javadoc synced with HEAD"
+		exit 0
+	fi
+fi
+
 cd ${LOCAL}
 rm -rf *
 cd -
-
+echo ${HEAD} > ${LOCAL}/.commit
 #Generate and copy
 mvn -q compile -DskipTests javadoc:aggregate||exit 1
 cp -r target/site/apidocs/* ${LOCAL}/
