@@ -6,7 +6,6 @@ fi
 LOCAL=`mktemp -d -t btrplace.XXX`
 REPOS=$1
 HEAD=$(git rev-parse HEAD)
-set -x
 git -C ${LOCAL} init
 git -C ${LOCAL} remote add origin git@github.com:${REPOS}||exit 1
 git -C ${LOCAL} pull origin gh-pages||exit 1
@@ -16,12 +15,11 @@ git -C ${LOCAL} checkout gh-pages||exit 1
 if [ -f ${LOCAL}/.commit ]; then
 	IN=`cat ${LOCAL}/.commit`	
 	echo ".commit ${IN}"
-	if [ "${HEAD}" == "${IN}" ]; then 
+	if [ $IN == $HEAD ]; then 
 		echo "Javadoc synced with HEAD"
 		exit 0
 	fi
 fi
-
 cd ${LOCAL}
 rm -rf *
 cd -
