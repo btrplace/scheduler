@@ -13,11 +13,12 @@ git -C ${LOCAL} checkout gh-pages||exit 1
 
 #Don't generate if not needed
 if [ -f ${LOCAL}/.commit ]; then
-	IN=`cat ${LOCAL}/.commit`	
-	echo ".commit ${IN}"
+	IN=`cat ${LOCAL}/.commit`		
 	if [ $IN == $HEAD ]; then 
 		echo "Javadoc synced with HEAD"
 		exit 0
+	else
+		echo "Stored version is ${IN} but HEAD is ${HEAD}. Need to resync"
 	fi
 fi
 cd ${LOCAL}
