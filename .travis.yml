@@ -19,7 +19,7 @@ before_install:
 - eval "$(ssh-agent)"
 - gpg --import etc/gpg
 - chmod 600 etc/deploy_scheduler etc/deploy_apidocs
-- ssh-add etc/deploy_scheduler etc/deploy_apidocs
+- ssh-add etc/deploy_apidocs
 - git config --global user.name "Build Bot"
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
