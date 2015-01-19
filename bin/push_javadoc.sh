@@ -14,7 +14,7 @@ git -C ${LOCAL} checkout gh-pages||exit 1
 
 #Don't generate if not needed
 if [ -f ${LOCAL}/.commit ]; then
-	IN=`cat .commit`	
+	IN=`cat ${LOCAL}/.commit`	
 	if [ ${HEAD} = ${IN} ]; then 
 		echo "Javadoc synced with HEAD"
 		exit 0
