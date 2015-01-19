@@ -152,7 +152,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
 
         placeVMs(strategies, runActions, schedHeuristic, pla);
   */
-        
+
         if (p.getNodeActions().length > 0) {
             //Boot some nodes if needed
             strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new InputOrder<>(), new IntDomainMin()));

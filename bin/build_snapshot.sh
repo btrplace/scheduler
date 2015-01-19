@@ -13,6 +13,7 @@ V=$(getVersion)
 if [[ ${V} == *-SNAPSHOT ]]; then
     mvn -Dmaven.repo.local=/tmp/cache clean test||exit 1
     ./bin/deploy.sh||quit "Unable to deploy"
+    bin/cache.sh push /tmp/cache
 else
     echo "${V} is not a snapshot version. Exiting"
     exit 1

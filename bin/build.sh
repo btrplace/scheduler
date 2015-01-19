@@ -8,7 +8,7 @@ fi
 
 case ${BRANCH} in
 release)
-	./bin/build_release.sh || exit 1
+	./bin/build_release.sh || exit 1	
 	;;
 master)
 	./bin/build_snapshot.sh || exit 1
