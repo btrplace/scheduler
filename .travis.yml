@@ -22,8 +22,11 @@ before_install:
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
+- mkdir /tmp/m2_repo
 install:
-- mvn -Dgpg.passphrase=${GPG_PASSPHRASE} dependency:resolve
+- bin/cache.sh get /tmp/cache btrplace/travis-cache
+- mvn -Dmaven.repo.local=/tmp/cache -Dgpg.passphrase=${GPG_PASSPHRASE} dependency:resolve
+- bin/cache.sh push /tmp/cache
 jdk:
 - oraclejdk8
 language: java
