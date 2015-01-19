@@ -23,7 +23,7 @@ before_install:
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 install:
-- mvn -Dgpg.passphrase=${GPG_PASSPHRASE} dependency:resolve
+- mvn -q -Dgpg.passphrase=${GPG_PASSPHRASE} dependency:resolve
 jdk:
 - oraclejdk8
 language: java

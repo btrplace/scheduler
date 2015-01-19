@@ -11,6 +11,9 @@ git -C ${LOCAL} init
 git -C ${LOCAL} remote add origin git@github.com:btrplace/${REMOTE}||exit 1
 git -C ${LOCAL} pull origin gh-pages||exit 1
 git -C ${LOCAL} checkout gh-pages||exit 1
+cd ${LOCAL}
+rm -rf *
+cd -
 
 #Generate and copy
 mvn -q compile -DskipTests javadoc:aggregate||exit 1
