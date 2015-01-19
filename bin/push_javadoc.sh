@@ -24,14 +24,15 @@ fi
 cd ${LOCAL}
 rm -rf *
 cd -
-echo ${HEAD} > ${LOCAL}/.commit
 #Generate and copy
 mvn -q compile -DskipTests javadoc:aggregate||exit 1
 cp -r target/site/apidocs/* ${LOCAL}/
+echo ${HEAD} > ${LOCAL}/.commit
 
 #Publish
 cd ${LOCAL}
 git add *
+git add .commit
 cd -
 git -C ${LOCAL} commit -m "apidoc for version ${VERSION}" -a||exit 1
 git -C ${LOCAL} push origin gh-pages||exit 1
