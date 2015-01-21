@@ -50,6 +50,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
     private int workersCount;
 
+    private SolvingStatistics stats;
+
     /**
      * Get the number of workers that are used to solve instances.
      *
@@ -77,7 +79,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     @Override
-    public InstanceResult solve(Parameters cra, Instance orig) throws SchedulerException {
+    public ReconfigurationPlan solve(Parameters cra, Instance orig) throws SchedulerException {
         long start = System.currentTimeMillis();
         long splitDuration = -System.currentTimeMillis();
         List<Instance> partitions = split(cra, orig);
@@ -112,7 +114,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
             }
         }
         duration += System.currentTimeMillis();
-        StaticPartitioningStatistics stats = new StaticPartitioningStatistics(cra, orig.getModel().getMapping().getNbNodes(),
+        stats = new StaticPartitioningStatistics(cra, orig.getModel().getMapping().getNbNodes(),
                 orig.getModel().getMapping().getNbVMs(),
                 nbConstraints,
                 start,
@@ -126,7 +128,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
         InstanceResult res = new InstanceResult(solved ? new DefaultReconfigurationPlan(orig.getModel()) : null, stats);
         merge(res, results);
-        return res;
+        stats = res.getStatistics();
+        return res.getPlan();
     }
 
     private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SchedulerException {
@@ -144,6 +147,11 @@ public abstract class StaticPartitioning implements InstanceSolver {
             SolvingStatistics st = result.getStatistics();
             ((StaticPartitioningStatistics) merged.getStatistics()).addPartitionStatistics(st);
         }
+    }
+
+    @Override
+    public SolvingStatistics getStatistics() {
+        return stats;
     }
 
     /**

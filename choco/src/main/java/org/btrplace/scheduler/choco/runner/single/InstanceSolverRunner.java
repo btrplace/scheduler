@@ -108,7 +108,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         //Customize the core problem
         speRPDuration = -System.currentTimeMillis();
         if (!injectConstraints()) {
-            return new InstanceResult(null, makeStatistics());
+            return new InstanceResult(null, getStatistics());
         }
         speRPDuration += System.currentTimeMillis();
 
@@ -152,7 +152,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
-        return new InstanceResult(p, makeStatistics());
+        return new InstanceResult(p, getStatistics());
     }
 
     private ReconfigurationProblem buildRP() throws SchedulerException {
@@ -297,10 +297,11 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private SingleRunnerStatistics  makeStatistics() {
+    public SingleRunnerStatistics getStatistics() {
         if (rp == null) {
             return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
+
         IMeasures m2 = rp.getSolver().getMeasures();
         SingleRunnerStatistics st = new SingleRunnerStatistics(
                 params,
@@ -312,7 +313,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 (long) (m2.getTimeCount() * 1000),
                 m2.getNodeCount(),
                 m2.getBackTrackCount(),
-                params.getTimeLimit() <= m2.getTimeCount(),
+                rp.getSolver().hasReachedLimit(), //assumed timeout is the only limit
                 coreRPDuration,
                 speRPDuration);
 

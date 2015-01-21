@@ -30,12 +30,12 @@ import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
 import org.btrplace.scheduler.choco.view.ModelViewMapper;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.*;
 
@@ -72,6 +72,51 @@ public class DefaultChocoSchedulerTest {
         ModelViewMapper m = new ModelViewMapper();
         cra.setViewMapper(m);
         Assert.assertEquals(cra.getViewMapper(), m);
+    }
+
+    @Test(expectedExceptions = {SchedulerException.class})
+    public void testGetStatisticsWithTimeout() throws SchedulerException {
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        for (int i = 0; i < 1000; i++) {
+            Node n = mo.newNode();
+            map.addOnlineNode(n);
+            for (int j = 0; j < 10; j++) {
+                map.addReadyVM(mo.newVM());
+            }
+        }
+        ChocoScheduler cra = new DefaultChocoScheduler();
+        cra.setTimeLimit(1);
+        try {
+            System.err.println(cra.solve(mo, (Collection) Running.newRunning(map.getAllVMs())));
+        } catch (SchedulerException e) {
+            SolvingStatistics stats = cra.getStatistics();
+            Assert.assertNotNull(stats);
+            Assert.assertTrue(stats.getNbSearchNodes() > 0);
+            Assert.assertTrue(stats.getSolutions().isEmpty());
+            Assert.assertEquals(stats.getNbNodes(), 1000);
+            Assert.assertEquals(stats.getNbVMs(), 10000);
+            throw e;
+        }
+    }
+
+    @Test
+    public void testGetStatisticsWithNoSolution() throws SchedulerException {
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        VM v = mo.newVM();
+        Node n = mo.newNode();
+        map.addReadyVM(v);
+        map.addOfflineNode(n);
+        ChocoScheduler cra = new DefaultChocoScheduler();
+            ReconfigurationPlan p = cra.solve(mo, Arrays.asList(new Running(v), new Offline(n)));
+            Assert.assertNull(p);
+            SolvingStatistics stats = cra.getStatistics();
+            Assert.assertNotNull(stats);
+            Assert.assertTrue(stats.getSolutions().isEmpty());
+            Assert.assertEquals(stats.getNbNodes(), 1);
+            Assert.assertEquals(stats.getNbVMs(), 1);
+            Assert.assertFalse(stats.hitTimeout());
     }
 
     @Test
@@ -132,7 +177,6 @@ public class DefaultChocoSchedulerTest {
         }
         Assert.assertEquals(nbRunning, 1);
         SolvingStatistics st = cra.getStatistics();
-        System.out.println(st);
         Assert.assertEquals(st.getSolutions().get(0).getOptValue(), 1);
         Assert.assertEquals(st.getSolutions().size(), 1);
     }
