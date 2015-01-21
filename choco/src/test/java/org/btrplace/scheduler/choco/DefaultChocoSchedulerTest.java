@@ -286,8 +286,8 @@ public class DefaultChocoSchedulerTest {
     public void testTransitionFactoryCustomisation() throws SchedulerException {
         ChocoScheduler cra = new DefaultChocoScheduler();
         TransitionFactory tf = cra.getTransitionFactory();
-        List<VMTransitionBuilder> b = tf.getBuilder(VMState.READY, VMState.RUNNING);
-        Assert.assertTrue(tf.remove(b.get(0)));
+        VMTransitionBuilder b = tf.getBuilder(VMState.READY, VMState.RUNNING);
+        Assert.assertTrue(tf.remove(b));
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         mo.getMapping().addReadyVM(v);

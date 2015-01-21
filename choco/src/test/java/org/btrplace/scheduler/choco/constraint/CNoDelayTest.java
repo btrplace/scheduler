@@ -161,7 +161,6 @@ public class CNoDelayTest {
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.setVerbosity(3);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
 

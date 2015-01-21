@@ -76,7 +76,6 @@ public class Decommissionning implements Example {
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(3);
-        cra.setVerbosity(2);
         try {
             cra.setVerbosity(1);
             ReconfigurationPlan p = cra.solve(mo, cstrs);
