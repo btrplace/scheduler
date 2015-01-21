@@ -68,16 +68,6 @@ public class LocalTaskScheduler {
 
     private int[] sortedMaxProfile;
 
-    /**
-     * LB of the moment the last c-slice leaves.
-     */
-    //private IStateInt lastCendInf;
-
-    /**
-     * UB of the moment the last c-slice leaves.
-     */
-   // private IStateInt lastCendSup;
-
     private int[][] capacities;
 
     private int[][] cUsages, dUsages;
@@ -154,8 +144,6 @@ public class LocalTaskScheduler {
                 lastSup = s;
             }
         }
-        //this.lastCendInf = early.getSolver().getEnvironment().makeInt(lastInf);
-        //this.lastCendSup = early.getSolver().getEnvironment().makeInt(lastSup);
     }
 
     /**
@@ -178,12 +166,6 @@ public class LocalTaskScheduler {
         if (vIn.size() == 0 && out.length() == 0) return;
         boolean allInstantiated = computeProfiles();
 
-        //last.updateLowerBound(lastCendInf.get(), aCause);
-
-       /* if (checkInvariant()) {
-            // all time variables are instantiated
-            return;
-        }*/
         checkInvariant();
         if (allInstantiated) {
             return;
@@ -200,10 +182,10 @@ public class LocalTaskScheduler {
 
         for (int d = 0; d < nbDims; d++) {
             //What is necessarily used on the resource
-            profilesMin[d].clear();//IntHashMap();
+            profilesMin[d].clear();
 
             //Maximum possible usage on the resource
-            profilesMax[d].clear();// new TIntIntHashMap();
+            profilesMax[d].clear();
 
             profilesMax[d].put(0, capacities[me][d] - startupFree[d]);
             profilesMin[d].put(0, capacities[me][d] - startupFree[d]);
@@ -216,7 +198,6 @@ public class LocalTaskScheduler {
         for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
 
             cEnds[ct].updateUpperBound(last.getUB(), aCause);
-            //cEnds[ct].updateLowerBound(last.getLB(), aCause);
             allinstantiated &= cEnds[ct].isInstantiated() || associatedToDSliceOnCurrentNode(ct);
 
             int tu = cEnds[ct].getUB();
@@ -248,17 +229,12 @@ public class LocalTaskScheduler {
         }
         last.updateLowerBound(lastInf, aCause);
 
-        //lastCendInf.set(lastInf);
-        //lastCendSup.set(lastSup);
-
         lastSup = 0;
         // the dTasks
         for (int x = 0; x < vIn.size(); x++) {
             int dt = vIn.get(x);
 
             dStarts[dt].updateLowerBound(early.getLB(), aCause);
-            //dStarts[dt].updateUpperBound(early.getUB(), aCause);
-
             allinstantiated &= dStarts[dt].isInstantiated() || associatedToCSliceOnCurrentNode(dt);
 
 
@@ -274,7 +250,6 @@ public class LocalTaskScheduler {
             }
         }
         early.updateUpperBound(lastSup, aCause);
-        //early.updateLowerBound(lastInf, aCause);
 
         //Now transforms into an absolute profile
         sortedMinProfile = null;
@@ -283,9 +258,6 @@ public class LocalTaskScheduler {
 
         sortedMaxProfile = null;
         sortedMaxProfile = profilesMax[0].keys();
-//        for (int d = 0; d < nbDims; d++) {
-//           profilesMax[d].keys(sortedMaxProfile);
-//        }
 
         Arrays.sort(sortedMaxProfile);
 
@@ -360,35 +332,6 @@ public class LocalTaskScheduler {
                 }
             }
         }
-/*
-        boolean allinstantiated = true;
-        //invariant related to the last and the early.
-        for (int idx = 0; idx < vIn.size(); idx++) {
-            int i = vIn.get(idx);
-            if (dStarts[i].getUB() < early.getLB()) {
-                throw new RuntimeException("Too early");
-
-                if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].toString() + ") (min expected=" + early.toString() + ")");
-                }
-                aCause.contradiction(early, "");
-
-            }
-            allinstantiated &= dStarts[i].isInstantiated() || associatedToCSliceOnCurrentNode(i);
-        }
-
-        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (cEnds[i].getLB() > last.getUB()) {
-                throw new RuntimeException("Too late");
-
-                if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].toString() + ") (last expected=" + last.toString() + ")");
-                }
-                aCause.contradiction(last, "");
-
-            }
-            allinstantiated &= cEnds[i].isInstantiated() || associatedToDSliceOnCurrentNode(i);
-        }*/
         return false;
     }
 

@@ -3,6 +3,7 @@ Release notes
 
 ???????????
 ----------------------
+- Speed up tasks scheduling. This improves the resolution of problems that manipulate the node states. See #62
 - Refer to the associated [issue tracker](https://github.com/btrplace/scheduler/issues?q=milestone%3A%22release+0.41%22+is%3Aclosed) to get the closed issues
 
 version 0.40 - 16 Jan 2015
