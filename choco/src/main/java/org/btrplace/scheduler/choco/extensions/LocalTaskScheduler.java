@@ -200,10 +200,10 @@ public class LocalTaskScheduler {
 
         for (int d = 0; d < nbDims; d++) {
             //What is necessarily used on the resource
-            profilesMin[d] = new TIntIntHashMap();
+            profilesMin[d].clear();//IntHashMap();
 
             //Maximum possible usage on the resource
-            profilesMax[d] = new TIntIntHashMap();
+            profilesMax[d].clear();// new TIntIntHashMap();
 
             profilesMax[d].put(0, capacities[me][d] - startupFree[d]);
             profilesMin[d].put(0, capacities[me][d] - startupFree[d]);
