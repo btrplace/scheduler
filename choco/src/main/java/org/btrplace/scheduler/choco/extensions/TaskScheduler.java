@@ -296,7 +296,6 @@ public class TaskScheduler extends Constraint {
             return dt < dHosters.length;
         }
 
-
         private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[] change) {
             TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
             for (int d = 0; d < nbDims; d++) {
@@ -321,7 +320,5 @@ public class TaskScheduler extends Constraint {
             }
             return b.toString();
         }
-
-
     }
 }
