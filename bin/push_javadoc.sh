@@ -5,6 +5,7 @@ if [ $# -ne 1 ]; then
 fi
 LOCAL=`mktemp -d -t btrplace.XXX`
 REPOS=$1
+VERSION=$2
 HEAD=$(git rev-parse HEAD)
 git -C ${LOCAL} init
 git -C ${LOCAL} remote add origin git@github.com:${REPOS}||exit 1
