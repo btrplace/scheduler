@@ -1,6 +1,9 @@
 Release notes
 ======================
 
+0.42-SNAPSHOT - 12 Feb 2015
+----------------------
+
 0.41 - 12 Feb 2015
 ----------------------
 - Speed up tasks scheduling. This improves the resolution of problems that manipulate the node states. See #62
