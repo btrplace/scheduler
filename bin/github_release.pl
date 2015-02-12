@@ -1,13 +1,14 @@
 #!/usr/bin/perl -w
 use strict;
 use LWP::UserAgent;
+use Env qw(GITHUB_TOKEN);
 
 my $CHANGELOG = "CHANGES.md";
 my $TAG_HEADER = "btrplace-scheduler-";
 my $REPO = "btrplace/scheduler";
-my $URL = "https://api.github.com/repos/$REPO/releases?access_token=$env{GITHUB_TOKEN}";
+my $URL = "https://api.github.com/repos/$REPO/releases?access_token=$GITHUB_TOKEN";
 
-if (!exists($ENV{GITHUB_TOKEN}) {
+if ($GITHUB_TOKEN eq "") {
 	print("Environment variable GITHUB_TOKEN is missing");
 	exit(1);
 }
@@ -21,17 +22,16 @@ sub getLog  {
 	while (my $line = <FP>) {
 		chomp $line;
 		if ($line =~ /^version\ $v/) {
-		$in = 1;
-		<FP>
-	}
-	elsif ($line eq "") {
-		$in = 0;
-	}elsif ($in) {
-		if ($line =~ /issue\stracker/) {
-			$tracker = 1;
+			$in = 1;
+			<FP>
+		} elsif ($line eq "") {
+			$in = 0;
+		} elsif ($in) {
+			if ($line =~ /issue\stracker/) {
+				$tracker = 1;
+			}
+			$log = $log . $line."\\n";
 		}
-		$log = $log . $line."\\n";
-	}
 	}
 	close FP;
 	if (!$tracker) {
@@ -70,7 +70,5 @@ if (scalar(@ARGV) != 1) {
 
 my $log = getLog($ARGV[0]);
 release($ARGV[0], $log);
-
-#send to g
 
 
