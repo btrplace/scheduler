@@ -77,6 +77,26 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
+     * Read an optional integer.
+     *
+     * @param o  the object to parse
+     * @param id the key in the map that points to an integer
+     * @param def the default integer value if the key is absent
+     * @return the resulting integer
+     * @throws JSONConverterException if the key does not point to a int
+     */
+    public static int optInt(JSONObject o, String id, int def) throws JSONConverterException {
+        if (o.containsKey(id)) {
+            try {
+                return (Integer) o.get(id);
+            } catch (Exception e) {
+                throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
+            }
+        }
+        return def;
+    }
+
+    /**
      * Check if some keys are present.
      *
      * @param o    the object to parse

@@ -53,6 +53,10 @@ public class ActionConverterTest {
         String o = ac.toJSONString(a);
         System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
+        a.setBandwidth(200);
+        o = ac.toJSONString(a);
+        System.out.println(o);
+        Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test

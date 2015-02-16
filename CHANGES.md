@@ -1,8 +1,9 @@
 Release notes
 ======================
 
-0.42-SNAPSHOT - 12 Feb 2015
+??????
 ----------------------
+- The API allows know to indicate a bandwidth to allocate for VM migration (#52)
 
 0.41 - 12 Feb 2015
 ----------------------

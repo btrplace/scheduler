@@ -47,7 +47,11 @@ public class MigrateVMTest {
         Assert.assertEquals(ns.get(1), a.getDestinationNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
+        Assert.assertEquals(a.getBandwidth(), Integer.MAX_VALUE);
         Assert.assertFalse(a.toString().contains("null"));
+        Assert.assertTrue(a.setBandwidth(100));
+        Assert.assertFalse(a.setBandwidth(-100));
+        Assert.assertEquals(a.getBandwidth(), 100);
 
     }
 
@@ -91,7 +95,8 @@ public class MigrateVMTest {
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-
+        b.setBandwidth(200);
+        Assert.assertNotEquals(a, b);
         Assert.assertNotSame(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 4, 5));
         Assert.assertNotSame(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 3, 4));
         Assert.assertNotSame(a, new MigrateVM(vms.get(1), ns.get(0), ns.get(1), 3, 5));
