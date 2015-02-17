@@ -20,8 +20,10 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
+import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.SliceUtils;
@@ -29,12 +31,11 @@ import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.limits.BacktrackCounter;
-import org.chocosolver.solver.search.loop.monitors.SMF;
+import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
@@ -90,9 +91,9 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
-        if (p.getVMs().length > 0) {
+        /*if (p.getVMs().length > 0) {
             SMF.geometrical(s, p.getVMs().length * 2, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
-        }
+        }*/
         injectPlacementHeuristic(p, cost);
         postCostConstraints();
         return true;
@@ -173,11 +174,30 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
+        IntValueSelector rnd = new RandomVMPlacement(rp, map, true);
+        IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), new RandomVMPlacement(rp, map, true)));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), quart));
             }
+        }
+    }
+
+    private Comparator<Node> getComparator() {
+
+        List<CShareableResource> rcs = new ArrayList<>();
+        for (String v : rp.getViews()) {
+            if (v.startsWith(ShareableResource.VIEW_ID_BASE)) {
+                rcs.add((CShareableResource) rp.getView(v));
+            }
+        }
+        if (rcs.isEmpty()) {
+            //No shareableresource view, load balance over cardinality
+            return new CapacityComparator(rp, false);
+        } else {
+            //TODO: most constrained
+            return new CShareableResourceComparator(rp, rcs.get(0), false);
         }
     }
 
