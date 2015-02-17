@@ -145,6 +145,8 @@
                     <windowtitle>${project.groupId}-${project.artifactId} ${project.version} API</windowtitle>
                     <bottom>Copyright © 2015 University of Nice-Sophia Antipolis. All Rights Reserved.</bottom>
                     <additionalparam>-Xdoclint:none</additionalparam>
+                    <!-- weired duplication, but aggregate does not scan module configurations -->
+                    <excludePackageNames>org.btrplace.btrpsl.antlr</excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>

@@ -20,10 +20,10 @@ package org.btrplace.btrpsl.tree;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.BaseTree;
-import org.btrplace.btrpsl.ANTLRBtrplaceSL2Parser;
 import org.btrplace.btrpsl.ErrorReporter;
 import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.SymbolsTable;
+import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Parser;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.element.BtrpSet;

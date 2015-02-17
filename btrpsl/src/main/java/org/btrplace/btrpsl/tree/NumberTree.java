@@ -19,8 +19,8 @@
 package org.btrplace.btrpsl.tree;
 
 import org.antlr.runtime.Token;
-import org.btrplace.btrpsl.ANTLRBtrplaceSL2Lexer;
 import org.btrplace.btrpsl.ErrorReporter;
+import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Lexer;
 import org.btrplace.btrpsl.element.BtrpNumber;
 import org.btrplace.btrpsl.element.BtrpOperand;
 
