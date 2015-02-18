@@ -54,7 +54,6 @@ public class RandOverQuartilePlacement implements IntValueSelector {
     @Override
     public int selectValue(IntVar x) {
         if (stay) {
-            //System.out.println("stay");
             VM vm = map.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
                 return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
@@ -64,30 +63,24 @@ public class RandOverQuartilePlacement implements IntValueSelector {
         if (!x.isInstantiated()) {
             Node [] candidates = extractNodes(x);
             Arrays.sort(candidates, comp);
-            CShareableResource rc = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + "core");
-            /*for (int i = 0; i < candidates.length; i++) {
-                System.out.print(" " + candidates[i] + ": " + rc.getPhysicalUsage(rp.getNode(candidates[i])));
-            }
-            System.out.println();*/
             int s = candidates.length / 4;
             if (s == 0) {
                 Node got = candidates[rnd.nextInt(candidates.length)];
-                //System.err.println("?(default) " + got);
                 //too small to extract quartiles
                 return rp.getNode(got);
             }
             int from = s * (quartile - 1);
-            //pretty(candidates, from, s);
             Node got = candidates[rnd.nextInt(s) + from];
-            //System.out.println("?" + got);
             return rp.getNode(got);
         }
         return x.getValue();
     }
 
-    private void pretty(Node[] candidates, int from, int s) {
+    private void pretty(VM v, Node[] candidates, int from, int s) {
+        CShareableResource rc = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + "core");
+        System.out.print(v + " core=" + rc.getVMsAllocation()[rp.getVM(v)] + "|");
         for (int i = from; i < s; i++) {
-            System.out.print(" " +candidates[i].id());
+            System.out.print(" " +candidates[i].id() + "=" + rc.getPhysicalUsage(rp.getNode(candidates[i])));
         }
         System.out.println();
     }
@@ -104,15 +97,5 @@ public class RandOverQuartilePlacement implements IntValueSelector {
             ite.dispose();
         }
         return ns;
-    }
-
-
-    private void sort(Integer [] hosts, CShareableResource rc) {
-        Arrays.sort(hosts, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer i, Integer j) {
-                return rc.getPhysicalUsage(i).getLB() - rc.getPhysicalUsage(j).getLB();
-            }
-        });
     }
 }

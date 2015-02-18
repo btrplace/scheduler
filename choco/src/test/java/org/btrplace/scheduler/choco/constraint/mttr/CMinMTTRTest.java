@@ -20,12 +20,17 @@ import java.util.List;
  */
 public class CMinMTTRTest {
 
+    /**
+     * The DC is heavily loaded.
+     * Provoked a large amount of backtracks when we relied on a random search
+     * @throws Exception
+     */
     @Test
     public void testHeavyLoad() throws Exception {
         Model mo = new DefaultModel();
         ShareableResource cpu = new ShareableResource("core", 7, 1);
         ShareableResource mem = new ShareableResource("mem", 20, 2);
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 50; i++) {
             Node n = mo.newNode();
             mo.getMapping().addOnlineNode(n);
             for (int j = 0; j < 4; j++) {
@@ -46,11 +51,12 @@ public class CMinMTTRTest {
         mo.attach(cpu);
         mo.attach(mem);
         DefaultChocoScheduler sched = new DefaultChocoScheduler();
-        sched.setVerbosity(2);
+        //sched.setVerbosity(2);
         ReconfigurationPlan p = sched.solve(mo, l);
         Assert.assertNotNull(p);
         System.err.println(sched.getStatistics());
+        //TODO: fragile. Usefull ?
+        Assert.assertTrue(sched.getStatistics().getNbBacktracks() < 100);
         System.err.flush();
-        Assert.fail();
     }
 }

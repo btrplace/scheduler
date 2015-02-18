@@ -174,7 +174,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
-        IntValueSelector rnd = new RandomVMPlacement(rp, map, true);
         IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
@@ -196,9 +195,38 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
             //No shareableresource view, load balance over cardinality
             return new CapacityComparator(rp, false);
         } else {
-            //TODO: most constrained
+            /*CShareableResource worst = null;
+            double u = 0.0;
+            for (CShareableResource rc : rcs) {
+                System.out.println(rc.getIdentifier() + " "  + usage(rc));
+                if (worst == null) {
+                    worst = rc;
+                    u = usage(worst);
+                } else {
+                    if (usage(rc) > u) {
+                        worst = rc;
+                        u = usage(rc);
+                    }
+                }
+            }
+            return new CShareableResourceComparator(rp, worst, false);*/
             return new CShareableResourceComparator(rp, rcs.get(0), false);
         }
+    }
+
+    private double usage(CShareableResource rc) {
+        double usage = 0;
+        for (IntVar v : rc.getVMsAllocation()) {
+            usage += v.getLB();
+            System.out.println(v);
+        }
+        double capa = 0;
+        for (Node n : rp.getNodes()) {
+            int idx = rp.getNode(n);
+            capa += (rc.getPhysicalUsage(idx).getUB() * rc.getOverbookRatio(idx).getLB());
+        }
+        System.out.println(usage + " " + capa);
+        return usage/capa;
     }
 
     @Override
