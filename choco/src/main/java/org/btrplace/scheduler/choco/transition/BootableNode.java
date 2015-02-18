@@ -151,6 +151,11 @@ public class BootableNode implements NodeTransition {
     }
 
     @Override
+    public String toString() {
+        return "bootable(node=" + node + ", online=" + getState() + ")";
+    }
+
+    @Override
     public IntVar getStart() {
         return start;
     }

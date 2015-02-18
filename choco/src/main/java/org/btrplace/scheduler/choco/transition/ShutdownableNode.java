@@ -154,6 +154,11 @@ public class ShutdownableNode implements NodeTransition {
     }
 
     @Override
+    public String toString() {
+        return "shutdownable(node=" + node + ", online=" + getState() + ")";
+    }
+
+    @Override
     public Node getNode() {
         return node;
     }

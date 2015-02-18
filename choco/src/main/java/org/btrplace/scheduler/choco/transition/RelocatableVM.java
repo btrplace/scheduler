@@ -284,7 +284,7 @@ public class RelocatableVM implements KeepRunningVM {
         return "relocate(doReinstantiation=" + prettyMethod(doReinstantiation) +
                 " ,vm=" + vm +
                 " ,from=" + src + "(" + rp.getNode(src) + ")" +
-                " ,to=" + dSlice.getHoster().toString() + ")";
+                " ,to=" + (dSlice.getHoster().isInstantiated() ? rp.getNode(dSlice.getHoster().getValue()) : dSlice.getHoster().toString()) + ")";
     }
 
     /**
