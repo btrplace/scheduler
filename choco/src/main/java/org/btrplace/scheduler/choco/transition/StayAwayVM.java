@@ -28,8 +28,6 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.EnumSet;
-
 
 /**
  * A fake action model that indicates the VM
@@ -43,14 +41,19 @@ public class StayAwayVM implements VMTransition {
 
     private BoolVar zero;
 
+    private VMState from, to;
     /**
      * Make a new model.
      *
+     * @param from the VM initial state
+     * @param to the VM next state
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
      */
-    public StayAwayVM(ReconfigurationProblem rp, VM e) {
+    public StayAwayVM(VMState from, VMState to, ReconfigurationProblem rp, VM e) {
         vm = e;
+        this.from = from;
+        this.to = to;
         zero = VariableFactory.zero(rp.getSolver());
     }
 
@@ -99,6 +102,16 @@ public class StayAwayVM implements VMTransition {
         return zero;
     }
 
+    @Override
+    public VMState getSourceState() {
+        return from;
+    }
+
+    @Override
+    public VMState getNextState() {
+        return to;
+    }
+
     /**
      * The builder devoted to a ready->ready transition.
      */
@@ -113,18 +126,8 @@ public class StayAwayVM implements VMTransition {
 
         @Override
         public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
-            return new StayAwayVM(r, v);
+            return new StayAwayVM(VMState.READY, VMState.READY, r, v);
         }
-    }
-
-    @Override
-    public EnumSet<VMState> getSourceState() {
-        return EnumSet.of(VMState.SLEEPING, VMState.READY);
-    }
-
-    @Override
-    public EnumSet<VMState> getDestState() {
-        return EnumSet.of(VMState.SLEEPING, VMState.READY);
     }
 
     /**
@@ -141,7 +144,25 @@ public class StayAwayVM implements VMTransition {
 
         @Override
         public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
-            return new StayAwayVM(r, v);
+            return new StayAwayVM(VMState.SLEEPING, VMState.SLEEPING, r, v);
+        }
+    }
+
+    /**
+     * The builder devoted to a sleeping->sleeping transition.
+     */
+    public static class BuilderInit extends VMTransitionBuilder {
+
+        /**
+         * New builder
+         */
+        public BuilderInit() {
+            super("stayInit", VMState.INIT, VMState.INIT);
+        }
+
+        @Override
+        public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
+            return new StayAwayVM(VMState.INIT, VMState.INIT, r, v);
         }
     }
 }

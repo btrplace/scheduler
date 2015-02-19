@@ -41,8 +41,6 @@ import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.EnumSet;
-
 
 /**
  * Model an action that allow a running VM to be relocate elsewhere if necessary.
@@ -290,13 +288,13 @@ public class RelocatableVM implements KeepRunningVM {
     }
 
     @Override
-    public EnumSet<VMState> getSourceState() {
-        return EnumSet.of(VMState.RUNNING);
+    public VMState getSourceState() {
+        return VMState.RUNNING;
     }
 
     @Override
-    public EnumSet<VMState> getDestState() {
-        return EnumSet.of(VMState.RUNNING);
+    public VMState getNextState() {
+        return VMState.RUNNING;
     }
 
 

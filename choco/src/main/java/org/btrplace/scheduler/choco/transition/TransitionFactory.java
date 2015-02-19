@@ -96,6 +96,9 @@ public class TransitionFactory {
      */
     public VMTransitionBuilder getBuilder(VMState srcState, VMState dstState) {
         List<VMTransitionBuilder> dstCompliant = vmAMB2.get(dstState);
+        if (dstCompliant == null) {
+            return null;
+        }
         for (VMTransitionBuilder vmb : dstCompliant) {
             if (vmb.getSourceStates().contains(srcState)) {
                 return vmb;
@@ -130,6 +133,7 @@ public class TransitionFactory {
         f.add(new ForgeVM.Builder());
         f.add(new StayAwayVM.BuilderReady());
         f.add(new StayAwayVM.BuilderSleeping());
+        f.add(new StayAwayVM.BuilderInit());
         f.add(new BootableNode.Builder());
         f.add(new ShutdownableNode.Builder());
         return f;

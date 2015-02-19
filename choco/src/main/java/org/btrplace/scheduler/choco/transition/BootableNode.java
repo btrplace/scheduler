@@ -198,7 +198,7 @@ public class BootableNode implements NodeTransition {
     }
 
     @Override
-    public EnumSet<NodeState> getDestState() {
+    public EnumSet<NodeState> getNextState() {
         return EnumSet.allOf(NodeState.class);
     }
 

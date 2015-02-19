@@ -137,15 +137,15 @@ public class BootVM implements VMTransition {
     }
 
     @Override
-    public EnumSet<VMState> getSourceState() {
-        return EnumSet.of(VMState.READY);
+    public VMState getSourceState() {
+        return VMState.READY;
     }
 
     @Override
-    public EnumSet<VMState> getDestState() {
-        return EnumSet.of(VMState.RUNNING);
+    public VMState getNextState() {
+        return VMState.RUNNING;
     }
-    
+
     /**
      * The builder devoted to a ready->running transition.
      */

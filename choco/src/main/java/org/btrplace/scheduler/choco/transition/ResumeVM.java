@@ -32,8 +32,6 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.EnumSet;
-
 
 /**
  * Model an action that resume a sleeping VM.
@@ -134,13 +132,13 @@ public class ResumeVM implements VMTransition {
     }
 
     @Override
-    public EnumSet<VMState> getSourceState() {
-        return EnumSet.of(VMState.SLEEPING);
+    public VMState getSourceState() {
+        return VMState.SLEEPING;
     }
 
     @Override
-    public EnumSet<VMState> getDestState() {
-        return EnumSet.of(VMState.RUNNING);
+    public VMState getNextState() {
+        return VMState.RUNNING;
     }
 
     /**

@@ -30,8 +30,6 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.EnumSet;
-
 /**
  * Model an action that stop a running VM.
  * An estimation of the action duration must be provided through a
@@ -130,13 +128,13 @@ public class ShutdownVM implements VMTransition {
     }
 
     @Override
-    public EnumSet<VMState> getSourceState() {
-        return EnumSet.of(VMState.RUNNING);
+    public VMState getSourceState() {
+        return VMState.RUNNING;
     }
 
     @Override
-    public EnumSet<VMState> getDestState() {
-        return EnumSet.of(VMState.READY);
+    public VMState getNextState() {
+        return VMState.READY;
     }
 
 

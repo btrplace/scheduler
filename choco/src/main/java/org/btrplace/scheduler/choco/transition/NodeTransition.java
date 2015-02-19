@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
-import org.btrplace.model.VMState;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.EnumSet;
@@ -61,8 +60,8 @@ public interface NodeTransition extends Transition {
     NodeState getSourceState();
 
     /**
-     * Get the possible destination states
-     * @return a set of possible states
+     * Get the possible next states for the node.
+     * @return the possible states
      */
-    EnumSet<NodeState> getDestState();
+    EnumSet<NodeState> getNextState();
 }

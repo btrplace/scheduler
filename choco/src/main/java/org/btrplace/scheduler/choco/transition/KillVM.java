@@ -62,14 +62,16 @@ public class KillVM implements VMTransition {
 
     private Slice cSlice;
 
+    private VMState from;
     /**
      * Make a new model.
      *
+     * @param from the initial VM state.
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred
+     * @throws SchedulerException if an error occurred
      */
-    public KillVM(ReconfigurationProblem rp, VM e) throws SchedulerException {
+    public KillVM(VMState from, ReconfigurationProblem rp, VM e) throws SchedulerException {
         vm = e;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
@@ -137,13 +139,13 @@ public class KillVM implements VMTransition {
     }
 
     @Override
-    public EnumSet<VMState> getSourceState() {
-        return EnumSet.of(VMState.READY, VMState.RUNNING, VMState.READY, VMState.INIT, VMState.SLEEPING);
+    public VMState getSourceState() {
+        return from;
     }
 
     @Override
-    public EnumSet<VMState> getDestState() {
-        return EnumSet.of(VMState.KILLED);
+    public VMState getNextState() {
+        return VMState.KILLED;
     }
     /**
      * The builder devoted to a (init|ready|running|sleep)->killed transition.
@@ -159,7 +161,15 @@ public class KillVM implements VMTransition {
 
         @Override
         public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
-            return new KillVM(r, v);
+            Mapping m = r.getSourceModel().getMapping();
+            if (m.isReady(v)) {
+                return new KillVM(VMState.READY, r, v);
+            } else if (m.isRunning(v)) {
+                return new KillVM(VMState.RUNNING, r, v);
+            }  else if (m.isSleeping(v)) {
+                return new KillVM(VMState.SLEEPING, r, v);
+            }
+            return new KillVM(VMState.INIT, r, v);
         }
     }
 }

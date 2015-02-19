@@ -25,14 +25,13 @@ import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import java.util.EnumSet;
 import java.util.List;
 
 
@@ -189,13 +188,13 @@ public class TransitionUtilsTest {
         }
 
         @Override
-        public EnumSet<VMState> getSourceState() {
-            return EnumSet.of(VMState.READY, VMState.RUNNING, VMState.READY, VMState.INIT, VMState.SLEEPING);
+        public VMState getSourceState() {
+            return VMState.READY;
         }
 
         @Override
-        public EnumSet<VMState> getDestState() {
-            return EnumSet.of(VMState.KILLED);
+        public VMState getNextState() {
+            return VMState.KILLED;
         }
 
     }

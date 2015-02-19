@@ -29,8 +29,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -51,6 +49,8 @@ import org.chocosolver.solver.variables.SetVar;
 import org.chocosolver.solver.variables.VariableFactory;
 import org.chocosolver.util.ESat;
 import org.chocosolver.util.tools.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -321,6 +321,29 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return null;
     }
 
+
+    @Override
+    public VMState getSourceState(VM v) {
+        if (getSourceModel().getMapping().isReady(v)) {
+            return VMState.READY;
+        } else if (getSourceModel().getMapping().isSleeping(v)) {
+            return VMState.SLEEPING;
+        } else if (getSourceModel().getMapping().isRunning(v)) {
+            return VMState.RUNNING;
+        }
+        return null;
+    }
+
+    @Override
+    public NodeState getSourceState(Node n) {
+        if (getSourceModel().getMapping().isOnline(n)) {
+            return NodeState.ONLINE;
+        } else if (getSourceModel().getMapping().isOffline(n)) {
+            return NodeState.OFFLINE;
+        }
+        return null;
+    }
+
     private void fillElements() {
         Set<VM> allVMs = new HashSet<>();
         allVMs.addAll(model.getMapping().getSleepingVMs());
@@ -358,7 +381,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
             VMState nextState = getNextState(vmId);
-            VMState curState = map.getState(vmId);
+            VMState curState = getSourceState(vmId);
             if (curState == null) {
                 //It's a new VM
                 curState = VMState.INIT;
