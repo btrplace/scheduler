@@ -411,6 +411,26 @@ public class CShareableResource implements ChocoView {
         }
 
         ((Cumulatives) v).addDim(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+
+        //Check if the initial capacity > sum current consumption
+        //The ratio is instantiated now so the computation is correct
+        //Seems to me we don't support ratio change
+        for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
+            int nIdx = rp.getNode(n);
+            double ratio = getOverbookRatio(nIdx).getLB();
+            double capa = getSourceResource().getCapacity(n) * ratio;
+            int usage = 0;
+            for (VM vm : rp.getSourceModel().getMapping().getRunningVMs(n)) {
+                usage += getSourceResource().getConsumption(vm);
+                if (usage > capa) {
+                    break;
+                }
+            }
+
+            if (usage > capa) {
+                throw new SchedulerException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
+            }
+        }
         return true;
     }
 

@@ -18,8 +18,6 @@
 
 package org.btrplace.bench;
 
-import org.testng.annotations.Test;
-
 import java.io.IOException;
 
 /**
@@ -27,7 +25,6 @@ import java.io.IOException;
  */
 public class LauncherTest {
 
-    @Test
     public void test() throws IOException {
 
         Launcher.main(new String[]{

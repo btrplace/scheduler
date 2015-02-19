@@ -28,11 +28,11 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.*;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -230,5 +230,23 @@ public class CShareableResourceTest {
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         System.out.println(p);
+    }
+
+    @Test(expectedExceptions = SchedulerException.class)
+    public void testInitiallyUnsatisfied() throws SchedulerException {
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        ShareableResource rc = new ShareableResource("cpu",1, 1);
+        VM v1 = mo.newVM();
+        VM v2 = mo.newVM();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addRunningVM(v1, n1);
+        mo.getMapping().addRunningVM(v2, n1);
+        mo.attach(rc);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        Assert.assertNull(s.solve(mo, new ArrayList<>()));
+        Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
     }
 }

@@ -227,15 +227,13 @@ public class CResourceCapacityTest {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
 
         org.btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
         rc.setConsumption(vm1, 3);
-        rc.setConsumption(vm2, 3);
-        rc.setConsumption(vm3, 1);
+        rc.setConsumption(vm2, 2);
 
         mo.attach(rc);
 
