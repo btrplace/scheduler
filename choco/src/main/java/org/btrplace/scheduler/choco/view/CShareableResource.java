@@ -434,7 +434,7 @@ public class CShareableResource implements ChocoView {
             try {
                 virtRcUsage[nIdx].updateUpperBound(phyRcUsage[nIdx].getUB(), Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: ", rp.getNode(nIdx), phyRcUsage[nIdx].getUB(), ex.getMessage());
+                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), phyRcUsage[nIdx].getUB(), ex.getMessage());
                 return false;
             }
         } else {
