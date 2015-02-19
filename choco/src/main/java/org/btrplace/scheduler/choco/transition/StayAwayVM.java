@@ -28,6 +28,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
+import java.util.EnumSet;
+
 
 /**
  * A fake action model that indicates the VM
@@ -113,6 +115,16 @@ public class StayAwayVM implements VMTransition {
         public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
             return new StayAwayVM(r, v);
         }
+    }
+
+    @Override
+    public EnumSet<VMState> getSourceState() {
+        return EnumSet.of(VMState.SLEEPING, VMState.READY);
+    }
+
+    @Override
+    public EnumSet<VMState> getDestState() {
+        return EnumSet.of(VMState.SLEEPING, VMState.READY);
     }
 
     /**

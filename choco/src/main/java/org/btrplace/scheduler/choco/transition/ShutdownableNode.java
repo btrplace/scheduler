@@ -32,6 +32,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
+import java.util.EnumSet;
+
 
 /**
  * Model an action that allow a node to boot if necessary.
@@ -191,6 +193,16 @@ public class ShutdownableNode implements NodeTransition {
     @Override
     public IntVar getHostingEnd() {
         return hostingEnd;
+    }
+
+    @Override
+    public NodeState getSourceState() {
+        return NodeState.ONLINE;
+    }
+
+    @Override
+    public EnumSet<NodeState> getDestState() {
+        return EnumSet.allOf(NodeState.class);
     }
 
     /**

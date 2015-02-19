@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -31,6 +32,7 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
+import java.util.EnumSet;
 import java.util.List;
 
 
@@ -184,6 +186,16 @@ public class TransitionUtilsTest {
         @Override
         public BoolVar getState() {
             return state;
+        }
+
+        @Override
+        public EnumSet<VMState> getSourceState() {
+            return EnumSet.of(VMState.READY, VMState.RUNNING, VMState.READY, VMState.INIT, VMState.SLEEPING);
+        }
+
+        @Override
+        public EnumSet<VMState> getDestState() {
+            return EnumSet.of(VMState.KILLED);
         }
 
     }

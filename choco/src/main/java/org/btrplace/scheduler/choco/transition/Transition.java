@@ -30,7 +30,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  * @see TransitionUtils
  */
-public interface Transition {
+public interface Transition<E> {
 
     /**
      * Get the moment the action starts.

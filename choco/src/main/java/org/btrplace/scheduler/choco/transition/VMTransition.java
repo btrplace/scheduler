@@ -19,7 +19,10 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 import org.btrplace.scheduler.choco.Slice;
+
+import java.util.EnumSet;
 
 
 /**
@@ -57,4 +60,16 @@ public interface VMTransition extends Transition {
      * @return {@code true} if the VM must be manipulated
      */
     boolean isManaged();
+
+    /**
+     * Get the VM initial state
+     * @return a state
+     */
+    EnumSet<VMState> getSourceState();
+
+    /**
+     * Get the VM destination state
+     * @return a state
+     */
+    EnumSet<VMState> getDestState();
 }

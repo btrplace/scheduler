@@ -136,6 +136,15 @@ public class KillVM implements VMTransition {
         return state;
     }
 
+    @Override
+    public EnumSet<VMState> getSourceState() {
+        return EnumSet.of(VMState.READY, VMState.RUNNING, VMState.READY, VMState.INIT, VMState.SLEEPING);
+    }
+
+    @Override
+    public EnumSet<VMState> getDestState() {
+        return EnumSet.of(VMState.KILLED);
+    }
     /**
      * The builder devoted to a (init|ready|running|sleep)->killed transition.
      */

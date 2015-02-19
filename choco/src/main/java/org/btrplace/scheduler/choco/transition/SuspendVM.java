@@ -31,6 +31,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
+import java.util.EnumSet;
+
 
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link org.btrplace.plan.event.SuspendVM} action.
@@ -125,6 +127,17 @@ public class SuspendVM implements VMTransition {
     public VM getVM() {
         return vm;
     }
+
+    @Override
+    public EnumSet<VMState> getSourceState() {
+        return EnumSet.of(VMState.RUNNING);
+    }
+
+    @Override
+    public EnumSet<VMState> getDestState() {
+        return EnumSet.of(VMState.SLEEPING);
+    }
+
 
     /**
      * The builder devoted to a running->sleeping transition.

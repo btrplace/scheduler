@@ -31,6 +31,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
+import java.util.EnumSet;
+
 
 /**
  * Model a transition that will forge a VM to put it into the ready state.
@@ -137,6 +139,15 @@ public class ForgeVM implements VMTransition {
         return true;
     }
 
+    @Override
+    public EnumSet<VMState> getSourceState() {
+        return EnumSet.of(VMState.INIT);
+    }
+
+    @Override
+    public EnumSet<VMState> getDestState() {
+        return EnumSet.of(VMState.READY);
+    }
 
     /**
      * Get the template to use to build the VM.
