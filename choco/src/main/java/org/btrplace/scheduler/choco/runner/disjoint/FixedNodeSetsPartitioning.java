@@ -129,9 +129,9 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         Set<VM> toLaunch = getVMsToLaunch(i);
 
         for (Collection<Node> s : partitions) {
-            SubModel partModel = new SubModel(mo, eb, s, new HashSet<VM>(toLaunch.size() / partitions.size()));
+            SubModel partModel = new SubModel(mo, eb, s, new HashSet<>(toLaunch.size() / partitions.size()));
 
-            parts.add(new Instance(partModel, new THashSet<SatConstraint>(), i.getOptConstraint()));
+            parts.add(new Instance(partModel, new THashSet<>(), i.getOptConstraint()));
 
             //VM Index
             partModel.getMapping().fillVMIndex(vmPosition, partNumber);

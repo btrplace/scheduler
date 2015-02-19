@@ -31,8 +31,6 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.EnumSet;
-
 
 /**
  * Model a transition that allows an offline node to be booted if necessary.
@@ -195,11 +193,6 @@ public class BootableNode implements NodeTransition {
     @Override
     public NodeState getSourceState() {
         return NodeState.OFFLINE;
-    }
-
-    @Override
-    public EnumSet<NodeState> getNextState() {
-        return EnumSet.allOf(NodeState.class);
     }
 
     /**

@@ -18,13 +18,9 @@
 
 package org.btrplace.scheduler.choco.transition;
 
-import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-
-import java.util.EnumSet;
-
 
 /**
  * A model skeleton for a transition.

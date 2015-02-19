@@ -193,7 +193,7 @@ public class TransitionUtilsTest {
         }
 
         @Override
-        public VMState getNextState() {
+        public VMState getFutureState() {
             return VMState.KILLED;
         }
 

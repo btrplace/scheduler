@@ -22,9 +22,6 @@ import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.EnumSet;
-
-
 /**
  * Interface to specify a transition that manipulates a node.
  *
@@ -58,10 +55,4 @@ public interface NodeTransition extends Transition {
      * @return a state
      */
     NodeState getSourceState();
-
-    /**
-     * Get the possible next states for the node.
-     * @return the possible states
-     */
-    EnumSet<NodeState> getNextState();
 }

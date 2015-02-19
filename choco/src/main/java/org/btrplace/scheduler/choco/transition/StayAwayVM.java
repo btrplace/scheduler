@@ -108,7 +108,7 @@ public class StayAwayVM implements VMTransition {
     }
 
     @Override
-    public VMState getNextState() {
+    public VMState getFutureState() {
         return to;
     }
 

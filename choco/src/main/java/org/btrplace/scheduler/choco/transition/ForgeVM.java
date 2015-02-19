@@ -143,7 +143,7 @@ public class ForgeVM implements VMTransition {
     }
 
     @Override
-    public VMState getNextState() {
+    public VMState getFutureState() {
         return VMState.READY;
     }
 

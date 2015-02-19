@@ -137,7 +137,7 @@ public class ResumeVM implements VMTransition {
     }
 
     @Override
-    public VMState getNextState() {
+    public VMState getFutureState() {
         return VMState.RUNNING;
     }
 

@@ -293,7 +293,7 @@ public class RelocatableVM implements KeepRunningVM {
     }
 
     @Override
-    public VMState getNextState() {
+    public VMState getFutureState() {
         return VMState.RUNNING;
     }
 

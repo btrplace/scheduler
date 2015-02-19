@@ -66,8 +66,8 @@ public interface VMTransition extends Transition<VMState> {
     VMState getSourceState();
 
     /**
-     * Get the VM next state.
+     * Get the future VM state.
      * @return a state
      */
-    VMState getNextState();
+    VMState getFutureState();
 }

@@ -110,7 +110,7 @@ public interface ReconfigurationProblem {
      * @param v the VM
      * @return the state if the VM is known, {@code null} otherwise
      */
-    VMState getNextState(VM v);
+    VMState getFutureState(VM v);
 
     /**
      * Get the current VM state.

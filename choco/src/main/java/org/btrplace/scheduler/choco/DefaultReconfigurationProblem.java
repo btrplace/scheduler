@@ -308,40 +308,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public final VMState getNextState(VM v) {
-        if (running.contains(v)) {
-            return VMState.RUNNING;
-        } else if (ready.contains(v)) {
-            return VMState.READY;
-        } else if (sleeping.contains(v)) {
-            return VMState.SLEEPING;
-        } else if (killed.contains(v)) {
-            return VMState.KILLED;
-        }
-        return null;
+    public final VMState getFutureState(VM v) {
+        VMTransition t = getVMAction(v);
+        return t == null ? null : t.getFutureState();
     }
 
 
     @Override
     public VMState getSourceState(VM v) {
-        if (getSourceModel().getMapping().isReady(v)) {
-            return VMState.READY;
-        } else if (getSourceModel().getMapping().isSleeping(v)) {
-            return VMState.SLEEPING;
-        } else if (getSourceModel().getMapping().isRunning(v)) {
-            return VMState.RUNNING;
-        }
-        return null;
+        VMTransition t = getVMAction(v);
+        return t == null ? null : t.getSourceState();
     }
 
     @Override
     public NodeState getSourceState(Node n) {
-        if (getSourceModel().getMapping().isOnline(n)) {
-            return NodeState.ONLINE;
-        } else if (getSourceModel().getMapping().isOffline(n)) {
-            return NodeState.OFFLINE;
-        }
-        return null;
+        NodeTransition t = getNodeAction(n);
+        return t == null ? null : t.getSourceState();
     }
 
     private void fillElements() {
@@ -380,26 +362,30 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmActions = new VMTransition[vms.length];
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
-            VMState nextState = getNextState(vmId);
-            VMState curState = getSourceState(vmId);
-            if (curState == null) {
-                //It's a new VM
-                curState = VMState.INIT;
+            VMState curState = VMState.INIT;
+            if (map.isRunning(vmId)) {
+                curState = VMState.RUNNING;
+            } else if (map.isSleeping(vmId)) {
+                curState = VMState.SLEEPING;
+            } else if (map.isReady(vmId)) {
+                curState = VMState.READY;
             }
-            if (nextState == null) {
-                //Next state is undefined, keep the current state
-                //Need to update running, sleeping and waiting accordingly
-                nextState = curState;
-                switch (nextState) {
-                    case RUNNING:
-                        running.add(vmId);
-                        break;
-                    case SLEEPING:
-                        sleeping.add(vmId);
-                        break;
-                    case READY:
-                        ready.add(vmId);
-                        break;
+
+            VMState nextState;
+            if (running.contains(vmId)) {
+                nextState = VMState.RUNNING;
+            } else if (sleeping.contains(vmId)) {
+                nextState = VMState.SLEEPING;
+            } else if (ready.contains(vmId)) {
+                nextState = VMState.READY;
+            } else if (killed.contains(vmId)) {
+                nextState = VMState.KILLED;
+            } else {
+                nextState = curState; //by default, maintain state
+                switch(nextState) {
+                    case READY: ready.add(vmId);break;
+                    case RUNNING: running.add(vmId); break;
+                    case SLEEPING: sleeping.add(vmId); break;
                 }
             }
 

@@ -132,7 +132,7 @@ public class SuspendVM implements VMTransition {
     }
 
     @Override
-    public VMState getNextState() {
+    public VMState getFutureState() {
         return VMState.SLEEPING;
     }
 
