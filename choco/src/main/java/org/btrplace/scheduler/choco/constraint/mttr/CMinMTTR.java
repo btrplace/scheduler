@@ -174,11 +174,12 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
-        IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
+        //IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
+        IntValueSelector rnd = new RandomVMPlacement(rp, map, true);
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), quart));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
             }
         }
     }
@@ -210,7 +211,8 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
                 }
             }
             return new CShareableResourceComparator(rp, worst, false);*/
-            return new CShareableResourceComparator(rp, rcs.get(0), false);
+            System.err.println(rcs.get(1));
+            return new CShareableResourceComparator(rp, rcs.get(1), false);
         }
     }
 

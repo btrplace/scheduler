@@ -138,7 +138,7 @@ public class Launcher {
         // Try to solve
         try {
             // For debug purpose
-            cra.setVerbosity(0);
+            cra.setVerbosity(2);
             plan = cra.solve(i.getModel(), i.getSatConstraints());
             if (plan == null) {
                 System.err.println("No solution !");
