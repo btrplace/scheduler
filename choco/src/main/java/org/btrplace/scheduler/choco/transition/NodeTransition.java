@@ -55,7 +55,7 @@ public interface NodeTransition extends Transition {
     IntVar getHostingEnd();
 
     /**
-     * Get the initial state
+     * Get the node initial state.
      * @return a state
      */
     NodeState getSourceState();

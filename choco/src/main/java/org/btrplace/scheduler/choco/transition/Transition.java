@@ -18,9 +18,12 @@
 
 package org.btrplace.scheduler.choco.transition;
 
+import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
+
+import java.util.EnumSet;
 
 
 /**
@@ -30,7 +33,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  * @see TransitionUtils
  */
-public interface Transition<E> {
+public interface Transition<E extends Enum<?>> {
 
     /**
      * Get the moment the action starts.

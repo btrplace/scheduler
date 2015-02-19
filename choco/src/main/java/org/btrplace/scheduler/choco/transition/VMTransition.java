@@ -30,7 +30,7 @@ import java.util.EnumSet;
  *
  * @author Fabien Hermenier
  */
-public interface VMTransition extends Transition {
+public interface VMTransition extends Transition<VMState> {
 
     /**
      * Get the VM manipulated by the action.
@@ -62,14 +62,14 @@ public interface VMTransition extends Transition {
     boolean isManaged();
 
     /**
-     * Get the VM initial state
-     * @return a state
+     * Get the possible initial states for the VM.
+     * @return the supported states
      */
     EnumSet<VMState> getSourceState();
 
     /**
-     * Get the VM destination state
-     * @return a state
+     * Get the possible destination states for the VM.
+     * @return the supported states
      */
     EnumSet<VMState> getDestState();
 }
