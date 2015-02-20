@@ -206,6 +206,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return makeResultingPlan();
     }
 
+    @Override
+    public List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException {
+        List<ReconfigurationPlan> plans = new ArrayList<>();
+        for (Solution s : solver.getSolutionRecorder().getSolutions()) {
+            plans.add(build(s, model));
+        }
+        return plans;
+    }
+
     private ReconfigurationPlan makeResultingPlan() throws SchedulerException {
 
         //Check for the solution

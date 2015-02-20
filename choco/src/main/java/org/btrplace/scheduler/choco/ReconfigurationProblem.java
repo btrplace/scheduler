@@ -31,6 +31,7 @@ import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -223,9 +224,16 @@ public interface ReconfigurationProblem {
      * @param optimize  {@code true} to make the solver try to improve the first computed solution.
      * @return a plan if the solving process succeeded, {@code null} if the solver was not able to compute
      * a solution.
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurs
+     * @throws SchedulerException if an error occurred
      */
     ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException;
+
+    /**
+     * Return all the solutions that have been computed from a previous {@link #solve(int, boolean)} call.
+     * @return a list of plan that may be empty
+     * @throws SchedulerException if an error occurred
+     */
+    List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException;
 
     /**
      * Get the Solver used to model this problem.
