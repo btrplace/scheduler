@@ -26,15 +26,16 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.*;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public class DefaultReconfigurationProblemTest {
         }
 
         @Override
-        public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+        public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
             throw new UnsupportedOperationException();
         }
 
@@ -265,9 +266,9 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp =
                 new DefaultReconfigurationProblemBuilder(mo)
                         .setNextVMsStates(Collections.singleton(vm1),
-                                new HashSet<VM>(),
-                                new HashSet<VM>(),
-                                new HashSet<VM>()).build();
+                                new HashSet<>(),
+                                new HashSet<>(),
+                                new HashSet<>()).build();
 
         Transition a = rp.getVMActions()[rp.getVM(vm1)];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -301,10 +302,10 @@ public class DefaultReconfigurationProblemTest {
         Mapping m = mo.getMapping();
         m.addReadyVM(vm1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
+                .setNextVMsStates(new HashSet<>(),
                         Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
+                        new HashSet<>(),
+                        new HashSet<>()).build();
 
         Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -340,10 +341,10 @@ public class DefaultReconfigurationProblemTest {
         m.addRunningVM(vm1, n1);
 
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
+                .setNextVMsStates(new HashSet<>(),
                         Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
+                        new HashSet<>(),
+                        new HashSet<>()).build();
         Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(RelocatableVM.class, a.getClass());
@@ -377,10 +378,10 @@ public class DefaultReconfigurationProblemTest {
         m.addOnlineNode(n1);
         m.addRunningVM(vm1, n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
+                .setNextVMsStates(new HashSet<>(),
+                        new HashSet<>(),
                         Collections.singleton(vm1),
-                        new HashSet<VM>()).build();
+                        new HashSet<>()).build();
 
         Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -417,9 +418,9 @@ public class DefaultReconfigurationProblemTest {
         m.addSleepingVM(vm2, n1);
         m.addReadyVM(vm3);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>(),
+                .setNextVMsStates(new HashSet<>(),
+                        new HashSet<>(),
+                        new HashSet<>(),
                         m.getAllVMs()).build();
 
         for (Transition a : rp.getVMActions()) {
@@ -456,9 +457,9 @@ public class DefaultReconfigurationProblemTest {
         m.addRunningVM(vm1, n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
+                        new HashSet<>(),
+                        new HashSet<>(),
+                        new HashSet<>()).build();
         Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ShutdownVM.class, a.getClass());
@@ -475,10 +476,10 @@ public class DefaultReconfigurationProblemTest {
         mo.getMapping().addOnlineNode(n1);
         mo.getMapping().addSleepingVM(vm1, n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
+                .setNextVMsStates(new HashSet<>(),
+                        new HashSet<>(),
                         Collections.singleton(vm1),
-                        new HashSet<VM>()).build();
+                        new HashSet<>()).build();
 
         Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -513,10 +514,10 @@ public class DefaultReconfigurationProblemTest {
         m.addOnlineNode(n1);
         m.addSleepingVM(vm1, n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
+                .setNextVMsStates(new HashSet<>(),
                         Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
+                        new HashSet<>(),
+                        new HashSet<>()).build();
         Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ResumeVM.class, a.getClass());
@@ -529,10 +530,10 @@ public class DefaultReconfigurationProblemTest {
         Node n1 = mo.newNode();
         m.addOnlineNode(n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
+                .setNextVMsStates(new HashSet<>(),
+                        new HashSet<>(),
+                        new HashSet<>(),
+                        new HashSet<>()).build();
 
         Transition a = rp.getNodeActions()[0];
         Assert.assertEquals(a, rp.getNodeAction(n1));
@@ -568,10 +569,10 @@ public class DefaultReconfigurationProblemTest {
         m.addOfflineNode(n1);
 
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
+                .setNextVMsStates(new HashSet<>(),
+                        new HashSet<>(),
+                        new HashSet<>(),
+                        new HashSet<>()).build();
 
         Transition a = rp.getNodeActions()[rp.getNode(n3)];
         Assert.assertEquals(a, rp.getNodeAction(n3));
@@ -707,10 +708,10 @@ public class DefaultReconfigurationProblemTest {
         map.addOnlineNode(n3);
         map.addOnlineNode(n2);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>()
+                .setNextVMsStates(new HashSet<>()
                         , map.getAllVMs()
-                        , new HashSet<VM>()
-                        , new HashSet<VM>())
+                        , new HashSet<>()
+                        , new HashSet<>())
                 .build();
 
         //Restrict the capacity to 5 at most

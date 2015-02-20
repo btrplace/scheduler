@@ -22,6 +22,7 @@ import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.chocosolver.solver.search.solution.Solution;
 
 
 /**
@@ -45,18 +46,20 @@ public interface ChocoView {
      * The view can then customize the RP a last time.
      *
      * @return {@code false} iff there will be no solution to the RP.
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred while building the problem
+     * @throws SchedulerException if an error occurred while building the problem
      */
     boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException;
 
     /**
      * Allow the insertion of actions on the plan computed for a given problem.
      *
+     * The variable values must be extracted from the solution object {@code s} and not directly.
      * @param rp the solver problem
+     * @param s the solution computed by the solver.
      * @param p  the computed plan
      * @return {@code true} iff the insertion succeeded
      */
-    boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p);
+    boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p);
 
     /**
      * Notify a new VM will be a clone of an already known VM.

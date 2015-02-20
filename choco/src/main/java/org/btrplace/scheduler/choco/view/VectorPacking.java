@@ -24,6 +24,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class VectorPacking extends Packing {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem pb, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem pb, Solution s, ReconfigurationPlan p) {
         return true;
     }
 

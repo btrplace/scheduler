@@ -29,6 +29,7 @@ import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -63,7 +64,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
         return true;
     }
 

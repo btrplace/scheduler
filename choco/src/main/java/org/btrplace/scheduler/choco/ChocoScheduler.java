@@ -68,4 +68,5 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      */
     void setInstanceSolver(InstanceSolver p);
 
+
 }

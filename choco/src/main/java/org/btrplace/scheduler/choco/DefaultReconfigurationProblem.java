@@ -35,6 +35,7 @@ import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.loop.monitors.SMF;
 import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
@@ -217,19 +218,31 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw new SchedulerException(model, "Unable to state about the problem feasibility.");
         }
 
-        DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
+        Solution s = solver.getSolutionRecorder().getLastSolution();
+        return build(s, model.clone());
+    }
+
+    /**
+     * Build a plan for a solution.
+     * @param s the solution
+     * @param src the source model
+     * @return the resulting plan
+     * @throws SchedulerException if a error occurred
+     */
+    private ReconfigurationPlan build(Solution s, Model src) throws SchedulerException {
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
         for (Transition action : nodeActions) {
-            action.insertActions(plan);
+            action.insertActions(s, plan);
         }
 
         for (Transition action : vmActions) {
-            action.insertActions(plan);
+            action.insertActions(s, plan);
         }
 
-        viewsManager.insertActions(plan);
+        viewsManager.insertActions(s, plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
-        assert checkConsistency(plan);
+        assert checkConsistency(s, plan);
         return plan;
     }
 
@@ -425,8 +438,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return nodeId == null ? -1 : getNode(nodeId);
     }
 
-    private boolean checkConsistency(ReconfigurationPlan p) {
-        if (p.getDuration() != end.getValue()) {
+    private boolean checkConsistency(Solution s, ReconfigurationPlan p) {
+        if (p.getDuration() != s.getIntVal(end)) {
             LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getValue());
             return false;
         }

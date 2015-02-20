@@ -28,6 +28,7 @@ import org.btrplace.scheduler.choco.extensions.FastIFFEq;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
@@ -145,9 +146,9 @@ public class ShutdownableNode implements NodeTransition {
 
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        if (isOffline.getValue() == 1) {
-            plan.add(new ShutdownNode(node, hostingEnd.getValue(), end.getValue()));
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        if (s.getIntVal(isOffline) == 1) {
+            plan.add(new ShutdownNode(node, s.getIntVal(hostingEnd), s.getIntVal(end)));
         }
         return true;
     }

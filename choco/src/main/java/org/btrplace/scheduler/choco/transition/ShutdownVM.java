@@ -26,6 +26,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
@@ -84,11 +85,11 @@ public class ShutdownVM implements VMTransition {
 
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         plan.add(new org.btrplace.plan.event.ShutdownVM(getVM(),
                 rp.getSourceModel().getMapping().getVMLocation(getVM()),
-                start.getValue(),
-                cSlice.getEnd().getValue()));
+                s.getIntVal(start),
+                s.getIntVal(cSlice.getEnd())));
         return true;
     }
 

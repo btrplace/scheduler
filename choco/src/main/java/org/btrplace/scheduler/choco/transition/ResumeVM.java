@@ -28,6 +28,7 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
@@ -86,11 +87,11 @@ public class ResumeVM implements VMTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        int ed = end.getValue();
-        int st = start.getValue();
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        int ed = s.getIntVal(end);
+        int st = s.getIntVal(start);
         Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
-        Node dst = rp.getNode(dSlice.getHoster().getValue());
+        Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
         org.btrplace.plan.event.ResumeVM a = new org.btrplace.plan.event.ResumeVM(vm, src, dst, st, ed);
         plan.add(a);
         return true;

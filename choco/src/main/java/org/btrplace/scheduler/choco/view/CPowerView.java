@@ -26,6 +26,7 @@ import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.chocosolver.solver.constraints.ICF;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -105,7 +106,7 @@ public class CPowerView implements ChocoView {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
         return true;
     }
 

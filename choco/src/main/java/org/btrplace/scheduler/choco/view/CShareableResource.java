@@ -36,6 +36,7 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
 import org.chocosolver.solver.variables.VariableFactory;
@@ -315,18 +316,18 @@ public class CShareableResource implements ChocoView {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
         Mapping srcMapping = r.getSourceModel().getMapping();
 
         for (VM vm : r.getFutureRunningVMs()) {
             Slice dSlice = r.getVMAction(vm).getDSlice();
-            Node destNode = r.getNode(dSlice.getHoster().getValue());
+            Node destNode = r.getNode(s.getIntVal(dSlice.getHoster()));
 
             if (srcMapping.isRunning(vm) && destNode == srcMapping.getVMLocation(vm)) {
                 //Was running and stay on the same node
                 //Check if the VM has been cloned
                 //TODO: might be too late depending on the symmetry breaking on the actions schedule
-                insertAllocateAction(p, vm, destNode, dSlice.getStart().getValue());
+                insertAllocateAction(s, p, vm, destNode, s.getIntVal(dSlice.getStart()));
             } else {
                 //TODO: not constant time operation. Maybe a big failure
                 VM dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
@@ -368,10 +369,10 @@ public class CShareableResource implements ChocoView {
         }
     }
 
-    private boolean insertAllocateAction(ReconfigurationPlan p, VM vm, Node destNode, int st) {
+    private boolean insertAllocateAction(Solution s, ReconfigurationPlan p, VM vm, Node destNode, int st) {
         String rcId = getResourceIdentifier();
         int prev = rc.getConsumption(vm);
-        int now = getVMsAllocation()[rp.getVM(vm)].getValue();
+        int now = s.getIntVal(getVMsAllocation()[rp.getVM(vm)]);
         if (prev != now) {
             Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
             return p.add(a);

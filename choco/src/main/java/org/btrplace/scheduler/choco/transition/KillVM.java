@@ -27,6 +27,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
@@ -128,8 +129,8 @@ public class KillVM implements VMTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        plan.add(new org.btrplace.plan.event.KillVM(vm, node, getStart().getValue(), getEnd().getValue()));
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        plan.add(new org.btrplace.plan.event.KillVM(vm, node, s.getIntVal(getStart()), s.getIntVal(getEnd())));
         return true;
     }
 

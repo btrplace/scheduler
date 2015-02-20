@@ -22,6 +22,7 @@ import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.chocosolver.solver.search.solution.Solution;
 
 import java.util.*;
 
@@ -99,15 +100,18 @@ public class SolverViewsManager {
     }
 
     /**
-     * Call {@link org.btrplace.scheduler.choco.view.ChocoView#insertActions(org.btrplace.scheduler.choco.ReconfigurationProblem, org.btrplace.plan.ReconfigurationPlan)}
+     * Call {@link org.btrplace.scheduler.choco.view.ChocoView#insertActions(org.btrplace.scheduler.choco.ReconfigurationProblem, org.chocosolver.solver.search.solution.Solution, org.btrplace.plan.ReconfigurationPlan)}
      * on each of the views in the <b>order</b> of their dependencies.
      *
+     * The variable values must be extracted by the solution computed by the solver
+     * @param s the solution computed by the solver.
+     * @param p the plan to manipulate
      * @return {@code true}
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred
      */
-    public boolean insertActions(ReconfigurationPlan p) throws SchedulerException {
+    public boolean insertActions(Solution s, ReconfigurationPlan p) throws SchedulerException {
         for (ChocoView v : workflow) {
-            v.insertActions(rp, p);
+            v.insertActions(rp, s, p);
         }
         return true;
     }

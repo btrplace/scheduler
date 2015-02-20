@@ -24,6 +24,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
@@ -63,7 +64,7 @@ public class StayAwayVM implements VMTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         return true;
     }
 

@@ -26,6 +26,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
@@ -178,7 +179,7 @@ public class TransitionUtilsTest {
         }
 
         @Override
-        public boolean insertActions(ReconfigurationPlan plan) {
+        public boolean insertActions(Solution s, ReconfigurationPlan plan) {
             return true;
         }
 
