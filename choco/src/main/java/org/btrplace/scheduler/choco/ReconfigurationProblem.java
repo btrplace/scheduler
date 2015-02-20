@@ -27,6 +27,7 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 
@@ -227,6 +228,15 @@ public interface ReconfigurationProblem {
      * @throws SchedulerException if an error occurred
      */
     ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException;
+
+    /**
+     * Build a plan for a solution.
+     * @param s the solution
+     * @param src the source model
+     * @return the resulting plan
+     * @throws SchedulerException if a error occurred
+     */
+    ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException;
 
     /**
      * Return all the solutions that have been computed from a previous {@link #solve(int, boolean)} call.

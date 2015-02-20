@@ -40,7 +40,7 @@ public interface InstanceSolver {
      * @param ps the parameters to consider
      * @param i  the instance to solve
      * @return the resulting reconfiguration plan, {@code null} if there is no solution
-     * @throws org.btrplace.scheduler.SchedulerException if an error prevent from running a solving process
+     * @throws SchedulerException if an error prevent from running a solving process
      */
     ReconfigurationPlan solve(Parameters ps,
                          Instance i) throws SchedulerException;
@@ -48,6 +48,7 @@ public interface InstanceSolver {
     /**
      * Return the statistics of the solving process.
      * @return some statistics
+     * @throws SchedulerException if an error occurred
      */
-    SolvingStatistics getStatistics();
+    SolvingStatistics getStatistics() throws SchedulerException;
 }

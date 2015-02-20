@@ -50,8 +50,6 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     private InstanceSolver runner;
 
-    private SolvingStatistics stats;
-
     /**
      * Make a new algorithm.
      *
@@ -111,12 +109,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
-        stats = null;
-        try {
-            return runner.solve(params, new Instance(i, cstrs, opt));
-        } finally {
-            stats = runner.getStatistics();
-        }
+        return runner.solve(params, new Instance(i, cstrs, opt));
     }
 
     @Override
@@ -130,8 +123,8 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public SolvingStatistics getStatistics() {
-        return stats;
+    public SolvingStatistics getStatistics() throws SchedulerException {
+        return runner.getStatistics();
     }
 
     @Override

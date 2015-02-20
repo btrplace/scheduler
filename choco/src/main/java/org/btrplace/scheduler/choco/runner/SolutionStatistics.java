@@ -18,6 +18,8 @@
 
 package org.btrplace.scheduler.choco.runner;
 
+import org.btrplace.plan.ReconfigurationPlan;
+
 /**
  * Store statistics about a solution.
  *
@@ -44,6 +46,8 @@ public class SolutionStatistics {
      * The objective value if an objective was designed.
      */
     private int optValue;
+
+    private ReconfigurationPlan solution = null;
 
     private boolean hasObjective = true;
 
@@ -81,6 +85,22 @@ public class SolutionStatistics {
      */
     public long getNbNodes() {
         return nbNodes;
+    }
+
+    /**
+     * Return the computed solution.
+     * @return a plan that might be null
+     */
+    public ReconfigurationPlan getReconfigurationPlan() {
+        return solution;
+    }
+
+    /**
+     * Attach the solution that was computed.
+     * @param p the computed solution
+     */
+    public void setReconfigurationPlan(ReconfigurationPlan p) {
+        solution = p;
     }
 
     /**

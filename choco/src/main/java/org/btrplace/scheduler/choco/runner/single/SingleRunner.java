@@ -32,22 +32,19 @@ import org.btrplace.scheduler.choco.runner.SolvingStatistics;
  */
 public class SingleRunner implements InstanceSolver {
 
-    private SolvingStatistics stats;
-
+    private InstanceSolverRunner r;
     @Override
     public ReconfigurationPlan solve(Parameters cra,
                                 Instance i) throws SchedulerException {
-        InstanceSolverRunner r = new InstanceSolverRunner(cra, i);
-        try {
-            return r.call().getPlan();
-        } finally {
-           stats = r.getStatistics();
-        }
-
+        r = new InstanceSolverRunner(cra, i);
+        return r.call().getPlan();
     }
 
     @Override
-    public SolvingStatistics getStatistics() {
-        return stats;
+    public SolvingStatistics getStatistics() throws SchedulerException {
+        if (r == null) {
+            return null;
+        }
+        return r.getStatistics();
     }
 }

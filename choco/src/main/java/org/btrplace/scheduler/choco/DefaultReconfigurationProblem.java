@@ -32,6 +32,7 @@ import org.btrplace.scheduler.choco.view.*;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.objective.ObjectiveManager;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.loop.monitors.SMF;
 import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
@@ -201,6 +202,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
                 solver.post(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
             });
+            if (!solver.getObjectiveManager().isOptimization()) {
+                solver.set(new ObjectiveManager<IntVar, Integer>(objective, solvingPolicy, true));
+            }
             solver.findOptimalSolution(solvingPolicy, objective);
         }
         return makeResultingPlan();
@@ -210,7 +214,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException {
         List<ReconfigurationPlan> plans = new ArrayList<>();
         for (Solution s : solver.getSolutionRecorder().getSolutions()) {
-            plans.add(build(s, model));
+            plans.add(buildReconfigurationPlan(s, model));
         }
         return plans;
     }
@@ -228,7 +232,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         Solution s = solver.getSolutionRecorder().getLastSolution();
-        return build(s, model.clone());
+        return buildReconfigurationPlan(s, model.clone());
     }
 
     /**
@@ -238,7 +242,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @return the resulting plan
      * @throws SchedulerException if a error occurred
      */
-    private ReconfigurationPlan build(Solution s, Model src) throws SchedulerException {
+    public ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException {
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
         for (Transition action : nodeActions) {
             action.insertActions(s, plan);

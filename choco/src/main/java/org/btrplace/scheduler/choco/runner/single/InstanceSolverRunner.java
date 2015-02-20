@@ -38,6 +38,7 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.measure.IMeasures;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.trace.Chatterbox;
 
 import java.util.*;
@@ -68,6 +69,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private long start;
 
     private List<SolutionStatistics> measures;
+    private List<Solution> solutions;
 
     /**
      * Choco version of the constraints.
@@ -92,7 +94,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp = null;
         start = System.currentTimeMillis();
         measures = new ArrayList<>();
-
+        solutions = new ArrayList<>();
         //Build the core problem
         coreRPDuration = -System.currentTimeMillis();
         rp = buildRP();
@@ -122,6 +124,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             @Override
             public void onSolution() {
                 IMeasures m = rp.getSolver().getMeasures();
+                Solution s = new Solution();
+                s.record(rp.getSolver());
                 SolutionStatistics sol;
                 if (m.hasObjective()) {
                     sol = new SolutionStatistics(m.getNodeCount(),
@@ -134,6 +138,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                             (long) (m.getTimeCount() * 1000));
                 }
                 measures.add(sol);
+                solutions.add(s);
             }
         });
 
@@ -297,7 +302,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    public SingleRunnerStatistics getStatistics() {
+    public SingleRunnerStatistics getStatistics() throws SchedulerException {
         if (rp == null) {
             return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
@@ -316,9 +321,12 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 rp.getSolver().hasReachedLimit(), //assumed timeout is the only limit
                 coreRPDuration,
                 speRPDuration);
-
+        int i = 0;
+        //Merge the statistics with the solution.
         for (SolutionStatistics m : measures) {
+            m.setReconfigurationPlan(rp.buildReconfigurationPlan(solutions.get(i), rp.getSourceModel()));
             st.addSolution(m);
+            i++;
         }
         return st;
     }
