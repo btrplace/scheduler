@@ -38,7 +38,8 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.measure.IMeasures;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
+import org.chocosolver.solver.search.solution.ISolutionRecorder;
 import org.chocosolver.solver.trace.Chatterbox;
 
 import java.util.*;
@@ -69,7 +70,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private long start;
 
     private List<SolutionStatistics> measures;
-    private List<Solution> solutions;
+    private ISolutionRecorder solutions;
 
     /**
      * Choco version of the constraints.
@@ -94,7 +95,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp = null;
         start = System.currentTimeMillis();
         measures = new ArrayList<>();
-        solutions = new ArrayList<>();
         //Build the core problem
         coreRPDuration = -System.currentTimeMillis();
         rp = buildRP();
@@ -120,12 +120,11 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
 
         //The solution monitor to store the measures at each solution
+        solutions = new AllSolutionsRecorder(rp.getSolver());
         rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
             @Override
             public void onSolution() {
                 IMeasures m = rp.getSolver().getMeasures();
-                Solution s = new Solution();
-                s.record(rp.getSolver());
                 SolutionStatistics sol;
                 if (m.hasObjective()) {
                     sol = new SolutionStatistics(m.getNodeCount(),
@@ -138,7 +137,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                             (long) (m.getTimeCount() * 1000));
                 }
                 measures.add(sol);
-                solutions.add(s);
             }
         });
 
@@ -324,7 +322,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         int i = 0;
         //Merge the statistics with the solution.
         for (SolutionStatistics m : measures) {
-            m.setReconfigurationPlan(rp.buildReconfigurationPlan(solutions.get(i), rp.getSourceModel()));
+            m.setReconfigurationPlan(rp.buildReconfigurationPlan(solutions.getSolutions().get(i), rp.getSourceModel()));
             st.addSolution(m);
             i++;
         }

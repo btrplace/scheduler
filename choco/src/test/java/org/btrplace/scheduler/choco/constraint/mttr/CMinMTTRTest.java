@@ -10,7 +10,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class CMinMTTRTest {
      * Provoked a large amount of backtracks when we relied on a random search
      * @throws Exception
      */
-    @Test
+    /*@Test*/
     public void testHeavyLoad() throws Exception {
         Model mo = new DefaultModel();
         ShareableResource cpu = new ShareableResource("core", 7, 1);
