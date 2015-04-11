@@ -18,6 +18,9 @@
 
 package org.btrplace.bench;
 
+import org.junit.Test;
+
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -25,13 +28,16 @@ import java.io.IOException;
  */
 public class LauncherTest {
 
+    @Test
     public void test() throws IOException {
+
+        String path = new File("").getAbsolutePath() + "/bench/src/test/resources/";
 
         Launcher.main(new String[]{
                 "--repair",
                 "--timeout", "500",
-                "-i", "src/test/resources/wkld-tdsc/li/r6/p5000/c0/1.gz",
-                "-o", "/tmp/nr-r3-p5000-c66-1.csv"
+                "-i", path + "wkld-tdsc/li/r6/p5000/c0/1.gz",
+                "-o", path + "nr-r3-p5000-c66-1.csv"
         });
         System.err.flush();
         System.out.flush();
