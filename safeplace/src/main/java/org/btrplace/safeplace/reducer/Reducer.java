@@ -18,13 +18,11 @@
 
 package org.btrplace.safeplace.reducer;
 
-import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.safeplace.CTestCase;
-import org.btrplace.safeplace.CTestCaseResult;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.fuzzer.TestCase;
+import org.btrplace.safeplace.runner.TestCaseResult;
 import org.btrplace.safeplace.spec.term.Constant;
-import org.btrplace.safeplace.verification.CheckerResult;
 import org.btrplace.safeplace.verification.Verifier;
 import org.btrplace.safeplace.verification.spec.SpecVerifier;
 
@@ -34,14 +32,16 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 public abstract class Reducer {
-    public abstract CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception;
+    public abstract TestCaseResult reduce(TestCaseResult tc, SpecVerifier oracle, Verifier against);
 
-    public CTestCase derive(CTestCase tc, List<Constant> args, ReconfigurationPlan p) {
-        return new CTestCase(tc.getTestClass(), tc.getTestName(), tc.getNumber(), tc.getConstraint(), args, p, tc.continuous());
+    public TestCase derive(TestCase tc, List<Constant> args, ReconfigurationPlan p) {
+        return tc;
+        //return new TestCase(tc.getTestClass(), tc.getTestName(), tc.getNumber(), tc.getConstraint(), args, p, tc.continuous());
     }
 
-    public boolean consistent(SpecVerifier v1, Verifier v2, Constraint cstr, List<Constant> args, ReconfigurationPlan p, boolean c, CTestCaseResult.Result errType) {
-        boolean r1, r2;
+    public boolean consistent(SpecVerifier v1, Verifier v2, Constraint cstr, List<Constant> args, ReconfigurationPlan p, boolean c, TestCaseResult.Result errType) {
+        return false;
+        /*boolean r1, r2;
         CheckerResult cr1, cr2;
         if (c) {
             cr1 = v1.verify(cstr, args, p);
@@ -52,28 +52,15 @@ public abstract class Reducer {
             cr1 = v1.verify(cstr, args, src, dst);
             cr2 = v2.verify(cstr, args, src, dst);
         }
-        CTestCaseResult.Result res = CTestCaseResult.makeResult(cr1, cr2);
-        return errType != res;
-        /*if (errType == res) {
-            return fal
-        }
-        System.out.println(cr1 + " " + cr2);
-        r1 = cr1.getStatus();
-        r2 = cr2.getStatus();
-        //System.out.println("With " + tc.getConstraint().toString(tc.getParameters()) + " " + r1 + " " + r2);
-        if (r1 == r2) {
-            return true;
-        }
-        //System.out.println(errType + " to " + r1 + " " + r2);
-        //We maintain the error type
-        if ((errType == CTestCaseResult.Result.falseNegative && !r2) || (errType == CTestCaseResult.Result.falsePositive && r2)) {
-            return false;
-        }
-        return true; */
+        TestCaseResult.Result res = TestCaseResult.makeResult(cr1, cr2);*/
+        //return errType != res;
     }
 
-    public boolean consistent(SpecVerifier v1, Verifier v2, CTestCase tc, CTestCaseResult.Result errType) {
+    public boolean consistent(SpecVerifier v1, Verifier v2, TestCase tc, TestCaseResult.Result errType) {
         return consistent(v1, v2, tc.getConstraint(), tc.getParameters(), tc.getPlan(), tc.continuous(), errType);
     }
 
+    public abstract long lastDuration();
+
+    public abstract long lastReduction();
 }

@@ -22,6 +22,7 @@ import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.fuzzer.TestCase;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.term.UserVar;
@@ -40,6 +41,7 @@ public class SpecVerifier implements Verifier {
 
     private List<VerifDomain> vDoms;
 
+
     public SpecVerifier(List<VerifDomain> vDoms) {
         this.vDoms = vDoms;
     }
@@ -49,6 +51,22 @@ public class SpecVerifier implements Verifier {
     }
 
     @Override
+    public Verifier clone() {
+        SpecVerifier s = new SpecVerifier();
+        for (VerifDomain v : vDoms) {
+            s.vDoms.add(v.clone());
+        }
+        return s;
+    }
+
+    @Override
+    public CheckerResult verify(TestCase tc) {
+        if (tc.continuous()) {
+            return verify(tc.getConstraint(), tc.getParameters(), tc.getPlan().getOrigin(), tc.getPlan().getResult());
+        }
+        return verify(tc.getConstraint(), tc.getParameters(), tc.getPlan());
+    }
+
     public CheckerResult verify(Constraint cstr, List<Constant> values, Model dst, Model src) {
         SpecModel sRes = new SpecModel(dst);
         setInputs(cstr, sRes, values);
@@ -64,7 +82,6 @@ public class SpecVerifier implements Verifier {
         }
     }
 
-    @Override
     public CheckerResult verify(Constraint cstr, List<Constant> values, ReconfigurationPlan p) {
 
         Proposition good = cstr.getProposition();

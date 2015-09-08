@@ -50,4 +50,8 @@ public class StringEnumVerifDomain implements VerifDomain<String> {
     public String toString() {
         return dom.toString();
     }
+
+    public VerifDomain<String> clone() {
+        return new StringEnumVerifDomain(dom.toArray(new String[dom.size()]));
+    }
 }

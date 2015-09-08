@@ -26,9 +26,8 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.*;
-import org.btrplace.safeplace.CTestCase;
-import org.btrplace.safeplace.CTestCaseResult;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.runner.TestCaseResult;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.verification.Verifier;
 import org.btrplace.safeplace.verification.btrplace.Constraint2BtrPlace;
@@ -51,9 +50,9 @@ import java.util.List;
 public class ElementsReducer extends Reducer {
 
     @Override
-    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception {
+    public TestCaseResult reduce(TestCaseResult tc, SpecVerifier v1, Verifier v2) {
         //System.err.println("Reduce: \n" + tc.getPlan().getOrigin().getMapping() + "\n" + tc.getPlan());
-        ReconfigurationPlan p = tc.getPlan();
+        /*ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
         List<Constant> in = tc.getParameters();
 
@@ -67,10 +66,11 @@ public class ElementsReducer extends Reducer {
             System.err.println(tc.getPlan().equals(res));
             return tc;
         }
-        return derive(tc, in, res);
+        return derive(tc, in, res);*/
+        return null;
     }
 
-    public ReconfigurationPlan reduceVMs(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, CTestCaseResult.Result errType) throws Exception {
+    public ReconfigurationPlan reduceVMs(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, TestCaseResult.Result errType) throws Exception {
         List<VM> l;
         if (cstr.isCore()) {
             l = new ArrayList<>(p.getOrigin().getMapping().getAllVMs());
@@ -156,7 +156,7 @@ public class ElementsReducer extends Reducer {
         return null;
     }
 
-    public ReconfigurationPlan reduceNodes(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, CTestCaseResult.Result errType) throws Exception {
+    public ReconfigurationPlan reduceNodes(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, boolean c, TestCaseResult.Result errType) throws Exception {
         List<Node> l;
         if (cstr.isCore()) {
             l = new ArrayList<>(p.getOrigin().getMapping().getAllNodes());
@@ -219,4 +219,15 @@ public class ElementsReducer extends Reducer {
         }
         return false;
     }
+
+    @Override
+    public long lastDuration() {
+        return 0;
+    }
+
+    @Override
+    public long lastReduction() {
+        return 0;
+    }
+
 }

@@ -53,4 +53,9 @@ public class IntVerifDomain implements VerifDomain<Integer> {
     public String toString() {
         return lb + ".." + ub;
     }
+
+    public IntVerifDomain clone() {
+        return new IntVerifDomain(lb, ub);
+    }
+
 }

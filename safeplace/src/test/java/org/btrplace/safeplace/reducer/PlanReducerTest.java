@@ -84,14 +84,14 @@ public class PlanReducerTest {
 
         PlanReducer pr = new PlanReducer();
 
-        //CTestCase tc = new CTestCase("foo", c, in, p);
+        //TestCase tc = new TestCase("foo", c, in, p);
         PlanReducer er = new PlanReducer();
         Verifier v1 = new SpecVerifier();
 //        v1.continuous(true);
 //        v1.continuous(false);
         Verifier v2 = new ImplVerifier();
 //        v2.continuous(true);
-        //CTestCase r = er.reduce(tc, v1, v2);
+        //TestCase r = er.reduce(tc, v1, v2);
         Assert.fail();
         /*System.out.println(tc);
         System.out.println(r);

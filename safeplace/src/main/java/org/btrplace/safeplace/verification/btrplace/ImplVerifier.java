@@ -23,6 +23,7 @@ import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.*;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.fuzzer.TestCase;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.verification.CheckerResult;
 import org.btrplace.safeplace.verification.Verifier;
@@ -52,6 +53,13 @@ public class ImplVerifier implements Verifier {
         cra.getConstraintMapper().register(new CSchedule.Builder());
     }
 
+
+    @Override
+    public Verifier clone() {
+        ImplVerifier i = new ImplVerifier(repair);
+        return i;
+    }
+
     public boolean repair() {
         return repair;
     }
@@ -63,6 +71,13 @@ public class ImplVerifier implements Verifier {
     private static CheckerResult noSolution = CheckerResult.newKo("No solution");
 
     @Override
+    public CheckerResult verify(TestCase tc) {
+        if (tc.continuous()) {
+            return verify(tc.getConstraint(), tc.getParameters(), tc.getPlan().getOrigin(), tc.getPlan().getResult());
+        }
+        return verify(tc.getConstraint(), tc.getParameters(), tc.getPlan());
+    }
+
     public CheckerResult verify(Constraint c, List<Constant> params, Model dst, Model src) {
 
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -97,7 +112,6 @@ public class ImplVerifier implements Verifier {
         }
     }
 
-    @Override
     public CheckerResult verify(Constraint c, List<Constant> params, ReconfigurationPlan p) {
         List<SatConstraint> cstrs = new ArrayList<>();
 

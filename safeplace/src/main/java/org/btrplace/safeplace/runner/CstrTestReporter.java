@@ -19,7 +19,7 @@
 package org.btrplace.safeplace.runner;
 
 import eu.infomas.annotation.AnnotationDetector;
-import org.btrplace.safeplace.annotations.CstrTest;
+import org.btrplace.safeplace.scanner.CstrTest;
 
 import java.lang.annotation.Annotation;
 

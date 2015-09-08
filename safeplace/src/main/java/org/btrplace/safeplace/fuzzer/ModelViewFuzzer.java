@@ -27,4 +27,5 @@ import org.btrplace.plan.ReconfigurationPlan;
 public interface ModelViewFuzzer<E extends ModelView> {
 
     void decorate(ReconfigurationPlan p);
+
 }

@@ -19,11 +19,9 @@
 package org.btrplace.safeplace.reducer;
 
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.safeplace.CTestCase;
-import org.btrplace.safeplace.CTestCaseResult;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.runner.TestCaseResult;
 import org.btrplace.safeplace.spec.term.Constant;
-import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.verification.Verifier;
 import org.btrplace.safeplace.verification.spec.SpecVerifier;
@@ -79,8 +77,8 @@ public class SignatureReducer2 extends Reducer {
     }
 
     @Override
-    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception {
-        //System.err.println("Reduce " + tc.getConstraint().toString(tc.getParameters()));
+    public TestCaseResult reduce(TestCaseResult tc, SpecVerifier v1, Verifier v2) {
+    /*    //System.err.println("Reduce " + tc.getConstraint().toString(tc.getParameters()));
         ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
         List<Constant> in = tc.getParameters();
@@ -97,9 +95,11 @@ public class SignatureReducer2 extends Reducer {
         }
         //System.out.println("Reduced " + tc.getConstraint().toString(tc.getParameters()) + " to " + tc.getConstraint().toString(cpy));
         return derive(tc, cpy, p);
+        */
+        return null;
     }
 
-    private void reduceCollection(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, Collection c, boolean b, CTestCaseResult.Result errType) {
+    private void reduceCollection(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, Collection c, boolean b, TestCaseResult.Result errType) {
         //System.out.println("Reduce " + c + " in " + in);
         if (c instanceof Set) {
             reduceSet(v1, v2, p, cstr, in, (Set) c, b, errType);
@@ -110,7 +110,7 @@ public class SignatureReducer2 extends Reducer {
     }
 
     //s is a reference to the set to reduce
-    private void reduceSet(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, Set s, boolean c, CTestCaseResult.Result errType) {
+    private void reduceSet(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, Set s, boolean c, TestCaseResult.Result errType) {
         //The elements to try to remove
         List removable = new ArrayList(s);
         for (Object o : removable) {
@@ -131,7 +131,7 @@ public class SignatureReducer2 extends Reducer {
     }
 
     //l is a reference to the list to reduce
-    private void reduceList(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List l, boolean c, CTestCaseResult.Result errType) {
+    private void reduceList(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List l, boolean c, TestCaseResult.Result errType) {
         //The elements to try to remove
         for (int i = 0; i < l.size(); ) {
             Object o = l.remove(i);
@@ -147,4 +147,15 @@ public class SignatureReducer2 extends Reducer {
             }
         }
     }
+
+    @Override
+    public long lastDuration() {
+        return 0;
+    }
+
+    @Override
+    public long lastReduction() {
+        return 0;
+    }
+
 }

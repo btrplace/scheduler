@@ -22,6 +22,7 @@ import com.google.gson.*;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.safeplace.fuzzer.TestCase;
 
 import java.lang.reflect.Type;
 
@@ -61,7 +62,7 @@ public class JSONUtils {
         return instance;
     }
 
-    public String toJSON(CTestCase c) {
+    public String toJSON(TestCase c) {
         return gson.toJson(c);
     }
 

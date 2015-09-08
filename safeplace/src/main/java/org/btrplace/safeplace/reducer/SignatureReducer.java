@@ -19,9 +19,8 @@
 package org.btrplace.safeplace.reducer;
 
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.safeplace.CTestCase;
-import org.btrplace.safeplace.CTestCaseResult;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.runner.TestCaseResult;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.Type;
@@ -70,8 +69,8 @@ public class SignatureReducer extends Reducer {
         return l;
     }
 
-    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) throws Exception {
-        ReconfigurationPlan p = tc.getPlan();
+    public TestCaseResult reduce(TestCaseResult tc, SpecVerifier v1, Verifier v2) {
+        /*ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
         List<Constant> in = tc.getParameters();
         List<Constant> cpy = deepCopy(in);
@@ -81,10 +80,11 @@ public class SignatureReducer extends Reducer {
             //  System.out.println("\t" + cpy);
         }
         //System.out.println("Result: " + cpy);
-        return derive(tc, cpy, p);
+        return derive(tc, cpy, p);*/
+        return tc;
     }
 
-    private void reduceArg(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i, CTestCaseResult.Result errType) throws Exception {
+    private void reduceArg(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i, TestCaseResult.Result errType) throws Exception {
         Constant c = in.get(i);
         if (c.type() instanceof ColType) {
             List l = (List) c.eval(null);
@@ -97,7 +97,7 @@ public class SignatureReducer extends Reducer {
         }
     }
 
-    private boolean reduceSetTo(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i, CTestCaseResult.Result errType) throws Exception {
+    private boolean reduceSetTo(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i, TestCaseResult.Result errType) throws Exception {
         if (col.get(i) instanceof Collection) {
             System.err.println("before fail " + col + " " + i);
             if (failWithout(v1, v2, p, cstr, in, col, i, errType)) {
@@ -119,15 +119,25 @@ public class SignatureReducer extends Reducer {
         }
     }
 
-    private boolean failWithout(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i, CTestCaseResult.Result errType) throws Exception {
+    private boolean failWithout(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i, TestCaseResult.Result errType) throws Exception {
         Object o = col.remove(i);
 
         return false;
-        /*if (consistent(v1, v2, new CTestCase("", cstr, in, p) errType)) { //Not the same error. Component needed
+        /*if (consistent(v1, v2, new TestCase("", cstr, in, p) errType)) { //Not the same error. Component needed
             col.add(i, o);
             //System.out.println("Unable to remove  " + o + " from " + col);
             return true;
         }
         return false;*/
+    }
+
+    @Override
+    public long lastDuration() {
+        return 0;
+    }
+
+    @Override
+    public long lastReduction() {
+        return 0;
     }
 }

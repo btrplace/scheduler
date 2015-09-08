@@ -30,6 +30,7 @@ public class FloatVerifDomain implements VerifDomain<Double> {
 
     private int lb, ub;
 
+    private double inc;
     public FloatVerifDomain(int lb, int ub, double inc) {
         dom = new HashSet<>();
         for (double i = lb; i <= ub; i += inc) {
@@ -37,6 +38,7 @@ public class FloatVerifDomain implements VerifDomain<Double> {
         }
         this.lb = lb;
         this.ub = ub;
+        this.inc = inc;
     }
 
     @Override
@@ -53,4 +55,9 @@ public class FloatVerifDomain implements VerifDomain<Double> {
     public String toString() {
         return lb + ".." + ub;
     }
+
+    public FloatVerifDomain clone() {
+        return new FloatVerifDomain(lb, ub, inc);
+    }
+
 }

@@ -18,55 +18,52 @@
 
 package org.btrplace.safeplace.test;
 
-import org.btrplace.safeplace.annotations.CstrTest;
-import org.btrplace.safeplace.annotations.CstrTestsProvider;
-import org.btrplace.safeplace.fuzzer.ReconfigurationPlanFuzzer2;
-import org.btrplace.safeplace.runner.CTestCasesRunner;
-import org.btrplace.safeplace.verification.spec.IntVerifDomain;
+import org.btrplace.safeplace.fuzzer.Fuzzer;
+import org.btrplace.safeplace.fuzzer.FuzzerImpl;
+import org.btrplace.safeplace.runner.TestCasesRunner;
+import org.btrplace.safeplace.runner.limit.MaxTests;
+import org.btrplace.safeplace.scanner.CstrTest;
+import org.btrplace.safeplace.scanner.CstrTestsProvider;
+import org.btrplace.safeplace.verification.btrplace.ImplVerifier;
 
 /**
  * @author Fabien Hermenier
  */
 public class Bench {
 
-    public static int nbVMs = 3;
-    public static int nbNodes = 3;
-
-    public static boolean reduce = false;
-    public static int tests = 100;
-    public static int to = 10000;
-
-    public static boolean validate = true;
-
-    public static boolean checkers = false;
-
-    public static final CTestCasesRunner check(CTestCasesRunner r) {
-        r.maxTests(tests);
-        r.timeout(to * 1000);
-        r.validate(validate);
-        if (checkers) {
-            r.checker();
-        } else {
-            r.impl();
-        }
-        if (!reduce) {
-            r.clearReducers();
-        }
+    public static final TestCasesRunner check(TestCasesRunner r) {
+        r.limit(new MaxTests(1000));
+        r.timeout(5);
+        r.verifier(new ImplVerifier());
         return r;
     }
 
-    public static CTestCasesRunner repair(CTestCasesRunner r) {
-        if (!checkers) {
-            r.impl().repair(true);
-        }
-        return r;
+    @CstrTestsProvider(name = "myProvider")
+    public Fuzzer myProvider() {
+        return new FuzzerImpl().nodes(1).vms(1).actionBounds(1, 3);
     }
 
-    @CstrTestsProvider(name = "my")
-    public ReconfigurationPlanFuzzer2 myProvider() {
-        return new ReconfigurationPlanFuzzer2().nbVMs(nbVMs).nbNodes(nbNodes);
+    @CstrTest(constraint = "noVMsOnOfflineNodes", groups = {"core", "unit", "rebuild", "noVMsOnOfflineNodes"}, provider = "myProvider")
+    public void testNoVMsOnOfflineNodes(TestCasesRunner r) {
+        check(r);
     }
 
+    @CstrTest(constraint = "toRunning", groups = {"core", "unit", "rebuild", "toRunning"}, provider = "myProvider")
+    public void testToRunning(TestCasesRunner r) {
+        check(r);
+    }
+
+    @CstrTest(constraint = "toSleeping", groups = {"core", "unit", "rebuild", "toSleeping"}, provider = "myProvider")
+    public void testToSleeping(TestCasesRunner r) {
+        check(r);
+    }
+
+    @CstrTest(constraint = "toReady", groups = {"core", "unit", "rebuild", "toReady"}, provider = "myProvider")
+    public void testToReady(TestCasesRunner r) {
+        check(r);
+    }
+
+    /*
     //Among
     @CstrTest(constraint = "Among", groups = {"vm2vm", "unit", "rebuild", "among"}, provider = "myProvider")
     public void testAmongContinuous(CTestCasesRunner r) {
@@ -107,27 +104,6 @@ public class Bench {
     @CstrTest(constraint = "Ban", groups = {"vm2pm", "unit", "repair", "ban"}, provider = "myProvider")
     public void testBanContinuousRepair(CTestCasesRunner r) {
         repair(check(r.continuous()));//.impl().repair(true);
-    }
-
-    //Core
-    @CstrTest(constraint = "noVMsOnOfflineNodes", groups = {"core", "unit", "rebuild", "noVMsOnOfflineNodes"}, provider = "myProvider")
-    public void testNoVMsOnOfflineNodes(CTestCasesRunner r) {
-        check(r.continuous());
-    }
-
-    @CstrTest(constraint = "toRunning", groups = {"core", "unit", "rebuild", "toRunning"}, provider = "myProvider")
-    public void testToRunning(CTestCasesRunner r) {
-        check(r.continuous());
-    }
-
-    @CstrTest(constraint = "toSleeping", groups = {"core", "unit", "rebuild", "toSleeping"}, provider = "myProvider")
-    public void testToSleeping(CTestCasesRunner r) {
-        check(r.continuous());
-    }
-
-    @CstrTest(constraint = "toReady", groups = {"core", "unit", "rebuild", "toReady"}, provider = "myProvider")
-    public void testToReady(CTestCasesRunner r) {
-        check(r.continuous());
     }
 
     //Fence
@@ -433,13 +409,5 @@ public class Bench {
         repair(check(r.discrete()));//.impl().repair(true);
     }
 
-    /*@CstrTest(constraint = "Seq", groups = {"vm2vm", "unit"}, provider = "myProvider")
-    public void testSeqContinuous(CTestCasesRunner r) {
-        check(r.continuous());
-    }
-
-    @CstrTest(constraint = "Seq", groups = {"vm2vm", "unit","seq"}, provider = "myProvider")
-    public void testSeqContinuousRepair(CTestCasesRunner r) {
-        check(r.continuous()).impl().repair(true);
-    }*/
+    */
 }

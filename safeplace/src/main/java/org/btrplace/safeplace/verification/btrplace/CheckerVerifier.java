@@ -24,6 +24,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlanChecker;
 import org.btrplace.plan.ReconfigurationPlanCheckerException;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.fuzzer.TestCase;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.verification.CheckerResult;
 import org.btrplace.safeplace.verification.Verifier;
@@ -36,6 +37,18 @@ import java.util.List;
 public class CheckerVerifier implements Verifier {
 
     @Override
+    public Verifier clone() {
+        return new CheckerVerifier();
+    }
+
+    @Override
+    public CheckerResult verify(TestCase tc) {
+        if (tc.continuous()) {
+            return verify(tc.getConstraint(), tc.getParameters(), tc.getPlan().getOrigin(), tc.getPlan().getResult());
+        }
+        return verify(tc.getConstraint(), tc.getParameters(), tc.getPlan());
+    }
+
     public CheckerResult verify(Constraint cstr, List<Constant> params, Model res, Model src) {
         if (cstr.isCore()) {
             if (res == null) {
@@ -64,7 +77,6 @@ public class CheckerVerifier implements Verifier {
 
     }
 
-    @Override
     public CheckerResult verify(Constraint cstr, List<Constant> params, ReconfigurationPlan p) {
         if (cstr.isCore()) {
             Model res = p.getResult();

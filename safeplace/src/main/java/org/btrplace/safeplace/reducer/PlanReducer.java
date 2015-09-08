@@ -21,14 +21,12 @@ package org.btrplace.safeplace.reducer;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
-import org.btrplace.safeplace.CTestCase;
-import org.btrplace.safeplace.CTestCaseResult;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.runner.TestCaseResult;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.verification.Verifier;
 import org.btrplace.safeplace.verification.spec.SpecVerifier;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,8 +41,8 @@ import java.util.List;
 public class PlanReducer extends Reducer {
 
     @Override
-    public CTestCase reduce(CTestCase tc, SpecVerifier v1, Verifier v2, CTestCaseResult.Result errType) {
-        ReconfigurationPlan p = tc.getPlan();
+    public TestCaseResult reduce(TestCaseResult tc, SpecVerifier v1, Verifier v2) {
+        /*ReconfigurationPlan p = tc.getPlan();
         Constraint cstr = tc.getConstraint();
         List<Constant> in = tc.getParameters();
         if (consistent(v1, v2, tc, errType)) {
@@ -52,7 +50,7 @@ public class PlanReducer extends Reducer {
         }
         List<ReconfigurationPlan> mins = new ArrayList<>();
         _reduce(v1, v2, p, cstr, in, mins, tc.continuous(), errType);
-        CTestCase red = derive(tc, in, mins.get(0));
+        TestCase red = derive(tc, in, mins.get(0));
         if (consistent(v1, v2, red, errType)) {
             System.err.println("BUG while reducing plan was:");
             System.err.println(tc);
@@ -63,7 +61,8 @@ public class PlanReducer extends Reducer {
             //System.exit(1);
         }
         //System.out.println("Reduced from " + p.getSize() + " action(s) to " + mins.get(0).getSize());
-        return derive(tc, in, mins.get(0));
+        return derive(tc, in, mins.get(0));*/
+        return null;
     }
 
     private ReconfigurationPlan[] splits(ReconfigurationPlan p, int sep) {
@@ -80,7 +79,7 @@ public class PlanReducer extends Reducer {
         return new ReconfigurationPlan[]{p1, p2};
     }
 
-    private boolean _reduce(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins, boolean c, CTestCaseResult.Result errType) {
+    private boolean _reduce(SpecVerifier v1, Verifier v2, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins, boolean c, TestCaseResult.Result errType) {
         //System.err.println("Working on " + p);
         if (p.getSize() <= 1) {
             mins.add(p);
@@ -117,4 +116,15 @@ public class PlanReducer extends Reducer {
         //Investigate the right sub plan
         return _reduce(v1, v2, !e1 ? subs[0] : subs[1], cstr, in, mins, c, errType);
     }
+
+    @Override
+    public long lastDuration() {
+        return 0;
+    }
+
+    @Override
+    public long lastReduction() {
+        return 0;
+    }
+
 }

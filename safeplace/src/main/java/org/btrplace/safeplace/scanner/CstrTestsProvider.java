@@ -16,17 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.verification.spec;
+package org.btrplace.safeplace.scanner;
 
-import java.util.Set;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author Fabien Hermenier
  */
-public interface VerifDomain<T> {
-    Set<T> domain();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface CstrTestsProvider {
+    String name();
 
-    String type();
-
-    VerifDomain<T> clone();
+    String source() default "";
 }

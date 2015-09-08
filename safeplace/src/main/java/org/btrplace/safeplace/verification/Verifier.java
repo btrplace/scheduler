@@ -18,21 +18,15 @@
 
 package org.btrplace.safeplace.verification;
 
-import org.btrplace.model.Model;
-import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.safeplace.Constraint;
-import org.btrplace.safeplace.spec.term.Constant;
-
-import java.util.List;
+import org.btrplace.safeplace.fuzzer.TestCase;
 
 /**
  * @author Fabien Hermenier
  */
 public interface Verifier {
 
-    CheckerResult verify(Constraint c, List<Constant> params, Model dst, Model src);
+    CheckerResult verify(TestCase tc);
 
-    CheckerResult verify(Constraint c, List<Constant> params, ReconfigurationPlan p);
-
+    Verifier clone();
     String id();
 }

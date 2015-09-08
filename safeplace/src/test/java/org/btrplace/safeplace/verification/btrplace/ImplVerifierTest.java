@@ -80,7 +80,7 @@ public class ImplVerifierTest {
                 new Constant(Collections.singletonList(vm1), new SetType(VMType.getInstance())),
                 new Constant(Collections.singleton(new HashSet<>(Arrays.asList(n0))), new SetType(new SetType(NodeType.getInstance()))));
 
-        /*CTestCase tc = new CTestCase("", c, Arrays.asList(
+        /*TestCase tc = new TestCase("", c, Arrays.asList(
                 new Constant(Collections.singletonList(vm1), new SetType(VMType.getInstance())),
                 new Constant(Collections.singleton(new HashSet<>(Arrays.asList(n0))), new SetType(new SetType(NodeType.getInstance())))
         ), p, false);
