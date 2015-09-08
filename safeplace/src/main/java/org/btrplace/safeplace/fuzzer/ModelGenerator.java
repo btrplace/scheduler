@@ -45,31 +45,32 @@ public class ModelGenerator {
         for (int i = 0; i < nbNodes; i++) {
             Node n = mo.newNode();
 
-            if (rnd.nextBoolean()) {
+            //if (rnd.nextBoolean()) {
                 mo.getMapping().addOnlineNode(n);
-            } else {
+           /* } else {
                 mo.getMapping().addOfflineNode(n);
-            }
+            }*/
         }
 
         for (int i = 0; i < nbVMs; i++) {
             VM v = mo.newVM();
-            switch (rnd.nextInt(3)) {
+            /*switch (rnd.nextInt(3)) {
                 case 0:
                     mo.getMapping().addReadyVM(v);
                     break;
                 case 1:
                     mo.getMapping().addSleepingVM(v, oneOf(rnd, mo.getMapping().getOnlineNodes()));
                     break;
-                case 2:
+                case 2:*/
                     mo.getMapping().addRunningVM(v, oneOf(rnd, mo.getMapping().getOnlineNodes()));
-                    break;
-            }
+/*                    break;
+            }*/
         }
         return mo;
     }
 
     private Node oneOf(Random rnd, Collection<Node> nodes) {
+
         int cnt = rnd.nextInt(nodes.size()) + 1;
 
         for (Node n : nodes) {

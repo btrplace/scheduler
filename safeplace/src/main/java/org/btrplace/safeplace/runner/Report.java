@@ -96,6 +96,6 @@ public class Report {
     }
 
     public String pretty() {
-        return testName() + " " + (ok + fp + fn + fe) + " tests: " + fp + "fp; " + fn + " fn; " + fe + " ex; (" + metrics.duration() + " ms)";
+        return testName() + ": " + (ok + fp + fn + fe) + " tests -- " + fp + "fp; " + fn + "fn; " + fe + "ex; " + metrics.duration() + "ms";
     }
 }

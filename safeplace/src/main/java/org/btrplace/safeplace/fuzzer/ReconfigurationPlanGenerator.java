@@ -51,13 +51,14 @@ public class ReconfigurationPlanGenerator {
         }
 
         for (VM v : mo.getMapping().getAllVMs()) {
+            if (!vmDurations.containsKey(v)) {
+                continue;
+            }
             int d = vmDurations.get(v);
             int end = rnd.nextInt(makespan + 1);
             int begin = end - d;
             Action a = null;
-            if (!vmDurations.containsKey(v)) {
-                continue;
-            }
+
             switch (rnd.nextInt(6)) {
                 case 0: //migrate
                     a = new MigrateVM(v,
@@ -102,13 +103,14 @@ public class ReconfigurationPlanGenerator {
         }
 
         for (Node n : mo.getMapping().getAllNodes()) {
-            int d = vmDurations.get(n);
-            int end = rnd.nextInt(makespan + 1);
-            int begin = end - d;
-            Action a = null;
             if (!nodeDurations.containsKey(n)) {
                 continue;
             }
+            int d = nodeDurations.get(n);
+            int end = rnd.nextInt(makespan + 1);
+            int begin = end - d;
+            Action a = null;
+
             switch (rnd.nextInt(2)) {
                 case 0: //offline
                     a = new BootNode(n,

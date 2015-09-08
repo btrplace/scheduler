@@ -20,18 +20,18 @@ package org.btrplace.safeplace.scanner;
 
 
 import eu.infomas.annotation.AnnotationDetector;
+import org.btrplace.safeplace.Constraint;
 import org.btrplace.safeplace.Specification;
 import org.btrplace.safeplace.fuzzer.Fuzzer;
 import org.btrplace.safeplace.fuzzer.FuzzerImpl;
 import org.btrplace.safeplace.runner.TestCasesRunner;
 import org.btrplace.safeplace.spec.SpecExtractor;
+import org.btrplace.safeplace.verification.btrplace.ImplVerifier;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Fabien Hermenier
@@ -49,6 +49,8 @@ public class Scanner implements AnnotationDetector.MethodReporter {
     private Map<TestCasesRunner, String> myFuzzer;
 
     private Exception ex;
+
+    private List<Constraint> cores;
 
     public Scanner() {
         tests = new ArrayList<>();
@@ -75,8 +77,8 @@ public class Scanner implements AnnotationDetector.MethodReporter {
     public void reportMethodAnnotation(Class<? extends Annotation> a, String className, String method) {
         try {
             Class cl = Class.forName(className);
+            Object o = cl.newInstance();
             if (a.equals(CstrTestsProvider.class)) {
-                Object o = cl.newInstance();
                 Method m = o.getClass().getMethod(method);
                 Fuzzer f = (Fuzzer) m.invoke(o);
                 CstrTestsProvider cc = m.getAnnotation(CstrTestsProvider.class);
@@ -88,8 +90,14 @@ public class Scanner implements AnnotationDetector.MethodReporter {
                 if (!match(cl, cc)) {
                     return;
                 }
-                runner = new TestCasesRunner(new ArrayList<>(), method, spec.get(cc.constraint()));
-                myFuzzer.put(runner, cc.input());
+                Constraint cstr = spec.get(cc.constraint());
+                if (cstr == null) {
+                    throw new Exception("No constraint '" + cc.constraint() + "'");
+                }
+                runner = new TestCasesRunner(cstr.isCore() ? Collections.emptyList() : cores, method, cstr);
+                m.invoke(o, runner);
+                runner.verifier(new ImplVerifier());
+                myFuzzer.put(runner, cc.provider());
                 runners.add(runner);
             }
         } catch (Exception e) {
@@ -116,7 +124,7 @@ public class Scanner implements AnnotationDetector.MethodReporter {
 
     public List<TestCasesRunner> scan() throws Exception {
         spec = new SpecExtractor().extract();
-
+        cores = spec.getConstraints().stream().filter(c -> c.isCore()).collect(Collectors.toList());
         AnnotationDetector detector = new AnnotationDetector(this);
         detector.detect();
         if (ex != null) {

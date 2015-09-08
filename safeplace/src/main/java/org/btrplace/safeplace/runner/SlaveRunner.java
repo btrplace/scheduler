@@ -5,6 +5,7 @@ import org.btrplace.safeplace.fuzzer.Fuzzer;
 import org.btrplace.safeplace.fuzzer.TestCase;
 import org.btrplace.safeplace.reducer.Reducer;
 import org.btrplace.safeplace.runner.limit.Limit;
+import org.btrplace.safeplace.verification.CheckerResult;
 import org.btrplace.safeplace.verification.Verifier;
 import org.btrplace.safeplace.verification.spec.SpecVerifier;
 
@@ -48,7 +49,9 @@ public class SlaveRunner implements Callable<List<TestCaseResult>> {
             m.fuzzing = since(st);
 
             st = System.currentTimeMillis();
-            tc = valid(tc);
+            while (!valid(tc)) {
+                tc = fuzzer.fuzz(label, cstr);
+            }
             m.validation = since(st);
 
             st = System.currentTimeMillis();
@@ -57,8 +60,7 @@ public class SlaveRunner implements Callable<List<TestCaseResult>> {
 
             for (Limit l : limits) {
                 if (!l.pass(res)) {
-                    stop = true;
-                    break;
+                    return results;
                 }
             }
 
@@ -75,9 +77,8 @@ public class SlaveRunner implements Callable<List<TestCaseResult>> {
         return results;
     }
 
-    private TestCase valid(TestCase tc) {
-        return tc;
-/*                //Necessarily against the continuous version
+    private boolean valid(TestCase tc) {
+        //Necessarily against the continuous version
                 for (Constraint c : preconditions) {
                     CheckerResult res = oracle.verify(tc);
                     if (!res.getStatus()) {
@@ -89,7 +90,8 @@ public class SlaveRunner implements Callable<List<TestCaseResult>> {
                     if (!res.getStatus()) {
                         return false;
                     }
-                }*/
+                }
+        return true;
     }
 
     private TestCaseResult test(TestCase tc) {

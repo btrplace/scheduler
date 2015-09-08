@@ -18,16 +18,13 @@
 
 package org.btrplace.safeplace;
 
-import org.btrplace.safeplace.test.Bench;
-import org.btrplace.safeplace.test.Test;
-
 /**
  * @author Fabien Hermenier
  */
 public class BenchSpeed {
 
     public static void main(String[] args) {
-
+/*
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "--vms":
@@ -69,6 +66,6 @@ public class BenchSpeed {
         } else {
             Test.main(new String[]{});
         }
-
+*/
     }
 }

@@ -16,7 +16,7 @@ public class MaxTests implements Limit {
     }
 
     @Override
-    public boolean pass(TestCaseResult o) {
-        return counter.decrementAndGet() > 0;
+    synchronized public boolean pass(TestCaseResult o) {
+        return counter.getAndDecrement() > 0;
     }
 }
