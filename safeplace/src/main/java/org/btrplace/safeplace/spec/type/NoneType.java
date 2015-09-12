@@ -47,7 +47,7 @@ public class NoneType implements Type {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         return null;
     }
 

@@ -2,6 +2,7 @@ package org.btrplace.safeplace.fuzzer;
 
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.verification.spec.Domain;
 import org.btrplace.safeplace.verification.spec.SpecModel;
 
 import java.util.ArrayList;
@@ -44,8 +45,12 @@ public class FuzzerImpl implements Fuzzer {
         return new TestCase(lbl, c, argsGen.build(c, spec), p, argsGen.continuous(c));
     }
 
-    public Fuzzer add(ModelViewFuzzer v) {
+    public FuzzerImpl add(ModelViewFuzzer v) {
         views.add(v);
+        return this;
+    }
+
+    public FuzzerImpl dom(Domain v) {
         return this;
     }
 

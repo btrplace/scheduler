@@ -29,7 +29,7 @@ public interface Type {
 
     boolean match(String n);
 
-    Constant newValue(String n);
+    Constant parse(String n);
 
     Type inside();
 

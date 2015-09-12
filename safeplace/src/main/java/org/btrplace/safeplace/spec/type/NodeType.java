@@ -51,7 +51,7 @@ public class NodeType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         throw new UnsupportedOperationException();
     }
 

@@ -37,8 +37,8 @@ public class ParallelConstraintVerificationFuzzTest {
         ReconfigurationPlanFuzzer2 fuzz = new ReconfigurationPlanFuzzer2();
         Constraint c = s.get("maxOnline");
         System.out.println(c.pretty());
-        List<VerifDomain> doms = new ArrayList<>();
-        doms.add(new IntVerifDomain(0, 5));
+        List<Domain> doms = new ArrayList<>();
+        doms.add(new IntDomain(0, 5));
         ParallelConstraintVerificationFuzz pc = new ParallelConstraintVerificationFuzz(fuzz, doms, new ImplVerifier(), c);
         ReducedDefiantStore b = new ReducedDefiantStore();
         b.reduceWith(new PlanReducer());

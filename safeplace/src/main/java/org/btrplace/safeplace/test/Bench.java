@@ -195,22 +195,22 @@ public class Bench {
     //MaxOnline
     @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit", "rebuild", "maxOnline"}, provider = "myProvider")
     public void testMaxOnlineContinuous(CTestCasesRunner r) {
-        check(r.continuous()).dom(new IntVerifDomain(0, 5));
+        check(r.continuous()).dom(new IntDomain(0, 5));
     }
 
     @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit", "repair", "maxOnline"}, provider = "myProvider")
     public void testMaxOnlineContinuousRepair(CTestCasesRunner r) {
-        repair(check(r.continuous()).dom(new IntVerifDomain(0, 5)));//.impl().repair(true);
+        repair(check(r.continuous()).dom(new IntDomain(0, 5)));//.impl().repair(true);
     }
 
     @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit", "rebuild", "maxOnline"}, provider = "myProvider")
     public void testMaxOnlineDiscrete(CTestCasesRunner r) {
-        check(r.discrete()).dom(new IntVerifDomain(0, 5));
+        check(r.discrete()).dom(new IntDomain(0, 5));
     }
 
     @CstrTest(constraint = "MaxOnline", groups = {"counting", "unit", "repair", "maxOnline"}, provider = "myProvider")
     public void testMaxOnlineDiscreteRepair(CTestCasesRunner r) {
-        repair(check(r.discrete()).dom(new IntVerifDomain(0, 5)));//.impl().repair(true);
+        repair(check(r.discrete()).dom(new IntDomain(0, 5)));//.impl().repair(true);
     }
 
     //Offline

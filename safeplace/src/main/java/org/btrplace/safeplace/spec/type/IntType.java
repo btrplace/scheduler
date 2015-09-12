@@ -59,7 +59,7 @@ public class IntType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         return new Constant(Integer.parseInt(n), IntType.getInstance());
     }
 

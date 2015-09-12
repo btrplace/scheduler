@@ -18,44 +18,40 @@
 
 package org.btrplace.safeplace.verification.spec;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class IntVerifDomain implements VerifDomain<Integer> {
+public class StringEnumDomain implements Domain<String> {
 
-    private Set<Integer> dom;
+    private Set<String> dom;
 
     private int lb, ub;
 
-    public IntVerifDomain(int lb, int ub) {
-        dom = new HashSet<>(ub - lb + 1);
-        for (int i = lb; i <= ub; i++) {
-            dom.add(i);
-        }
-        this.lb = lb;
-        this.ub = ub;
+    public StringEnumDomain(String[] strs) {
+        dom = new HashSet<>(strs.length);
+        Collections.addAll(dom, strs);
     }
 
     @Override
-    public Set<Integer> domain() {
+    public Set<String> values() {
         return dom;
     }
 
     @Override
     public String type() {
-        return "int";
+        return "string";
     }
 
     @Override
     public String toString() {
-        return lb + ".." + ub;
+        return dom.toString();
     }
 
-    public IntVerifDomain clone() {
-        return new IntVerifDomain(lb, ub);
+    public Domain<String> clone() {
+        return new StringEnumDomain(dom.toArray(new String[dom.size()]));
     }
-
 }

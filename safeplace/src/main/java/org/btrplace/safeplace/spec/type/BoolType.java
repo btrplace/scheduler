@@ -57,7 +57,7 @@ public class BoolType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         return new Constant(Boolean.parseBoolean(n), BoolType.getInstance());
     }
 

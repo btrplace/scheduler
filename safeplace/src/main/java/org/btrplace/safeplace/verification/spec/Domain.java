@@ -23,10 +23,16 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public interface VerifDomain<T> {
-    Set<T> domain();
+public interface Domain<T> {
+    Set<T> values();
 
     String type();
 
-    VerifDomain<T> clone();
+    Domain<T> clone();
+
+//    boolean isIn(Object v);
+
+    //Object value();
+
+    //  Object subset();
 }

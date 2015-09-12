@@ -34,7 +34,7 @@ public class SpecModel {
 
     private SpecMapping sm;
 
-    private Map<String, VerifDomain> vDoms;
+    private Map<String, Domain> vDoms;
 
     private Model mo;
 
@@ -83,16 +83,16 @@ public class SpecModel {
         return o;*/
     }
 
-    public void add(VerifDomain d) {
+    public void add(Domain d) {
         vDoms.put(d.type(), d);
     }
 
     public Set getVerifDomain(String lbl) {
-        VerifDomain v = vDoms.get(lbl);
+        Domain v = vDoms.get(lbl);
         if (v == null) {
             return null;
         }
-        return v.domain();
+        return v.values();
     }
 
     @Override

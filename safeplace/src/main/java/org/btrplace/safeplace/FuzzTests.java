@@ -3,6 +3,7 @@ package org.btrplace.safeplace;
 
 import org.btrplace.safeplace.fuzzer.Fuzzer;
 import org.btrplace.safeplace.runner.Report;
+import org.btrplace.safeplace.runner.TestCaseResult;
 import org.btrplace.safeplace.runner.TestCasesRunner;
 import org.btrplace.safeplace.scanner.Scanner;
 
@@ -17,14 +18,14 @@ import java.util.List;
 public class FuzzTests {
 
     private static void usage(int c) {
-        System.out.println("FuzzTests (-h) (--help) (--tests x,y,z | --groups a,b,c) ");
+        System.out.println("FuzzTests (-h) (--help) (-v)* (--tests x,y,z | --groups a,b,c) ");
         System.exit(c);
     }
 
     public static void main(String[] args) throws Exception {
         List<String> tests = new ArrayList<>();
         List<String> groups = new ArrayList<>();
-
+        int verbosity = 0;
         //Fuzz --tests --groups
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -33,6 +34,9 @@ public class FuzzTests {
                     break;
                 case "--groups":
                     groups = split(args[++i]);
+                    break;
+                case "-v":
+                    verbosity++;
                     break;
                 case "-h":
                 case "--help":
@@ -43,13 +47,8 @@ public class FuzzTests {
         }
 
         Scanner sc = new Scanner();
-        for (String test : tests) {
-            sc.test(test);
-        }
-
-        for (String group : groups) {
-            sc.group(group);
-        }
+        tests.stream().forEach(sc::test);
+        groups.stream().forEach(sc::group);
 
         List<TestCasesRunner> runners = sc.scan();
         System.out.println(runners.size() + " testing campaigns");
@@ -60,7 +59,13 @@ public class FuzzTests {
                 System.exit(1);
             }
             Report report = new Report(r.label());
-            report.add(r.run(f));
+            List<TestCaseResult> results = r.run(f);
+            for (TestCaseResult result : results) {
+                if (verbosity >= 2 || (verbosity >= 1 && result.result() != TestCaseResult.Result.success)) {
+                    System.out.println(result);
+                }
+                report.add(result);
+            }
             System.out.println(report.pretty());
         }
     }

@@ -114,7 +114,7 @@ public class SignatureReducerTest {
         ps.add(new HashSet<>(Arrays.asList(n0, n1)));
         ps.add(new HashSet<>(Arrays.asList(n2, n3, n4)));
         args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
-        args.add(BoolType.getInstance().newValue(true));                             */
+        args.add(BoolType.getInstance().parse(true));                             */
 
         //TestCase tc = new TestCase("foo", c, args, p, false);
         SignatureReducer er = new SignatureReducer();

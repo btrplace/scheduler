@@ -71,7 +71,7 @@ public class ColType implements Type {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         throw new UnsupportedOperationException();
     }
 

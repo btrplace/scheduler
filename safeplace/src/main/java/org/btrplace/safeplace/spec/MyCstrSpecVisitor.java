@@ -389,15 +389,15 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         }
 
         if (VMStateType.getInstance().match(ref)) {
-            return VMStateType.getInstance().newValue(ref);
+            return VMStateType.getInstance().parse(ref);
         }
 
         if (NodeStateType.getInstance().match(ref)) {
-            return NodeStateType.getInstance().newValue(ref);
+            return NodeStateType.getInstance().parse(ref);
         }
 
         if (TimeType.getInstance().match(ref)) {
-            return TimeType.getInstance().newValue(ref);
+            return TimeType.getInstance().parse(ref);
         }
 
         if (NoneType.getInstance().match(ref)) {
@@ -409,13 +409,13 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     @Override
     public Constant visitIntTerm(@NotNull CstrSpecParser.IntTermContext ctx) {
-        return IntType.getInstance().newValue(ctx.INT().getText());
+        return IntType.getInstance().parse(ctx.INT().getText());
     }
 
     @Override
     public Object visitStringTerm(@NotNull CstrSpecParser.StringTermContext ctx) {
         String txt = ctx.STRING().getText();
-        return StringType.getInstance().newValue(txt.substring(1, txt.length()));
+        return StringType.getInstance().parse(txt.substring(1, txt.length()));
     }
 
 

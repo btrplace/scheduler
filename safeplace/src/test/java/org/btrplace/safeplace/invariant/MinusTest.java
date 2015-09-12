@@ -39,7 +39,7 @@ public class MinusTest {
 
     @Test
     public void testInts() {
-        Minus p = new IntMinus(IntType.getInstance().newValue("5"), IntType.getInstance().newValue("7"));
+        Minus p = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
         Assert.assertEquals(p.eval(new SpecModel()), -2);
         Assert.assertEquals(p.type(), IntType.getInstance());
     }
@@ -57,14 +57,14 @@ public class MinusTest {
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
         Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(IntType.getInstance()));
-        Constant v2 = new Constant(Arrays.asList(VMStateType.getInstance().newValue("running")), new SetType(VMStateType.getInstance()));
+        Constant v2 = new Constant(Arrays.asList(VMStateType.getInstance().parse("running")), new SetType(VMStateType.getInstance()));
         new SetMinus(v1, v2);
     }
 
     @Test
     public void testMinusMinus() {
-        Minus p1 = new IntMinus(IntType.getInstance().newValue("5"), IntType.getInstance().newValue("7"));
-        Minus p2 = new IntMinus(IntType.getInstance().newValue("1"), IntType.getInstance().newValue("2"));
+        Minus p1 = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
+        Minus p2 = new IntMinus(IntType.getInstance().parse("1"), IntType.getInstance().parse("2"));
         Minus p3 = new IntMinus(p1, p2);
         Assert.assertEquals(p3.eval(new SpecModel()), -1);
     }

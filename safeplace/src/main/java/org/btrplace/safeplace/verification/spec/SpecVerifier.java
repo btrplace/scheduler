@@ -39,21 +39,21 @@ import java.util.List;
  */
 public class SpecVerifier implements Verifier {
 
-    private List<VerifDomain> vDoms;
+    private List<Domain> vDoms;
 
 
-    public SpecVerifier(List<VerifDomain> vDoms) {
+    public SpecVerifier(List<Domain> vDoms) {
         this.vDoms = vDoms;
     }
 
     public SpecVerifier() {
-        this(Collections.<VerifDomain>emptyList());
+        this(Collections.<Domain>emptyList());
     }
 
     @Override
     public Verifier clone() {
         SpecVerifier s = new SpecVerifier();
-        for (VerifDomain v : vDoms) {
+        for (Domain v : vDoms) {
             s.vDoms.add(v.clone());
         }
         return s;

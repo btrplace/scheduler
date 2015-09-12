@@ -61,7 +61,7 @@ public class RealType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         return new Constant(Double.parseDouble(n), RealType.getInstance());
     }
 

@@ -40,7 +40,7 @@ public class TimeType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         if (match(n)) {
             try {
                 return new Constant(Integer.parseInt(n.substring(1)), this);

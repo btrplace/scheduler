@@ -40,7 +40,7 @@ public class PlusTest {
 
     @Test
     public void testInts() {
-        Plus p = new IntPlus(IntType.getInstance().newValue("5"), IntType.getInstance().newValue("7"));
+        Plus p = new IntPlus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
         Assert.assertEquals(p.eval(new SpecModel()), 12);
         Assert.assertEquals(p.type(), IntType.getInstance());
     }
@@ -58,14 +58,14 @@ public class PlusTest {
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
         Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(IntType.getInstance()));
-        Constant v2 = new Constant(new HashSet(Arrays.asList(VMStateType.getInstance().newValue("running"))), new SetType(VMStateType.getInstance()));
+        Constant v2 = new Constant(new HashSet(Arrays.asList(VMStateType.getInstance().parse("running"))), new SetType(VMStateType.getInstance()));
         new SetPlus(v1, v2);
     }
 
     @Test
     public void testPlusPlus() {
-        Plus p1 = new IntPlus(IntType.getInstance().newValue("5"), IntType.getInstance().newValue("7"));
-        Plus p2 = new IntPlus(IntType.getInstance().newValue("1"), IntType.getInstance().newValue("2"));
+        Plus p1 = new IntPlus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
+        Plus p2 = new IntPlus(IntType.getInstance().parse("1"), IntType.getInstance().parse("2"));
         Plus p3 = new IntPlus(p1, p2);
         Assert.assertEquals(p3.eval(new SpecModel()), 15);
     }

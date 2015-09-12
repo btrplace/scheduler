@@ -9,7 +9,5 @@ public interface Fuzzer {
 
     TestCase fuzz(String lbl, Constraint c);
 
-    Fuzzer add(ModelViewFuzzer v);
-
     Fuzzer clone();
 }

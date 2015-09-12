@@ -64,7 +64,7 @@ public class VMStateType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         return new Constant(Type.valueOf(n), this);
     }
 

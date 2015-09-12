@@ -18,8 +18,6 @@
 
 package org.btrplace.safeplace.runner;
 
-import java.util.List;
-
 /**
  * @author Fabien Hermenier
  */
@@ -40,12 +38,6 @@ public class Report {
 
     public String testName() {
         return id;
-    }
-
-    public void add(List<TestCaseResult> list) {
-        for (TestCaseResult r : list) {
-            add(r);
-        }
     }
 
     public void add(TestCaseResult r) {

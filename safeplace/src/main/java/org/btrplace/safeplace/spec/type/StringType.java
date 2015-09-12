@@ -33,7 +33,7 @@ public class StringType extends Atomic {
     }
 
     @Override
-    public Constant newValue(String n) {
+    public Constant parse(String n) {
         if (match(n)) {
             return new Constant(n, this);
         }

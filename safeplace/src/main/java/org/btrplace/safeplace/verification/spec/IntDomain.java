@@ -24,31 +24,24 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class FloatVerifDomain implements VerifDomain<Double> {
+public class IntDomain implements Domain<Integer> {
 
-    private Set<Double> dom;
+    private Set<Integer> dom;
 
     private int lb, ub;
 
-    private double inc;
-    public FloatVerifDomain(int lb, int ub, double inc) {
-        dom = new HashSet<>();
-        for (double i = lb; i <= ub; i += inc) {
+    public IntDomain(int lb, int ub) {
+        dom = new HashSet<>(ub - lb + 1);
+        for (int i = lb; i <= ub; i++) {
             dom.add(i);
         }
         this.lb = lb;
         this.ub = ub;
-        this.inc = inc;
-    }
-
-    @Override
-    public Set<Double> domain() {
-        return dom;
     }
 
     @Override
     public String type() {
-        return "float";
+        return "int";
     }
 
     @Override
@@ -56,8 +49,27 @@ public class FloatVerifDomain implements VerifDomain<Double> {
         return lb + ".." + ub;
     }
 
-    public FloatVerifDomain clone() {
-        return new FloatVerifDomain(lb, ub, inc);
+    public IntDomain clone() {
+        return new IntDomain(lb, ub);
     }
 
+    @Override
+    public Set<Integer> values() {
+        return dom;
+    }
+
+    //@Override
+    public boolean isIn(Object v) {
+        return dom.contains(v);
+    }
+
+    /*@Override
+    public Object value() {
+        return null;
+    }
+
+    @Override
+    public Object subset() {
+        return null;
+    }*/
 }
