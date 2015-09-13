@@ -92,24 +92,26 @@ public class TransitionFactory {
      *
      * @param srcState the current VM state
      * @param dstState the current VM state
-     * @return the list of possible transitions. May be empty
+     * @return the list of possible transitions. {@code null} if no transition is available
      */
-    public List<VMTransitionBuilder> getBuilder(VMState srcState, VMState dstState) {
+    public VMTransitionBuilder getBuilder(VMState srcState, VMState dstState) {
         List<VMTransitionBuilder> dstCompliant = vmAMB2.get(dstState);
-        List<VMTransitionBuilder> possibles = new ArrayList<>();
+        if (dstCompliant == null) {
+            return null;
+        }
         for (VMTransitionBuilder vmb : dstCompliant) {
             if (vmb.getSourceStates().contains(srcState)) {
-                possibles.add(vmb);
+                return vmb;
             }
         }
-        return possibles;
+        return null;
     }
 
     /**
      * Get the model builder for a given transition
      *
-     * @param srcState the current VM state
-     * @return the {@link NodeTransition} associated to the state transition
+     * @param srcState the current node state
+     * @return the {@link NodeTransition} associated to the state transition. {@code null} if no transition is available
      */
     public NodeTransitionBuilder getBuilder(NodeState srcState) {
         return nodeAMB.get(srcState);
@@ -131,6 +133,7 @@ public class TransitionFactory {
         f.add(new ForgeVM.Builder());
         f.add(new StayAwayVM.BuilderReady());
         f.add(new StayAwayVM.BuilderSleeping());
+        f.add(new StayAwayVM.BuilderInit());
         f.add(new BootableNode.Builder());
         f.add(new ShutdownableNode.Builder());
         return f;

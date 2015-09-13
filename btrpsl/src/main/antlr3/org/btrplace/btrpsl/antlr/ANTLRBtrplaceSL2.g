@@ -7,16 +7,18 @@ options {
 
 
 @parser::header {
-package org.btrplace.btrpsl;
+package org.btrplace.btrpsl.antlr;
 	
 	import java.util.LinkedList;
 	import java.util.List;
+	import org.btrplace.btrpsl.ErrorReporter;
 }
 
 @lexer::header {
-package org.btrplace.btrpsl;
+package org.btrplace.btrpsl.antlr;
 
 import java.util.LinkedList;
+import org.btrplace.btrpsl.ErrorReporter;
 }
 
 @lexer::members {

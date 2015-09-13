@@ -26,10 +26,11 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import solver.constraints.IntConstraintFactory;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -85,9 +86,9 @@ public class SuspendVM implements VMTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        Node node = rp.getNode(cSlice.getHoster().getValue());
-        plan.add(new org.btrplace.plan.event.SuspendVM(vm, node, node, start.getValue(), getEnd().getValue()));
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        Node node = rp.getNode(s.getIntVal(cSlice.getHoster()));
+        plan.add(new org.btrplace.plan.event.SuspendVM(vm, node, node, s.getIntVal(start), s.getIntVal(getEnd())));
         return true;
     }
 
@@ -125,6 +126,17 @@ public class SuspendVM implements VMTransition {
     public VM getVM() {
         return vm;
     }
+
+    @Override
+    public VMState getSourceState() {
+        return VMState.RUNNING;
+    }
+
+    @Override
+    public VMState getFutureState() {
+        return VMState.SLEEPING;
+    }
+
 
     /**
      * The builder devoted to a running->sleeping transition.

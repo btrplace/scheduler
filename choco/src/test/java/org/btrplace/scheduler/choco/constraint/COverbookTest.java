@@ -33,7 +33,7 @@ import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.exception.ContradictionException;
+import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.ArrayList;
 import java.util.Collection;

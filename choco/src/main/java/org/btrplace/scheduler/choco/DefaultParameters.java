@@ -56,7 +56,7 @@ public class DefaultParameters implements Parameters {
     /**
      * No time limit by default.
      */
-    private int timeLimit = 0;
+    private int timeLimit = -1;
 
     private boolean repair = false;
 

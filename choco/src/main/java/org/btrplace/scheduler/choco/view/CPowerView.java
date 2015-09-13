@@ -25,8 +25,10 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.constraints.ICF;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,9 +67,10 @@ public class CPowerView implements ChocoView {
                 IntVar powerEnd = rp.makeUnboundedDuration("NodeActionType(", n, ").Pe");
                 VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
+                rp.getSolver().post(ICF.arithm(powerEnd,"<=",rp.getEnd()));
             } else if (na instanceof BootableNode) {
                 powerStarts.put(rp.getNode(n), na.getStart());
-                powerEnds.put(rp.getNode(n), na.getHostingEnd());
+                powerEnds.put(rp.getNode(n), /*na.getHostingEnd()*/rp.getEnd());
             }
         }
     }
@@ -103,7 +106,7 @@ public class CPowerView implements ChocoView {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
         return true;
     }
 

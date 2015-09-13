@@ -28,6 +28,9 @@ import java.util.Objects;
 /**
  * Migrate a running VM from one online node to another one.
  *
+ * It is possible to parametrise the action with the amount of bandwidth
+ * to reserve to perform the operation.
+ *
  * @author Fabien Hermenier
  */
 public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
@@ -36,25 +39,37 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     private Node src, dst;
 
+    private int bw;
+
     /**
      * Make a new action.
      *
-     * @param v     the VM to migrate
-     * @param from  the node the VM is currently running on
-     * @param to    the node where to place the VM
-     * @param start the moment the action will consume
-     * @param end   the moment the action will stop
+     * @param v         the VM to migrate
+     * @param from      the node the VM is currently running on
+     * @param to        the node where to place the VM
+     * @param start     the moment the action will consume
+     * @param end       the moment the action will stop
+     * @param bandwidth the reserved bandwidth in MB. {@link Integer#MAX_VALUE} for an unlimited bandwidth
      */
-    public MigrateVM(VM v, Node from, Node to, int start, int end) {
+    public MigrateVM(VM v, Node from, Node to, int start, int end, int bandwidth) {
         super(start, end);
         this.vm = v;
         this.src = from;
         this.dst = to;
+        this.bw = bandwidth;
     }
 
-    @Override
-    public Node getDestinationNode() {
-        return dst;
+    /**
+     * Make a new action with an unlimited bandwidth.
+     *
+     * @param v         the VM to migrate
+     * @param from      the node the VM is currently running on
+     * @param to        the node where to place the VM
+     * @param start     the moment the action will consume
+     * @param end       the moment the action will stop
+     */
+    public MigrateVM(VM v, Node from, Node to, int start, int end) {
+        this(v, from, to, start, end, Integer.MAX_VALUE);
     }
 
     /**
@@ -64,6 +79,20 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      */
     public Node getSourceNode() {
         return src;
+    }
+
+    /**
+     * Get the bandwidth reserved for the migration
+     *
+     * @return an amount in megabytes. {@link Integer#MAX_VALUE} for an unlimited bandwidth
+     */
+    public int getBandwidth() {
+        return bw;
+    }
+
+    @Override
+    public Node getDestinationNode() {
+        return dst;
     }
 
     @Override
@@ -100,21 +129,37 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         MigrateVM that = (MigrateVM) o;
         return this.vm.equals(that.vm) &&
                 this.src.equals(that.src) &&
-                this.dst.equals(that.dst);
+                this.dst.equals(that.dst) &&
+                (this.bw < 0 && that.bw < 0) ||(this.bw == that.bw);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getStart(), getEnd(), src, dst, vm);
+        return Objects.hash(getStart(), getEnd(), src, dst, vm, bw);
     }
 
     @Override
     public String pretty() {
-        return "migrate(vm=" + vm + ", from=" + src + ", to=" + dst + ')';
+        String pretty = "migrate(vm=" + vm + ", from=" + src + ", to=" + dst;
+        if(bw > 0) { pretty += ", bw=" + bw; }
+        return pretty + ')';
     }
 
     @Override
     public Object visit(ActionVisitor v) {
         return v.visit(this);
+    }
+
+    /**
+     * Set the bandwidth to reserve for the operation.
+     * The value is in MB
+     * @param bandwidth a positive value. {@link java.lang.Integer#MAX_VALUE} for an unlimited bandwidth
+     * @return {@code true} if the value was positive
+     */
+    public boolean setBandwidth(int bandwidth) {
+        if (bandwidth > 0) {
+            this.bw = bandwidth;
+        }
+        return bandwidth > 0;
     }
 }

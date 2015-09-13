@@ -20,13 +20,12 @@ package org.btrplace.scheduler.choco.extensions;
 
 
 import gnu.trove.map.hash.TIntIntHashMap;
-import memory.IStateInt;
-import memory.IStateIntVector;
+import org.chocosolver.memory.IStateIntVector;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.constraints.Propagator;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -68,16 +67,6 @@ public class LocalTaskScheduler {
     private TIntIntHashMap[] profilesMax;
 
     private int[] sortedMaxProfile;
-
-    /**
-     * LB of the moment the last c-slice leaves.
-     */
-    private IStateInt lastCendInf;
-
-    /**
-     * UB of the moment the last c-slice leaves.
-     */
-    private IStateInt lastCendSup;
 
     private int[][] capacities;
 
@@ -155,8 +144,6 @@ public class LocalTaskScheduler {
                 lastSup = s;
             }
         }
-        this.lastCendInf = early.getSolver().getEnvironment().makeInt(lastInf);
-        this.lastCendSup = early.getSolver().getEnvironment().makeInt(lastSup);
     }
 
     /**
@@ -177,11 +164,10 @@ public class LocalTaskScheduler {
 
     public void propagate(BitSet watchHosts) throws ContradictionException {
         if (vIn.size() == 0 && out.length() == 0) return;
-        computeProfiles();
-        last.updateLowerBound(lastCendInf.get(), aCause);
+        boolean allInstantiated = computeProfiles();
 
-        if (checkInvariant()) {
-            // all time variables are instantiated
+        checkInvariant();
+        if (allInstantiated) {
             return;
         }
 
@@ -190,14 +176,16 @@ public class LocalTaskScheduler {
         updateDStartsSup(watchHosts);
     }
 
-    public void computeProfiles() {
+    public boolean computeProfiles() throws ContradictionException {
+
+        boolean allinstantiated = true;
 
         for (int d = 0; d < nbDims; d++) {
             //What is necessarily used on the resource
-            profilesMin[d] = new TIntIntHashMap();
+            profilesMin[d].clear();
 
             //Maximum possible usage on the resource
-            profilesMax[d] = new TIntIntHashMap();
+            profilesMax[d].clear();
 
             profilesMax[d].put(0, capacities[me][d] - startupFree[d]);
             profilesMin[d].put(0, capacities[me][d] - startupFree[d]);
@@ -209,14 +197,15 @@ public class LocalTaskScheduler {
         // the cTasks
         for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
 
+            cEnds[ct].updateUpperBound(last.getUB(), aCause);
+            allinstantiated &= cEnds[ct].isInstantiated() || associatedToDSliceOnCurrentNode(ct);
+
+            int tu = cEnds[ct].getUB();
             int tl = cEnds[ct].getLB();
             if (tl < lastInf) {
                 lastInf = tl;
             }
-            int tu = cEnds[ct].getUB();
-            if (tu > lastSup) {
-                lastSup = tu;
-            }
+
             boolean increasing = associatedToDSliceOnCurrentNode(ct) && increase(ct, associateDTask[ct]);
             // the cTask does not migrate and its demand increases on at least one dimension
             if (increasing) {
@@ -238,20 +227,29 @@ public class LocalTaskScheduler {
                 }
             }
         }
+        last.updateLowerBound(lastInf, aCause);
 
-        lastCendInf.set(lastInf);
-        lastCendSup.set(lastSup);
-
+        lastSup = 0;
         // the dTasks
         for (int x = 0; x < vIn.size(); x++) {
             int dt = vIn.get(x);
-            int tu = dStarts[dt].getUB();
+
+            dStarts[dt].updateLowerBound(early.getLB(), aCause);
+            allinstantiated &= dStarts[dt].isInstantiated() || associatedToCSliceOnCurrentNode(dt);
+
+
             int tl = dStarts[dt].getLB();
+            int tu = dStarts[dt].getUB();
+            if (tu > lastSup) {
+                lastSup = tu;
+            }
+
             for (int d = 0; d < nbDims; d++) {
                 profilesMin[d].put(tu, profilesMin[d].get(tu) + dUsages[dt][d]);
                 profilesMax[d].put(tl, profilesMax[d].get(tl) + dUsages[dt][d]);
             }
         }
+        early.updateUpperBound(lastSup, aCause);
 
         //Now transforms into an absolute profile
         sortedMinProfile = null;
@@ -260,9 +258,6 @@ public class LocalTaskScheduler {
 
         sortedMaxProfile = null;
         sortedMaxProfile = profilesMax[0].keys();
-//        for (int d = 0; d < nbDims; d++) {
-//           profilesMax[d].keys(sortedMaxProfile);
-//        }
 
         Arrays.sort(sortedMaxProfile);
 
@@ -290,6 +285,7 @@ public class LocalTaskScheduler {
             }
             LOGGER.debug("/--- " + me + "---/");
         }
+        return allinstantiated;
     }
 
     private boolean increase(int ct, int dt) {
@@ -336,30 +332,7 @@ public class LocalTaskScheduler {
                 }
             }
         }
-
-        boolean allinstantiated = true;
-        //invariant related to the last and the early.
-        for (int idx = 0; idx < vIn.size(); idx++) {
-            int i = vIn.get(idx);
-            if (dStarts[i].getUB() < early.getLB()) {
-                if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].toString() + ") (min expected=" + early.toString() + ")");
-                }
-                aCause.contradiction(early, "");
-            }
-            allinstantiated &= dStarts[i].isInstantiated() || associatedToCSliceOnCurrentNode(i);
-        }
-
-        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (cEnds[i].getLB() > last.getUB()) {
-                if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].toString() + ") (last expected=" + last.toString() + ")");
-                }
-                aCause.contradiction(last, "");
-            }
-            allinstantiated &= cEnds[i].isInstantiated() || associatedToDSliceOnCurrentNode(i);
-        }
-        return allinstantiated;
+        return false;
     }
 
     // TODO: ou sont instanciees les dates des VMs qui restent sur le noeud ??

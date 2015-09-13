@@ -27,11 +27,11 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CPowerView;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.variables.IntVar;
-import solver.variables.Task;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.Task;
+import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,7 +91,9 @@ public class CMaxOnline implements ChocoConstraint {
             for (Node n : constraint.getInvolvedNodes()) {
                 nodeIdx[i++] = rp.getNode(n);
             }
-            IntVar capacity = VariableFactory.bounded("capacity", 0, constraint.getAmount(), solver);
+            //IntVar capacity = VariableFactory.bounded("capacity", constraint.getAmount(), constraint.getAmount(), solver);
+            IntVar capacity = VariableFactory.fixed("capacity", constraint.getAmount(), solver);
+
             // The state of the node:
             IntVar[] heights = new IntVar[numberOfTasks];
             IntVar[] starts = new IntVar[numberOfTasks];

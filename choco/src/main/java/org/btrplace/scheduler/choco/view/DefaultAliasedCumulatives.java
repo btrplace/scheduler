@@ -23,7 +23,8 @@ import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.AliasedCumulatives;
-import solver.variables.IntVar;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,7 +107,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
         return true;
     }
 

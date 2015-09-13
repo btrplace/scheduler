@@ -18,15 +18,16 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import memory.IStateInt;
+import org.btrplace.scheduler.choco.constraint.CObjective;
+import org.chocosolver.memory.IStateInt;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.search.strategy.selectors.VariableSelector;
-import solver.variables.IntVar;
+import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -56,7 +57,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private BitSet[] ins;
 
-    private CMinMTTR obj;
+    private CObjective obj;
 
     private IStateInt firstFree;
 
@@ -68,7 +69,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
      * @param rp the problem to rely on
      * @param o  the objective to rely on
      */
-    public OnStableNodeFirst(ReconfigurationProblem rp, CMinMTTR o) {
+    public OnStableNodeFirst(ReconfigurationProblem rp, CObjective o) {
 
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;

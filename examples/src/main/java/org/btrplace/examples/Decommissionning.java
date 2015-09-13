@@ -51,7 +51,7 @@ public class Decommissionning implements Example {
             Node n = mo.newNode();
             mo.getMapping().addOnlineNode(n);
 
-            //16 VMs on it
+            // 4 VMs per node
             for (int j = 0; j < ratio * nbPCPUs; j++) {
                 VM v = mo.newVM();
                 mo.getMapping().addRunningVM(v, n);
@@ -76,10 +76,11 @@ public class Decommissionning implements Example {
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(3);
-        cra.setVerbosity(2);
         try {
+            cra.setVerbosity(1);
             ReconfigurationPlan p = cra.solve(mo, cstrs);
             System.out.println(p);
+            System.out.println(cra.getStatistics());
         } catch (SchedulerException ex) {
             System.err.println(ex.getMessage());
             return false;

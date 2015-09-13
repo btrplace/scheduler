@@ -18,10 +18,10 @@
 
 package org.btrplace.scheduler.choco.extensions.pack;
 
-import memory.IStateBitSet;
-import memory.structure.S64BitSet;
-import solver.exception.ContradictionException;
-import util.iterators.DisposableValueIterator;
+import org.chocosolver.memory.IStateBitSet;
+import org.chocosolver.memory.structure.S64BitSet;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.util.iterators.DisposableValueIterator;
 
 import java.util.ArrayList;
 

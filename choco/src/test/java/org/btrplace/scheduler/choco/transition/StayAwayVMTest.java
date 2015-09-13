@@ -25,8 +25,8 @@ import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Cause;
-import solver.exception.ContradictionException;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.exception.ContradictionException;
 
 /**
  * Unit tests for {@link StayAwayVM}.

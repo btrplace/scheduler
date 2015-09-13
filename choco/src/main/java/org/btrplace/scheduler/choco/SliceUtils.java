@@ -19,7 +19,7 @@
 package org.btrplace.scheduler.choco;
 
 
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.List;
 

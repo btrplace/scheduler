@@ -27,8 +27,8 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.StayAwayVM;
 import org.btrplace.scheduler.choco.transition.Transition;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
 
 import java.util.*;
 

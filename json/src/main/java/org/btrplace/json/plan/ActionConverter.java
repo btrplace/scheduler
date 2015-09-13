@@ -74,6 +74,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
 
     public static final String VM_DESTINATION_LABEL = "to";
 
+    public static final String BANDWIDTH = "bw";
+
     /**
      * Key to indicate a resource identifier.
      */
@@ -233,6 +235,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         o.put(VM_LABEL, toJSON(a.getVM()));
         o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
         o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
+        o.put(BANDWIDTH, a.getBandwidth());
         return o;
     }
 
@@ -242,7 +245,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
                 requiredNode(in, VM_LOCATION_LABEL),
                 requiredNode(in, VM_DESTINATION_LABEL),
                 requiredInt(in, START_LABEL),
-                requiredInt(in, END_LABEL));
+                requiredInt(in, END_LABEL),
+                optInt(in, BANDWIDTH, Integer.MAX_VALUE)
+                );
     }
 
     @Override

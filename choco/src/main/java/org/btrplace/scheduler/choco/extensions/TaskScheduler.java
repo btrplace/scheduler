@@ -21,15 +21,15 @@ package org.btrplace.scheduler.choco.extensions;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import memory.IStateInt;
-import memory.IStateIntVector;
-import solver.constraints.Constraint;
-import solver.constraints.Propagator;
-import solver.constraints.PropagatorPriority;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import util.ESat;
-import util.tools.ArrayUtils;
+import org.chocosolver.memory.IStateInt;
+import org.chocosolver.memory.IStateIntVector;
+import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.constraints.PropagatorPriority;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.util.ESat;
+import org.chocosolver.util.tools.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -296,7 +296,6 @@ public class TaskScheduler extends Constraint {
             return dt < dHosters.length;
         }
 
-
         private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[] change) {
             TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
             for (int d = 0; d < nbDims; d++) {
@@ -321,7 +320,5 @@ public class TaskScheduler extends Constraint {
             }
             return b.toString();
         }
-
-
     }
 }

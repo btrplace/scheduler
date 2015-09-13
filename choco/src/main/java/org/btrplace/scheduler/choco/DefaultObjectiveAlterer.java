@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco;
 
-import solver.ResolutionPolicy;
+import org.chocosolver.solver.ResolutionPolicy;
 
 /**
  * Default objective alterer.

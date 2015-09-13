@@ -19,6 +19,8 @@
 package org.btrplace.btrpsl;
 
 import org.antlr.runtime.*;
+import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Lexer;
+import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Parser;
 import org.btrplace.btrpsl.constraint.ConstraintsCatalog;
 import org.btrplace.btrpsl.constraint.DefaultConstraintsCatalog;
 import org.btrplace.btrpsl.includes.Includes;

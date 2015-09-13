@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import solver.search.strategy.selectors.variables.InputOrder;
-import solver.variables.IntVar;
+import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
+import org.chocosolver.solver.variables.IntVar;
 
 /**
  * A variable selector that focuses the placement variables of slices.

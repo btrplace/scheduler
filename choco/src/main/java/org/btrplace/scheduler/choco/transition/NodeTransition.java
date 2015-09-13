@@ -19,8 +19,8 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.model.Node;
-import solver.variables.IntVar;
-
+import org.btrplace.model.NodeState;
+import org.chocosolver.solver.variables.IntVar;
 
 /**
  * Interface to specify a transition that manipulates a node.
@@ -49,4 +49,10 @@ public interface NodeTransition extends Transition {
      * @return a variable
      */
     IntVar getHostingEnd();
+
+    /**
+     * Get the node initial state.
+     * @return a state
+     */
+    NodeState getSourceState();
 }

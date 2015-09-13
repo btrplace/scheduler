@@ -28,12 +28,12 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.Solver;
-import solver.constraints.Arithmetic;
-import solver.constraints.IntConstraintFactory;
-import solver.constraints.Operator;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
 
@@ -118,7 +118,7 @@ public class CSpread implements ChocoConstraint {
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
             BoolVar eq = new Arithmetic(d.getHoster(), Operator.EQ, c.getHoster()).reif();
-            solver.constraints.Constraint leqCstr = new Arithmetic(c.getEnd(), Operator.LE, d.getStart());
+            Arithmetic leqCstr = new Arithmetic(c.getEnd(), Operator.LE, d.getStart());
             ChocoUtils.postImplies(s, eq, leqCstr);
         }
     }
@@ -146,7 +146,7 @@ public class CSpread implements ChocoConstraint {
             Node h = map.getVMLocation(vm);
             if (map.isRunning(vm)) {
                 if (!spots.containsKey(h)) {
-                    spots.put(h, new HashSet<VM>());
+                    spots.put(h, new HashSet<>());
                 }
                 spots.get(h).add(vm);
             }

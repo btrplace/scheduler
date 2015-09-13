@@ -26,7 +26,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -90,8 +89,7 @@ public class StaticPartitioningTest {
         };
         Parameters p = new DefaultChocoScheduler();
 
-        InstanceResult res = st.solve(p, i0);
-        ReconfigurationPlan plan = res.getPlan();
+        ReconfigurationPlan plan = st.solve(p, i0);
         Assert.assertNotNull(plan);
         Model dst = plan.getResult();
         Assert.assertEquals(dst.getMapping().getOnlineNodes().size(), 2);
@@ -99,9 +97,9 @@ public class StaticPartitioningTest {
 
         //Now, there is no solution for i2. the resulting plan should be null
         i2.getSatConstraints().addAll(Offline.newOffline(Arrays.asList(n2)));
-        res = st.solve(p, i0);
-        Assert.assertNull(res.getPlan());
-        Assert.assertEquals(res.getStatistics().getSolutions().size(), 0);
+        plan = st.solve(p, i0);
+        Assert.assertNull(plan);
+        Assert.assertEquals(st.getStatistics().getSolutions().size(), 0);
     }
 
     @Test(expectedExceptions = {SchedulerException.class})

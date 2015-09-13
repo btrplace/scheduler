@@ -25,11 +25,12 @@ import org.btrplace.plan.event.BootNode;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -143,11 +144,16 @@ public class BootableNode implements NodeTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        if (getState().getValue() == 1) {
-            plan.add(new BootNode(node, start.getValue(), end.getValue()));
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        if (s.getIntVal(getState()) == 1) {
+            plan.add(new BootNode(node, s.getIntVal(start), s.getIntVal(end)));
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "bootable(node=" + node + ", online=" + getState() + ")";
     }
 
     @Override
@@ -183,6 +189,11 @@ public class BootableNode implements NodeTransition {
     @Override
     public IntVar getHostingEnd() {
         return hostingEnd;
+    }
+
+    @Override
+    public NodeState getSourceState() {
+        return NodeState.OFFLINE;
     }
 
     /**

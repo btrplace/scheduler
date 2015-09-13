@@ -32,14 +32,15 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.extensions.FastIFFEq;
-import solver.Solver;
-import solver.constraints.Arithmetic;
-import solver.constraints.IntConstraintFactory;
-import solver.constraints.Operator;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VF;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
+import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -194,15 +195,15 @@ public class RelocatableVM implements KeepRunningVM {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         DurationEvaluators dev = rp.getDurationEvaluators();
-        if (cSlice.getHoster().getValue() != dSlice.getHoster().getValue()) {
-            assert stay.getValue() == 0;
+        if (s.getIntVal(cSlice.getHoster()) != s.getIntVal(dSlice.getHoster())) {
+            assert s.getIntVal(stay) == 0;
             Action a;
-            Node dst = rp.getNode(dSlice.getHoster().getValue());
-            if (doReinstantiation.isInstantiatedTo(0)) {
-                int st = getStart().getValue();
-                int ed = getEnd().getValue();
+            Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
+            if (s.getIntVal(doReinstantiation) == 0) {
+                int st = s.getIntVal(getStart());
+                int ed = s.getIntVal(getEnd());
                 a = new MigrateVM(vm, src, dst, st, ed);
                 plan.add(a);
             } else {
@@ -212,14 +213,14 @@ public class RelocatableVM implements KeepRunningVM {
                         rp.getLogger().error("Unable to get a new int to plan the re-instantiate of VM {}", vm);
                         return false;
                     }
-                    org.btrplace.plan.event.ForgeVM fvm = new org.btrplace.plan.event.ForgeVM(newVM, dSlice.getStart().getValue() - dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm), dSlice.getStart().getValue());
+                    org.btrplace.plan.event.ForgeVM fvm = new org.btrplace.plan.event.ForgeVM(newVM, s.getIntVal(dSlice.getStart()) - dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm), dSlice.getStart().getValue());
                     //forge the new VM from a template
                     plan.add(fvm);
                     //Boot the new VM
                     int endForging = fvm.getEnd();
                     org.btrplace.plan.event.BootVM boot = new org.btrplace.plan.event.BootVM(newVM, dst, endForging, endForging + dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, newVM));
                     boot.addEvent(Action.Hook.PRE, new SubstitutedVMEvent(vm, newVM));
-                    return plan.add(boot) && plan.add(new org.btrplace.plan.event.ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getValue()));
+                    return plan.add(boot) && plan.add(new org.btrplace.plan.event.ShutdownVM(vm, src, boot.getEnd(), s.getIntVal(cSlice.getEnd())));
                 } catch (SchedulerException ex) {
                     rp.getLogger().error(ex.getMessage());
                     return false;
@@ -284,8 +285,20 @@ public class RelocatableVM implements KeepRunningVM {
         return "relocate(doReinstantiation=" + prettyMethod(doReinstantiation) +
                 " ,vm=" + vm +
                 " ,from=" + src + "(" + rp.getNode(src) + ")" +
-                " ,to=" + dSlice.getHoster().toString() + ")";
+                " ,to=" + (dSlice.getHoster().isInstantiated() ? rp.getNode(dSlice.getHoster().getValue()) : dSlice.getHoster().toString()) + ")";
     }
+
+    @Override
+    public VMState getSourceState() {
+        return VMState.RUNNING;
+    }
+
+    @Override
+    public VMState getFutureState() {
+        return VMState.RUNNING;
+    }
+
+
 
     /**
      * The builder devoted to a running->running transition.

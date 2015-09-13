@@ -29,28 +29,30 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.*;
+import org.chocosolver.solver.ResolutionPolicy;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.objective.ObjectiveManager;
+import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
+import org.chocosolver.solver.search.loop.monitors.SMF;
+import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.search.strategy.ISF;
+import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
+import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
+import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
+import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
+import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
+import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.RealVar;
+import org.chocosolver.solver.variables.SetVar;
+import org.chocosolver.solver.variables.VariableFactory;
+import org.chocosolver.util.ESat;
+import org.chocosolver.util.tools.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.ResolutionPolicy;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.search.loop.monitors.IMonitorSolution;
-import solver.search.loop.monitors.SMF;
-import solver.search.solution.AllSolutionsRecorder;
-import solver.search.strategy.ISF;
-import solver.search.strategy.selectors.values.RealDomainMiddle;
-import solver.search.strategy.selectors.values.SetDomainMin;
-import solver.search.strategy.selectors.variables.InputOrder;
-import solver.search.strategy.selectors.variables.Occurrence;
-import solver.search.strategy.strategy.RealStrategy;
-import solver.search.strategy.strategy.SetStrategy;
-import solver.search.strategy.strategy.StrategiesSequencer;
-import solver.variables.IntVar;
-import solver.variables.RealVar;
-import solver.variables.SetVar;
-import solver.variables.VariableFactory;
-import util.ESat;
-import util.tools.ArrayUtils;
 
 import java.util.*;
 
@@ -200,9 +202,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
                 solver.post(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
             });
+            if (!solver.getObjectiveManager().isOptimization()) {
+                solver.set(new ObjectiveManager<IntVar, Integer>(objective, solvingPolicy, true));
+            }
             solver.findOptimalSolution(solvingPolicy, objective);
         }
         return makeResultingPlan();
+    }
+
+    @Override
+    public List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException {
+        List<ReconfigurationPlan> plans = new ArrayList<>();
+        for (Solution s : solver.getSolutionRecorder().getSolutions()) {
+            plans.add(buildReconfigurationPlan(s, model));
+        }
+        return plans;
     }
 
     private ReconfigurationPlan makeResultingPlan() throws SchedulerException {
@@ -217,19 +231,31 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw new SchedulerException(model, "Unable to state about the problem feasibility.");
         }
 
-        DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
+        Solution s = solver.getSolutionRecorder().getLastSolution();
+        return buildReconfigurationPlan(s, model.clone());
+    }
+
+    /**
+     * Build a plan for a solution.
+     * @param s the solution
+     * @param src the source model
+     * @return the resulting plan
+     * @throws SchedulerException if a error occurred
+     */
+    public ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException {
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
         for (Transition action : nodeActions) {
-            action.insertActions(plan);
+            action.insertActions(s, plan);
         }
 
         for (Transition action : vmActions) {
-            action.insertActions(plan);
+            action.insertActions(s, plan);
         }
 
-        viewsManager.insertActions(plan);
+        viewsManager.insertActions(s, plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
-        assert checkConsistency(plan);
+        assert checkConsistency(s, plan);
         return plan;
     }
 
@@ -308,17 +334,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public final VMState getNextState(VM v) {
-        if (running.contains(v)) {
-            return VMState.RUNNING;
-        } else if (ready.contains(v)) {
-            return VMState.READY;
-        } else if (sleeping.contains(v)) {
-            return VMState.SLEEPING;
-        } else if (killed.contains(v)) {
-            return VMState.KILLED;
-        }
-        return null;
+    public final VMState getFutureState(VM v) {
+        VMTransition t = getVMAction(v);
+        return t == null ? null : t.getFutureState();
+    }
+
+
+    @Override
+    public VMState getSourceState(VM v) {
+        VMTransition t = getVMAction(v);
+        return t == null ? null : t.getSourceState();
+    }
+
+    @Override
+    public NodeState getSourceState(Node n) {
+        NodeTransition t = getNodeAction(n);
+        return t == null ? null : t.getSourceState();
     }
 
     private void fillElements() {
@@ -357,37 +388,38 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmActions = new VMTransition[vms.length];
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
-            VMState nextState = getNextState(vmId);
-            VMState curState = map.getState(vmId);
-            if (curState == null) {
-                //It's a new VM
-                curState = VMState.INIT;
+            VMState curState = VMState.INIT;
+            if (map.isRunning(vmId)) {
+                curState = VMState.RUNNING;
+            } else if (map.isSleeping(vmId)) {
+                curState = VMState.SLEEPING;
+            } else if (map.isReady(vmId)) {
+                curState = VMState.READY;
             }
-            if (nextState == null) {
-                //Next state is undefined, keep the current state
-                //Need to update running, sleeping and waiting accordingly
-                nextState = curState;
-                switch (nextState) {
-                    case RUNNING:
-                        running.add(vmId);
-                        break;
-                    case SLEEPING:
-                        sleeping.add(vmId);
-                        break;
-                    case READY:
-                        ready.add(vmId);
-                        break;
+
+            VMState nextState;
+            if (running.contains(vmId)) {
+                nextState = VMState.RUNNING;
+            } else if (sleeping.contains(vmId)) {
+                nextState = VMState.SLEEPING;
+            } else if (ready.contains(vmId)) {
+                nextState = VMState.READY;
+            } else if (killed.contains(vmId)) {
+                nextState = VMState.KILLED;
+            } else {
+                nextState = curState; //by default, maintain state
+                switch(nextState) {
+                    case READY: ready.add(vmId);break;
+                    case RUNNING: running.add(vmId); break;
+                    case SLEEPING: sleeping.add(vmId); break;
                 }
             }
 
-            List<VMTransitionBuilder> am = amFactory.getBuilder(curState, nextState);
-            if (am.isEmpty()) {
+            VMTransitionBuilder am = amFactory.getBuilder(curState, nextState);
+            if (am == null) {
                 throw new SchedulerException(model, "No model available for VM transition " + curState + " -> " + nextState);
             }
-            if (am.size() > 1) {
-                throw new SchedulerException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
-            }
-            vmActions[i] = am.get(0).build(this, vmId);
+            vmActions[i] = am.build(this, vmId);
             if (vmActions[i].isManaged()) {
                 manageable.add(vmId);
             }
@@ -419,8 +451,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return nodeId == null ? -1 : getNode(nodeId);
     }
 
-    private boolean checkConsistency(ReconfigurationPlan p) {
-        if (p.getDuration() != end.getValue()) {
+    private boolean checkConsistency(Solution s, ReconfigurationPlan p) {
+        if (p.getDuration() != s.getIntVal(end)) {
             LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getValue());
             return false;
         }

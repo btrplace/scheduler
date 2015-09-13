@@ -25,11 +25,12 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -92,8 +93,8 @@ public class ForgeVM implements VMTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        org.btrplace.plan.event.ForgeVM a = new org.btrplace.plan.event.ForgeVM(vm, getStart().getValue(), getEnd().getValue());
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        org.btrplace.plan.event.ForgeVM a = new org.btrplace.plan.event.ForgeVM(vm, s.getIntVal(getStart()), s.getIntVal(getEnd()));
         return plan.add(a);
     }
 
@@ -137,6 +138,15 @@ public class ForgeVM implements VMTransition {
         return true;
     }
 
+    @Override
+    public VMState getSourceState() {
+        return VMState.INIT;
+    }
+
+    @Override
+    public VMState getFutureState() {
+        return VMState.READY;
+    }
 
     /**
      * Get the template to use to build the VM.

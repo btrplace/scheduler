@@ -19,10 +19,11 @@
 package org.btrplace.scheduler.choco.runner.single;
 
 import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 
 /**
  * A simple runner that solve in one stage a whole instance.
@@ -31,11 +32,19 @@ import org.btrplace.scheduler.choco.runner.InstanceSolver;
  */
 public class SingleRunner implements InstanceSolver {
 
+    private InstanceSolverRunner r;
     @Override
-    public InstanceResult solve(Parameters cra,
+    public ReconfigurationPlan solve(Parameters cra,
                                 Instance i) throws SchedulerException {
-        InstanceSolverRunner r = new InstanceSolverRunner(cra, i);
-        return r.call();
+        r = new InstanceSolverRunner(cra, i);
+        return r.call().getPlan();
+    }
 
+    @Override
+    public SolvingStatistics getStatistics() throws SchedulerException {
+        if (r == null) {
+            return null;
+        }
+        return r.getStatistics();
     }
 }

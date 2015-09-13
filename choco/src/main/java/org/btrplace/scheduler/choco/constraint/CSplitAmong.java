@@ -27,9 +27,9 @@ import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.variables.IntVar;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.Collection;
 import java.util.HashSet;

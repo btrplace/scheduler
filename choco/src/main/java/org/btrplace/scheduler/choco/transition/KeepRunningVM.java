@@ -19,7 +19,7 @@
 package org.btrplace.scheduler.choco.transition;
 
 
-import solver.variables.BoolVar;
+import org.chocosolver.solver.variables.BoolVar;
 
 /**
  * An interface to specify an VM transition on a VM that is running and that will keep running.

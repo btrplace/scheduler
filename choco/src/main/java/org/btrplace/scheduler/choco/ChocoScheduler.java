@@ -38,9 +38,10 @@ public interface ChocoScheduler extends Scheduler, Parameters {
     /**
      * Get statistics about the last solved problem.
      *
+     * @throws SchedulerException if an error occurred
      * @return some statistics, {@code null} if no problem has been solved for the moment
      */
-    SolvingStatistics getStatistics();
+    SolvingStatistics getStatistics() throws SchedulerException;
 
     /**
      * Compute a reconfiguration plan to reach a solution to the model.
@@ -67,5 +68,6 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      * @param p the runner to use
      */
     void setInstanceSolver(InstanceSolver p);
+
 
 }

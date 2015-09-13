@@ -27,7 +27,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.runner.single.SingleRunner;
@@ -50,8 +49,6 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     private Parameters params;
 
     private InstanceSolver runner;
-
-    private SolvingStatistics stats;
 
     /**
      * Make a new algorithm.
@@ -112,10 +109,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
-        stats = null;
-        InstanceResult res = runner.solve(params, new Instance(i, cstrs, opt));
-        stats = res.getStatistics();
-        return res.getPlan();
+        return runner.solve(params, new Instance(i, cstrs, opt));
     }
 
     @Override
@@ -129,8 +123,8 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public SolvingStatistics getStatistics() {
-        return stats;
+    public SolvingStatistics getStatistics() throws SchedulerException {
+        return runner.getStatistics();
     }
 
     @Override

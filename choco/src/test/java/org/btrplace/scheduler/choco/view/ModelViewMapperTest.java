@@ -24,6 +24,7 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.chocosolver.solver.search.solution.Solution;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -71,7 +72,7 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+        public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
             throw new UnsupportedOperationException();
         }
 

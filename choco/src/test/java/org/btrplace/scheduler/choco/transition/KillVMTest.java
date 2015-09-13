@@ -28,8 +28,8 @@ import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Cause;
-import solver.exception.ContradictionException;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Set;

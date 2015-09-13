@@ -41,6 +41,17 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
+    private Comparator<Action> sorter = new Comparator<Action>() {
+
+        public int compare(Action o1, Action o2) {
+            int diffStart = o1.getStart() - o2.getStart();
+            if (diffStart == 0) {
+                return o1.getEnd() - o2.getEnd();
+            }
+            return diffStart;
+        }
+    };
+
     /**
      * Make a new plan that starts from a given model.
      *
@@ -109,7 +120,13 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     @Override
     public String toString() {
-        return applier.toString(this);
+        List<Action> l = new ArrayList<>(actions);
+        Collections.sort(l, sorter);
+        StringBuilder b = new StringBuilder();
+        for (Action a : l) {
+            b.append(a.getStart()).append(':').append(a.getEnd()).append(' ').append(a.toString()).append('\n');
+        }
+        return b.toString();
     }
 
     @Override

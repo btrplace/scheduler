@@ -1,6 +1,7 @@
 #!/bin/bash
 if [ -e etc/gpg ]; then
 	PASSPHRASE="-Dgpg.passphrase=${GPG_PASSPHRASE}"
-	SETTINGS="-q -s etc/sonatype.xml"
+	SETTINGS="-s etc/sonatype.xml"
 fi
-mvn ${SETTINGS} clean javadoc:jar source:jar -Dgpg.keyname=BF1447AC ${PASSPHRASE} deploy ||exit 1
+mvn ${SETTINGS} -DskipTests=true -Dmaven.repo.local=/tmp/cache -Dgpg.keyname=BF1447AC ${PASSPHRASE} javadoc:jar source:jar deploy
+exit $?

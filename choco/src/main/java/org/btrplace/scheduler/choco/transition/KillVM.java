@@ -27,9 +27,10 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.EnumSet;
 
@@ -62,14 +63,16 @@ public class KillVM implements VMTransition {
 
     private Slice cSlice;
 
+    private VMState from;
     /**
      * Make a new model.
      *
+     * @param from the initial VM state.
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred
+     * @throws SchedulerException if an error occurred
      */
-    public KillVM(ReconfigurationProblem rp, VM e) throws SchedulerException {
+    public KillVM(VMState from, ReconfigurationProblem rp, VM e) throws SchedulerException {
         vm = e;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
@@ -126,8 +129,8 @@ public class KillVM implements VMTransition {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationPlan plan) {
-        plan.add(new org.btrplace.plan.event.KillVM(vm, node, getStart().getValue(), getEnd().getValue()));
+    public boolean insertActions(Solution s, ReconfigurationPlan plan) {
+        plan.add(new org.btrplace.plan.event.KillVM(vm, node, s.getIntVal(getStart()), s.getIntVal(getEnd())));
         return true;
     }
 
@@ -136,6 +139,15 @@ public class KillVM implements VMTransition {
         return state;
     }
 
+    @Override
+    public VMState getSourceState() {
+        return from;
+    }
+
+    @Override
+    public VMState getFutureState() {
+        return VMState.KILLED;
+    }
     /**
      * The builder devoted to a (init|ready|running|sleep)->killed transition.
      */
@@ -150,7 +162,15 @@ public class KillVM implements VMTransition {
 
         @Override
         public VMTransition build(ReconfigurationProblem r, VM v) throws SchedulerException {
-            return new KillVM(r, v);
+            Mapping m = r.getSourceModel().getMapping();
+            if (m.isReady(v)) {
+                return new KillVM(VMState.READY, r, v);
+            } else if (m.isRunning(v)) {
+                return new KillVM(VMState.RUNNING, r, v);
+            }  else if (m.isSleeping(v)) {
+                return new KillVM(VMState.SLEEPING, r, v);
+            }
+            return new KillVM(VMState.INIT, r, v);
         }
     }
 }

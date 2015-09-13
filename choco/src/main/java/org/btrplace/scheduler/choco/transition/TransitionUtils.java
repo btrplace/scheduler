@@ -19,7 +19,7 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.scheduler.choco.Slice;
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.Collection;

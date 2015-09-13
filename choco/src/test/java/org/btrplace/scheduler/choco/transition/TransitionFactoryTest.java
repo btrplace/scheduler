@@ -36,49 +36,49 @@ public class TransitionFactoryTest {
 
         System.out.println(amf);
         //Running -> Sleeping
-        VMTransitionBuilder b = amf.getBuilder(VMState.RUNNING, VMState.SLEEPING).get(0);
+        VMTransitionBuilder b = amf.getBuilder(VMState.RUNNING, VMState.SLEEPING);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.SLEEPING);
         Assert.assertTrue(b.getSourceStates().contains(VMState.RUNNING));
 
         //Sleeping -> Running
-        b = amf.getBuilder(VMState.SLEEPING, VMState.RUNNING).get(0);
+        b = amf.getBuilder(VMState.SLEEPING, VMState.RUNNING);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.RUNNING);
         Assert.assertTrue(b.getSourceStates().contains(VMState.SLEEPING));
 
         //Running -> Running
-        b = amf.getBuilder(VMState.RUNNING, VMState.RUNNING).get(0);
+        b = amf.getBuilder(VMState.RUNNING, VMState.RUNNING);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.RUNNING);
         Assert.assertTrue(b.getSourceStates().contains(VMState.RUNNING));
 
         //Ready -> Running
-        b = amf.getBuilder(VMState.READY, VMState.RUNNING).get(0);
+        b = amf.getBuilder(VMState.READY, VMState.RUNNING);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.RUNNING);
         Assert.assertTrue(b.getSourceStates().contains(VMState.READY));
 
         //Running -> Ready
-        b = amf.getBuilder(VMState.RUNNING, VMState.READY).get(0);
+        b = amf.getBuilder(VMState.RUNNING, VMState.READY);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.READY);
         Assert.assertTrue(b.getSourceStates().contains(VMState.RUNNING));
 
         //Init -> Ready
-        b = amf.getBuilder(VMState.INIT, VMState.READY).get(0);
+        b = amf.getBuilder(VMState.INIT, VMState.READY);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.READY);
         Assert.assertTrue(b.getSourceStates().contains(VMState.INIT));
 
         //Ready -> READY
-        b = amf.getBuilder(VMState.READY, VMState.READY).get(0);
+        b = amf.getBuilder(VMState.READY, VMState.READY);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.READY);
         Assert.assertTrue(b.getSourceStates().contains(VMState.READY));
 
         //Sleeping -> Sleeping
-        b = amf.getBuilder(VMState.SLEEPING, VMState.SLEEPING).get(0);
+        b = amf.getBuilder(VMState.SLEEPING, VMState.SLEEPING);
         Assert.assertNotNull(b);
         Assert.assertEquals(b.getDestinationState(), VMState.SLEEPING);
         Assert.assertTrue(b.getSourceStates().contains(VMState.SLEEPING));

@@ -21,15 +21,17 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Solver;
-import solver.variables.BoolVar;
-import solver.variables.IntVar;
-import solver.variables.VF;
 
 import java.util.List;
 
@@ -177,13 +179,23 @@ public class TransitionUtilsTest {
         }
 
         @Override
-        public boolean insertActions(ReconfigurationPlan plan) {
+        public boolean insertActions(Solution s, ReconfigurationPlan plan) {
             return true;
         }
 
         @Override
         public BoolVar getState() {
             return state;
+        }
+
+        @Override
+        public VMState getSourceState() {
+            return VMState.READY;
+        }
+
+        @Override
+        public VMState getFutureState() {
+            return VMState.KILLED;
         }
 
     }

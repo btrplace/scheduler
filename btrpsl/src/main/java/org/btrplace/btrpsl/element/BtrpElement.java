@@ -38,7 +38,7 @@ public class BtrpElement extends DefaultBtrpOperand implements Cloneable {
     /**
      * Make a new element.
      *
-     * @param ty the element type. Either {@link Type#VM} or {@link Type#node}.
+     * @param ty the element type. Either {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#node}.
      * @param n  the element name
      * @param el the associated BtrPlace element
      */

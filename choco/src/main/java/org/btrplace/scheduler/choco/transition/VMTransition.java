@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 import org.btrplace.scheduler.choco.Slice;
 
 
@@ -27,7 +28,7 @@ import org.btrplace.scheduler.choco.Slice;
  *
  * @author Fabien Hermenier
  */
-public interface VMTransition extends Transition {
+public interface VMTransition extends Transition<VMState> {
 
     /**
      * Get the VM manipulated by the action.
@@ -57,4 +58,16 @@ public interface VMTransition extends Transition {
      * @return {@code true} if the VM must be manipulated
      */
     boolean isManaged();
+
+    /**
+     * Get the VM initial state.
+     * @return a state
+     */
+    VMState getSourceState();
+
+    /**
+     * Get the future VM state.
+     * @return a state
+     */
+    VMState getFutureState();
 }

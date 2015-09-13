@@ -123,7 +123,8 @@ public class CSplitTest {
         //System.out.println(p);
     }
 
-    @Test
+    //@Test
+    @Test(enabled = false)
     public void testContinuous() throws SchedulerException {
 
         Model mo = new DefaultModel();
@@ -144,7 +145,7 @@ public class CSplitTest {
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4, vm5)
                 .run(n5, vm6, vm7, vm8).get();
-
+        System.out.println(map);
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);
         Collection<VM> g3 = Arrays.asList(vm6, vm7);
@@ -161,6 +162,8 @@ public class CSplitTest {
         for (VM v : map.getRunningVMs(n1)) {
             cstrs.add(new Fence(v, Collections.singleton(n3)));
         }
+        cra.setVerbosity(3);
+        //cra.setTimeLimit(2);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);

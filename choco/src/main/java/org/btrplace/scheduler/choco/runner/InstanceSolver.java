@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.runner;
 
 import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.slf4j.Logger;
@@ -38,9 +39,16 @@ public interface InstanceSolver {
      *
      * @param ps the parameters to consider
      * @param i  the instance to solve
-     * @return the result of the solving process
-     * @throws org.btrplace.scheduler.SchedulerException if an error prevent from running a solving process
+     * @return the resulting reconfiguration plan, {@code null} if there is no solution
+     * @throws SchedulerException if an error prevent from running a solving process
      */
-    InstanceResult solve(Parameters ps,
+    ReconfigurationPlan solve(Parameters ps,
                          Instance i) throws SchedulerException;
+
+    /**
+     * Return the statistics of the solving process.
+     * @return some statistics
+     * @throws SchedulerException if an error occurred
+     */
+    SolvingStatistics getStatistics() throws SchedulerException;
 }

@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.view;
 
-import solver.variables.IntVar;
+import org.chocosolver.solver.variables.IntVar;
 
 /**
  * An interface to specify a cumulatives constraint when a resource is shared among

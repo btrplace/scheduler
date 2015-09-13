@@ -21,12 +21,12 @@ package org.btrplace.scheduler.choco.runner.disjoint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Running;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -81,8 +81,8 @@ public class FixedSizePartitioningTest {
 
         //Get a solution, the ready VMs must have been launched
         params.setTimeLimit(3);
-        InstanceResult res = f.solve(params, i);
-        Assert.assertEquals(res.getPlan().getSize(), 5);
+        ReconfigurationPlan plan = f.solve(params, i);
+        Assert.assertEquals(plan.getSize(), 5);
 
     }
 
@@ -109,8 +109,8 @@ public class FixedSizePartitioningTest {
             }
         }*/
         //Get a solution, the ready VMs must have been launched
-        InstanceResult res = f.solve(params, origin);
-        Assert.assertEquals(res.getPlan().getSize(), 5);
+        ReconfigurationPlan plan = f.solve(params, origin);
+        Assert.assertEquals(plan.getSize(), 5);
 
     }
 

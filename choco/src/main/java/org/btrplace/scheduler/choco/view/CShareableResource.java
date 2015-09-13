@@ -32,13 +32,14 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.RoundedUpDivision;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.Cause;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import solver.variables.RealVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.RealVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -315,18 +316,18 @@ public class CShareableResource implements ChocoView {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
         Mapping srcMapping = r.getSourceModel().getMapping();
 
         for (VM vm : r.getFutureRunningVMs()) {
             Slice dSlice = r.getVMAction(vm).getDSlice();
-            Node destNode = r.getNode(dSlice.getHoster().getValue());
+            Node destNode = r.getNode(s.getIntVal(dSlice.getHoster()));
 
             if (srcMapping.isRunning(vm) && destNode == srcMapping.getVMLocation(vm)) {
                 //Was running and stay on the same node
                 //Check if the VM has been cloned
                 //TODO: might be too late depending on the symmetry breaking on the actions schedule
-                insertAllocateAction(p, vm, destNode, dSlice.getStart().getValue());
+                insertAllocateAction(s, p, vm, destNode, s.getIntVal(dSlice.getStart()));
             } else {
                 //TODO: not constant time operation. Maybe a big failure
                 VM dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
@@ -368,10 +369,10 @@ public class CShareableResource implements ChocoView {
         }
     }
 
-    private boolean insertAllocateAction(ReconfigurationPlan p, VM vm, Node destNode, int st) {
+    private boolean insertAllocateAction(Solution s, ReconfigurationPlan p, VM vm, Node destNode, int st) {
         String rcId = getResourceIdentifier();
         int prev = rc.getConsumption(vm);
-        int now = getVMsAllocation()[rp.getVM(vm)].getValue();
+        int now = s.getIntVal(getVMsAllocation()[rp.getVM(vm)]);
         if (prev != now) {
             Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
             return p.add(a);
@@ -411,6 +412,26 @@ public class CShareableResource implements ChocoView {
         }
 
         ((Cumulatives) v).addDim(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+
+        //Check if the initial capacity > sum current consumption
+        //The ratio is instantiated now so the computation is correct
+        //Seems to me we don't support ratio change
+        for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
+            int nIdx = rp.getNode(n);
+            double ratio = getOverbookRatio(nIdx).getLB();
+            double capa = getSourceResource().getCapacity(n) * ratio;
+            int usage = 0;
+            for (VM vm : rp.getSourceModel().getMapping().getRunningVMs(n)) {
+                usage += getSourceResource().getConsumption(vm);
+                if (usage > capa) {
+                    break;
+                }
+            }
+
+            if (usage > capa) {
+                throw new SchedulerException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
+            }
+        }
         return true;
     }
 
@@ -434,7 +455,7 @@ public class CShareableResource implements ChocoView {
             try {
                 virtRcUsage[nIdx].updateUpperBound(phyRcUsage[nIdx].getUB(), Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: ", rp.getNode(nIdx), phyRcUsage[nIdx].getUB(), ex.getMessage());
+                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), phyRcUsage[nIdx].getUB(), ex.getMessage());
                 return false;
             }
         } else {

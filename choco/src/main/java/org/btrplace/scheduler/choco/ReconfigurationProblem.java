@@ -18,22 +18,21 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.VMState;
+import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.ChocoView;
+import org.chocosolver.solver.ResolutionPolicy;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
-import solver.ResolutionPolicy;
-import solver.Solver;
-import solver.variables.IntVar;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -113,7 +112,21 @@ public interface ReconfigurationProblem {
      * @param v the VM
      * @return the state if the VM is known, {@code null} otherwise
      */
-    VMState getNextState(VM v);
+    VMState getFutureState(VM v);
+
+    /**
+     * Get the current VM state.
+     * @param v the VM
+     * @return its states if the VM is known. {@code null} otherwise
+     */
+    VMState getSourceState(VM v);
+
+    /**
+     * Get the current node state.
+     * @param n the node
+     * @return its states if the node is known. {@code null} otherwise
+     */
+    NodeState getSourceState(Node n);
 
     /**
      * Get the starting moment of the reconfiguration.
@@ -212,9 +225,25 @@ public interface ReconfigurationProblem {
      * @param optimize  {@code true} to make the solver try to improve the first computed solution.
      * @return a plan if the solving process succeeded, {@code null} if the solver was not able to compute
      * a solution.
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurs
+     * @throws SchedulerException if an error occurred
      */
     ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException;
+
+    /**
+     * Build a plan for a solution.
+     * @param s the solution
+     * @param src the source model
+     * @return the resulting plan
+     * @throws SchedulerException if a error occurred
+     */
+    ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException;
+
+    /**
+     * Return all the solutions that have been computed from a previous {@link #solve(int, boolean)} call.
+     * @return a list of plan that may be empty
+     * @throws SchedulerException if an error occurred
+     */
+    List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException;
 
     /**
      * Get the Solver used to model this problem.

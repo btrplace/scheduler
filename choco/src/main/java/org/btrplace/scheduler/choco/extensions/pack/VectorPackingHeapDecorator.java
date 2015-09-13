@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.extensions.pack;
 
-import solver.exception.ContradictionException;
+import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.ArrayList;
 import java.util.Comparator;

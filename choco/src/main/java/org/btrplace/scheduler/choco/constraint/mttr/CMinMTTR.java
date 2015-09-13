@@ -20,8 +20,10 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
+import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.SliceUtils;
@@ -29,18 +31,18 @@ import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import solver.Solver;
-import solver.constraints.Constraint;
-import solver.constraints.IntConstraintFactory;
-import solver.search.limits.BacktrackCounter;
-import solver.search.loop.monitors.SMF;
-import solver.search.strategy.selectors.values.IntDomainMin;
-import solver.search.strategy.selectors.variables.InputOrder;
-import solver.search.strategy.strategy.AbstractStrategy;
-import solver.search.strategy.strategy.IntStrategy;
-import solver.search.strategy.strategy.StrategiesSequencer;
-import solver.variables.IntVar;
-import solver.variables.VariableFactory;
+import org.btrplace.scheduler.choco.view.CShareableResource;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
+import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
+import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
+import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -89,9 +91,9 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
-        if (p.getVMs().length > 0) {
+        /*if (p.getVMs().length > 0) {
             SMF.geometrical(s, p.getVMs().length * 2, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
-        }
+        }*/
         injectPlacementHeuristic(p, cost);
         postCostConstraints();
         return true;
@@ -172,12 +174,61 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
+        //IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
+        IntValueSelector rnd = new RandomVMPlacement(rp, map, true);
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), new RandomVMPlacement(rp, map, true)));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
             }
         }
+    }
+
+    private Comparator<Node> getComparator() {
+
+        List<CShareableResource> rcs = new ArrayList<>();
+        for (String v : rp.getViews()) {
+            if (v.startsWith(ShareableResource.VIEW_ID_BASE)) {
+                rcs.add((CShareableResource) rp.getView(v));
+            }
+        }
+        if (rcs.isEmpty()) {
+            //No shareableresource view, load balance over cardinality
+            return new CapacityComparator(rp, false);
+        } else {
+            /*CShareableResource worst = null;
+            double u = 0.0;
+            for (CShareableResource rc : rcs) {
+                System.out.println(rc.getIdentifier() + " "  + usage(rc));
+                if (worst == null) {
+                    worst = rc;
+                    u = usage(worst);
+                } else {
+                    if (usage(rc) > u) {
+                        worst = rc;
+                        u = usage(rc);
+                    }
+                }
+            }
+            return new CShareableResourceComparator(rp, worst, false);*/
+            System.err.println(rcs.get(1));
+            return new CShareableResourceComparator(rp, rcs.get(1), false);
+        }
+    }
+
+    private double usage(CShareableResource rc) {
+        double usage = 0;
+        for (IntVar v : rc.getVMsAllocation()) {
+            usage += v.getLB();
+            System.out.println(v);
+        }
+        double capa = 0;
+        for (Node n : rp.getNodes()) {
+            int idx = rp.getNode(n);
+            capa += (rc.getPhysicalUsage(idx).getUB() * rc.getOverbookRatio(idx).getLB());
+        }
+        System.out.println(usage + " " + capa);
+        return usage/capa;
     }
 
     @Override

@@ -33,12 +33,12 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.btrplace.scheduler.choco.view.ChocoView;
-import solver.Cause;
-import solver.Solver;
-import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
-import solver.variables.IntVar;
-import solver.variables.VariableFactory;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;

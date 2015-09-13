@@ -20,11 +20,11 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
-import solver.Solver;
-import solver.constraints.Arithmetic;
-import solver.constraints.Operator;
-import solver.variables.IntVar;
-import solver.variables.VF;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 
 /**
