@@ -1,4 +1,4 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 import org.btrplace.model.Node;
 
@@ -9,33 +9,26 @@ import java.util.List;
  * corresponding maximal bandwidth available on the path.
  * It can be either physical L2 or logical L3 routing depending on the desired implementation.
  * 
- * Note: a Routing class can be instantiated automatically, see {@link NetworkView#initRouting(Class)}
+ * Note: A routing should be first associated to a network view, see {@link #setNetwork(Network)}.
  * 
  * @author Vincent Kherbache
- * @see NetworkView#initRouting(Class)
+ * @see #setNetwork(Network)
  */
 public abstract class Routing {
 
-    protected NetworkView net;
-
-    /**
-     * The default constructor that associates a given network view.
-     *
-     * @param net   the network view
-     */
-    protected Routing(NetworkView net) { setNetwork(net); }
+    protected Network net;
     
     /**
-     * Set the network view (recursively)
+     * Set the network view (recursively).
      */
-    public void setNetwork(NetworkView net) {
+    public void setNetwork(Network net) {
         this.net = net;
         if (net.getRouting() != this) net.setRouting(this);
     }
     
     /**
-     * Get the path between two nodes
-     * 
+     * Get the path between two nodes.
+     *
      * @param n1    the source node
      * @param n2    the destination node
      * @return the path consisting of an ordered list of links
@@ -43,7 +36,7 @@ public abstract class Routing {
     abstract public List<Link> getPath(Node n1, Node n2);
 
     /**
-     * Get the maximal bandwidth available between two nodes
+     * Get the maximal bandwidth available between two nodes.
      *
      * @param n1    the source node
      * @param n2    the destination node
@@ -54,13 +47,13 @@ public abstract class Routing {
     /**
      * Clone the routing.
      *
-     * @return
+     * @return  a clone of the routing.
      */
     public abstract Routing clone();
 
     /**
-     * Inner class that map two nodes to ease the routing
-     * It allows to easily compare and differentiate and the nodes pair (src, dst)
+     * Inner class that map two nodes to ease the routing.
+     * It allows to easily compare and differentiate and the nodes pair (src, dst).
      */
     public static class NodesMap {
         private Node n1, n2;

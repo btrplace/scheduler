@@ -1,4 +1,4 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 /**
  * Created by vkherbac on 05/01/15.

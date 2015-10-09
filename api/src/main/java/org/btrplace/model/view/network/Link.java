@@ -1,4 +1,4 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 /**
  * Model a link
@@ -6,10 +6,10 @@ package org.btrplace.model.view.net;
  * Thus, there should be no direct connection (link) between two nodes
  * 
  * A link should not be instantiated directly. Typically, new links are automatically created by connecting
- * PhysicalElement together, see {@link NetworkView#connect(int, Switch, PhysicalElement)}
+ * PhysicalElement together, see {@link Network#connect(int, Switch, PhysicalElement)}
  * 
  * @author Vincent Kherbache
- * @see NetworkView#connect(int, Switch, PhysicalElement)
+ * @see Network#connect(int, Switch, PhysicalElement)
  */
 public class Link implements NetworkElement {
 

@@ -1,4 +1,4 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
@@ -9,7 +9,6 @@ import org.btrplace.model.view.NamingService;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,13 +21,12 @@ import java.util.stream.Collectors;
  * @author Vincent Kherbache
  * @see Routing#getPath(Node, Node)
  */
-public class NetworkView implements ModelView, Cloneable {
+public class Network implements ModelView, Cloneable {
 
+    private String viewId;
     private List<Switch> switches;
     private List<Link> links;
-    private Map<PhysicalElement, List<Link>> mapping;
     private Routing routing;
-    private String viewId;
     private SwitchBuilder swBuilder;
     private LinkBuilder lnBuilder;
 
@@ -41,78 +39,77 @@ public class NetworkView implements ModelView, Cloneable {
      * Make a new default instance that rely on a {@link DefaultRouting}, a {@link DefaultSwitchBuilder} and a
      * {@link DefaultLinkBuilder}.
      */
-    public NetworkView() {
-        this(DefaultRouting.class, new DefaultSwitchBuilder(), new DefaultLinkBuilder());
+    public Network() {
+        this(new DefaultRouting(), new DefaultSwitchBuilder(), new DefaultLinkBuilder());
     }
 
     /**
      * Make a new custom instance relying on a given switch builder, a {@link DefaultRouting} and a
      * {@link DefaultLinkBuilder}.
      *
-     * @param sb the switch builder to use
+     * @param sb    the switch builder to use
      */
-    public NetworkView(SwitchBuilder sb) {
-        this(DefaultRouting.class, sb, new DefaultLinkBuilder());
+    public Network(SwitchBuilder sb) {
+        this(new DefaultRouting(), sb, new DefaultLinkBuilder());
     }
 
     /**
      * Make a new custom instance relying on a given link builder, a {@link DefaultRouting} and a
      * {@link DefaultSwitchBuilder}.
      *
-     * @param lb the link builder to use
+     * @param lb    the link builder to use
      */
-    public NetworkView(LinkBuilder lb) {
-        this(DefaultRouting.class, new DefaultSwitchBuilder(), lb);
+    public Network(LinkBuilder lb) {
+        this(new DefaultRouting(), new DefaultSwitchBuilder(), lb);
     }
 
     /**
      * Make a new custom instance relying on a given routing implementation, a {@link DefaultSwitchBuilder} and a
      * {@link DefaultLinkBuilder}.
      *
-     * @param routingClass the routing class to use
+     * @param routing   the routing implementation to use
      */
-    public NetworkView(Class<? extends Routing> routingClass) {
-        this(routingClass, new DefaultSwitchBuilder(), new DefaultLinkBuilder());
+    public Network(Routing routing) {
+        this(routing, new DefaultSwitchBuilder(), new DefaultLinkBuilder());
     }
 
     /**
      * Make a new custom instance relying on a given routing implementation, a given switch builder, and a
      * {@link DefaultLinkBuilder}.
      *
-     * @param routingClass the routing class to use
-     * @param sb           the switch builder to use
+     * @param routing   the routing implementation to use
+     * @param sb        the switch builder to use
      */
-    public NetworkView(Class<? extends Routing> routingClass, SwitchBuilder sb) {
-        this(routingClass, sb, new DefaultLinkBuilder());
+    public Network(Routing routing, SwitchBuilder sb) {
+        this(routing, sb, new DefaultLinkBuilder());
     }
 
     /**
      * Make a new custom instance relying on a given routing implementation, a given link builder, and a
      * {@link DefaultSwitchBuilder}.
      *
-     * @param routingClass the routing class to use
-     * @param lb           the link builder to use
+     * @param routing   the routing implementation to use
+     * @param lb        the link builder to use
      */
-    public NetworkView(Class<? extends Routing> routingClass, LinkBuilder lb) {
-        this(routingClass, new DefaultSwitchBuilder(), lb);
+    public Network(Routing routing, LinkBuilder lb) {
+        this(routing, new DefaultSwitchBuilder(), lb);
     }
 
     /**
      * Make a new full custom instance relying on a given routing implementation, a given switch builder, and a
      * given link builder
      *
-     * @param routingClass the routing class to use
-     * @param sb           the switch builder to use
-     * @param lb           the link builder to use
+     * @param routing   the routing implementation to use
+     * @param sb        the switch builder to use
+     * @param lb        the link builder to use
      */
-    public NetworkView(Class<? extends Routing> routingClass, SwitchBuilder sb, LinkBuilder lb) {
+    public Network(Routing routing, SwitchBuilder sb, LinkBuilder lb) {
         this.viewId = VIEW_ID;
         switches = new ArrayList<>();
         links = new ArrayList<>();
-        mapping = new HashMap<>();
         swBuilder = sb;
         lnBuilder = lb;
-        initRouting(routingClass);
+        setRouting(routing);
     }
 
     /**
@@ -163,9 +160,6 @@ public class NetworkView implements ModelView, Cloneable {
         // Create a new link with a specific id
         Link link = lnBuilder.newLink(id, bandwidth, sw, pe);
         links.add(link);
-
-        // Map the link with both elements
-        mapLink(link, sw, pe);
         return link;
     }
 
@@ -182,9 +176,6 @@ public class NetworkView implements ModelView, Cloneable {
         // Create a new link
         Link link = lnBuilder.newLink(bandwidth, sw, pe);
         links.add(link);
-
-        // Map the link with both elements
-        mapLink(link, sw, pe);
         return link;
     }
 
@@ -260,7 +251,7 @@ public class NetworkView implements ModelView, Cloneable {
      *
      * @return  the mapping
      */
-    public Map<PhysicalElement, List<Link>> getMapping() { return mapping; }
+    //public Map<PhysicalElement, List<Link>> getMapping() { return mapping; }
 
     /**
      * Get the list of links connected to a given physical element
@@ -269,7 +260,16 @@ public class NetworkView implements ModelView, Cloneable {
      * @return  the list of links
      */
     public List<Link> getConnectedLinks(PhysicalElement pe) {
-        return mapping.get(pe);
+        List<Link> links = new ArrayList<>();
+        for (Link l : this.links) {
+            if (l.getElement() == pe) {
+                links.add(l);
+            }
+            else if (l.getSwitch() == pe) {
+                links.add(l);
+            }
+        }
+        return links;
     }
 
     /**
@@ -279,8 +279,8 @@ public class NetworkView implements ModelView, Cloneable {
      */
     public List<Node> getConnectedNodes() {
         List<Node> nodes = new ArrayList<>();
-        for (PhysicalElement pe : mapping.keySet()) {
-            if (pe instanceof Node) { nodes.add((Node) pe); }
+        for (Link l : links) {
+            if (l.getElement() instanceof Node) nodes.add((Node) l.getElement());
         }
         return nodes;
     }
@@ -380,19 +380,6 @@ public class NetworkView implements ModelView, Cloneable {
     }
 
     /**
-     * Set the routing implementation class to use
-     *
-     * @param routingClass the routing class
-     */
-    private void initRouting(Class<? extends Routing> routingClass) {
-        try {
-            routing = routingClass.getDeclaredConstructor(NetworkView.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Set the routing implementation to use
      *
      * @param routing the routing implementation
@@ -400,23 +387,6 @@ public class NetworkView implements ModelView, Cloneable {
     public void setRouting(Routing routing) {
         this.routing = routing;
         routing.setNetwork(this);
-    }
-
-    /**
-     * Keep a mapping between a given switch to a given physical element through the given link.
-     *
-     * @param link  the link connecting the switch and the physical element
-     * @param sw    the switch to map
-     * @param pe    the physical element to map
-     */
-    private void mapLink(Link link, Switch sw, PhysicalElement pe) {
-        // Map switch to the link
-        if (!mapping.containsKey(sw)) { mapping.put(sw, new ArrayList<>()); }
-        mapping.get(sw).add(link);
-
-        // Map physical element to the link
-        if (!mapping.containsKey(pe)) { mapping.put(pe, new ArrayList<>()); }
-        mapping.get(pe).add(link);
     }
 
     /**
@@ -445,17 +415,16 @@ public class NetworkView implements ModelView, Cloneable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return this.viewId.equals(((NetworkView) o).getIdentifier());
+        return this.viewId.equals(((Network) o).getIdentifier());
     }
 
     @Override
     public ModelView clone() {
-        NetworkView net = new NetworkView();
+        Network net = new Network();
         net.routing = routing.clone();
         net.routing.setNetwork(net);
         net.switches.addAll(switches);
         net.links.addAll(links);
-        net.mapping.putAll(mapping);
         net.lnBuilder = lnBuilder.clone();
         net.swBuilder = swBuilder.clone();
         return net;

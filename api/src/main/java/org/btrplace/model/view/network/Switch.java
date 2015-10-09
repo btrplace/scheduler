@@ -1,13 +1,13 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 import org.btrplace.model.Element;
 
 /**
  * Model a switch
- * A switch should not be instantiated directly. Use {@link NetworkView#newSwitch()} instead.
+ * A switch should not be instantiated directly. Use {@link Network#newSwitch()} instead.
  *
  * @author Vincent Kherbache
- * @see NetworkView#newSwitch()
+ * @see Network#newSwitch()
  */
 public class Switch implements Element,PhysicalElement,NetworkElement {
 

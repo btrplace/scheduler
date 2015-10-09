@@ -1,4 +1,4 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 import org.btrplace.model.Node;
 
@@ -8,23 +8,18 @@ import java.util.*;
  * Default implementation of {@link Routing}.
  * Allows to retrieve physical path (L2) between network elements by looking at physical connections.
  *
- * The constructor must strictly match the parent signature {@link Routing(NetworkView)} for generic instantiation,
- * see {@link NetworkView#initRouting(Class)}.
- * However, the class can still be instantiated manually and attached to an existing network view.
+ * If instantiated manually, it should be first attached to an existing network view,
+ * see {@link #setNetwork(Network)}.
  *
  * @author Vincent Kherbache
- * @see NetworkView#initRouting(Class)
+ * @see #setNetwork(Network)
  */
 public class DefaultRouting extends Routing {
 
     /**
      * Make a new default routing
-     *
-     * @param net   the associated network view
      */
-    public DefaultRouting(NetworkView net) {
-        super(net);
-    }
+    public DefaultRouting() {}
     
     /**
      * Recursive method to get the first physical path found from a switch to a destination node
@@ -87,6 +82,8 @@ public class DefaultRouting extends Routing {
 
     @Override
     public Routing clone() {
-        return new DefaultRouting(net);
+        DefaultRouting clone = new DefaultRouting();
+        clone.net = net; // Do not associate view->routing, only routing->view
+        return clone;
     }
 }

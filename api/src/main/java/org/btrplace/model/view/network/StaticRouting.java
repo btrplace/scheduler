@@ -1,4 +1,4 @@
-package org.btrplace.model.view.net;
+package org.btrplace.model.view.network;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
@@ -17,12 +17,10 @@ import java.util.*;
  * Allows to import static routes and import a network topology from an xml file.
  * If a specific path is not found from static routing rules, it automatically looks for physical connections.
  *
- * The constructor must strictly match the parent signature {@link Routing(NetworkView)} for generic instantiation,
- * see {@link NetworkView#initRouting(Class)}.
- * However, the class can still be instantiated manually and attached to an existing network view.
+ * If instantiated manually, it should be first attached to an existing network view, see {@link #setNetwork(Network)}.
  *
  * @author Vincent Kherbache
- * @see NetworkView#initRouting(Class)
+ * @see #setNetwork(Network)
  */
 public class StaticRouting extends Routing {
 
@@ -30,12 +28,28 @@ public class StaticRouting extends Routing {
 
     /**
      * Make a new static routing.
-     * 
-     * @param net   the associated network view
      */
-    public StaticRouting(NetworkView net) {
-        super(net);
+    public StaticRouting() {
         routes = new HashMap<>();
+    }
+
+    /**
+     * Get the static route between two given nodes.
+     * 
+     * @param nm    the nodes map
+     * @return  the static route
+     */
+    public List<Link> getStaticRoute(NodesMap nm) {
+        return routes.get(nm);
+    }
+
+    /**
+     * Get all the registered static routes.
+     *
+     * @return  the static routes
+     */
+    public Map<NodesMap, List<Link>> getStaticRoutes() {
+        return routes;
     }
 
     /**
@@ -295,7 +309,8 @@ public class StaticRouting extends Routing {
 
     @Override
     public Routing clone() {
-        StaticRouting srouting = new StaticRouting(net);
+        StaticRouting srouting = new StaticRouting();
+        srouting.net = net; // Do not associate view->routing, only routing->view
         srouting.routes.putAll(routes);
         return srouting;
     }
