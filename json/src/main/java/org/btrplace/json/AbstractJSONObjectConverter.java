@@ -368,7 +368,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      */
     public Node getOrMakeNode(int nodeID) throws JSONConverterException {
         if (mo == null) {
-            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
+            throw new JSONConverterException("Unable to extract Nodes without a model to use as a reference");
         }
         mo.newNode(nodeID);
         return new Node(nodeID);
