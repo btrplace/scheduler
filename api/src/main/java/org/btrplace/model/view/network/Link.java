@@ -1,15 +1,17 @@
 package org.btrplace.model.view.network;
 
+import org.btrplace.model.PhysicalElement;
+
 /**
  * Model a link
  * A link strictly connect a Switch to a PhysicalElement
  * Thus, there should be no direct connection (link) between two nodes
  * 
  * A link should not be instantiated directly. Typically, new links are automatically created by connecting
- * PhysicalElement together, see {@link Network#connect(int, Switch, PhysicalElement)}
+ * PhysicalElement together, see {@link Network#connect(int, Switch, org.btrplace.model.PhysicalElement)}
  * 
  * @author Vincent Kherbache
- * @see Network#connect(int, Switch, PhysicalElement)
+ * @see Network#connect(int, Switch, org.btrplace.model.PhysicalElement)
  */
 public class Link implements NetworkElement {
 

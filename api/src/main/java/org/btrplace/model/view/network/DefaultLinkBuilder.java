@@ -1,5 +1,7 @@
 package org.btrplace.model.view.network;
 
+import org.btrplace.model.PhysicalElement;
+
 import java.util.BitSet;
 
 /**

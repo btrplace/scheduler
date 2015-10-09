@@ -1,6 +1,7 @@
 package org.btrplace.model.view.network;
 
 import org.btrplace.model.Element;
+import org.btrplace.model.PhysicalElement;
 
 /**
  * Model a switch

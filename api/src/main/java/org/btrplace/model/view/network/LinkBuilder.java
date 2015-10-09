@@ -1,5 +1,7 @@
 package org.btrplace.model.view.network;
 
+import org.btrplace.model.PhysicalElement;
+
 /**
  * Interface to specify a builder to create links.
  * Each created link is guarantee for being unique.

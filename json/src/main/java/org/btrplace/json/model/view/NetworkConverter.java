@@ -22,6 +22,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Node;
+import org.btrplace.model.PhysicalElement;
 import org.btrplace.model.view.network.*;
 
 import java.util.ArrayList;

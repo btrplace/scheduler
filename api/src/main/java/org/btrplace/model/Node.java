@@ -18,8 +18,6 @@
 
 package org.btrplace.model;
 
-import org.btrplace.model.view.network.PhysicalElement;
-
 /**
  * Model a node.
  * A node should not be instantiated directly. Use {@link Model#newNode()} instead.

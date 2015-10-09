@@ -2,6 +2,7 @@ package org.btrplace.model.view.network;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
+import org.btrplace.model.PhysicalElement;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.NamingService;
@@ -296,7 +297,6 @@ public class Network implements ModelView, Cloneable {
      */
     public boolean generateDot(Model mo, String out, boolean fromLeftToRight) {
 
-        int numLink;
         List<Node> nodes = getConnectedNodes();
         Set<Link> drawedLinks = new HashSet<>();
 

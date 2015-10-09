@@ -1,4 +1,4 @@
-package org.btrplace.model.view.network;
+package org.btrplace.model;
 
 /**
  * Represents physical elements like nodes and switches
