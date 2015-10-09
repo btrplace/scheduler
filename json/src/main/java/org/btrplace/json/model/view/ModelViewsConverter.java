@@ -53,6 +53,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      * <ul>
      * <li>{@link org.btrplace.json.model.view.ShareableResourceConverter}</li>
      * <li>{@link org.btrplace.json.model.view.NamingServiceConverter}</li>
+     * <li>{@link org.btrplace.json.model.view.NetworkConverter}</li>
      * </ul>
      *
      * @return a fulfilled converter.
@@ -61,6 +62,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         ModelViewsConverter converter = new ModelViewsConverter();
         converter.register(new ShareableResourceConverter());
         converter.register(new NamingServiceConverter());
+        converter.register(new NetworkConverter());
         return converter;
     }
 
