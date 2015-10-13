@@ -12,7 +12,8 @@ function warn() {
 }
 
 function getVersion() {    
-    mvn ${MVN_ARGS} -Dmaven.repo.local=/tmp/cache org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
+#    mvn ${MVN_ARGS} -Dmaven.repo.local=/tmp/cache org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
+    mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
 }
 
     #Extract the version
@@ -25,7 +26,8 @@ function getVersion() {
     if [ $? -ne 0 ]; then
         echo "Tag ${TAG} does not exist. Retry"        
         #Working version ?
-        mvn -Dmaven.repo.local=/tmp/cache clean test >tests.out 2>&1 ||err "Unstable build" tests.out 
+        #mvn -Dmaven.repo.local=/tmp/cache clean test >tests.out 2>&1 ||err "Unstable build" tests.out 
+        mvn clean test >tests.out 2>&1 ||err "Unstable build" tests.out 
         echo "Tests are ok"   
         git tag ${TAG} >tag.out 2>&1 ||err "Unable to tag with ${TAG}" tag.out        
         echo "Tagged locally"

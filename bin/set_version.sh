@@ -2,7 +2,8 @@
 #Script to notify the website about a release
 
 function getVersion() {
-    mvn -Dmaven.repo.local=/tmp/cache -q ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
+#    mvn -Dmaven.repo.local=/tmp/cache -q ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
+    mvn -q ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
 }
 
 function guess() {
@@ -30,7 +31,8 @@ else
 fi
 echo "New version is ${VERSION}"
 #Update the poms
-mvn -Dmaven.repo.local=/tmp/cache versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false||exit 1
+#mvn -Dmaven.repo.local=/tmp/cache versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false||exit 1
+mvn versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false||exit 1
 
 sedInPlace "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
 
