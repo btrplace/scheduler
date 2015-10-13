@@ -1,7 +1,7 @@
 sudo: false
 cache:
   directories:
-    - $HOME/.cache/pip
+    - $HOME/.m2
 branches:
   only:
   - master
