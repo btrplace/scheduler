@@ -29,10 +29,7 @@ before_install:
 - export MAVEN_OPTS=-Xmx512m
 #- mkdir /tmp/m2_repo
 install:
-#- bin/cache.sh get /tmp/cache btrplace/travis-cache
-#- mvn -Dmaven.repo.local=/tmp/cache -Dgpg.passphrase=${GPG_PASSPHRASE} install -DskipTests
 - mvn -Dgpg.passphrase=${GPG_PASSPHRASE} install -DskipTests
-#- bin/cache.sh push /tmp/cache
 jdk:
 - oraclejdk8
 language: java
