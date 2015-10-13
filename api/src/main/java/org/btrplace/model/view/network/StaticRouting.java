@@ -1,20 +1,11 @@
 package org.btrplace.model.view.network;
 
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
  * Specific implementation of {@link Routing}.
- * Allows to import static routes and import a network topology from an xml file.
  * If a specific path is not found from static routing rules, it automatically looks for physical connections.
  *
  * If instantiated manually, it should be first attached to an existing network view, see {@link #setNetwork(Network)}.
@@ -98,184 +89,6 @@ public class StaticRouting extends Routing {
         return Collections.emptyList();
     }
 
-    /**
-     * Import an XML file representing a full network topology including nodes, switches, links and routes
-     * An example of XML file can be found in {api/test/resources/network/routing-test.xml}
-     * 
-     * @param mo    the associated model (needed to manage nodes)
-     * @param xml   the xml file to parse
-     * @return  the full list of nodes (already existing or newly created)
-     */
-    public List<Node> importXML(Model mo, File xml) {
-
-        List<Node> nodes = new ArrayList<>();
-
-        try {
-            if (!xml.exists()) throw new FileNotFoundException("File '" + xml.getName() + "' not found");
-
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(xml);
-            doc.getDocumentElement().normalize();
-
-            org.w3c.dom.Node root = doc.getDocumentElement();
-            NodeList nList;
-
-            // Parse nodes
-            nList = ((Element) root).getElementsByTagName("node");
-            for (int i = 0; i < nList.getLength(); i++) {
-                org.w3c.dom.Node node = nList.item(i);
-
-                if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    Element elt = (Element) node;
-
-                    // Get the node if exists or create it and add it to the list
-                    int id = Integer.valueOf(elt.getAttribute("id"));
-                    int cpu = Integer.valueOf(elt.getAttribute("cpu"));
-                    int ram = Integer.valueOf(elt.getAttribute("ram"));
-                    Node nd = null;
-                    for (Node n : mo.getMapping().getAllNodes()) {
-                        if (n.id() == id) { nd = n; break; }
-                    }
-                    if (nd == null) nd = mo.newNode(id);
-                    nodes.add(nd);
-                }
-            }
-
-            // Parse switches
-            nList = ((Element) root).getElementsByTagName("switch");
-            for (int i = 0; i < nList.getLength(); i++) {
-                org.w3c.dom.Node node = nList.item(i);
-
-                if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    Element elt = (Element) node;
-
-                    // Create the new Switch
-                    int id = Integer.valueOf(elt.getAttribute("id"));
-                    int capacity = Integer.valueOf(elt.getAttribute("capacity"));
-                    net.newSwitch(id, capacity);
-                }
-            }
-
-            // Parse links
-            nList = ((Element) root).getElementsByTagName("link");
-            for (int i = 0; i < nList.getLength(); i++) {
-                org.w3c.dom.Node node = nList.item(i);
-
-                if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    Element elt = (Element) node;
-
-                    // Connect elements
-                    int id = Integer.valueOf(elt.getAttribute("id"));
-                    int bandwidth = Integer.valueOf(elt.getAttribute("bandwidth"));
-                    String leftType = elt.getAttribute("left").split("_")[0];
-                    int leftId = Integer.valueOf(elt.getAttribute("left").split("_")[1]);
-                    String rightType = elt.getAttribute("right").split("_")[0];
-                    int rightId = Integer.valueOf(elt.getAttribute("right").split("_")[1]);
-
-                    if (leftType.equals("switch")) {
-                        Switch leftSwitch = null;
-                        for (Switch sw : net.getSwitches()) {
-                            if (sw.id() == leftId) leftSwitch = sw;
-                        }
-                        if (leftSwitch == null)
-                            throw new Exception("Cannot find the switch with id '" + leftId + "'");
-
-                        if (rightType.equals("switch")) {
-                            Switch rightSwitch = null;
-                            for (Switch sw : net.getSwitches()) {
-                                if (sw.id() == rightId) rightSwitch = sw;
-                            }
-                            if (rightSwitch == null)
-                                throw new Exception("Cannot find the switch with id '" + rightId + "'");
-
-                            // Connect two switches
-                            net.connect(bandwidth, leftSwitch, rightSwitch);
-                        } else {
-                            Node rightNode = null;
-                            for (Node n : nodes) {
-                                if (n.id() == rightId) rightNode = n;
-                            }
-                            if (rightNode == null)
-                                throw new Exception("Cannot find the node with id '" + rightId + "'");
-
-                            // Connect switch to node
-                            net.connect(id, bandwidth, leftSwitch, rightNode);
-                        }
-                    } else {
-                        Node leftNode = null;
-                        for (Node n : nodes) {
-                            if (n.id() == leftId) leftNode = n;
-                        }
-                        if (leftNode == null) throw new Exception("Cannot find the node with id '" + leftId + "'");
-
-                        if (rightType.equals("switch")) {
-                            Switch rightSwitch = null;
-                            for (Switch sw : net.getSwitches()) {
-                                if (sw.id() == rightId) rightSwitch = sw;
-                            }
-                            if (rightSwitch == null)
-                                throw new Exception("Cannot find the switch with id '" + rightId + "'");
-
-                            // Connect node to switch
-                            net.connect(id, bandwidth, rightSwitch, leftNode);
-                        } else {
-                            throw new Exception("Cannot link two nodes together !");
-                        }
-                    }
-                }
-            }
-
-            // Parse routes
-            nList = ((Element) root).getElementsByTagName("route");
-            for (int i = 0; i < nList.getLength(); i++) {
-                org.w3c.dom.Node node = nList.item(i);
-
-                if (node.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    Element elt = (Element) node;
-
-                    int src = Integer.valueOf(elt.getAttribute("src"));
-                    Node srcNode = null;
-                    for (Node n : nodes) {
-                        if (n.id() == src) srcNode = n;
-                    }
-                    if (srcNode == null) throw new Exception("Cannot find the node with id '" + src + "'");
-
-                    int dst = Integer.valueOf(elt.getAttribute("dst"));
-                    Node dstNode = null;
-                    for (Node n : nodes) {
-                        if (n.id() == dst) dstNode = n;
-                    }
-                    if (dstNode == null) throw new Exception("Cannot find the node with id '" + dst + "'");
-
-                    NodesMap nodesMap = new NodesMap(srcNode, dstNode);
-                    List<Link> links = new ArrayList<>();
-
-                    // Parse route's links
-                    NodeList lnks = elt.getElementsByTagName("lnk");
-                    for (int j = 0; j < lnks.getLength(); j++) {
-                        Element lnk = (Element) lnks.item(j);
-                        int id = Integer.valueOf(lnk.getAttribute("id"));
-                        // Looking for the link and adding it to the list
-                        for (Link l : net.getLinks()) {
-                            if (l.id() == id) { links.add(l); break; }
-                        }
-                    }
-
-                    // Add the new route
-                    setStaticRoute(nodesMap, links);
-                }
-            }
-        }
-        catch (Exception e) {
-            System.err.println("Error during XML import: " + e.toString());
-            e.printStackTrace();
-            return null;
-        }
-
-        return nodes;
-    }
-
     @Override
     public List<Link> getPath(Node n1, Node n2) {
 
@@ -313,5 +126,37 @@ public class StaticRouting extends Routing {
         srouting.net = net; // Do not associate view->routing, only routing->view
         srouting.routes.putAll(routes);
         return srouting;
+    }
+
+    /**
+     * Inner class that map two nodes to ease the routing.
+     * It allows to easily compare and differentiate and the nodes pair (src, dst).
+     */
+    public static class NodesMap {
+        private Node n1, n2;
+
+        public NodesMap(Node n1, Node n2) {
+            this.n1 = n1;
+            this.n2 = n2;
+        }
+
+        public Node getSrc() {
+            return n1;
+        }
+
+        public Node getDst() {
+            return n2;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof NodesMap)) {
+                return false;
+            }
+            return (((NodesMap) o).getSrc().equals(n1) && ((NodesMap) o).getDst().equals(n2));
+        }
     }
 }
