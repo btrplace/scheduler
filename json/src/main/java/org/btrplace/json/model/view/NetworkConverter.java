@@ -321,11 +321,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
             JSONArray a = (JSONArray) o.get("routes");
             for (Object ao : a) {
                 Routing.NodesMap nm = nodesMapFromJSON((JSONObject)((JSONObject)ao).get("nodes_map"));
-                List<Link> links = new ArrayList<>();
-                JSONArray aoa = (JSONArray)((JSONObject)ao).get("links");
-                for (Object aoao : aoa) {
-                    links.add(linkFromJSON((JSONObject)aoao));
-                }
+                List<Link> links = linksFromJSON((JSONArray)((JSONObject)ao).get("links"));
                 staticRouting.setStaticRoute(nm, links);
             }
             return staticRouting;
