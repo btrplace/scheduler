@@ -32,7 +32,7 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.safeplace.spec.SpecExtractor;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.verification.CheckerResult;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 import org.btrplace.safeplace.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -191,6 +191,6 @@ public class TestSpec {
         VM v = mo.newVM();
         Specification spec = getSpecification();
         Constraint c = spec.get("noVMsOnOfflineNodes");
-        System.out.println(c.getProposition().simplify(new SpecModel(mo)));
+        System.out.println(c.getProposition().simplify(new Context(mo)));
     }
 }

@@ -2,8 +2,8 @@ package org.btrplace.safeplace.fuzzer;
 
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.verification.spec.Context;
 import org.btrplace.safeplace.verification.spec.Domain;
-import org.btrplace.safeplace.verification.spec.SpecModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class FuzzerImpl implements Fuzzer {
         //the reconfiguration plan with the durations
         ReconfigurationPlan p = pGen.build(moGen.build());
 
-        SpecModel spec = new SpecModel(p.getOrigin());
+        Context spec = new Context(p.getOrigin());
 
         //the views
         for (ModelViewFuzzer f : views) {

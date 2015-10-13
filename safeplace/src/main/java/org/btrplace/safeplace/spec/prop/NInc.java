@@ -19,7 +19,7 @@
 package org.btrplace.safeplace.spec.prop;
 
 import org.btrplace.safeplace.spec.term.Term;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.Collection;
 
@@ -38,7 +38,7 @@ public class NInc extends AtomicProp {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         Collection cA = (Collection) a.eval(m);
         Collection cB = (Collection) b.eval(m);
         if (cB == null) {

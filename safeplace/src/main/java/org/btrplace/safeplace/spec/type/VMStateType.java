@@ -20,22 +20,16 @@ package org.btrplace.safeplace.spec.type;
 
 import org.btrplace.safeplace.spec.term.Constant;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * @author Fabien Hermenier
  */
 public class VMStateType extends Atomic {
 
-    public static enum Type {ready, booting, running, migrating, suspending, sleeping, resuming, halting, terminated}
+    public enum Type {ready, booting, running, migrating, suspending, sleeping, resuming, halting, terminated}
 
     private static VMStateType instance = new VMStateType();
 
     private VMStateType() {
-        Set<Object> s = new HashSet<>();
-        Collections.addAll(s, Type.values());
     }
 
     public static VMStateType getInstance() {
@@ -48,29 +42,17 @@ public class VMStateType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        try {
-            Type.valueOf(n);
-            return true;
-        } catch (Exception e) {
-
-        }
-        return false;
-    }
-
-    @Override
     public String label() {
         return "vmState";
     }
 
     @Override
     public Constant parse(String n) {
-        return new Constant(Type.valueOf(n), this);
-    }
-
-    @Override
-    public boolean comparable(org.btrplace.safeplace.spec.type.Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
+        try {
+            return new Constant(Type.valueOf(n), this);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
 }

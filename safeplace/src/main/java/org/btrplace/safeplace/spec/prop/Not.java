@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
@@ -37,7 +37,7 @@ public class Not implements Proposition {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         return !p.eval(m);
     }
 
@@ -47,7 +47,7 @@ public class Not implements Proposition {
     }
 
     @Override
-    public Proposition simplify(SpecModel m) {
+    public Proposition simplify(Context m) {
         return new Not(p.simplify(m));
     }
 }

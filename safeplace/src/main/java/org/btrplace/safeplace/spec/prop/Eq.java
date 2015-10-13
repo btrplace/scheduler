@@ -19,7 +19,7 @@
 package org.btrplace.safeplace.spec.prop;
 
 import org.btrplace.safeplace.spec.term.Term;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
@@ -36,7 +36,7 @@ public class Eq extends AtomicProp {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         Object vA = a.eval(m);
         Object vB = b.eval(m);
         if (vA == null && vB == null) {

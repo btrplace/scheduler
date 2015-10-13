@@ -19,49 +19,15 @@
 package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.Collection;
-import java.util.Set;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public abstract class Term<T> {
+public interface Term<T> {
 
-    public abstract T eval(SpecModel mo);
+    T eval(Context mo, Object... args);
 
-    public abstract Type type();
-
-    public UserVar newInclusive(String n, boolean not) {
-        if (type() instanceof Primitive) {
-            return null;
-        }
-        return new UserVar(n, false, not, this);
-    }
-
-    public UserVar<Set> newPart(String n, boolean not) {
-        return new UserVar<Set>(n, true, not, this);
-    }
-
-    public Object pickIn(SpecModel mo) {
-        throw new UnsupportedOperationException("Sth in " + this.type() + " " + getClass().getSimpleName());
-    }
-
-    public Object pickIncluded(SpecModel mo) {
-        throw new UnsupportedOperationException("Sth included " + this.type() + " " + getClass().getSimpleName());
-    }
-
-    public boolean isConstant() {
-        return false;
-    }
-
-    public boolean contains(SpecModel mo, Object o) {
-        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not support contains()");
-    }
-
-    public boolean includes(SpecModel mo, Collection<Object> col) {
-        throw new UnsupportedOperationException(this.getClass().getSimpleName() + " does not support include()");
-    }
+    Type type();
 
 }

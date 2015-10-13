@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class SetPlus extends Plus<Set<?>> {
     }
 
     @Override
-    public Set eval(SpecModel mo) {
+    public Set eval(Context mo, Object... args) {
         Set o1 = a.eval(mo);
         Set o2 = b.eval(mo);
         Set<?> l = new HashSet(o1);

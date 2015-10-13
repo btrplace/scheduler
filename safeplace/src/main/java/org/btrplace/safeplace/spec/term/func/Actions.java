@@ -25,10 +25,9 @@ import org.btrplace.safeplace.spec.type.ActionType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Actions extends Function<Set<Action>> {
+public class Actions extends DefaultFunction<Set<Action>> {
 
     @Override
     public Type type() {
@@ -45,8 +44,8 @@ public class Actions extends Function<Set<Action>> {
 
 
     @Override
-    public Set<Action> eval(SpecModel mo, List<Object> args) {
-        VM v = (VM) args.get(0);
+    public Set<Action> eval(Context mo, Object... args) {
+        VM v = (VM) args[0];
         if (v == null) {
             throw new UnsupportedOperationException();
         }

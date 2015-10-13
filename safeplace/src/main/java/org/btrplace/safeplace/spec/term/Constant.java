@@ -20,7 +20,7 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.TimeType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * @author Fabien Hermenier
  */
-public class Constant extends Term {
+public class Constant implements Term {
 
     private Type t;
 
@@ -79,7 +79,7 @@ public class Constant extends Term {
     }
 
     @Override
-    public Object eval(SpecModel mo) {
+    public Object eval(Context mo, Object... terms) {
         return o;
     }
 }

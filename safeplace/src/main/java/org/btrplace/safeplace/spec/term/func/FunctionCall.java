@@ -20,23 +20,21 @@ package org.btrplace.safeplace.spec.term.func;
 
 import org.btrplace.safeplace.spec.term.Term;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class FunctionCall<T> extends Term<T> {
+public class FunctionCall<T> implements Term<T> {
 
-    private Function<T> c;
+    private DefaultFunction<T> c;
 
     private List<Term> args;
 
-    public static enum Moment {
+    public enum Moment {
         begin {
             @Override
             public String toString() {
@@ -59,7 +57,7 @@ public class FunctionCall<T> extends Term<T> {
 
     private Moment moment;
 
-    public FunctionCall(Function<T> c, List<Term> args, Moment m) {
+    public FunctionCall(DefaultFunction<T> c, List<Term> args, Moment m) {
         check(c, args);
         this.c = c;
         this.args = args;
@@ -72,10 +70,11 @@ public class FunctionCall<T> extends Term<T> {
     }
 
     @Override
-    public T eval(SpecModel m) {
-        List<Object> values = new ArrayList<>(args.size());
+    public T eval(Context m, Object... objs) {
+        Object[] values = new Object[args.size()];
+        int i = 0;
         for (Term t : args) {
-            values.add(t.eval(m));
+            values[i++] = t.eval(m);
         }
         return c.eval(m, values);
     }
@@ -95,8 +94,8 @@ public class FunctionCall<T> extends Term<T> {
         return b.append(')').toString();
     }
 
-    private static void check(Function f, List<Term> args) {
-        Type[] expected = f.signature(args);
+    private static void check(DefaultFunction f, List<Term> args) {
+        Type[] expected = f.signature(/*args*/);
         if (expected.length != args.size()) {
             throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
         }
@@ -120,41 +119,5 @@ public class FunctionCall<T> extends Term<T> {
         return b.append(')').toString();
     }
 
-    @Override
-    public Object pickIn(SpecModel mo) {
-        return c.pickIn(mo, args);
-    }
 
-    @Override
-    public Object pickIncluded(SpecModel mo) {
-        return c.pickIncluded(mo, args);
-    }
-
-    @Override
-    public boolean isConstant() {
-        boolean cons = true;
-        for (Term t : args) {
-            cons &= t.isConstant();
-        }
-        return cons;
-    }
-
-    @Override
-    public boolean contains(SpecModel mo, Object o) {
-        List<Object> values = new ArrayList<>();
-        for (Term t : args) {
-            values.add(t.eval(mo));
-        }
-        return c.contains(mo, values, o);
-    }
-
-    @Override
-    public boolean includes(SpecModel mo, Collection<Object> col) {
-        List<Object> values = new ArrayList<>();
-        for (Term t : args) {
-            values.add(t.eval(mo));
-        }
-        return c.containsAll(mo, values, col);
-
-    }
 }

@@ -40,11 +40,6 @@ public class ActionType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        return false;
-    }
-
-    @Override
     public String label() {
         return "action";
     }
@@ -53,11 +48,6 @@ public class ActionType extends Atomic {
     @Override
     public Constant parse(String n) {
         throw new RuntimeException();
-    }
-
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
     }
 
 }

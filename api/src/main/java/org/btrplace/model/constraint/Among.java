@@ -39,7 +39,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"vs <: vms", "parts : packings(nodes)"}, inv = "?(g : parts) {host(i). i : vs, vmState(i) = running} <: g")
+@SideConstraint(args = {"vs <: vms", "parts <<: nodes"}, inv = "?(g : parts) {host(i). i : vs, vmState(i) = running} <: g")
 public class Among extends SatConstraint {
 
     /**

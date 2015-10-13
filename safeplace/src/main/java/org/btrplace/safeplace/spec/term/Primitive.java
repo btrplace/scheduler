@@ -20,30 +20,21 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
 
-import java.util.*;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class Primitive extends Var<Set> {
+public abstract class Primitive<T> implements Var<Set<T>> {
 
     private Type type;
 
-
-    private Primitive(String name, Type enclosingType, Set c) {
-        super(name);
-        type = new SetType(enclosingType);
-    }
+    private String lbl;
 
     public Primitive(String name, Type enclosingType) {
-        this(name, enclosingType, null);
-    }
-
-    @Override
-    public Set eval(SpecModel mo) {
-        return get(mo);
+        lbl = name;
+        type = new SetType(enclosingType);
     }
 
     @Override
@@ -51,46 +42,13 @@ public class Primitive extends Var<Set> {
         return type;
     }
 
-    private static Random rnd = new Random();
-
     @Override
-    public Object pickIn(SpecModel mo) {
-        int n = rnd.nextInt(mo.getVerifDomain(label()).size());
-        Iterator it = mo.getVerifDomain(label()).iterator();
-
-        while (n > 0) {
-            it.next();
-            n--;
-        }
-        return it.next();
+    public String label() {
+        return lbl;
     }
 
     @Override
-    public Object pickIncluded(SpecModel mo) {
-        Set s = new HashSet<>();
-        for (Object v : mo.getVerifDomain(label())) {
-            if (rnd.nextBoolean()) {
-                s.add(v);
-            }
-        }
-        return s;
-    }
-
-    private Set get(SpecModel mo) {
-        Set dom = mo.getVerifDomain(label());
-        if (dom == null) {
-            throw new UnsupportedOperationException("No domain has been set for primitive '" + label() + "'");
-        }
-        return dom;
-    }
-
-    @Override
-    public boolean contains(SpecModel mo, Object o) {
-        return get(mo).contains(o);
-    }
-
-    @Override
-    public boolean includes(SpecModel mo, Collection<Object> col) {
-        return get(mo).containsAll(col);
+    public String pretty() {
+        return label() + ":" + type();
     }
 }

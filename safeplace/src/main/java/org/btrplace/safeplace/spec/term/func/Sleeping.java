@@ -23,15 +23,14 @@ import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
-import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class Sleeping extends Function<Set<VM>> {
+public class Sleeping extends DefaultFunction<Set<VM>> {
 
     @Override
     public SetType type() {
@@ -39,7 +38,7 @@ public class Sleeping extends Function<Set<VM>> {
     }
 
     @Override
-    public Set<VM> eval(SpecModel mo, List<Object> args) {
+    public Set<VM> eval(Context mo, Object... args) {
         throw new UnsupportedOperationException();
         /*
         Node n = (Node) args.get(0);

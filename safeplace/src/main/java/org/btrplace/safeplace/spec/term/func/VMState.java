@@ -22,14 +22,12 @@ import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMStateType;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.List;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class VMState extends Function<VMStateType.Type> {
+public class VMState extends DefaultFunction<VMStateType.Type> {
 
     @Override
     public VMStateType type() {
@@ -37,8 +35,8 @@ public class VMState extends Function<VMStateType.Type> {
     }
 
     @Override
-    public VMStateType.Type eval(SpecModel mo, List<Object> args) {
-        VM v = (VM) args.get(0);
+    public VMStateType.Type eval(Context mo, Object... args) {
+        VM v = (VM) args[0];
         if (v == null) {
             throw new UnsupportedOperationException();
         }

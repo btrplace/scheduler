@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"vs : packings(vms)", "part : packings(nodes)"}, inv = "(!(v : vs) Among(v, part)) & Split(vs)")
+@SideConstraint(args = {"vs <<: vms", "part <<: nodes"}, inv = "(!(v : vs) Among(v, part)) & Split(vs)")
 public class SplitAmong extends SatConstraint {
 
     /**

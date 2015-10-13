@@ -24,16 +24,15 @@ import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class Colocated extends Function<Set<VM>> {
+public class Colocated extends DefaultFunction<Set<VM>> {
 
     @Override
     public SetType type() {
@@ -41,8 +40,8 @@ public class Colocated extends Function<Set<VM>> {
     }
 
     @Override
-    public Set<VM> eval(SpecModel mo, List<Object> args) {
-        VM v = (VM) args.get(0);
+    public Set<VM> eval(Context mo, Object... args) {
+        VM v = (VM) args[0];
         if (v == null) {
             return null;
         }

@@ -51,7 +51,6 @@ public class TestCasesRunner {
     }
 
     public List<TestCaseResult> run(Fuzzer f) throws ExecutionException, InterruptedException {
-        System.err.println(label);
         ExecutorService executor = Executors.newFixedThreadPool(slaves);
 
         List<TestCaseResult> results = new ArrayList<>();

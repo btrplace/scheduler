@@ -20,7 +20,7 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.NoneType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.Set;
 
@@ -32,26 +32,16 @@ public class None extends Primitive {
     private static None instance = new None();
 
     public None() {
-        super(null, NoneType.getInstance());
+        super("none", NoneType.getInstance());
     }
 
     @Override
-    public Set eval(SpecModel m) {
+    public Set eval(Context m, Object... args) {
         return null;
     }
 
     public static None instance() {
         return instance;
-    }
-
-    @Override
-    public UserVar newInclusive(String n, boolean not) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public UserVar<Set> newPart(String n, boolean not) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -62,5 +52,10 @@ public class None extends Primitive {
     @Override
     public String label() {
         return type().label();
+    }
+
+    @Override
+    public String pretty() {
+        return "none";
     }
 }

@@ -19,12 +19,12 @@
 package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Mult extends Term {
+public class Mult implements Term {
 
     private Term a, b;
 
@@ -34,7 +34,7 @@ public class Mult extends Term {
     }
 
     @Override
-    public Object eval(SpecModel mo) {
+    public Object eval(Context mo, Object... args) {
         Object o1 = a.eval(mo);
         Object o2 = b.eval(mo);
         if (o1 == null || o2 == null) {

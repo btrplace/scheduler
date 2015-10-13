@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>0.40-SNAPSHOT</version>
+        <version>0.42-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -75,7 +75,7 @@
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.3</version>
+                <version>4.5</version>
                 <configuration>
                     <sourceDirectory>src/main/antlr</sourceDirectory>
                     <visitor>true</visitor>

@@ -22,7 +22,7 @@ import org.btrplace.safeplace.spec.term.Term;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.term.Var;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.*;
 
@@ -49,7 +49,7 @@ public class Exists implements Proposition {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         boolean ret = false;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
@@ -91,7 +91,7 @@ public class Exists implements Proposition {
     }
 
     @Override
-    public Proposition simplify(SpecModel m) {
+    public Proposition simplify(Context m) {
         Or tail = null;
 
         boolean ret = true;

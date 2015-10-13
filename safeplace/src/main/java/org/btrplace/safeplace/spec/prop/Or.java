@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
@@ -40,7 +40,7 @@ public class Or extends BinaryProp {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         Boolean r1 = p1.eval(m);
         if (r1 == null) {
             return null;
@@ -52,7 +52,7 @@ public class Or extends BinaryProp {
     }
 
     @Override
-    public Proposition simplify(SpecModel m) {
+    public Proposition simplify(Context m) {
         return new Or(p1.simplify(m), p2.simplify(m));
     }
 

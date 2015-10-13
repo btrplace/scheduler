@@ -22,16 +22,14 @@ import org.btrplace.plan.event.Action;
 import org.btrplace.safeplace.spec.type.ActionType;
 import org.btrplace.safeplace.spec.type.TimeType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.List;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * Get the moment an action begins.
  *
  * @author Fabien Hermenier
  */
-public class Begin extends Function<Integer> {
+public class Begin extends DefaultFunction<Integer> {
 
     @Override
     public TimeType type() {
@@ -39,8 +37,8 @@ public class Begin extends Function<Integer> {
     }
 
     @Override
-    public Integer eval(SpecModel mo, List<Object> args) {
-        Action a = (Action) args.get(0);
+    public Integer eval(Context mo, Object... args) {
+        Action a = (Action) args[0];
         if (a == null) {
             throw new UnsupportedOperationException();
         }

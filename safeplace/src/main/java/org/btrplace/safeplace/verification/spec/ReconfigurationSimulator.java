@@ -29,17 +29,17 @@ import org.btrplace.safeplace.spec.type.VMStateType;
  */
 public class ReconfigurationSimulator {
 
-    private SpecModel mo;
+    private Context mo;
 
-    public ReconfigurationSimulator(SpecModel mo) {
+    public ReconfigurationSimulator(Context mo) {
         this.mo = mo;
     }
 
-    public SpecModel currentModel() {
+    public Context currentModel() {
         return mo;
     }
 
-    public void startsWith(SpecModel mo) {
+    public void startsWith(Context mo) {
         this.mo = mo;
     }
 
@@ -171,7 +171,7 @@ public class ReconfigurationSimulator {
     }
 
 
-    public boolean endsWith(SpecModel mo) {
+    public boolean endsWith(Context mo) {
         return true;
     }
 

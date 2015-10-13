@@ -19,14 +19,16 @@
 package org.btrplace.safeplace.spec.prop;
 
 import org.btrplace.safeplace.spec.term.Term;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
+
+import java.util.Collection;
 
 /**
  * @author Fabien Hermenier
  */
 public class In extends AtomicProp {
 
-    public In(Term a, Term b) {
+    public In(Term a, Term<? extends Collection> b) {
         super(a, b, ":");
     }
 
@@ -36,8 +38,9 @@ public class In extends AtomicProp {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         Object o = a.eval(m);
-        return b.contains(m, o);
+        Collection o2 = ((Term<? extends Collection>) b).eval(m);
+        return o2.contains(o);
     }
 }

@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.btrplace.safeplace.*;
 import org.btrplace.safeplace.spec.prop.*;
 import org.btrplace.safeplace.spec.term.*;
-import org.btrplace.safeplace.spec.term.func.Function;
+import org.btrplace.safeplace.spec.term.func.DefaultFunction;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
 import org.btrplace.safeplace.spec.term.func.ValueAt;
 import org.btrplace.safeplace.spec.type.*;
@@ -137,7 +137,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             ps.add(tm);
         }
 
-        Function f = symbols.getFunction(id);
+        DefaultFunction f = symbols.getFunction(id);
         if (f == null) {
             report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, id, "Cannot resolve symbol '" + id + "'");
             return null;
@@ -198,6 +198,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     @Override
     public List<UserVar> visitTypedef(@NotNull CstrSpecParser.TypedefContext ctx) {
+
         Term parent = (Term) visit(ctx.term());
         if (parent == null) {
             return null;
@@ -209,25 +210,27 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         List<UserVar> vars = new ArrayList<>();
         for (TerminalNode n : ctx.ID()) {
             String lbl = n.getText();
-            UserVar v = null;
-            switch (ctx.op.getType()) {
-                case CstrSpecParser.IN:
-                    v = parent.newInclusive(lbl, false);
-                    break;
-                case CstrSpecParser.NOT_IN:
-                    v = parent.newInclusive(lbl, true);
-                    break;
-                case CstrSpecParser.INCL:
-                    v = parent.newPart(lbl, false);
-                    break;
-                case CstrSpecParser.NOT_INCL:
-                    v = parent.newPart(lbl, true);
-                    break;
-            }
+            UserVar v = new UserVar(lbl, ctx.op.getText(), parent);
             symbols.put(v);
             vars.add(v);
         }
         return vars;
+    }
+
+    @Override
+    public UserVar visitArg(CstrSpecParser.ArgContext ctx) {
+        Term parent = (Term) visit(ctx.term());
+        if (parent == null) {
+            return null;
+        }
+        if (parent.type() instanceof Atomic) {
+            report(ctx.op, "Unsupported operation: '" + parent + "' is an atomic type");
+            return null;
+        }
+        String lbl = ctx.ID().getText();
+        UserVar v = new UserVar(lbl, ctx.op.getText(), parent);
+        symbols.put(v);
+        return v;
     }
 
     @Override
@@ -388,23 +391,21 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             return v;
         }
 
-        if (VMStateType.getInstance().match(ref)) {
-            return VMStateType.getInstance().parse(ref);
+        Term c;
+        c = VMStateType.getInstance().parse(ref);
+        if (c == null) {
+            c = NodeStateType.getInstance().parse(ref);
         }
-
-        if (NodeStateType.getInstance().match(ref)) {
-            return NodeStateType.getInstance().parse(ref);
+        if (c == null) {
+            c = TimeType.getInstance().parse(ref);
         }
-
-        if (TimeType.getInstance().match(ref)) {
-            return TimeType.getInstance().parse(ref);
+        if (c == null) {
+            c = None.instance();
         }
-
-        if (NoneType.getInstance().match(ref)) {
-            return None.instance();
+        if (c == null) {
+            report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, ctx.ID().getText(), "Unknown symbol '" + ctx.ID().getText() + "'");
         }
-        report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, ctx.ID().getText(), "Unknown symbol '" + ctx.ID().getText() + "'");
-        return null;
+        return c;
     }
 
     @Override
@@ -420,8 +421,10 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
 
     private boolean sameType(Token to, Term t1, Term t2) {
-        if (!t1.type().comparable(t2.type())) {
-//        if (!t1.type().equals(t2.type())) {
+        if (t1.type().equals(NoneType.getInstance()) || t2.type().equals(NoneType.getInstance())) {
+            return true;
+        }
+        if (!t1.type().equals(t2.type())) {
             report(to, "Incompatible types: expecting '" + t2.type() + " " + to.getText() + " " + t2.type() +
                     "' but was '" + t1.type() + " " + to.getText() + " " + t2.type() + "'");
             return false;
@@ -430,8 +433,10 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     }
 
     private boolean sameType(Token to, Term t1, Term t2, Type t) {
-        //if (!t1.type().equals(t2.type()) || !t1.type().equals(t)) {
-        if (!t1.type().comparable(t2.type())) {
+        if (t1.type().equals(NoneType.getInstance()) || t2.type().equals(NoneType.getInstance())) {
+            return true;
+        }
+        if (!t1.type().equals(t2.type())) {
             report(to, "Incompatible types: expecting '" + t + " " + to.getText() + " " + t +
                     "' but was '" + t1.type() + " " + to.getText() + " " + t2.type() + "'");
             return false;
@@ -480,6 +485,10 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
                 return sameType(ctx.op, t1, t2) ? new Inc(t1, t2) : null;
             case CstrSpecParser.NOT_INCL:
                 return sameType(ctx.op, t1, t2) ? new NInc(t1, t2) : null;
+            case CstrSpecParser.PART:
+                return isIn(ctx.op, t2, t1) ? new Packings(t1, t2) : null;
+            case CstrSpecParser.NOT_PART:
+                return isIn(ctx.op, t2, t1) ? new NoPackings(t1, t2) : null;
             case CstrSpecParser.LT:
                 return sameType(ctx.op, t1, t2, IntType.getInstance()) ? new Lt(t1, t2) : null;
             case CstrSpecParser.LEQ:

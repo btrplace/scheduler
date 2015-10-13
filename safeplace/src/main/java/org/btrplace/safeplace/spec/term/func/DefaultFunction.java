@@ -16,38 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.spec.prop;
+package org.btrplace.safeplace.spec.term.func;
 
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.spec.term.Term;
+import org.btrplace.safeplace.spec.type.Type;
+
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class ProtectedProposition implements Proposition {
+public abstract class DefaultFunction<T> implements Function<T> {
 
-    private Proposition p;
-
-    public ProtectedProposition(Proposition p) {
-        this.p = p;
+    public Type type(List<Term> args) {
+        return type();
     }
 
-    @Override
-    public Boolean eval(Context m) {
-        return p.eval(m);
-    }
-
-    @Override
-    public Proposition not() {
-        return p.not();
-    }
+    /*public Type[] signature(List<Term> args) {
+        return signature();
+    }*/
 
     @Override
     public String toString() {
-        return "(" + p + ")";
-    }
-
-    @Override
-    public Proposition simplify(Context m) {
-        return new ProtectedProposition(p.simplify(m));
+        StringBuilder b = new StringBuilder();
+        b.append(id()).append('(');
+        Type[] expected = signature();
+        for (int i = 0; i < expected.length; i++) {
+            b.append(expected[i]);
+            if (i < expected.length - 1) {
+                b.append(", ");
+            }
+        }
+        return b.append(')').toString();
     }
 }

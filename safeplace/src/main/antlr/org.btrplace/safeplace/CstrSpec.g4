@@ -18,8 +18,10 @@ RACC:'}';
 COMMA:',';
 IN:':';
 NOT_IN:'/:';
-INCL:'<:';  
+INCL:'<:';
 NOT_INCL:'/<:';
+PART: '<<:';
+NOT_PART: '/<<:';
 PLUS:'+';
 MINUS:'-';
 MULT:'*';
@@ -71,9 +73,10 @@ set: LACC term SUCH_AS typedef (COMMA formula)? RACC #setInComprehension
 list: LBRACK term SUCH_AS typedef (COMMA formula)? RBRACK #listInComprehension
       | LBRACK term (COMMA term)* RBRACK #listInExtension;
 
-comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;
+comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL | PART|NOT_PART) t2=term;
 
-typedef: ID (COMMA ID)* op=(IN|INCL|NOT_IN|NOT_INCL) i2=term;
+typedef: ID (COMMA ID)* op=(IN|INCL|NOT_IN|NOT_INCL|PART|NOT_PART) i2=term;
+arg: ID op=(IN|INCL|PART) i2=term;
 formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison
@@ -87,6 +90,6 @@ formula: LPARA formula RPARA   #protectedFormula
        
 call: BEGIN? ID LPARA term (COMMA term)* RPARA;
 
-constraint: CORE? DISCRETE? CONSTRAINT ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
+constraint: CORE? DISCRETE? CONSTRAINT ID LPARA (arg (COMMA arg)*)? RPARA DEF_CONTENT formula;
 
 spec: constraint+;

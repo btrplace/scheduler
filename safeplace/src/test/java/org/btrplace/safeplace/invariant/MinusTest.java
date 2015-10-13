@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.term.SetMinus;
 import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.VMStateType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,7 +40,7 @@ public class MinusTest {
     @Test
     public void testInts() {
         Minus p = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
-        Assert.assertEquals(p.eval(new SpecModel()), -2);
+        Assert.assertEquals(p.eval(new Context()), -2);
         Assert.assertEquals(p.type(), IntType.getInstance());
     }
 
@@ -49,7 +49,7 @@ public class MinusTest {
         Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(IntType.getInstance()));
         Constant v2 = new Constant(Arrays.asList(2, 5), new SetType(IntType.getInstance()));
         Minus p = new SetMinus(v1, v2);
-        Set s = (Set) p.eval(new SpecModel());
+        Set s = (Set) p.eval(new Context());
         Assert.assertEquals(s.size(), 1);
         Assert.assertEquals(p.type(), new SetType(IntType.getInstance()));
     }
@@ -66,7 +66,7 @@ public class MinusTest {
         Minus p1 = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
         Minus p2 = new IntMinus(IntType.getInstance().parse("1"), IntType.getInstance().parse("2"));
         Minus p3 = new IntMinus(p1, p2);
-        Assert.assertEquals(p3.eval(new SpecModel()), -1);
+        Assert.assertEquals(p3.eval(new Context()), -1);
     }
 
 }

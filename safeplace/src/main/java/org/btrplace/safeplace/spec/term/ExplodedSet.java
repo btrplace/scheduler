@@ -20,14 +20,17 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class ExplodedSet extends Term<Set> {
+public class ExplodedSet implements Term<Set> {
 
     private List<Term> terms;
 
@@ -41,7 +44,7 @@ public class ExplodedSet extends Term<Set> {
     }
 
     @Override
-    public Set eval(SpecModel mo) {
+    public Set eval(Context mo, Object... args) {
         if (cache == null) {
             cache = new HashSet<>();
             for (Term t : terms) {
@@ -70,13 +73,4 @@ public class ExplodedSet extends Term<Set> {
         return b.toString();
     }
 
-    @Override
-    public boolean includes(SpecModel mo, Collection<Object> col) {
-        return eval(mo).containsAll(col);
-    }
-
-    @Override
-    public boolean contains(SpecModel mo, Object o) {
-        return eval(mo).contains(o);
-    }
 }

@@ -23,8 +23,4 @@ package org.btrplace.safeplace.spec.type;
  */
 public abstract class Atomic implements Type {
 
-    @Override
-    public Type inside() {
-        throw new UnsupportedOperationException(this + " is an atomic type");
-    }
 }

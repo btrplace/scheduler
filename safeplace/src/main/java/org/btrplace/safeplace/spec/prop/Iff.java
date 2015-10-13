@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
@@ -44,13 +44,13 @@ public class Iff extends BinaryProp {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         return o.eval(m);
     }
 
 
     @Override
-    public Proposition simplify(SpecModel m) {
+    public Proposition simplify(Context m) {
         return new Or(new And(p1.simplify(m), p2.simplify(m)), new And(p1.not().simplify(m), p2.not().simplify(m)));
     }
 }

@@ -24,7 +24,7 @@ import org.btrplace.safeplace.spec.term.Term;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.type.ListType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
  * @author Fabien Hermenier
  *         TODO: multiple variables
  */
-public class ListBuilder<T> extends Term<List<T>> {
+public class ListBuilder<T> implements Term<List<T>> {
 
     private Proposition p;
 
@@ -58,7 +58,7 @@ public class ListBuilder<T> extends Term<List<T>> {
     }
 
     @Override
-    public List<T> eval(SpecModel mo) {
+    public List<T> eval(Context mo, Object... args) {
         List res = new ArrayList();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {

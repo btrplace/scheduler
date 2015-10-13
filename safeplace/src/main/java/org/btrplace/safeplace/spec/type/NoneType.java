@@ -19,7 +19,6 @@
 package org.btrplace.safeplace.spec.type;
 
 import org.btrplace.safeplace.spec.term.Constant;
-import org.btrplace.safeplace.spec.term.None;
 
 /**
  * @author Fabien Hermenier
@@ -42,23 +41,8 @@ public class NoneType implements Type {
     }
 
     @Override
-    public boolean match(String n) {
-        return n.equals(None.instance().toString());
-    }
-
-    @Override
     public Constant parse(String n) {
         return null;
-    }
-
-    @Override
-    public Type inside() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean comparable(Type t) {
-        return true;
     }
 
 }

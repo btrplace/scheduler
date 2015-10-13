@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * A logical proposition.
@@ -29,7 +29,7 @@ public interface Proposition {
 
     Proposition not();
 
-    Boolean eval(SpecModel m);
+    Boolean eval(Context m);
 
     static final Proposition False = new Proposition() {
         @Override
@@ -38,7 +38,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean eval(SpecModel m) {
+        public Boolean eval(Context m) {
             return Boolean.FALSE;
         }
 
@@ -48,7 +48,7 @@ public interface Proposition {
         }
 
         @Override
-        public Proposition simplify(SpecModel m) {
+        public Proposition simplify(Context m) {
             return this;
         }
     };
@@ -60,7 +60,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean eval(SpecModel m) {
+        public Boolean eval(Context m) {
             return Boolean.TRUE;
         }
 
@@ -70,10 +70,10 @@ public interface Proposition {
         }
 
         @Override
-        public Proposition simplify(SpecModel m) {
+        public Proposition simplify(Context m) {
             return this;
         }
     };
 
-    Proposition simplify(SpecModel m);
+    Proposition simplify(Context m);
 }

@@ -61,17 +61,8 @@ public class SetType extends ColType {
         return label();
     }
 
-    @Override
-    public Type inside() {
-        return type;
-    }
-
     public Type enclosingType() {
         return type;
     }
 
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
-    }
 }

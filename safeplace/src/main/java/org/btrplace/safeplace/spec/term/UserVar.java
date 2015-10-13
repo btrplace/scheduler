@@ -19,71 +19,77 @@
 package org.btrplace.safeplace.spec.term;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
+import org.btrplace.safeplace.spec.type.ColType;
+import org.btrplace.safeplace.spec.type.NoneType;
+import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
-public class UserVar<T> extends Var<T> {
+public class UserVar<T> implements Var<T> {
 
-    private Term<Collection> backend;
+    private Term backend;
 
-    private boolean incl;
+    private String lbl;
 
-    private boolean not;
+    private String op;
 
-    public UserVar(String lbl, boolean incl, boolean not, Term backend) {
-        super(lbl);
-        this.incl = incl;
+    public UserVar(String lbl, String op, Term backend) {
         this.backend = backend;
-        this.not = not;
+        this.lbl = lbl;
+        this.op = op;
+    }
+
+    @Override
+    public String label() {
+        return lbl;
     }
 
     @Override
     public Type type() {
-        return incl ? backend.type() : backend.type().inside();
+        switch (op) {
+            case ":":
+            case "/:":
+                return ((ColType) backend.type()).inside();
+            case "<:":
+            case "/<:":
+                return backend.type();
+            case "<<:":
+            case "/<<:":
+                return new SetType(backend.type());
+
+        }
+        return NoneType.getInstance();
     }
 
     @Override
     public String pretty() {
-        return label() + (not ? " /" : " ") + (incl ? ": " : "<: ") + backend;
+        return label() + " " + op + " " + backend;
     }
 
-    public Term<Collection> getBackend() {
+    public Term getBackend() {
         return backend;
     }
 
     @Override
-    public T eval(SpecModel m) {
+    public T eval(Context m, Object... args) {
         return (T) m.getValue(label());
     }
 
     @Override
-    public Constant pickIn(SpecModel mo) {
-        throw new UnsupportedOperationException();
+    public String toString() {
+        return label();
     }
 
-    @Override
-    public Object pickIncluded(SpecModel mo) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Object pick(SpecModel mo) {
-        if (incl) {
-            return backend.pickIncluded(mo);
-        } else {
-            return backend.pickIn(mo);
-        }
-    }
-
-    public List<Constant> domain(SpecModel mo) {
+    public List<Constant> domain(Context mo) {
         Collection col = null;
-        col = backend.eval(mo);
-        if (incl) {
+        col = (Collection) backend.eval(mo);
+        if (op.equals("<:") || op.equals("/<:")) {
             List<Object> s = new ArrayList<>();
             for (Object o : col) {
                 s.add(o);
@@ -107,15 +113,4 @@ public class UserVar<T> extends Var<T> {
         }
     }
 
-    @Override
-    public boolean contains(SpecModel mo, Object o) {
-        Collection col = backend.eval(mo);
-        return col.contains(o);
-    }
-
-    @Override
-    public boolean includes(SpecModel mo, Collection<Object> col) {
-        Collection c = backend.eval(mo);
-        return c.containsAll(col);
-    }
 }

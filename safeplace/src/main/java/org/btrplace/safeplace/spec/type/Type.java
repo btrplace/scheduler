@@ -27,11 +27,5 @@ public interface Type {
 
     String label();
 
-    boolean match(String n);
-
     Constant parse(String n);
-
-    Type inside();
-
-    boolean comparable(Type t);
 }

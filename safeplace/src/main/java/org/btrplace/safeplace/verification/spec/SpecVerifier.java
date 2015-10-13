@@ -68,7 +68,7 @@ public class SpecVerifier implements Verifier {
     }
 
     public CheckerResult verify(Constraint cstr, List<Constant> values, Model dst, Model src) {
-        SpecModel sRes = new SpecModel(dst);
+        Context sRes = new Context(dst);
         setInputs(cstr, sRes, values);
         Proposition ok = cstr.getProposition();
         Boolean bOk = ok.eval(sRes);
@@ -85,7 +85,7 @@ public class SpecVerifier implements Verifier {
     public CheckerResult verify(Constraint cstr, List<Constant> values, ReconfigurationPlan p) {
 
         Proposition good = cstr.getProposition();
-        SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
+        Context mo = new Context(p.getOrigin()); //Discrete means the plan contains no actions.
         setInputs(cstr, mo, values);
         SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, p);
         try {
@@ -103,7 +103,7 @@ public class SpecVerifier implements Verifier {
         return CheckerResult.newOk();
     }
 
-    private void setInputs(Constraint c, SpecModel mo, List<Constant> values) {
+    private void setInputs(Constraint c, Context mo, List<Constant> values) {
         //Check signature
         if (values.size() != c.getParameters().size()) {
             throw new IllegalArgumentException(toString(c.id(), values) + " cannot match " + signatureToString(c));

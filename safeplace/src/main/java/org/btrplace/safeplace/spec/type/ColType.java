@@ -66,11 +66,6 @@ public class ColType implements Type {
     }
 
     @Override
-    public boolean match(String n) {
-        return false;
-    }
-
-    @Override
     public Constant parse(String n) {
         throw new UnsupportedOperationException();
     }
@@ -80,7 +75,6 @@ public class ColType implements Type {
         return label();
     }
 
-    @Override
     public Type inside() {
         return type;
     }
@@ -89,8 +83,4 @@ public class ColType implements Type {
         return type;
     }
 
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
-    }
 }

@@ -21,16 +21,15 @@ package org.btrplace.safeplace.verification.spec;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.safeplace.spec.type.NodeStateType;
+import org.btrplace.safeplace.spec.type.VMStateType;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
-public class SpecModel {
+public class Context {
 
     private SpecMapping sm;
 
@@ -40,11 +39,9 @@ public class SpecModel {
 
     private ReconfigurationPlan plan;
 
-    //private Map<String, Object> vars;
-
     private LinkedList<Map<String, Object>> stack;
 
-    public SpecModel() {
+    public Context() {
         this(new DefaultModel());
     }
 
@@ -52,13 +49,17 @@ public class SpecModel {
         return plan;
     }
 
-    public SpecModel(Model mo) {
+    public Context(Model mo) {
         this.mo = mo;
         sm = new SpecMapping(mo.getMapping());
         vDoms = new HashMap<>();
-        //this.vars = new HashMap<>();
         stack = new LinkedList<>();
-        stack.add(new HashMap<String, Object>());
+        stack.add(new HashMap<>());
+        //default domains
+        add(new SetDomain<>("nodes", mo.getMapping().getAllNodes()));
+        add(new SetDomain<>("vms", mo.getMapping().getAllVMs()));
+        add(new SetDomain<>("vmState", EnumSet.allOf(VMStateType.Type.class)));
+        add(new SetDomain<>("nodeState", EnumSet.allOf(NodeStateType.Type.class)));
     }
 
     public Model getModel() {
@@ -71,23 +72,17 @@ public class SpecModel {
 
     public void setValue(String label, Object o) {
         stack.getFirst().put(label, o);
-        //vars.put(label, o);
     }
 
     public Object getValue(String label) {
         return stack.getFirst().get(label);
-        /*Object o = vars.get(label);
-        if (o == null) {
-            throw new RuntimeException("No value for " + label);
-        }
-        return o;*/
     }
 
     public void add(Domain d) {
         vDoms.put(d.type(), d);
     }
 
-    public Set getVerifDomain(String lbl) {
+    public Set domain(String lbl) {
         Domain v = vDoms.get(lbl);
         if (v == null) {
             return null;
@@ -101,7 +96,7 @@ public class SpecModel {
     }
 
     public void saveStack() {
-        stack.push(new HashMap<String, Object>());
+        stack.push(new HashMap<>());
     }
 
     public void restoreStack() {
@@ -113,13 +108,9 @@ public class SpecModel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SpecModel specModel = (SpecModel) o;
+        Context context = (Context) o;
 
-        if (!sm.equals(specModel.sm)) return false;
-        //if (!stack.equals(specModel.stack)) return false;
-        //if (!vDoms.equals(specModel.vDoms)) return false;
-
-        return true;
+        return sm.equals(context.sm);
     }
 
     @Override

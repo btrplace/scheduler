@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.prop.Not;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,7 +50,7 @@ public class ConstraintCall implements Proposition {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
         List<UserVar> ps = c.getParameters();
         List<Object> ins = new ArrayList<>(ps.size());
         for (Term t : args) {
@@ -64,7 +64,7 @@ public class ConstraintCall implements Proposition {
     }
 
     private static void check(Constraint f, List<Term> args) {
-        Type[] expected = f.signature(args);
+        Type[] expected = f.signature(/*args*/);
         if (expected.length != args.size()) {
             throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f.toString());
         }
@@ -90,7 +90,7 @@ public class ConstraintCall implements Proposition {
     }
 
     @Override
-    public Proposition simplify(SpecModel m) {
+    public Proposition simplify(Context m) {
         return this;
     }
 }

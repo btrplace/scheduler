@@ -24,7 +24,7 @@ import org.btrplace.safeplace.spec.term.Term;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Set;
  * @author Fabien Hermenier
  *         TODO: multiple variables
  */
-public class SetBuilder<T> extends Term<Set<T>> {
+public class SetBuilder<T> implements Term<Set<T>> {
 
     private Proposition p;
 
@@ -59,7 +59,7 @@ public class SetBuilder<T> extends Term<Set<T>> {
     }
 
     @Override
-    public Set<T> eval(SpecModel mo) {
+    public Set<T> eval(Context mo, Object... args) {
         Set res = new HashSet();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {

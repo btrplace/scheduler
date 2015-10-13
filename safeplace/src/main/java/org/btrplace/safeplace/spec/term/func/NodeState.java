@@ -22,14 +22,12 @@ import org.btrplace.model.Node;
 import org.btrplace.safeplace.spec.type.NodeStateType;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.List;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class NodeState extends Function<NodeStateType.Type> {
+public class NodeState extends DefaultFunction<NodeStateType.Type> {
 
     @Override
     public NodeStateType type() {
@@ -37,20 +35,12 @@ public class NodeState extends Function<NodeStateType.Type> {
     }
 
     @Override
-    public NodeStateType.Type eval(SpecModel mo, List<Object> args) {
-
-        Node n = (Node) args.get(0);
+    public NodeStateType.Type eval(Context mo, Object... args) {
+        Node n = (Node) args[0];
         if (n == null) {
             return null;
         }
         return mo.getMapping().state(n);
-        /*if (mo.getMapping().isOffline(n)) {
-            return NodeStateType.Type.offline;
-        } else if (mo.getMapping().isOnline(n)) {
-            return NodeStateType.Type.online;
-        } else {
-            return null;
-        } */
     }
 
     @Override

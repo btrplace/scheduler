@@ -24,24 +24,22 @@ import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.StringType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.List;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Cons extends Function<Integer> {
+public class Cons extends DefaultFunction<Integer> {
 
     @Override
-    public Integer eval(SpecModel mo, List<Object> args) {
+    public Integer eval(Context mo, Object... args) {
         //throw new UnsupportedOperationException();
-        String rc = (String) args.get(1);
+        String rc = (String) args[1];
         ShareableResource r = (ShareableResource) mo.getModel().getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             throw new RuntimeException("View '" + ShareableResource.VIEW_ID_BASE + rc + "' is missing");
         }
-        return r.getConsumption((VM) args.get(0));
+        return r.getConsumption((VM) args[0]);
     }
 
     @Override

@@ -20,7 +20,7 @@ package org.btrplace.safeplace.invariant;
 
 import org.btrplace.safeplace.spec.prop.Iff;
 import org.btrplace.safeplace.spec.prop.Proposition;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -43,6 +43,6 @@ public class IffTest {
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
         Iff p = new Iff(a, b);
-        Assert.assertEquals(p.eval(new SpecModel()), r);
+        Assert.assertEquals(p.eval(new Context()), r);
     }
 }

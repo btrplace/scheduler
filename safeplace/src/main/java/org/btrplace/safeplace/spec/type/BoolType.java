@@ -47,11 +47,6 @@ public class BoolType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        return n.equalsIgnoreCase("true") || n.equalsIgnoreCase("false");
-    }
-
-    @Override
     public String label() {
         return "bool";
     }
@@ -65,8 +60,4 @@ public class BoolType extends Atomic {
         return new Constant(i, BoolType.getInstance());
     }
 
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
-    }
 }

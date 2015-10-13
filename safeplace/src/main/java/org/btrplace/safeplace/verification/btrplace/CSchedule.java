@@ -25,9 +25,9 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.Transition;
-import solver.Cause;
-import solver.exception.ContradictionException;
-import solver.exception.SolverException;
+import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.exception.SolverException;
 
 import java.util.Collections;
 import java.util.Set;

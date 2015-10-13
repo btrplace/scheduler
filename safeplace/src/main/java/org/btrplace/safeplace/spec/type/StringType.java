@@ -28,16 +28,8 @@ public class StringType extends Atomic {
     private static StringType instance = new StringType();
 
     @Override
-    public boolean match(String n) {
-        return true;
-    }
-
-    @Override
     public Constant parse(String n) {
-        if (match(n)) {
-            return new Constant(n, this);
-        }
-        return null;
+        return new Constant(n, this);
     }
 
     @Override
@@ -52,11 +44,6 @@ public class StringType extends Atomic {
 
     public static StringType getInstance() {
         return instance;
-    }
-
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
     }
 
 }

@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"part : packings(vms)"}, inv = "{ {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)")
+@SideConstraint(args = {"part <<: vms"}, inv = "{ {host(v). v : p , vmState(v) = running}. p : part} <<: nodes")
 public class Split extends SatConstraint {
 
     private Collection<Collection<VM>> sets;

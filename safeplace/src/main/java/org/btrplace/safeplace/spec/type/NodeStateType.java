@@ -42,29 +42,17 @@ public class NodeStateType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        try {
-            Type.valueOf(n);
-            return true;
-        } catch (Exception e) {
-
-        }
-        return false;
-    }
-
-    @Override
     public String label() {
         return "nodeState";
     }
 
     @Override
     public Constant parse(String n) {
-        return new Constant(Type.valueOf(n), this);
-    }
-
-    @Override
-    public boolean comparable(org.btrplace.safeplace.spec.type.Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
+        try {
+            return new Constant(Type.valueOf(n), this);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 
 }

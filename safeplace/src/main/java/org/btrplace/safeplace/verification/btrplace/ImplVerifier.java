@@ -29,7 +29,7 @@ import org.btrplace.safeplace.verification.CheckerResult;
 import org.btrplace.safeplace.verification.Verifier;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import solver.exception.SolverException;
+import org.chocosolver.solver.exception.SolverException;
 
 import java.util.*;
 

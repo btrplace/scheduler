@@ -19,14 +19,12 @@
 package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.Set;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class ProtectedTerm<T> extends Term<T> {
+public class ProtectedTerm<T> implements Term<T> {
 
     private Term<T> t;
 
@@ -35,7 +33,7 @@ public class ProtectedTerm<T> extends Term<T> {
     }
 
     @Override
-    public T eval(SpecModel mo) {
+    public T eval(Context mo, Object... args) {
         return t.eval(mo);
     }
 
@@ -44,15 +42,6 @@ public class ProtectedTerm<T> extends Term<T> {
         return t.type();
     }
 
-    @Override
-    public UserVar newInclusive(String n, boolean not) {
-        return t.newInclusive(n, not);
-    }
-
-    @Override
-    public UserVar<Set> newPart(String n, boolean not) {
-        return t.newPart(n, not);
-    }
 
     @Override
     public String toString() {

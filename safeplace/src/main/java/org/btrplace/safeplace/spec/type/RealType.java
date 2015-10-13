@@ -44,18 +44,6 @@ public class RealType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        try {
-            Double i = Double.parseDouble(n);
-            if (i >= inf && i <= sup) {
-                return true;
-            }
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    @Override
     public String label() {
         return "real";
     }
@@ -67,11 +55,6 @@ public class RealType extends Atomic {
 
     public Constant newValue(double i) {
         return new Constant(i, RealType.getInstance());
-    }
-
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
     }
 
 }

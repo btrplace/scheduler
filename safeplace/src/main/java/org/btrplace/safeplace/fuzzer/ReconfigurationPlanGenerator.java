@@ -55,8 +55,8 @@ public class ReconfigurationPlanGenerator {
                 continue;
             }
             int d = vmDurations.get(v);
-            int end = rnd.nextInt(makespan + 1);
-            int begin = end - d;
+            int begin = rnd.nextInt(makespan - d + 1);
+            int end = begin + d;
             Action a = null;
 
             switch (rnd.nextInt(6)) {

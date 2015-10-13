@@ -53,7 +53,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     /**
      * Make a new instance.
      */
-    public SpecReconfigurationPlanChecker(SpecModel mo, ReconfigurationPlan p) {
+    public SpecReconfigurationPlanChecker(Context mo, ReconfigurationPlan p) {
         checkers = new ReconfigurationSimulator(mo);
         this.p = p;
     }
@@ -227,7 +227,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
 
 
     public boolean isConsistent(Proposition ok) {
-        SpecModel mo = checkers.currentModel();
+        Context mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
         return bOk;
     }

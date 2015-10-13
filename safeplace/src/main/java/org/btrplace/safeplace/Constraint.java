@@ -24,10 +24,10 @@ import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.term.Var;
-import org.btrplace.safeplace.spec.term.func.Function;
+import org.btrplace.safeplace.spec.term.func.DefaultFunction;
 import org.btrplace.safeplace.spec.type.BoolType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Constraint extends Function<Boolean> {
+public class Constraint extends DefaultFunction<Boolean> {
 
     private Proposition p;
 
@@ -97,10 +97,10 @@ public class Constraint extends Function<Boolean> {
         return params;
     }
 
-    public Boolean eval(SpecModel mo, List<Object> values) {
+    public Boolean eval(Context mo, Object... values) {
         for (int i = 0; i < params.size(); i++) {
             UserVar v = params.get(i);
-            mo.setValue(v.label(), values.get(i));
+            mo.setValue(v.label(), values[i]);
         }
         Proposition good = p;
         //Proposition noGood = good.not();
@@ -127,8 +127,6 @@ public class Constraint extends Function<Boolean> {
         Class<SatConstraint> cl = (Class<SatConstraint>) Class.forName(pkg + "." + clName);
         for (Constructor c : cl.getConstructors()) {
             if (c.getParameterTypes().length == values.size()) {
-                //System.out.println(Arrays.toString(c.getParameterTypes()));
-                //System.out.println(values);
                 return (SatConstraint) c.newInstance(values.toArray());
             }
         }

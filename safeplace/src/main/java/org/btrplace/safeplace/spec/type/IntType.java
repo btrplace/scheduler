@@ -44,16 +44,6 @@ public class IntType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        try {
-            Integer i = Integer.parseInt(n);
-            return i >= inf && i <= sup;
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    @Override
     public String label() {
         return "int";
     }
@@ -63,8 +53,4 @@ public class IntType extends Atomic {
         return new Constant(Integer.parseInt(n), IntType.getInstance());
     }
 
-    @Override
-    public boolean comparable(Type t) {
-        return t.equals(NoneType.getInstance()) || equals(t);
-    }
 }

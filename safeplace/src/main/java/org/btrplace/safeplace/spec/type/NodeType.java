@@ -41,11 +41,6 @@ public class NodeType extends Atomic {
     }
 
     @Override
-    public boolean match(String n) {
-        return false;
-    }
-
-    @Override
     public String label() {
         return "node";
     }
@@ -55,8 +50,4 @@ public class NodeType extends Atomic {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public boolean comparable(Type t) {
-        return true;
-    }
 }

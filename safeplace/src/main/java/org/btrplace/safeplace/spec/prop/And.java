@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * Logical and between several propositions.
@@ -42,7 +42,7 @@ public class And extends BinaryProp {
     }
 
     @Override
-    public Boolean eval(SpecModel m) {
+    public Boolean eval(Context m) {
 
         Boolean r1 = p1.eval(m);
         if (r1 == null) {
@@ -59,7 +59,7 @@ public class And extends BinaryProp {
     }
 
     @Override
-    public Proposition simplify(SpecModel m) {
+    public Proposition simplify(Context m) {
         return new And(p1.simplify(m), p2.simplify(m));
     }
 

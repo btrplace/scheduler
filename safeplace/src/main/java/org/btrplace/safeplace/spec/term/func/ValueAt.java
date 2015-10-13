@@ -19,8 +19,9 @@
 package org.btrplace.safeplace.spec.term.func;
 
 import org.btrplace.safeplace.spec.term.Term;
+import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ValueAt extends Term {
+public class ValueAt implements Term {
 
     private Term<List> arr;
     private Term<Integer> idx;
@@ -41,11 +42,11 @@ public class ValueAt extends Term {
 
     @Override
     public Type type() {
-        return arr.type().inside();
+        return ((ColType) arr.type()).inside();
     }
 
     @Override
-    public Object eval(SpecModel mo) {
+    public Object eval(Context mo, Object... args) {
         List l = arr.eval(mo);
         if (l == null) {
             return null;

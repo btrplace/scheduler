@@ -21,15 +21,14 @@ package org.btrplace.safeplace.spec.term.func;
 import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class Card extends Function<Integer> {
+public class Card extends DefaultFunction<Integer> {
 
     @Override
     public Type type() {
@@ -38,8 +37,8 @@ public class Card extends Function<Integer> {
 
 
     @Override
-    public Integer eval(SpecModel mo, List<Object> args) {
-        Collection c = (Collection) args.get(0);
+    public Integer eval(Context mo, Object... args) {
+        Collection c = (Collection) args[0];
         if (c == null) {
             return null;
         }

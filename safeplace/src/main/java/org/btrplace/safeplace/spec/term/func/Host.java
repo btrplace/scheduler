@@ -23,14 +23,12 @@ import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.List;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Host extends Function<Node> {
+public class Host extends DefaultFunction<Node> {
 
     @Override
     public String id() {
@@ -43,8 +41,8 @@ public class Host extends Function<Node> {
     }
 
     @Override
-    public Node eval(SpecModel mo, List<Object> args) {
-        VM vm = (VM) args.get(0);
+    public Node eval(Context mo, Object... args) {
+        VM vm = (VM) args[0];
         if (vm == null) {
             throw new UnsupportedOperationException();
         }

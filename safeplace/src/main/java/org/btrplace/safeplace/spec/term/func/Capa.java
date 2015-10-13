@@ -22,14 +22,12 @@ import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.StringType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
-
-import java.util.List;
+import org.btrplace.safeplace.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Capa extends Function<Integer> {
+public class Capa extends DefaultFunction<Integer> {
 
     @Override
     public String id() {
@@ -37,7 +35,7 @@ public class Capa extends Function<Integer> {
     }
 
     @Override
-    public Integer eval(SpecModel mo, List<Object> args) {
+    public Integer eval(Context mo, Object... args) {
         throw new UnsupportedOperationException();
         /*String rc = args.get(1).toString();
         ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);

@@ -121,8 +121,9 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
         CstrSpecParser parser = new CstrSpecParser(getTokens(s.s.inv()));
         ParseTree tree = parser.formula();
         MyCstrSpecVisitor v = new MyCstrSpecVisitor(s.cl);
-
-        return v.getSideConstraint(s.cl, s.fqcl, args, known, tree);
+        Constraint c = v.getSideConstraint(s.cl, s.fqcl, args, known, tree);
+        //System.out.println(c.pretty());
+        return c;
     }
 
 
@@ -131,7 +132,9 @@ public class SpecExtractor implements AnnotationDetector.TypeReporter {
         CstrSpecParser parser = new CstrSpecParser(tokens);
         ParseTree tree = parser.formula();
         MyCstrSpecVisitor v = new MyCstrSpecVisitor(core.name());
-        return v.getCoreConstraint(core.name(), tree);
+        Constraint c = v.getCoreConstraint(core.name(), tree);
+        //System.out.println(c.pretty());
+        return c;
     }
 
     public static void main(String[] args) {

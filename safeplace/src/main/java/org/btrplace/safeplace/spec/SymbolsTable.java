@@ -23,7 +23,10 @@ import org.btrplace.safeplace.spec.term.*;
 import org.btrplace.safeplace.spec.term.func.*;
 import org.btrplace.safeplace.spec.type.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -34,7 +37,7 @@ public class SymbolsTable {
 
     private Map<String, Constraint> cstrs;
 
-    private Map<String, Function> funcs;
+    private Map<String, DefaultFunction> funcs;
 
     private SymbolsTable parent;
 
@@ -68,7 +71,6 @@ public class SymbolsTable {
         root.put(new NodeState());
         root.put(new Card());
         root.put(new Sum());
-        root.put(new Packings());
         root.put(new Lists());
         root.put(new Range());
         root.put(new Actions());
@@ -81,16 +83,16 @@ public class SymbolsTable {
         SymbolsTable syms = new SymbolsTable(this);
         //Copy the primitives
 
-        syms.put(new AllVMs());
-        syms.put(new AllNodes());
-        syms.put(new ConstantSet("vmState", VMStateType.getInstance(), EnumSet.allOf(VMStateType.Type.class)));
-        syms.put(new ConstantSet("nodeState", NodeStateType.getInstance(), EnumSet.allOf(NodeStateType.Type.class)));
-        syms.put(new Primitive("int", IntType.getInstance()));
-        syms.put(new Primitive("time", TimeType.getInstance()));
-        syms.put(new Primitive("action", ActionType.getInstance()));
-        syms.put(new ConstantSet("bool", BoolType.getInstance(), BoolType.DOMAIN));
-        syms.put(new Primitive("float", RealType.getInstance()));
-        syms.put(new Primitive("string", StringType.getInstance()));
+        syms.put(new InDomain<>("nodes", NodeType.getInstance()));
+        syms.put(new InDomain<>("vms", VMType.getInstance()));
+        syms.put(new InDomain<>("vmState", VMStateType.getInstance()));
+        syms.put(new InDomain<>("nodeState", NodeStateType.getInstance()));
+        syms.put(new InDomain<>("int", IntType.getInstance()));
+        syms.put(new InDomain<>("time", TimeType.getInstance()));
+        syms.put(new InDomain<>("action", ActionType.getInstance()));
+        syms.put(new InDomain<>("bool", BoolType.getInstance()));
+        syms.put(new InDomain<>("float", RealType.getInstance()));
+        syms.put(new InDomain<>("string", StringType.getInstance()));
         syms.put(None.instance());
         return syms;
     }
@@ -122,7 +124,7 @@ public class SymbolsTable {
         for (Map.Entry<String, Var> e : table.entrySet()) {
             b.append("var \t").append(e.getKey()).append("\t").append(e.getValue().type()).append("\n");
         }
-        for (Map.Entry<String, Function> e : funcs.entrySet()) {
+        for (Map.Entry<String, DefaultFunction> e : funcs.entrySet()) {
             b.append("func\t").append(e.getValue()).append("\t").append(e.getValue().type()).append("\n");
         }
         for (Map.Entry<String, Constraint> e : cstrs.entrySet()) {
@@ -131,7 +133,7 @@ public class SymbolsTable {
         return b.toString();
     }
 
-    public boolean put(Function f) {
+    public boolean put(DefaultFunction f) {
         if (funcs.containsKey(f.id())) {
             return false;
         }
@@ -139,7 +141,7 @@ public class SymbolsTable {
         return true;
     }
 
-    public Function getFunction(String id) {
+    public DefaultFunction getFunction(String id) {
         if (funcs.containsKey(id)) {
             return funcs.get(id);
         }

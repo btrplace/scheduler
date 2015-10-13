@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.type.Type;
 /**
  * @author Fabien Hermenier
  */
-public abstract class Plus<T> extends Term<T> {
+public abstract class Plus<T> implements Term<T> {
 
     protected Term<T> a, b;
 

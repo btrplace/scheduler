@@ -98,7 +98,7 @@ public class TestCaseResult {
         StringBuilder b = new StringBuilder();
         b.append("id: ").append(tc.id()).append("\n");
         b.append("constraint: ").append(tc.getConstraint().toString(tc.getParameters())).append("\n");
-        b.append("specRes: ").append(res1).append("\n");
+        b.append("spec: ").append(res1).append("\n");
         b.append("vRes: ").append(res2).append("\n");
         b.append("res: ").append(res).append("\n");
         TestCase tc = reduced != null ? reduced : this.tc;

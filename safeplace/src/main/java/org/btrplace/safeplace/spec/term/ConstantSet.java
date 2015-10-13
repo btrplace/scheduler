@@ -19,25 +19,29 @@
 package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.SpecModel;
+import org.btrplace.safeplace.verification.spec.Context;
 
 import java.util.Collections;
+import java.util.Random;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class ConstantSet extends Primitive {
+public class ConstantSet<T> extends Primitive<T> {
 
-    private Set cnt;
+    private Set<T> cnt;
 
-    public ConstantSet(String lbl, Type t, Set cnt) {
+    private Random rnd = new Random();
+
+    public ConstantSet(String lbl, Type t, Set<T> cnt) {
         super(lbl, t);
         this.cnt = Collections.unmodifiableSet(cnt);
     }
 
     @Override
-    public Set eval(SpecModel m) {
+    public Set<T> eval(Context m, Object... args) {
         return cnt;
     }
+
 }
