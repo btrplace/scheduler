@@ -37,6 +37,7 @@ import java.util.List;
 /**
  * Serialize/Un-serialize a {@link org.btrplace.model.view.network.Network} view.
  *
+ * By default, it also registers a {@link DefaultRoutingConverter} and a {@link StaticRoutingConverter}.
  * @author Vincent Kherbache
  */
 public class NetworkConverter extends ModelViewConverter<Network> {
@@ -53,16 +54,29 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         return "net";
     }
 
+    /**
+     * Make a new converter.
+     */
     public NetworkConverter() {
         routingConverters = new ArrayList<>();
         routingConverters.add(new DefaultRoutingConverter());
         routingConverters.add(new StaticRoutingConverter());
     }
 
+    /**
+     * Register a routing converter.
+     *
+     * @param r the converter to register
+     */
     public void register(RoutingConverter<? extends Routing> r) {
         routingConverters.add(r);
     }
 
+    /**
+     * Remove a routing converter.
+     * @param r the converter to remove
+     * @return {@code true} iff it has been removed
+     */
     public boolean unRegister(RoutingConverter<? extends Routing> r) {
         return routingConverters.remove(r);
     }

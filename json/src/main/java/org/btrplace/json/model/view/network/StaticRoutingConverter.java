@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by fhermeni2 on 13/10/15.
+ * A converter to (un-)serialise a {@link StaticRouting}.
+ *
+ * All the routes are serialized.
+ * @author Fabien Hermenier
  */
 public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
 
@@ -24,6 +27,11 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
         return StaticRouting.class;
     }
 
+    /**
+     * Return the routing identifier.
+     *
+     * @return {@value "static"}
+     */
     @Override
     public String getJSONId() {
         return "static";

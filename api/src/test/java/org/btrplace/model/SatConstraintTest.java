@@ -34,7 +34,7 @@ public class SatConstraintTest {
     static class MockSatConstraints extends SatConstraint {
 
         public MockSatConstraints() {
-            super(new HashSet<VM>(), new HashSet<Node>(), false);
+            super(new HashSet<>(), new HashSet<>(), false);
             getInvolvedVMs().add(new VM(5));
         }
 
