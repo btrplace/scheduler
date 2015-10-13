@@ -51,20 +51,4 @@ public abstract class Routing {
      */
     public abstract Routing clone();
 
-    /**
-     * Inner class that map two nodes to ease the routing.
-     * It allows to easily compare and differentiate and the nodes pair (src, dst).
-     */
-    public static class NodesMap {
-        private Node n1, n2;
-        public NodesMap(Node n1, Node n2) { this.n1 = n1; this.n2 = n2; }
-        public Node getSrc() { return n1; }
-        public Node getDst() { return n2; }
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) { return true; }
-            if (!(o instanceof NodesMap)) { return false; }
-            return (((NodesMap)o).getSrc().equals(n1) && ((NodesMap)o).getDst().equals(n2));
-        }
-    }
 }

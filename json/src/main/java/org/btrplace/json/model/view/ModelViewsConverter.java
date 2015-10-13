@@ -25,6 +25,7 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.view.network.NetworkConverter;
 import org.btrplace.model.view.ModelView;
 
 import java.io.*;
@@ -53,7 +54,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      * <ul>
      * <li>{@link org.btrplace.json.model.view.ShareableResourceConverter}</li>
      * <li>{@link org.btrplace.json.model.view.NamingServiceConverter}</li>
-     * <li>{@link org.btrplace.json.model.view.NetworkConverter}</li>
+     * <li>{@link NetworkConverter}</li>
      * </ul>
      *
      * @return a fulfilled converter.
