@@ -18,6 +18,10 @@
 
 package org.btrplace.btrpsl.constraint;
 
+import org.btrplace.btrpsl.constraint.migration.BeforeBuilder;
+import org.btrplace.btrpsl.constraint.migration.SerializeBuilder;
+import org.btrplace.btrpsl.constraint.migration.SyncBuilder;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -73,6 +77,9 @@ public class DefaultConstraintsCatalog implements ConstraintsCatalog {
         c.add(new SeqBuilder());
         c.add(new MaxOnlineBuilder());
         c.add(new NoDelayBuilder());
+        c.add(new BeforeBuilder());
+        c.add(new SerializeBuilder());
+        c.add(new SyncBuilder());
         return c;
     }
 
