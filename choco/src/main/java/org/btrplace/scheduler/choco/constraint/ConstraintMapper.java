@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.constraint.Constraint;
+import org.btrplace.scheduler.choco.constraint.migration.*;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 
 import java.util.HashMap;
@@ -72,7 +73,12 @@ public class ConstraintMapper {
         map.register(new CSequentialVMTransitions.Builder());
         map.register(new CMaxOnline.Builder());
         map.register(new CMinMTTR.Builder());
+        map.register(new CMinMTTRMig.Builder());
         map.register(new CNoDelay.Builder());
+        map.register(new CDeadline.Builder());
+        map.register(new CPrecedence.Builder());
+        map.register(new CSerialize.Builder());
+        map.register(new CSync.Builder());
         return map;
     }
 
