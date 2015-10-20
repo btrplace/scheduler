@@ -65,7 +65,7 @@ public class LonelyTest {
         Assert.assertTrue(l.equals(l));
         Assert.assertTrue(l.equals(new Lonely(new HashSet<>(s))));
         Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(l.equals(new Lonely(new HashSet<VM>())));
+        Assert.assertFalse(l.equals(new Lonely(new HashSet<>())));
         Assert.assertNotEquals(new Lonely(s, true), new Lonely(s, false));
         Assert.assertNotEquals(new Lonely(s, true).hashCode(), new Lonely(s, false).hashCode());
     }

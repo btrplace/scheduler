@@ -6,7 +6,8 @@ import org.btrplace.model.view.network.DefaultRouting;
 import org.btrplace.model.view.network.Routing;
 
 /**
- * Created by fhermeni2 on 13/10/15.
+ * A converter to (un-)serialise a {@link DefaultRouting}.
+ * @author Fabien Hermenier
  */
 public class DefaultRoutingConverter extends RoutingConverter<DefaultRouting> {
 
@@ -15,6 +16,11 @@ public class DefaultRoutingConverter extends RoutingConverter<DefaultRouting> {
         return DefaultRouting.class;
     }
 
+    /**
+     * Return the routing identifier.
+     *
+     * @return {@value "default"}
+     */
     @Override
     public String getJSONId() {
         return "default";

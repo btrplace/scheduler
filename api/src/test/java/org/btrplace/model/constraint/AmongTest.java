@@ -78,7 +78,7 @@ public class AmongTest {
         Assert.assertTrue(a.equals(a));
         Assert.assertTrue(a.equals(new Among(new HashSet<>(vg), pGrps)));
         Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vg), pGrps).hashCode());
-        Assert.assertFalse(a.equals(new Among(new HashSet<VM>(), pGrps)));
+        Assert.assertFalse(a.equals(new Among(new HashSet<>(), pGrps)));
         Assert.assertFalse(a.equals(new Among(new HashSet<>(vg), Collections.<Collection<Node>>emptyList())));
         Among a2 = new Among(new HashSet<>(vg), Collections.<Collection<Node>>emptyList());
         a2.setContinuous(true);

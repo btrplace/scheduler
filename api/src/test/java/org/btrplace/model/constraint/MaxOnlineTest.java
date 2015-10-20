@@ -63,7 +63,7 @@ public class MaxOnlineTest {
         MaxOnline mo = new MaxOnline(s, 3);
         Assert.assertEquals(mo, new MaxOnline(s, 3));
         Assert.assertNotEquals(mo, new MaxOnline(s, 1));
-        Assert.assertNotEquals(mo, new MaxOnline(new HashSet<Node>(), 3));
+        Assert.assertNotEquals(mo, new MaxOnline(new HashSet<>(), 3));
         Assert.assertNotEquals(new MaxOnline(s, 3, true), new MaxOnline(s, 3, false));
         Assert.assertEquals(mo, new MaxOnline(s, 3));
         Assert.assertNotEquals(new MaxOnline(s, 3, true).hashCode(), new MaxOnline(s, 3, false).hashCode());
@@ -82,7 +82,7 @@ public class MaxOnlineTest {
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
 
-        Set<Node> s = new HashSet<Node>(Arrays.asList(n1, n2, n3));
+        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2, n3));
         MaxOnline mo = new MaxOnline(s, 2);
 
         Assert.assertTrue(mo.isSatisfied(model));
@@ -103,7 +103,7 @@ public class MaxOnlineTest {
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
 
-        Set<Node> s = new HashSet<Node>(Arrays.asList(n1, n2, n3));
+        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2, n3));
         MaxOnline mo = new MaxOnline(s, 2);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
