@@ -20,10 +20,13 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
+import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
@@ -35,6 +38,9 @@ import org.btrplace.scheduler.choco.view.ModelViewMapper;
 import org.btrplace.scheduler.choco.view.SolverViewBuilder;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link ChocoScheduler}.
@@ -65,6 +71,16 @@ public class DefaultChocoScheduler implements ChocoScheduler {
      */
     public DefaultChocoScheduler() {
         this(new DefaultParameters());
+    }
+
+    @Override
+    public Parameters doOptimizeMigScheduling(boolean b) {
+        return params.doOptimizeMigScheduling(b);
+    }
+
+    @Override
+    public boolean doOptimizeMigScheduling() {
+        return params.doOptimizeMigScheduling();
     }
 
     @Override
@@ -109,7 +125,25 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
-        return runner.solve(params, new Instance(i, cstrs, opt));
+        ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, opt));
+        
+        // Try to optimize the migrations scheduling
+        if (doOptimizeMigScheduling()) {
+            // No action to schedule
+            if (p.getActions().isEmpty()) return p;
+            // Collect migrations and remember the destination node chosen
+            List<SatConstraint> newCstrs = p.getActions().stream()
+                .filter(a -> a instanceof MigrateVM)
+                .map(a -> new Fence(((MigrateVM)a).getVM(), Collections.singleton(((MigrateVM)a).getDestinationNode())))
+                .collect(Collectors.toList());
+            // No migration to schedule
+            if (newCstrs.isEmpty()) return p;
+            // Solve again by improving the migrations scheduling
+            newCstrs.addAll(cstrs);
+            return runner.solve(params, new Instance(i, newCstrs, new MinMTTRMig()));
+        }
+        
+        return p;
     }
 
     @Override
