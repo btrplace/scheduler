@@ -23,9 +23,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * A constraint to ensure no overlapping between a set of migrations.
@@ -37,7 +35,7 @@ public class Serialize extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the involved VMs
+     * @param vms   a list of at least 2 VMs to serialize
      */
     public Serialize(Collection<VM> vms) {
         super(vms, Collections.<Node>emptyList(), true);
@@ -46,12 +44,30 @@ public class Serialize extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the involved VMs
+     * @param vm1   the first VM to serialize
+     * @param vm2   the second VM to serialize
+     * @param vms   possible VMs to serialize with the two first AND also together
      */
-    public Serialize(VM... vms) {
-        super(Arrays.asList(vms), Collections.<Node>emptyList(), true);
+    public Serialize(VM vm1, VM vm2, VM... vms) {
+        super(makeSingleList(vm1, vm2, vms), Collections.<Node>emptyList(), true);
     }
 
+    /**
+     * Create a list of VMs.
+     *
+     * @param vm1   first VM to add on the list
+     * @param vm2   second VM to add on the list
+     * @param vms   a table of VMs to add (can be empty)
+     * @return  the list
+     */
+    private static List<VM> makeSingleList(VM vm1, VM vm2, VM... vms) {
+        List<VM> vmList = new ArrayList<>();
+        vmList.add(vm1);
+        vmList.add(vm2);
+        if (vms.length > 0) { vmList.addAll(Arrays.asList(vms)); }
+        return vmList;
+    }
+    
     @Override
     public boolean setContinuous(boolean b) {
         return b;

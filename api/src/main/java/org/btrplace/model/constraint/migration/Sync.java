@@ -23,9 +23,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * A constraint to force some vms migration to terminate or begin (depending of the migration algorithm)
@@ -38,7 +36,7 @@ public class Sync extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the vms to sync
+     * @param vms   a list of at least 2 VMs to synchronize
      */
     public Sync(Collection<VM> vms) {
         super(vms, Collections.<Node>emptyList(), true);
@@ -47,10 +45,28 @@ public class Sync extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the vms to sync
+     * @param vm1   the first VM to synchronize
+     * @param vm2   the second VM t synchronize
+     * @param vms   possible VMs to synchronize with the two first AND also together
      */
-    public Sync(VM... vms) {
-        super(Arrays.asList(vms), Collections.<Node>emptyList(), true);
+    public Sync(VM vm1, VM vm2, VM... vms) {
+        super(makeSingleList(vm1, vm2, vms), Collections.<Node>emptyList(), true);
+    }
+
+    /**
+     * Create a list of VMs.
+     *
+     * @param vm1   first VM to add on the list
+     * @param vm2   second VM to add on the list
+     * @param vms   a table of VMs to add (can be empty)
+     * @return  the list
+     */
+    private static List<VM> makeSingleList(VM vm1, VM vm2, VM... vms) {
+        List<VM> vmList = new ArrayList<>();
+        vmList.add(vm1);
+        vmList.add(vm2);
+        if (vms.length > 0) { vmList.addAll(Arrays.asList(vms)); }
+        return vmList;
     }
 
     @Override
