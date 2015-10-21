@@ -128,7 +128,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
         ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, opt));
         
         // Try to optimize the migrations scheduling
-        if (doOptimizeMigScheduling()) {
+        if (doOptimizeMigScheduling() && !(opt instanceof MinMTTRMig)) {
             // No action to schedule
             if (p.getActions().isEmpty()) return p;
             // Collect migrations and remember the destination node chosen
