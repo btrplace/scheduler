@@ -105,9 +105,14 @@ public class CSync implements ChocoConstraint {
                         RelocatableVM vm = vm2;
                         if (!vm1.getDSlice().getHoster().isInstantiated()) vm = vm1;
 
-                        throw new SchedulerException(mo, "The 'Sync' constraint must know the destination " +
+                        // Log an error and return false instead of throwing an exception
+                        /*throw new SchedulerException(mo, "The 'Sync' constraint must know the destination " +
+                                "node of the " + vm.getVM().toString() + " migration, see the 'Fence' constraint " +
+                                "to manually set the destination node.");*/
+                        rp.getLogger().error("The 'Sync' constraint must know the destination " +
                                 "node of the " + vm.getVM().toString() + " migration, see the 'Fence' constraint " +
                                 "to manually set the destination node.");
+                        return false;
                     }
 
                     // Get src and dst nodes and compute the routes
@@ -126,10 +131,17 @@ public class CSync implements ChocoConstraint {
                                 if (l1.getCapacity() == net.getRouting().getMaxBW(src1, dst1) ||
                                         l1.getCapacity() == net.getRouting().getMaxBW(src2, dst2)) {
 
-                                    throw new SchedulerException(mo, "The migrations of " + vm1.getVM().toString() +
+                                    // Log an error and return false instead of throwing an exception
+                                    /*throw new SchedulerException(mo, "The migrations of " + vm1.getVM().toString() +
                                             " and " + vm2.getVM().toString() + " can not be synchronized as" +
                                             " their migration paths share a common link that will slowdown" +
                                             " unnecessarily both migrations, so they must be scheduled sequentially.");
+                                    */
+                                    rp.getLogger().error("The migrations of " + vm1.getVM().toString() +
+                                            " and " + vm2.getVM().toString() + " can not be synchronized as" +
+                                            " their migration paths share a common link that will slowdown" +
+                                            " unnecessarily both migrations, so they must be scheduled sequentially.");
+                                    return false;
                                 }
                             }
                         }}

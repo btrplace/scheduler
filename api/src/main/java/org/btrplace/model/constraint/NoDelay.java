@@ -54,7 +54,6 @@ public class NoDelay extends SatConstraint {
      * @param vm the vm to restrict
      */
     public NoDelay(VM vm) {
-
         super(Collections.singleton(vm), Collections.<Node>emptyList(), true);
     }
 

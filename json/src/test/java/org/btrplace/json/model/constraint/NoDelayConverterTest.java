@@ -28,7 +28,10 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 /**
- * Created by vkherbac on 05/09/14.
+ * Unit tests for {@link org.btrplace.json.model.constraint.NoDelayConverter}.
+ *
+ * @author Vincent Kherbache
+ * @see org.btrplace.json.model.constraint.NoDelayConverter
  */
 public class NoDelayConverterTest {
 

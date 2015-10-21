@@ -36,9 +36,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unit tests for {@link org.btrplace.model.constraint.Gather}.
+ * Unit tests for {@link org.btrplace.scheduler.choco.constraint.CNoDelay}.
  *
- * @author Fabien Hermenier
+ * @author Vincent Kherbache
+ * @see org.btrplace.scheduler.choco.constraint.CNoDelay
  */
 public class CNoDelayTest {
 

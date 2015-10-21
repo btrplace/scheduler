@@ -28,9 +28,8 @@ import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.constraints.LCF;
-import org.chocosolver.solver.variables.VF;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.Operator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -99,7 +98,7 @@ public class CDeadline implements ChocoConstraint {
         try {
             deadline = convertTimestamp(dl.getTimestamp());
         } catch (ParseException e) {
-            throw new SchedulerException(rp.getSourceModel(), "Unable to parse the timestamp '" + dl.getTimestamp() + "'");
+            throw new SchedulerException(rp.getSourceModel(), "Unable to parse the timestamp '"+dl.getTimestamp()+"'");
         }
 
         // Get all migrations involved
@@ -107,7 +106,8 @@ public class CDeadline implements ChocoConstraint {
             VM vm = ite.next();
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
-                LCF.ifThen(VF.not(((RelocatableVM)vt).isStaying()), ICF.arithm(vt.getEnd(), "<=", deadline));
+                rp.getSolver().post(new Arithmetic(vt.getEnd(), Operator.LE, deadline));
+                //LCF.ifThen(VF.not(((RelocatableVM)vt).isStaying()), ICF.arithm(vt.getEnd(), "<=", deadline));
             }
         }
 
