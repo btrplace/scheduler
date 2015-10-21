@@ -27,7 +27,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by vkherbac on 30/12/14.
+ * The solver part of the network view.
+ * Define the maximal bandwidth allocatable for each migration according to the capacity
+ * of the network elements on each migration path. Then, establish the relation between the
+ * migrations duration and their allocated bandwidth based on specific VMs attributes related
+ * to VM memory activity.
+ *
+ * @author Vincent Kherbache
  */
 public class CNetwork implements ChocoView {
 
@@ -43,6 +49,13 @@ public class CNetwork implements ChocoView {
     List<Task> tasksList;
     List<IntVar> heightsList;
 
+    /**
+     * Make a new network view
+     *
+     * @param p the reconfiguration problem
+     * @param n the network view we rely on
+     * @throws SchedulerException   if one or more needed VM attributes are not defined
+     */
     public CNetwork(ReconfigurationProblem p, Network n) throws SchedulerException {
         net = n;
         rp = p;
@@ -56,7 +69,7 @@ public class CNetwork implements ChocoView {
     public String getIdentifier() { return net.getIdentifier(); }
 
     @Override
-    public boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean beforeSolve(ReconfigurationProblem rp) {
         
         Model mo = rp.getSourceModel();
         Solver s = rp.getSolver();
@@ -66,13 +79,17 @@ public class CNetwork implements ChocoView {
 
             if (migration instanceof RelocatableVM) {
                 
+                // Get vars from migration
                 VM vm = migration.getVM();
                 IntVar bandwidth = ((RelocatableVM) migration).getBandwidth();
                 IntVar duration = migration.getDuration();
-                
                 Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
+                
+                // Try to get the destination node
                 Node dst;
                 if (!migration.getDSlice().getHoster().isInstantiated()) {
+                    // Do not throw an exception, show a warning and leave the view
+                    rp.getLogger().warn("The destination node for " + vm + " is not known, skipping network view..");
                     //throw new SchedulerException(null, "Destination node for VM '" + vm + "' should be known !");
                     return true;
                 }
@@ -81,75 +98,82 @@ public class CNetwork implements ChocoView {
                 }
 
                 // Check if all attributes are defined
-                if (mo.getAttributes().isSet(vm, "memUsed") &&
-                        mo.getAttributes().isSet(vm, "dirtyRate") &&
-                        mo.getAttributes().isSet(vm, "maxDirtySize") &&
-                        mo.getAttributes().isSet(vm, "maxDirtyDuration")) {
-
-                    double dirtyRate;
-                    int memUsed, maxDirtyDuration, maxDirtySize;
+                if (mo.getAttributes().isSet(vm, "memUsed")) {
 
                     // Get attribute vars
-                    memUsed = mo.getAttributes().getInteger(vm, "memUsed");
-                    dirtyRate = mo.getAttributes().getDouble(vm, "dirtyRate");
-                    maxDirtySize = mo.getAttributes().getInteger(vm, "maxDirtySize");
-                    maxDirtyDuration = mo.getAttributes().getInteger(vm, "maxDirtyDuration");
+                    int memUsed = mo.getAttributes().getInteger(vm, "memUsed");
+                    
+                    // Get VM memory activity attributes if defined, otherwise set an idle workload on the VM
+                    int hotDirtySize = mo.getAttributes().isSet(vm, "hotDirtySize") ?
+                            mo.getAttributes().getInteger(vm, "hotDirtySize") :
+                            5; // Minimal observed value on idle VM
+                    int hotDirtyDuration = mo.getAttributes().isSet(vm, "hotDirtyDuration") ?
+                            mo.getAttributes().getInteger(vm, "hotDirtyDuration") :
+                            2; // Minimal observed value on idle VM
+                    double coldDirtyRate = mo.getAttributes().isSet(vm, "coldDirtyRate") ?
+                            mo.getAttributes().getDouble(vm, "coldDirtyRate") :
+                            0; // Minimal observed value on idle VM
 
-                    // Enumerated BW
+                    // Get the maximal bandwidth available on the migration path
                     int maxBW = net.getRouting().getMaxBW(src, dst);
+                    // Enumerate different possible values for the bandwidth to allocate (< maxBW)
+                    // MULTIPLE BW; eg.(step=maxBW/2) split the max BW in 2 and allow to migrate 2 migrations per link
+                    // SINGLE BW: (step=maxBW) the bandwidth can not be reduced below maxBW (always migrate at max BW)
                     int step = maxBW;
                     List<Integer> bwEnum = new ArrayList<>();
                     for (int i = step; i <= maxBW; i += step) {
-                        if (i > Math.round(maxDirtySize / maxDirtyDuration)) {
+                        if (i > Math.round(hotDirtySize / hotDirtyDuration)) {
                             bwEnum.add(i);
                         }
                     }
 
-                    // Enumerated duration
+                    // Compute the duration related to each enumerated bandwidth
                     double durationMin, durationColdPages, durationHotPages, durationTotal;
                     List<Integer> durEnum = new ArrayList<>();
                     for (Integer bw : bwEnum) {
 
-                        // Cheat a bit, real is less than theoretical !
+                        // Cheat a bit, real is less than theoretical (8->9)
                         double bandwidth_octet = bw / 9;
 
-                        // Estimate duration
+                        // Estimate the duration for the current bandwidth
                         durationMin = memUsed / bandwidth_octet;
-                        if (durationMin > maxDirtyDuration) {
+                        if (durationMin > hotDirtyDuration) {
 
-                            durationColdPages = ((maxDirtySize + ((durationMin - maxDirtyDuration) * dirtyRate)) /
-                                    (bandwidth_octet - dirtyRate));
-                            durationHotPages = ((maxDirtySize / bandwidth_octet) * ((maxDirtySize / maxDirtyDuration) /
-                                    (bandwidth_octet - (maxDirtySize / maxDirtyDuration))));
+                            durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
+                                    (bandwidth_octet - coldDirtyRate));
+                            durationHotPages = ((hotDirtySize / bandwidth_octet) * ((hotDirtySize / hotDirtyDuration) /
+                                    (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
                             durationTotal = durationMin + durationColdPages + durationHotPages;
                         } else {
-                            durationTotal = durationMin + (((maxDirtySize / maxDirtyDuration) * durationMin) /
-                                    (bandwidth_octet - (maxDirtySize / maxDirtyDuration)));
+                            durationTotal = durationMin + (((hotDirtySize / hotDirtyDuration) * durationMin) /
+                                    (bandwidth_octet - (hotDirtySize / hotDirtyDuration)));
                         }
                         durEnum.add((int) Math.round(durationTotal));
                     }
 
-                    /* Create the enumerated vars
+                    /*// USING MULTIPLE BW FOR EACH MIGRATION
+                    // Create the enumerated vars
                     bandwidth = VF.enumerated("bandwidth_enum", bwEnum.stream().mapToInt(i -> i).toArray(), s);
-                    duration = VF.enumerated("duration_enum", durEnum.stream().mapToInt(i -> i).toArray(), s);*/
+                    duration = VF.enumerated("duration_enum", durEnum.stream().mapToInt(i -> i).toArray(), s);
 
-                    /* Associate vars using Tuples
+                    // Associate vars using Tuples
                     Tuples tpl = new Tuples(true);
                     for (int i = 0; i < bwEnum.size(); i++) {
                         tpl.add(bwEnum.get(i), durEnum.get(i));
                     }
+                    
+                    // Post the table constraint
                     s.post(ICF.table(bandwidth, duration, tpl, ""));*/
 
-                    /* Set the vars in the VM transition
-                    ((MigrateVMTransition) migration).setBandwidth(bandwidth);
-                    ((MigrateVMTransition) migration).setDuration(duration);*/
-
-                    // Assign values to unbounded vars
+                    // USING A SINGLE BW PER MIGRATION
                     s.post(new Arithmetic(duration, Operator.EQ, durEnum.get(0)));
                     s.post(new Arithmetic(bandwidth, Operator.EQ, bwEnum.get(0)));
                     
                 } else {
-                    throw new SchedulerException(null, "Unable to retrieve attributes for the vm '" + vm + "'");
+                    // Do not throw an exception, show a warning and leave the view
+                    rp.getLogger().warn("The 'memUsed' attribute for " + vm + " is missing, skipping network view..");
+                    //throw new SchedulerException(null, "Unable to retrieve attributes for the vm '" + vm + "'");
+                    return true;
                 }
             }
         }
@@ -165,7 +189,6 @@ public class CNetwork implements ChocoView {
 
                     Node src = source.getMapping().getVMLocation(vm);
                     Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
-                    
                     List<Link> path = net.getRouting().getPath(src, dst);
 
                     // If the link is on migration path
@@ -176,16 +199,19 @@ public class CNetwork implements ChocoView {
                 }
             }
             if (!tasksList.isEmpty()) {
+                
+                // Post the cumulative constraint for the current link
                 solver.post(new Cumulative(
                         tasksList.toArray(new Task[tasksList.size()]),
                         heightsList.toArray(new IntVar[heightsList.size()]),
                         VF.fixed(l.getCapacity(), solver),
-                        true
-                        ,Cumulative.Filter.TIME
-                        //,Cumulative.Filter.SWEEP
-                        //,Cumulative.Filter.SWEEP_HEI_SORT
-                        ,Cumulative.Filter.NRJ
-                        ,Cumulative.Filter.HEIGHTS
+                        true,
+                        // Try to tune the filters to improve the constraint efficiency
+                        Cumulative.Filter.TIME,
+                        //Cumulative.Filter.SWEEP,
+                        //Cumulative.Filter.SWEEP_HEI_SORT,
+                        Cumulative.Filter.NRJ,
+                        Cumulative.Filter.HEIGHTS
                 ));
             }
             tasksList.clear();
@@ -214,6 +240,7 @@ public class CNetwork implements ChocoView {
                     }
                 }
 
+                // Post the cumulative constraint for the current switch
                 solver.post(ICF.cumulative(
                         tasksList.toArray(new Task[tasksList.size()]),
                         heightsList.toArray(new IntVar[heightsList.size()]),

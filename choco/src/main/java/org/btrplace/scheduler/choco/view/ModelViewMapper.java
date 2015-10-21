@@ -48,6 +48,7 @@ public class ModelViewMapper {
     public static ModelViewMapper newBundle() {
         ModelViewMapper map = new ModelViewMapper();
         map.register(new CShareableResource.Builder());
+        map.register(new CNetwork.Builder());
         return map;
     }
 
