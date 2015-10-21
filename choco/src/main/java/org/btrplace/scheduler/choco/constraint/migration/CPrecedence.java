@@ -11,7 +11,8 @@ import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
+import org.chocosolver.solver.constraints.Arithmetic;
+import org.chocosolver.solver.constraints.Operator;
 
 import java.util.*;
 
@@ -47,7 +48,8 @@ public class CPrecedence implements ChocoConstraint {
 
         // Not enough / too much VMs
         if(pr.getInvolvedVMs().size() != 2) {
-            return true;
+            rp.getLogger().error("Unable to inject the constraint '" + pr + "', the amount of involved VMs must be 2.");
+            return false;
         }
 
         // Get all migrations involved
@@ -61,11 +63,12 @@ public class CPrecedence implements ChocoConstraint {
 
         // Not enough migrations
         if (migrationList.size() < 2) {
-            return true;
+            rp.getLogger().error("Unable to inject the constraint '" + pr + "', the involved VMs are not migrating..");
+            return false;
         }
 
         // Post the precedence constraint (involved VMs need to be ordered)
-        s.post(ICF.arithm(migrationList.get(0).getEnd(), ">=", migrationList.get(1).getStart()));
+        s.post(new Arithmetic(migrationList.get(0).getEnd(), Operator.LE, migrationList.get(1).getStart()));
 
         return true;
     }
