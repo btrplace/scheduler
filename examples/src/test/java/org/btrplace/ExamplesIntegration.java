@@ -19,6 +19,8 @@
 package org.btrplace;
 
 import org.btrplace.examples.*;
+import org.btrplace.examples.migration.ScheduleMigrations;
+import org.btrplace.examples.migration.SingleMigration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -48,9 +50,20 @@ public class ExamplesIntegration {
     }
 
     @Test
-    public void testDecomissioning() throws Exception {
+    public void testDecommissioning() throws Exception {
         Example ex = new Decommissionning();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
+    @Test
+    public void testSingleMigration() throws Exception {
+        Example ex = new SingleMigration();
+        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+    }
+
+    @Test
+    public void testScheduleMigrations() throws Exception {
+        Example ex = new ScheduleMigrations();
+        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+    }
 }
