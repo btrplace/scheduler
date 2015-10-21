@@ -196,8 +196,8 @@ public class RelocatableVM implements KeepRunningVM {
             );
 
             // Re-instantiate or migrate ?
-            // Prefer the re-instantiation if the duration are the same, otherwise choose the min
-            LCF.ifThenElse(LCF.or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // as doReinstantiation can be instantiate externally
+            // (Prefer the re-instantiation if the duration are the same, otherwise choose the min)
+            LCF.ifThenElse(LCF.or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // can be instantiated externally !
                                   new Arithmetic(migrationDuration, Operator.LT, reInstantiateDuration)),
                     new Arithmetic(duration, Operator.EQ, migrationDuration),
                     new Arithmetic(duration, Operator.EQ, reInstantiateDuration)
@@ -218,11 +218,11 @@ public class RelocatableVM implements KeepRunningVM {
             duration = migrationDuration;
         }
 
-        // If the VM stay: duration=0
+        // If the VM stay => duration = 0
         s.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         s.post(new FastIFFEq(stay, duration, 0));
 
-        // Add constraints to the duration
+        // Post the migration as a task in a cumulative constraint with a height of 1
         VariableFactory.task(start, duration, end);
     }
 
@@ -243,12 +243,13 @@ public class RelocatableVM implements KeepRunningVM {
     @Override
     public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         DurationEvaluators dev = rp.getDurationEvaluators();
+        // Only if the VM doesn't stay
         if (s.getIntVal(cSlice.getHoster()) != s.getIntVal(dSlice.getHoster())) {
             assert s.getIntVal(stay) == 0;
             Action a;
             Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
+            // Migration
             if (s.getIntVal(doReinstantiation) == 0) {
-               
                 int st = s.getIntVal(getStart());
                 int ed = s.getIntVal(getEnd());
 
@@ -259,6 +260,7 @@ public class RelocatableVM implements KeepRunningVM {
                     a = new MigrateVM(vm, src, dst, st, ed);
                 }
                 plan.add(a);
+            // Re-instantiation
             } else {
                 try {
                     VM newVM = rp.cloneVM(vm);
