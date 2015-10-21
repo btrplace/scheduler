@@ -21,9 +21,13 @@ package org.btrplace.model.constraint;
 import org.btrplace.plan.event.*;
 
 /**
- * Created by vkherbac on 01/09/14.
+ * Checker for the {@link org.btrplace.model.constraint.NoDelay} constraint
+ *
+ * @author Vincent Kherbache
+ * @see org.btrplace.model.constraint.NoDelay
  */
 public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
+
     /**
      * Make a new checker.
      *

@@ -23,7 +23,10 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.constraint.NoDelay;
 
 /**
- * Created by vkherbac on 01/09/14.
+ * JSON Converter for the constraint {@link org.btrplace.model.constraint.NoDelay}.
+ *
+ * @author Vincent Kherbache
+ * @see org.btrplace.model.constraint.NoDelay
  */
 public class NoDelayConverter extends ConstraintConverter<NoDelay> {
 

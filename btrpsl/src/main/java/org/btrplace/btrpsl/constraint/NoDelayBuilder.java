@@ -28,7 +28,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by vkherbac on 05/09/14.
+ * A builder for {@link org.btrplace.model.constraint.NoDelay} constraints.
+ *
+ * @author Vincent Kherbache
  */
 public class NoDelayBuilder extends DefaultSatConstraintBuilder {
 

@@ -27,10 +27,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A constraint to force vms' actions to be executed
- * at the beginning (at time t=0), without any delay.
+ * A constraint to force VMs' actions to be executed
+ * at the beginning (time t=0), without any delay.
  * <p>
- * Created by vkherbac on 01/09/14.
+ * @author Vincent Kherbache
  */
 public class NoDelay extends SatConstraint {
 
