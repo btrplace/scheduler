@@ -126,6 +126,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
         ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, opt));
+        if (p == null) return null;
         
         // Try to optimize the migrations scheduling
         if (doOptimizeMigScheduling() && !(opt instanceof MinMTTRMig)) {
