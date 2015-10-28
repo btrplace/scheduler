@@ -22,10 +22,11 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.MinMTTRMig;
-import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.testng.Assert;
@@ -65,22 +66,20 @@ public class CNetworkTest {
         mo.attach(net);
         // Connect the nodes through a main non-blocking switch using 1 Gbit/s links
         Switch swMain = net.newSwitch();
-        net.connect(1000, swMain, srcNode, dstNode);
+        int bw = 1000;
+        net.connect(bw, swMain, srcNode, dstNode);
 
         // Create and host 1 running VM on the source node
         VM vm = mo.newVM();
         ma.addRunningVM(vm, srcNode);
 
-        // Attach CPU and Mem resource views and assign nodes capacity and VMs consumption
-        int mem_vm = 8, cpu_vm = 4, mem_node = 8, cpu_node = 4;
-        ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
-        mo.attach(rcMem);
-        mo.attach(rcCPU);
-        rcMem.setConsumption(vm, mem_vm).setCapacity(srcNode, mem_node).setCapacity(dstNode, mem_node);
-        rcCPU.setConsumption(vm, cpu_vm).setCapacity(srcNode, cpu_node).setCapacity(dstNode, cpu_node);
-
-        // Set the real memory used by the VM in MiB, with no workload: the VM is considered idle
-        mo.getAttributes().put(vm, "memUsed", 6000); // 6 GiB
+        // The VM consumes 6 GiB memory and has a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"
+        int memUsed = 6000, hotDirtySize = 46, hotDirtyDuration = 2;
+        double coldDirtyRate = 23.6;
+        mo.getAttributes().put(vm, "memUsed", memUsed); // 6 GiB
+        mo.getAttributes().put(vm, "hotDirtySize", hotDirtySize); // 46 MiB
+        mo.getAttributes().put(vm, "hotDirtyDuration", hotDirtyDuration); // 2 sec.
+        mo.getAttributes().put(vm, "coldDirtyRate", coldDirtyRate); // 23.6 MiB/sec.
 
         // Add constraints
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -91,7 +90,29 @@ public class CNetworkTest {
         ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
         Assert.assertNotNull(p);
         
-        // TODO: test the correct path, capacities are respected, no parallel mig on double crossed path that is minimal
-        // TODO: + the correct migration duration
+        // The switch is non-blocking
+        Assert.assertTrue(swMain.getCapacity() == -1);
+        
+        // Check the migration path and bandwidth
+        MigrateVM mig = null;
+        for (Action a : p.getActions()) { if (a instanceof MigrateVM) {
+            mig = (MigrateVM) a;
+            Assert.assertTrue(net.getRouting().getPath(((MigrateVM) a).getSourceNode(),
+                    ((MigrateVM) a).getDestinationNode()).containsAll(net.getLinks()));
+            Assert.assertTrue(net.getRouting().getMaxBW(((MigrateVM) a).getSourceNode(),
+                    ((MigrateVM) a).getDestinationNode()) == bw);
+            Assert.assertTrue(((MigrateVM) a).getBandwidth() == bw);
+            break;
+        }}
+
+        // Check the migration duration computation
+        double bandwidth_octet = mig.getBandwidth()/9, durationMin, durationColdPages, durationHotPages, durationTotal;
+        durationMin = memUsed / bandwidth_octet;
+        durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
+                (bandwidth_octet - coldDirtyRate));
+        durationHotPages = ((hotDirtySize / bandwidth_octet) * ((hotDirtySize / hotDirtyDuration) /
+                (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
+        durationTotal = durationMin + durationColdPages + durationHotPages;
+        Assert.assertTrue((mig.getEnd() - mig.getStart()) == (int) Math.round(durationTotal));
     }
 }
