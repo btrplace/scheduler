@@ -23,7 +23,6 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Precedence;
-import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -67,39 +66,25 @@ public class ScheduleMigrations implements Example {
         ma.addRunningVM(vm1, srcNode1);
         ma.addRunningVM(vm2, srcNode2);
 
-        // Attach CPU and Mem resource views and assign nodes capacity and VMs consumption
-        int mem_vm = 8, cpu_vm = 4, mem_src = 8, cpu_src = 4, mem_dst = 16, cpu_dst = 8;
-        ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
-        mo.attach(rcMem);
-        mo.attach(rcCPU);
-        // VMs
-        rcMem.setConsumption(vm1, mem_vm).setConsumption(vm2, mem_vm);
-        rcCPU.setConsumption(vm1, cpu_vm).setConsumption(vm2, cpu_vm);
-        // Nodes
-        rcMem.setCapacity(srcNode1, mem_src).setCapacity(srcNode2, mem_src).setCapacity(dstNode, mem_dst);
-        rcCPU.setCapacity(srcNode1, cpu_src).setCapacity(srcNode2, cpu_src).setCapacity(dstNode, cpu_dst);
-
         // Set VM attributes 'memory used', 'hot dirty page size', 'hot dirty page duration' and 'cold dirty pages rate'
-        int vm_mu = 6000, vm_mds = 46, vm_mdd = 2; double vm_cdr = 23.6;
+        int vm_mu = 6000, vm_hds = 46, vm_hdd = 2; double vm_cdr = 23.6;
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 6 GiB of memory
         mo.getAttributes().put(vm1, "memUsed", vm_mu);
         // vm2 consumes 6 GiB memory and has a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"
-        mo.getAttributes().put(vm2, "memUsed", vm_mu); // VM with a workload
-        mo.getAttributes().put(vm2, "hotDirtySize", vm_mds);
-        mo.getAttributes().put(vm2, "hotDirtyDuration", vm_mdd);
+        mo.getAttributes().put(vm2, "memUsed", vm_mu);
+        mo.getAttributes().put(vm2, "hotDirtySize", vm_hds);
+        mo.getAttributes().put(vm2, "hotDirtyDuration", vm_hdd);
         mo.getAttributes().put(vm2, "coldDirtyRate", vm_cdr);
                 
         // Create constraints
         List<SatConstraint> cstrs = new ArrayList<>();
-        
-        // Placement constraints, we want to shutdown the source nodes to force the migration to destination nodes
+        // Placement constraints: we want to shutdown the source nodes to force VMs migration to destination nodes
         cstrs.add(new Offline(srcNode1));
         cstrs.add(new Offline(srcNode2));
-        
-        // Scheduling constraint, we want vm2 start before vm1 for example (try: Sync, Serialize, Deadline, ..)
+        // Scheduling constraint: we want vm2 start before vm1 for example (try: Sync, Serialize, Deadline, ..)
         cstrs.add(new Precedence(vm2, vm1));
 
-        // Set parameter to /!\ Optimize the migrations scheduling /!\
+        // Set parameter: /!\ Optimize the migrations scheduling /!\
         DefaultParameters ps = new DefaultParameters();
         ps.doOptimizeMigScheduling(true);
 
