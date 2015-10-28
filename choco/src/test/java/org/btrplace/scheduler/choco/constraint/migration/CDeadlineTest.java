@@ -26,9 +26,11 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultParameters;
+import org.btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -113,8 +115,15 @@ public class CDeadlineTest {
         
         // It works because 30s is enough to fully migrate vm2
         Assert.assertNotNull(p);
+        
+        // Check if the deadline is respected
+        MigrateVM mig1 = null;
+        for (Action a : p.getActions()) {
+            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm1)) mig1 = (MigrateVM) a;
+        }
+        Assert.assertTrue(mig1.getEnd() <= 90);
 
-        // TODO: use methods on DeadlineChecker to verify that the action terminate at time
+        // TODO: use methods on DeadlineChecker to verify that the action terminates at time ?
         Assert.assertTrue(dead.isSatisfied(p));
     }
 

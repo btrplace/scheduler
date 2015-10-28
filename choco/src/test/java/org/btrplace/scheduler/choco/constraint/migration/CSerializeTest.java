@@ -26,6 +26,8 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultParameters;
@@ -112,7 +114,15 @@ public class CSerializeTest {
         ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, cstrs);
         Assert.assertNotNull(p);
 
-        // TODO: use methods on SerializeChecker to verify that the actions are serialized
+        // Check if the serialize constraint is respected
+        MigrateVM mig1 = null, mig2 = null ;
+        for (Action a : p.getActions()) {
+            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm1)) mig1 = (MigrateVM) a;
+            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm2)) mig2 = (MigrateVM) a;
+        }
+        Assert.assertTrue(mig1.getStart() >= mig2.getEnd() || mig2.getStart() >= mig1.getEnd());
+
+        // TODO: use methods on SerializeChecker to verify that the actions are serialized ?
         Assert.assertTrue(serial.isSatisfied(p));
     }
 }
