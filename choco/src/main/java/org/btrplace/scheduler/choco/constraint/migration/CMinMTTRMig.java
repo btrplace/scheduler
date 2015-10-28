@@ -114,9 +114,11 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
 
                     if (rp.getNode(n) == (a.getCSlice().getHoster().getValue())) {
 
-                        // Boot dst
-                        if (!endVars.contains(rp.getNodeAction(rp.getNode(a.getDSlice().getHoster().getValue())).getEnd())) {
-                            endVars.add(rp.getNodeAction(rp.getNode(a.getDSlice().getHoster().getValue())).getEnd());
+                        // Boot dst node (if known)
+                        if (a.getDSlice().getHoster().isInstantiated()) {
+                            if (!endVars.contains(rp.getNodeAction(rp.getNode(a.getDSlice().getHoster().getValue())).getEnd())) {
+                                endVars.add(rp.getNodeAction(rp.getNode(a.getDSlice().getHoster().getValue())).getEnd());
+                            }
                         }
 
                         // Migrate all
