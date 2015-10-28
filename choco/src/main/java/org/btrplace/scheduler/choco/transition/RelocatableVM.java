@@ -132,7 +132,7 @@ public class RelocatableVM implements KeepRunningVM {
             return;
         }
 
-        // The VM should move (to re-instantiate or migrate) OR STAY eg. if the VM state change from Ready to Running ?
+        // The VM can move (to re-instantiate or migrate) OR STAY to the same host
         //stay = VariableFactory.zero(rp.getSolver());
         stay = VF.bool(vm + "stay", s);
         cSlice = new SliceBuilder(rp, vm, PREFIX, vm, ").cSlice")
@@ -148,11 +148,11 @@ public class RelocatableVM implements KeepRunningVM {
         s.post(new Arithmetic(dSlice.getEnd(), Operator.LE, rp.getEnd()));
         s.post(new Arithmetic(cSlice.getEnd(), Operator.LE, rp.getEnd()));
 
-        // Update start and end vars
+        // Update start and end vars of the action
         start = dSlice.getStart();
         end = cSlice.getEnd();
 
-        // Get the static durations from evaluators
+        // Get some static durations from evaluators
         DurationEvaluators dev = rp.getDurationEvaluators();
         int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);
         int bootDuration = dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, vm);
@@ -185,7 +185,7 @@ public class RelocatableVM implements KeepRunningVM {
             bandwidth = null;
         }
 
-        // Possibly re-instantiate
+        // Possibly re-instantiate (if some attributes are defined)
         if (Boolean.TRUE.equals(mo.getAttributes().getBoolean(vm,"clone")) && mo.getAttributes().isSet(vm,"template")) {
 
             doReinstantiation = VariableFactory.bool(rp.makeVarLabel("relocation_method(", vm, ")"), s);
@@ -195,7 +195,7 @@ public class RelocatableVM implements KeepRunningVM {
                     Math.max(migrationDuration.getUB(), reInstantiateDuration), s
             );
 
-            // Re-instantiate or migrate ?
+            // Re-instantiate or migrate
             // (Prefer the re-instantiation if the duration are the same, otherwise choose the min)
             LCF.ifThenElse(LCF.or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // can be instantiated externally !
                                   new Arithmetic(migrationDuration, Operator.LT, reInstantiateDuration)),
@@ -212,17 +212,17 @@ public class RelocatableVM implements KeepRunningVM {
             // Be sure that doReinstantiation will be instantiated
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
         }
-        // Migrate
+        // The VM either migrate or stay but won't be re-instantiated for sure
         else {
             doReinstantiation = VariableFactory.zero(s);
             duration = migrationDuration;
         }
 
-        // If the VM stay => duration = 0
+        // If the VM stay (src host == dst host), then duration = 0
         s.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         s.post(new FastIFFEq(stay, duration, 0));
 
-        // Post the migration as a task in a cumulative constraint with a height of 1
+        // Post the migration as a task in a 'default' cumulative constraint with a height of 1
         VariableFactory.task(start, duration, end);
     }
 

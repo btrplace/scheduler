@@ -56,7 +56,7 @@ public class ScheduleMigrations implements Example {
         Network net = new Network();
         mo.attach(net);
         // Connect the nodes through a main non-blocking switch
-        // The destination node have twice the bandwidth of source nodes
+        // The destination node has twice the bandwidth of source nodes
         Switch swMain = net.newSwitch();
         net.connect(1000, swMain, srcNode1, srcNode2);
         net.connect(2000, swMain, dstNode);

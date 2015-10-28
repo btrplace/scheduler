@@ -124,7 +124,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
                     }
                 }
 
-                // Shutdown
+                // Shutdown src node
                 endVars.add(rp.getNodeAction(n).getEnd());
             }
 

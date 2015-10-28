@@ -266,13 +266,6 @@ public class Network implements ModelView, Cloneable {
     public Routing getRouting() { return routing; }
 
     /**
-     * Get the mapping of each physical elements to their links
-     *
-     * @return  the mapping
-     */
-    //public Map<PhysicalElement, List<Link>> getMapping() { return mapping; }
-
-    /**
      * Get the list of links connected to a given physical element
      * 
      * @param pe    the physical element
@@ -381,7 +374,7 @@ public class Network implements ModelView, Cloneable {
      *
      * @param out               the output dot file to create
      * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams) 
-     * @return  true if it succeed, false otherwise
+     * @return  {@code true} if it succeed, {@code false} otherwise
      */
     public boolean generateDot(String out, boolean fromLeftToRight) {
         return generateDot(null, out, fromLeftToRight);
@@ -391,7 +384,7 @@ public class Network implements ModelView, Cloneable {
      * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
      *
      * @param out   the output dot file to create
-     * @return  true if it succeed, false otherwise
+     * @return  {@code true} if it succeed, {@code false} otherwise
      */
     public boolean generateDot(String out) {
         return generateDot(null, out, false);
