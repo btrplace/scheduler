@@ -413,6 +413,30 @@ public class Network implements ModelView, Cloneable {
         return new DecimalFormat("#.##").format(megabits / Math.pow(unit, exp)) + "GTPE".charAt(exp-1) + "b";
     }
 
+    /**
+     * Create and attach a default network view to the given model.
+     * Basically, the Network consists of a main non-blocking switch connected
+     * to all the existing nodes in the model through 1 Gbit/s links each.
+     *
+     * Note: replace the previous Network view attached to the model (if exists).
+     * 
+     * @param mo    the model to add/replace the Network view
+     * @return  the new 'default' network view, already attached to the given model
+     */
+    public static Network createDefaultNetwork(Model mo) {
+        Network net = new Network();
+        Switch mainSwitch = net.newSwitch(); // Main non-blocking switch
+        for (Node n : mo.getMapping().getAllNodes()) {
+            net.connect(1000, mainSwitch, n); // Connect all nodes with 1Gbit/s links
+        }
+        // Remove the current Network view if exists
+        if (mo.getView(VIEW_ID) != null) {
+            mo.detach(mo.getView(VIEW_ID));
+        }
+        mo.attach(net);
+        return net;
+    }
+
     @Override
     public String getIdentifier() {
         return viewId;
