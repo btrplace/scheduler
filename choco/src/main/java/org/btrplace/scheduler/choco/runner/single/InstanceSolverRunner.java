@@ -121,7 +121,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //The solution monitor to store the measures at each solution
         solutions = new AllSolutionsRecorder(rp.getSolver());
-        rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
+        rp.getSolver().plugMonitor(new IMonitorSolution() {
             @Override
             public void onSolution() {
                 IMeasures m = rp.getSolver().getMeasures();

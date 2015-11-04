@@ -103,7 +103,7 @@ public class Disjoint extends Constraint {
             idms = new IIntDeltaMonitor[vars.length];
             int i = 0;
             for (IntVar v : vars) {
-                idms[i++] = v.monitorDelta(aCause);
+                idms[i++] = v.monitorDelta(this);
             }
             remProc = new RemProc();
             groups = new IntVar[2][];
@@ -112,7 +112,7 @@ public class Disjoint extends Constraint {
         }
 
         @Override
-        protected int getPropagationConditions(int vIdx) {
+        public int getPropagationConditions(int vIdx) {
             return IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
@@ -146,7 +146,7 @@ public class Disjoint extends Constraint {
             //remove the value for the domains of the other groups
             int i = 0;
             for (IntVar v : groups[otherGroup]) {
-                if (v.removeValue(val, aCause)) {
+                if (v.removeValue(val, this)) {
                     candidates[otherGroup][val].add(-1);
                     if (v.isInstantiated()) {
                         filterInst(i, otherGroup);
@@ -243,7 +243,7 @@ public class Disjoint extends Constraint {
                 int i = (other == 0) ? 0 : nbX;
                 int end = (other == 0) ? nbX : vars.length;
                 for (; i < end; i++) {
-                    if (vars[i].removeValue(val, aCause)) {
+                    if (vars[i].removeValue(val, this)) {
                         n++;
                     }
                 }

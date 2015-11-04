@@ -34,8 +34,6 @@ import org.chocosolver.util.iterators.DisposableValueIterator;
 import org.chocosolver.util.procedure.UnaryIntProcedure;
 import org.chocosolver.util.tools.ArrayUtils;
 
-import java.util.Arrays;
-
 /**
  * Lighter but faster version of a multi dimension vector packing that does not provide the knapsack filtering
  * enforce:
@@ -152,6 +150,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             sumLoadInf[d] = getSolver().getEnvironment().makeInt();
             sumLoadSup[d] = getSolver().getEnvironment().makeInt();
         }
+        super.linkVariables();
     }
 
     public void attachHeapDecorator() {
@@ -194,6 +193,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     @Override
     public int getPropagationConditions(int idx) {
         return (idx < bins.length ? IntEventType.all() : IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask());
+    }
+
+    @Override
+    protected void linkVariables() {
+        // do nothing, the linking is postponed because getPropagationConditions() needs some internal data
     }
 
     /**
@@ -275,7 +279,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int delta = newLoadInf - loads[dim][bin].getLB();
         if (delta <= 0)
             return false;
-        loads[dim][bin].updateLowerBound(newLoadInf, aCause);
+        loads[dim][bin].updateLowerBound(newLoadInf, this);
         if (sumISizes[dim] < sumLoadInf[dim].add(delta))
             contradiction(null, "");
         return true;
@@ -292,11 +296,13 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     protected boolean filterLoadSup(int dim, int bin, int newLoadSup) throws ContradictionException {
         int delta = newLoadSup - loads[dim][bin].getUB();
-        if (delta >= 0)
+        if (delta >= 0) {
             return false;
-        loads[dim][bin].updateUpperBound(newLoadSup, aCause);
-        if (sumISizes[dim] > sumLoadSup[dim].add(delta))
+        }
+        loads[dim][bin].updateUpperBound(newLoadSup, this);
+        if (sumISizes[dim] > sumLoadSup[dim].add(delta)) {
             contradiction(null, "");
+        }
         return true;
     }
 
@@ -380,7 +386,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
 
     protected ICause getACause() {
-        return aCause;
+        return this;
     }
 
     /**
@@ -399,8 +405,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
-            bins[i].updateLowerBound(0, aCause);
-            bins[i].updateUpperBound(nbBins - 1, aCause);
+            bins[i].updateLowerBound(0, this);
+            bins[i].updateUpperBound(nbBins - 1, this);
             if (bins[i].isInstantiated()) {
                 for (int d = 0; d < nbDims; d++) {
                     rLoads[d][bins[i].getValue()] += iSizes[d][i];
@@ -430,8 +436,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 assignedLoad[d][b].set(rLoads[d][b]);
                 potentialLoad[d][b].set(rLoads[d][b] + cLoads[d][b]);
 
-                loads[d][b].updateLowerBound(rLoads[d][b], aCause);
-                loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
+                loads[d][b].updateLowerBound(rLoads[d][b], this);
+                loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], this);
                 slb[d] += loads[d][b].getLB();
                 slu[d] += loads[d][b].getUB();
             }
@@ -454,9 +460,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 //        detectEntailedDimensions(sumFreeSize);
 
         assert checkLoadConsistency();
-        //       LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
-        LOGGER.trace("BinPacking: " + Arrays.toString(name));
+        //LOGGER.trace("BinPacking: " + Arrays.toString(name));
 
+        for (IIntDeltaMonitor delta : deltaMonitor) {
+            delta.unfreeze();
+        }
     }
 
     /**
@@ -550,33 +558,33 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             int sls = 0;
             for (int b = 0; b < rs[d].length; b++) {
                 if (rs[d][b] != assignedLoad[d][b].get()) {
-                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
+                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                     check = false;
                 }
                 if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
-                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
+                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
                 if (loads[d][b].getLB() < rs[d][b]) {
-                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
+                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
                     check = false;
                 }
                 if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
-                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
                 sli += loads[d][b].getLB();
                 sls += loads[d][b].getUB();
             }
             if (this.sumLoadInf[d].get() != sli) {
-                LOGGER.warn(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+                //LOGGER.warn(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
                 check = false;
             }
             if (this.sumLoadSup[d].get() != sls) {
-                LOGGER.warn(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+                //LOGGER.warn(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
                 check = false;
             }
-            if (!check) {
+            /*if (!check) {
                 for (int b = 0; b < rs[d].length; b++) {
                     LOGGER.error(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " (" + rs[d][b] + ") potential=" + potentialLoad[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
                 }
@@ -585,7 +593,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 for (IntVar v : bins) {
                     LOGGER.info(v.toString());
                 }
-            }
+            }*/
         }
         return check;
     }

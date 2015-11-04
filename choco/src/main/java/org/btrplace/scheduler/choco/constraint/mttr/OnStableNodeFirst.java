@@ -18,14 +18,14 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.btrplace.scheduler.choco.constraint.CObjective;
-import org.chocosolver.memory.IStateInt;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
+import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -77,12 +77,12 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
         VMTransition[] vmActions = rp.getVMActions();
 
-        hosts = new IntVar[vmActions.length];
-        starts = new IntVar[vmActions.length];
+        List<IntVar> hosts = new ArrayList<>();
+        List<IntVar> starts = new ArrayList<>();
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
-        oldPos = new int[hosts.length];
+        oldPos = new int[vmActions.length];
         outs = new BitSet[rp.getNodes().length];
         ins = new BitSet[rp.getNodes().length];
         for (int i = 0; i < rp.getNodes().length; i++) {
@@ -90,27 +90,31 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
             ins[i] = new BitSet();
         }
 
-        for (int i = 0; i < hosts.length; i++) {
-            VMTransition action = vmActions[i];
+        int j = 0; //a separate counter because there is not necessarily a dSlice for each action
+        //for (int i = 0; i < vmActions.length; i++) {
+        for (VMTransition action : vmActions) {
             Slice slice = action.getDSlice();
             if (slice != null) {
                 IntVar h = slice.getHoster();
                 IntVar s = slice.getStart();
-                hosts[i] = h;
+                hosts.add(h);
                 if (s != rp.getEnd()) {
-                    starts[i] = s;
+                    starts.add(s);
                 }
                 VM vm = action.getVM();
                 Node n = cfg.getVMLocation(vm);
                 if (n == null) {
-                    oldPos[i] = -1;
+                    oldPos[j] = -1;
                 } else {
-                    oldPos[i] = rp.getNode(n);
+                    oldPos[j] = rp.getNode(n);
                     //VM i was on node n
-                    outs[rp.getNode(n)].set(i);
+                    outs[rp.getNode(n)].set(j);
                 }
+                j++;
             }
         }
+        this.hosts = hosts.toArray(new IntVar[hosts.size()]);
+        this.starts = starts.toArray(new IntVar[starts.size()]);
     }
 
     private BitSet stays, move;

@@ -28,12 +28,13 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.trace.Chatterbox;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,14 +63,18 @@ public class BootVMTest {
         map.addReadyVM(vm1);
 
         Parameters ps = new DefaultParameters();
+        ps.setVerbosity(3);
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
+                .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        for (Node n : rp.getNodes()) {
+            System.out.println(n + " " + rp.getNode(n));
+        }
         BootVM m = (BootVM) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
@@ -78,8 +83,10 @@ public class BootVMTest {
         Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
-
+        Chatterbox.showDecisions(rp.getSolver());
+        Chatterbox.showStatistics(rp.getSolver());
         ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
         org.btrplace.plan.event.BootVM a = (org.btrplace.plan.event.BootVM) p.getActions().iterator().next();
 
         Node dest = rp.getNode(m.getDSlice().getHoster().getValue());

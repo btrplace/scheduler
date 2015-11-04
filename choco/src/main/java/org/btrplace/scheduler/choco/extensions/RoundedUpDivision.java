@@ -70,7 +70,7 @@ public class RoundedUpDivision extends Constraint {
         }
 
         @Override
-        protected int getPropagationConditions(int vIdx) {
+        public int getPropagationConditions(int vIdx) {
             return IntEventType.DECUPP.getMask() + IntEventType.INCLOW.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
@@ -119,17 +119,17 @@ public class RoundedUpDivision extends Constraint {
 
         public boolean awakeOnInf(int i) throws ContradictionException {
             if (i == 1) {
-                return vars[0].updateLowerBound(div(vars[1].getLB()), aCause);
+                return vars[0].updateLowerBound(div(vars[1].getLB()), this);
             } else {
-                return vars[1].updateLowerBound(multLB(vars[0].getLB()), aCause);
+                return vars[1].updateLowerBound(multLB(vars[0].getLB()), this);
             }
         }
 
         public boolean awakeOnSup(int i) throws ContradictionException {
             if (i == 1) {
-                return vars[0].updateUpperBound(div(vars[1].getUB()), aCause);
+                return vars[0].updateUpperBound(div(vars[1].getUB()), this);
             } else {
-                return vars[1].updateUpperBound((int) Math.floor(divider * vars[0].getUB()), aCause);
+                return vars[1].updateUpperBound((int) Math.floor(divider * vars[0].getUB()), this);
             }
         }
     }

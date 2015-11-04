@@ -111,14 +111,15 @@ public class DisjointMultiple extends Constraint {
             idms = new IIntDeltaMonitor[vars.length];
             int i = 0;
             for (IntVar v : vars) {
-                idms[i++] = v.monitorDelta(aCause);
+                idms[i++] = v.monitorDelta(this);
             }
             remProc = new RemProc();
         }
 
         @Override
-        protected int getPropagationConditions(int vIdx) {
-            return IntEventType.REMOVE.getMask() + IntEventType.INSTANTIATE.getMask();
+        public int getPropagationConditions(int vIdx) {
+            //TODO: REMOVE should be fine
+            return IntEventType.all(); //IntEventType.REMOVE.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
         @Override
@@ -188,16 +189,16 @@ public class DisjointMultiple extends Constraint {
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (IntEventType.isRemove(mask)) {
-                idms[idx].freeze();
-                idms[idx].forEachRemVal(remProc.set(idx));
-                idms[idx].unfreeze();
-            }
             if (IntEventType.isInstantiate(mask)) {
                 int group = getGroup(idx);
                 if (!required[group].get(vars[idx].getValue())) {
                     setRequired(vars[idx].getValue(), group);
                 }
+            }
+            if (IntEventType.isRemove(mask)) {
+                idms[idx].freeze();
+                idms[idx].forEachRemVal(remProc.set(idx));
+                idms[idx].unfreeze();
             }
         }
 
@@ -221,7 +222,7 @@ public class DisjointMultiple extends Constraint {
                     if (candidates[g][val].get() > 0) {
                         //The value was possible for the other group, so we remove it from its variable
                         for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
-                            if (vars[i].removeValue(val, aCause)) {
+                            if (vars[i].removeValue(val, this)) {
                                 candidates[g][val].add(-1);
                                 if (vars[i].isInstantiated()) {
                                     if (!required[g].get(vars[i].getValue())) {
