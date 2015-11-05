@@ -416,7 +416,7 @@ public class Network implements ModelView, Cloneable {
     /**
      * Create and attach a default network view to the given model.
      * Basically, the Network consists of a main non-blocking switch connected
-     * to all the existing nodes in the model through 1 Gbit/s links each.
+     * to all the existing nodes in the model using 1Gbit/sec. links.
      *
      * Note: replace the previous Network view attached to the model (if exists).
      * 
