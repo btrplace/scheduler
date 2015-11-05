@@ -24,7 +24,7 @@ import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.migration.MinMTTRMig;
+import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
@@ -74,16 +74,6 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public Parameters doOptimizeMigScheduling(boolean b) {
-        return params.doOptimizeMigScheduling(b);
-    }
-
-    @Override
-    public boolean doOptimizeMigScheduling() {
-        return params.doOptimizeMigScheduling();
-    }
-
-    @Override
     public Parameters doOptimize(boolean b) {
         return params.doOptimize(b);
     }
@@ -125,26 +115,38 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
-        ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, opt));
-        if (p == null) return null;
         
-        // Try to optimize the migrations scheduling
-        if (doOptimizeMigScheduling() && !(opt instanceof MinMTTRMig)) {
-            // No action to schedule
-            if (p.getActions().isEmpty()) return p;
-            // Collect migrations and remember the destination node chosen
-            List<SatConstraint> newCstrs = p.getActions().stream()
-                .filter(a -> a instanceof MigrateVM)
-                .map(a -> new Fence(((MigrateVM)a).getVM(), Collections.singleton(((MigrateVM)a).getDestinationNode())))
-                .collect(Collectors.toList());
-            // No migration to schedule
-            if (newCstrs.isEmpty()) return p;
-            // Solve again by improving the migrations scheduling
-            newCstrs.addAll(cstrs);
-            return runner.solve(params, new Instance(i, newCstrs, new MinMTTRMig()));
+        // If a network view is attached, ensure that all the migrations' destination node are defined
+        Network net = (Network) i.getView(Network.VIEW_ID);
+        if  (net != null) {
+            
+            // The network view is useless to take placement decisions
+            i.detach(net);
+
+            // Solve a first time using placement oriented MinMTTR optimisation constraint
+            ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
+            if (p == null) return null;
+
+            // Remember each migration's destination node
+            if (!p.getActions().isEmpty()) {
+
+                // Add fence constraints for each destination node chosen
+                List<SatConstraint> newCstrs = p.getActions().stream()
+                        .filter(a -> a instanceof MigrateVM)
+                        .map(a -> new Fence(((MigrateVM) a).getVM(),
+                                            Collections.singleton(((MigrateVM) a).getDestinationNode())))
+                        .collect(Collectors.toList());
+
+                // Add the new Fence constraints to the list
+                if (!newCstrs.isEmpty()) cstrs.addAll(newCstrs);
+            }
+
+            // Re-attach the network view
+            i.attach(net);
         }
-        
-        return p;
+
+        // Solve and return the computed plan
+        return runner.solve(params, new Instance(i, cstrs, opt));
     }
 
     @Override
