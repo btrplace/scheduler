@@ -244,7 +244,7 @@ public class RelocatableVM implements KeepRunningVM {
     public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         DurationEvaluators dev = rp.getDurationEvaluators();
         // Only if the VM doesn't stay
-        if (!s.getIntVal(cSlice.getHoster()).equals(s.getIntVal(dSlice.getHoster()))) {
+        if (s.getIntVal(cSlice.getHoster()) != s.getIntVal(dSlice.getHoster())) {
             assert s.getIntVal(stay) == 0;
             Action a;
             Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
