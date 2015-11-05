@@ -161,7 +161,7 @@ public class AliasedCumulatives extends Constraint {
                     vIns,
                     assocs,
                     revAssociations,
-                    aCause);
+                    this);
         }
 
         @Override

@@ -272,7 +272,7 @@ public class RelocatableVM implements KeepRunningVM {
                             newVM,
                             s.getIntVal(dSlice.getStart()) - 
                                     dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm),
-                            dSlice.getStart().getValue()
+                            s.getIntVal(dSlice.getStart())
                     );
                     //forge the new VM from a template
                     plan.add(fvm);

@@ -265,14 +265,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      */
     private void appendNaiveBranchHeuristic() {
         StrategiesSequencer seq;
+
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(
-                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
+                    ISF.custom(ISF.minDomainSize_var_selector(),
+                            ISF.min_value_selector(),
+                            ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
 
         } else {
             seq = new StrategiesSequencer(
                     solver.getSearchLoop().getStrategy(),
-                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
+                    ISF.custom(ISF.minDomainSize_var_selector(),
+                            ISF.min_value_selector(),
+                            ArrayUtils.append(solver.retrieveBoolVars(),
+                                    solver.retrieveIntVars())));
         }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {

@@ -82,15 +82,15 @@ public class FastIFFEq extends Constraint {
         public void propagate(int mask) throws ContradictionException {
             if (vars[0].isInstantiated()) {
                 if (vars[0].contains(0)) {
-                    if (vars[1].removeValue(constant, aCause))
+                    if (vars[1].removeValue(constant, this))
                         setPassive();
                 } else {
-                    vars[1].instantiateTo(constant, aCause);
+                    vars[1].instantiateTo(constant, this);
                 }
             } else if (vars[1].isInstantiatedTo(constant)) {
-                vars[0].instantiateTo(1, aCause);
+                vars[0].instantiateTo(1, this);
             } else if (!vars[1].contains(constant)) {
-                vars[0].instantiateTo(0, aCause);
+                vars[0].instantiateTo(0, this);
                 setPassive();
             }
         }
@@ -100,16 +100,16 @@ public class FastIFFEq extends Constraint {
             if (idx == 0) {
                 assert IntEventType.isInstantiate(mask);
                 if (vars[0].contains(0)) {
-                    if (vars[1].removeValue(constant, aCause))
+                    if (vars[1].removeValue(constant, this))
                         setPassive();
                 } else {
-                    vars[1].instantiateTo(constant, aCause);
+                    vars[1].instantiateTo(constant, this);
                 }
             } else {
                 if (vars[1].isInstantiatedTo(constant)) {
-                    vars[0].instantiateTo(1, aCause);
+                    vars[0].instantiateTo(1, this);
                 } else if (!vars[1].contains(constant)) {
-                    vars[0].instantiateTo(0, aCause);
+                    vars[0].instantiateTo(0, this);
                     setPassive();
                 }
             }
