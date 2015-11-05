@@ -254,7 +254,7 @@ public class RelocatableVM implements KeepRunningVM {
                 int ed = s.getIntVal(getEnd());
 
                 if (getBandwidth() != null) {
-                    a = new MigrateVM(vm, src, dst, st, ed, getBandwidth().getValue());
+                    a = new MigrateVM(vm, src, dst, st, ed, s.getIntVal(getBandwidth()));
                 }
                 else {
                     a = new MigrateVM(vm, src, dst, st, ed);
