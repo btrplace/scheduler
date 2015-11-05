@@ -87,7 +87,7 @@ public class CNetwork implements ChocoView {
     public String getIdentifier() { return net.getIdentifier(); }
 
     @Override
-    public boolean beforeSolve(ReconfigurationProblem rp) {
+    public boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
         
         Model mo = rp.getSourceModel();
         Solver s = rp.getSolver();
@@ -105,14 +105,14 @@ public class CNetwork implements ChocoView {
                 
                 // Try to get the destination node
                 Node dst;
-                if (!migration.getDSlice().getHoster().isInstantiated()) {
-                    // Do not throw an exception, show a warning and leave the view
-                    rp.getLogger().warn("The destination node for " + vm + " is not known, skipping network view..");
-                    //throw new SchedulerException(null, "Destination node for VM '" + vm + "' should be known !");
-                    return true;
+                if (migration.getDSlice().getHoster().isInstantiated()) {
+                    dst = rp.getNode(migration.getDSlice().getHoster().getValue());
                 }
                 else {
-                    dst = rp.getNode(migration.getDSlice().getHoster().getValue());
+                    // Show a warning and throw an exception
+                    rp.getLogger().warn("The destination node for " + vm + " is not known, migration discarded " +
+                            "from network view.");
+                    throw new SchedulerException(null, "Destination node for VM '" + vm + "' should be known !");
                 }
 
                 // Check if all attributes are defined
@@ -188,10 +188,10 @@ public class CNetwork implements ChocoView {
                     s.post(new Arithmetic(bandwidth, Operator.EQ, bwEnum.get(0)));
                     
                 } else {
-                    // Do not throw an exception, show a warning and leave the view
-                    rp.getLogger().warn("The 'memUsed' attribute for " + vm + " is missing, skipping network view..");
-                    //throw new SchedulerException(null, "Unable to retrieve attributes for the vm '" + vm + "'");
-                    return true;
+                    // Show a warning and throw an exception
+                    rp.getLogger().warn("The 'memUsed' attribute for " + vm + " is missing, migration discarded " +
+                            "from network view.");
+                    throw new SchedulerException(null, "Unable to retrieve 'memUsed' attribute for the vm '" +vm+ "'");
                 }
             }
         }
@@ -202,17 +202,22 @@ public class CNetwork implements ChocoView {
             for (VM vm : rp.getVMs()) {
                 VMTransition a = rp.getVMAction(vm);
 
-                if (a != null && a instanceof RelocatableVM &&
-                        (a.getCSlice().getHoster().getValue() != a.getDSlice().getHoster().getValue())) {
+                if (a != null && a instanceof RelocatableVM) {
+                    
+                    if (a.getDSlice().getHoster().isInstantiated()) {
 
-                    Node src = source.getMapping().getVMLocation(vm);
-                    Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
-                    List<Link> path = net.getRouting().getPath(src, dst);
+                        if (a.getCSlice().getHoster().getValue() != a.getDSlice().getHoster().getValue()) {
 
-                    // If the link is on migration path
-                    if (path.contains(l)) {
-                        tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
-                        heightsList.add(((RelocatableVM) a).getBandwidth());
+                            Node src = source.getMapping().getVMLocation(vm);
+                            Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
+                            List<Link> path = net.getRouting().getPath(src, dst);
+
+                            // If the link is on migration path
+                            if (path.contains(l)) {
+                                tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
+                                heightsList.add(((RelocatableVM) a).getBandwidth());
+                            }
+                        }
                     }
                 }
             }
@@ -245,15 +250,20 @@ public class CNetwork implements ChocoView {
                 for (VM vm : rp.getVMs()) {
                     VMTransition a = rp.getVMAction(vm);
 
-                    if (a != null && a instanceof RelocatableVM &&
-                            (a.getCSlice().getHoster().getValue() != a.getDSlice().getHoster().getValue())) {
+                    if (a != null && a instanceof RelocatableVM) {
 
-                        Node src = source.getMapping().getVMLocation(vm);
-                        Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
+                        if (a.getDSlice().getHoster().isInstantiated()) {
 
-                        if (!Collections.disjoint(net.getConnectedLinks(sw), net.getRouting().getPath(src, dst))) {
-                            tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
-                            heightsList.add(((RelocatableVM) a).getBandwidth());
+                            if (a.getCSlice().getHoster().getValue() != a.getDSlice().getHoster().getValue()) {
+
+                                Node src = source.getMapping().getVMLocation(vm);
+                                Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
+
+                                if (!Collections.disjoint(net.getConnectedLinks(sw), net.getRouting().getPath(src, dst))) {
+                                    tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
+                                    heightsList.add(((RelocatableVM) a).getBandwidth());
+                                }
+                            }
                         }
                     }
                 }
