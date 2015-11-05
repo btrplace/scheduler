@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco.constraint.migration;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.model.constraint.migration.Precedence;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
@@ -30,7 +31,6 @@ import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.DefaultParameters;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -106,12 +106,8 @@ public class CPrecedenceTest {
         Precedence prec = new Precedence(vm2, vm1);
         cstrs.add(prec);
 
-        // Set parameter to /!\ Optimize the migrations scheduling /!\
-        DefaultParameters ps = new DefaultParameters();
-        ps.doOptimizeMigScheduling(true);
-
-        // Solve it
-        ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, cstrs);
+        // Solve it using the Min Max Time To Repair Migration scheduling oriented objective
+        ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
         Assert.assertNotNull(p);
 
         // Check if the precedence constraint is respected

@@ -22,15 +22,15 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Deadline;
+import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.DefaultParameters;
-import org.btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -106,12 +106,8 @@ public class CDeadlineTest {
         Deadline dead = new Deadline(vm2, "+00:01:30"); // 90s
         cstrs.add(dead);
 
-        // Set parameter to /!\ Optimize the migrations scheduling /!\
-        DefaultParameters ps = new DefaultParameters();
-        ps.doOptimizeMigScheduling(true);
-
-        // Solve it
-        ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, cstrs);
+        // Solve it using the Min Max Time To Repair Migration scheduling oriented objective
+        ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
         
         // It works because 30s is enough to fully migrate vm2
         Assert.assertNotNull(p);
@@ -183,16 +179,12 @@ public class CDeadlineTest {
         cstrs.add(new Offline(srcNode1));
         cstrs.add(new Offline(srcNode2));
 
-        // SET AN TOO SHORT DEADLINE FOR THE MIGRATION OF VM2
+        // SET A TOO SHORT DEADLINE FOR THE MIGRATION OF VM2
         Deadline dead = new Deadline(vm2, "+00:00:30"); // 30s
         cstrs.add(dead);
 
-        // Set parameter to /!\ Optimize the migrations scheduling /!\
-        DefaultParameters ps = new DefaultParameters();
-        ps.doOptimizeMigScheduling(true);
-
-        // Try to solve it
-        ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, cstrs);
+        // Try to solve it using the Min Max Time To Repair Migration scheduling oriented objective
+        ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
         Assert.assertNull(p);
     }
 }
