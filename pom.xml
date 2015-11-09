@@ -23,16 +23,16 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>scheduler</artifactId>
-    <version>0.42-DEVS</version>
-    <name>scheduler-devs</name>
-    <description>BtrPlace developments</description>
+    <version>0.42-SNAPSHOT</version>
+    <name>scheduler</name>
+    <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
     <url>http://www.btrplace.org</url>
     <developers>
         <developer>
-            <name>Vincent Kherbache</name>
-            <email>vincent.kherbache@inria.fr</email>
-            <organization>INRIA</organization>
+            <name>Fabien Hermenier</name>
+            <email>fabien.hermenier@unice.fr</email>
+            <organization>University Nice Sophia Antipolis</organization>
         </developer>
     </developers>
     <modules>
@@ -53,6 +53,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
 
     <dependencies>
         <dependency>
@@ -76,7 +77,6 @@
         </dependency>
     </dependencies>
 
-
     <distributionManagement>
         <repository>
             <id>sonatype</id>
@@ -88,12 +88,13 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <layout>default</layout>
         </snapshotRepository>
+
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git://github.com/btrplace/scheduler-devs.git</connection>
-        <url>scm:git:git@github.com:btrplace/scheduler-devs</url>
-        <developerConnection>scm:git:git@github.com:btrplace/scheduler-devs.git</developerConnection>
+        <connection>scm:git:git://github.com/btrplace/scheduler.git</connection>
+        <url>scm:git:git@github.com:btrplace/scheduler</url>
+        <developerConnection>scm:git:git@github.com:btrplace/scheduler.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -182,6 +183,17 @@
                     <includes>
                         <include>**/*Integration.java</include>
                     </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.5</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>sonatype</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>
