@@ -27,6 +27,7 @@ before_install:
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
+- pip install --user codecov
 #- mkdir /tmp/m2_repo
 install:
 - mvn -Dgpg.passphrase=${GPG_PASSPHRASE} install -DskipTests
@@ -46,3 +47,5 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 script: ./bin/build.sh
+after_success:
+- codecov
