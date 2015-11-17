@@ -18,25 +18,20 @@
 
 package org.btrplace.scheduler.choco.constraint.migration;
 
-import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.SliceUtils;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
-import org.btrplace.scheduler.choco.constraint.mttr.*;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.btrplace.scheduler.choco.transition.Transition;
-import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.strategy.ISF;
-import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
@@ -45,7 +40,10 @@ import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An objective that minimizes the time to repair a non-viable model involving a set of migrations.
@@ -78,9 +76,6 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
 
         // Set the objective, minimize the cost
         rp.setObjective(true, cost);
-
-        // TODO: inject placement heuristic if dst nodes are not yet known (1st pass) ?
-        //injectPlacementHeuristic(cost);
 
         // Inject the scheduling heuristic
         injectSchedulingHeuristic(cost);
@@ -279,7 +274,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
         ));*/
 
 
-        // Set the strategies in the added order
+        // Set the strategies in the correct order (as added before)
         strategies.add(new IntStrategy(new IntVar[]{rp.getEnd(), cost}, new InputOrder<>(), new IntDomainMin()));
 
         // Add all defined strategies
@@ -290,97 +285,6 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
                 )
         );
         //s.set(strategies.toArray(new AbstractStrategy[strategies.size()]));
-    }
-
-    private void injectPlacementHeuristic(IntVar cost) {
-
-        Model mo = rp.getSourceModel();
-        Mapping map = mo.getMapping();
-
-        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(rp, this);
-
-        //Get the VMs to place
-        Set<VM> onBadNodes = new HashSet<>(rp.getManageableVMs());
-
-        //Get the VMs that runs and have a pretty low chances to move
-        Set<VM> onGoodNodes = map.getRunningVMs(map.getOnlineNodes());
-        onGoodNodes.removeAll(onBadNodes);
-
-        VMTransition[] goodActions = rp.getVMActions(onGoodNodes);
-        VMTransition[] badActions = rp.getVMActions(onBadNodes);
-
-        Solver s = rp.getSolver();
-
-        //Get the VMs to move for exclusion issue
-        Set<VM> vmsToExclude = new HashSet<>(rp.getManageableVMs());
-        for (Iterator<VM> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
-            VM vm = ite.next();
-            if (!(map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm))) {
-                ite.remove();
-            }
-        }
-        List<AbstractStrategy> strategies = new ArrayList<>();
-
-        Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(rp);
-        if (!vmsToExclude.isEmpty()) {
-            List<VMTransition> actions = new LinkedList<>();
-            //Get all the involved slices
-            for (VM vm : vmsToExclude) {
-                if (rp.getFutureRunningVMs().contains(vm)) {
-                    actions.add(rp.getVMAction(vm));
-                }
-            }
-            IntVar[] scopes = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
-
-            strategies.add(new IntStrategy(scopes, new MovingVMs(rp, map, actions),
-                    new RandomVMPlacement(rp, pla, true)));
-        }
-
-        placeVMs(strategies, badActions, schedHeuristic, pla);
-        placeVMs(strategies, goodActions, schedHeuristic, pla);
-
-        //VMs to run
-/*        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
-        vmsToRun.removeAll(p.getFutureReadyVMs());
-
-        VMTransition[] runActions = p.getVMActions(vmsToRun);
-
-        placeVMs(strategies, runActions, schedHeuristic, pla);
-  */
-
-        if (rp.getNodeActions().length > 0) {
-            //Boot some nodes if needed
-            strategies.add(new IntStrategy(TransitionUtils.getStarts(rp.getNodeActions()),
-                    new InputOrder<>(), new IntDomainMin()));
-        }
-
-        ///SCHEDULING PROBLEM
-        MovementGraph gr = new MovementGraph(rp);
-        strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())),
-                new StartOnLeafNodes(rp, gr), new IntDomainMin()));
-        strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
-
-        //At this stage only it matters to plug the cost constraints
-        strategies.add(new IntStrategy(new IntVar[]{rp.getEnd(), cost}, new InputOrder<>(), new IntDomainMin()));
-
-        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(),
-                strategies.toArray(new AbstractStrategy[strategies.size()])));
-    }
-
-    /*
-     * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
-     */
-    private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions,
-                          OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
-
-        //IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
-        IntValueSelector rnd = new RandomVMPlacement(rp, map, true);
-        if (actions.length > 0) {
-            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
-            if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
-            }
-        }
     }
 
     @Override

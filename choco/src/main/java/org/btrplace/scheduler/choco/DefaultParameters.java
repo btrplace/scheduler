@@ -53,8 +53,6 @@ public class DefaultParameters implements Parameters {
 
     private boolean optimize = false;
 
-    private boolean optimizeMigScheduling = false;
-
     /**
      * No time limit by default.
      */
@@ -95,17 +93,6 @@ public class DefaultParameters implements Parameters {
     @Override
     public boolean doRepair() {
         return repair;
-    }
-
-    @Override
-    public Parameters doOptimizeMigScheduling(boolean b) {
-        optimizeMigScheduling = b;
-        return this;
-    }
-
-    @Override
-    public boolean doOptimizeMigScheduling() {
-        return optimizeMigScheduling;
     }
 
     @Override

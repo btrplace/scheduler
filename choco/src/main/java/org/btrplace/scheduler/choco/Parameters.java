@@ -58,21 +58,6 @@ public interface Parameters {
     Parameters doOptimize(boolean b);
 
     /**
-     * Tell is the scheduler tries to improve the migrations scheduling decisions using custom heuristic.
-     *
-     * @return {@code true} iff it try to improve the migrations scheduling
-     */
-    boolean doOptimizeMigScheduling();
-
-    /**
-     * State if the scheduler must try to improve the migrations scheduling decisions using custom heuristic.
-     *
-     * @param b {@code true} to make the scheduler try to improve the migrations scheduling
-     * @return the current instance
-     */
-    Parameters doOptimizeMigScheduling(boolean b);
-
-    /**
      * Tell is the solver tries to improve the first computed solution.
      *
      * @return {@code true} iff it try to improve the solution

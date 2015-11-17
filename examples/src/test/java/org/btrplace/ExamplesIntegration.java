@@ -19,9 +19,8 @@
 package org.btrplace;
 
 import org.btrplace.examples.*;
-import org.btrplace.examples.migration.AdvancedScheduling;
-import org.btrplace.examples.migration.ScheduleMigrations;
-import org.btrplace.examples.migration.SingleMigration;
+import org.btrplace.examples.migration.AdvancedMigScheduling;
+import org.btrplace.examples.migration.NetworkAndMigrations;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,20 +56,14 @@ public class ExamplesIntegration {
     }
 
     @Test
-    public void testSingleMigration() throws Exception {
-        Example ex = new SingleMigration();
+    public void testNetworkAndMigrations() throws Exception {
+        Example ex = new NetworkAndMigrations();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
-    public void testScheduleMigrations() throws Exception {
-        Example ex = new ScheduleMigrations();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
-    }
-
-    @Test
-    public void testAdvancedScheduling() throws Exception {
-        Example ex = new AdvancedScheduling();
+    public void testAdvancedMigScheduling() throws Exception {
+        Example ex = new AdvancedMigScheduling();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 }

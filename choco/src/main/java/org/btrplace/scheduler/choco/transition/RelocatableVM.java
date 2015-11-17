@@ -172,9 +172,9 @@ public class RelocatableVM implements KeepRunningVM {
                 if (mo.getAttributes().getBoolean(vm, "postCopy")) postCopy = true;
             }
 
-            // Create unbounded vars for 'duration' and 'bandwidth'
+            // Create unbounded/large domain vars for migration duration and bandwidth
             migrationDuration = p.makeUnboundedDuration(PREFIX, vm, ").duration");
-            bandwidth = p.makeUnboundedDuration(PREFIX, vm, ").bandwidth");
+            bandwidth = VF.bounded(PREFIX + vm + ").bandwidth", 0, Integer.MAX_VALUE/100, s);
         }
         // No networking view, set the duration from the evaluator
         else {
@@ -244,7 +244,7 @@ public class RelocatableVM implements KeepRunningVM {
     public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         DurationEvaluators dev = rp.getDurationEvaluators();
         // Only if the VM doesn't stay
-        if (s.getIntVal(cSlice.getHoster()) != s.getIntVal(dSlice.getHoster())) {
+        if (!s.getIntVal(cSlice.getHoster()).equals(s.getIntVal(dSlice.getHoster()))) {
             assert s.getIntVal(stay) == 0;
             Action a;
             Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
@@ -254,7 +254,7 @@ public class RelocatableVM implements KeepRunningVM {
                 int ed = s.getIntVal(getEnd());
 
                 if (getBandwidth() != null) {
-                    a = new MigrateVM(vm, src, dst, st, ed, getBandwidth().getValue());
+                    a = new MigrateVM(vm, src, dst, st, ed, s.getIntVal(getBandwidth()));
                 }
                 else {
                     a = new MigrateVM(vm, src, dst, st, ed);
