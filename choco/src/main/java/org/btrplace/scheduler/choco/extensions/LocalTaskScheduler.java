@@ -191,7 +191,7 @@ public class LocalTaskScheduler {
             profilesMin[d].put(0, capacities[me][d] - startupFree[d]);
         }
 
-        int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
+        int lastInf = 0;//out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
         // the cTasks
@@ -202,7 +202,7 @@ public class LocalTaskScheduler {
 
             int tu = cEnds[ct].getUB();
             int tl = cEnds[ct].getLB();
-            if (tl < lastInf) {
+            if (tl > lastInf) {
                 lastInf = tl;
             }
 
