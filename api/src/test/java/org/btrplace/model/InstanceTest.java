@@ -67,6 +67,9 @@ public class InstanceTest {
         Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs), new MinMTTR());
 
         Assert.assertEquals(i, i2);
+        Assert.assertTrue(i.equals(i));
+        Assert.assertFalse(i.equals(null));
+        Assert.assertFalse(i.equals(ma));
         Assert.assertEquals(i.hashCode(), i2.hashCode());
 
         i2.getModel().getMapping().addReadyVM(vms.get(2));

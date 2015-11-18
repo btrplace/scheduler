@@ -81,13 +81,15 @@ public class DefaultModelTest {
         j.attach(rc);
         j.attach(b);
         Assert.assertTrue(i.equals(i));
-        Assert.assertTrue(i.equals(j));
         Assert.assertEquals(i.hashCode(), j.hashCode());
         j.detach(rc);
         Assert.assertFalse(i.equals(j));
         j.attach(rc);
         j.getMapping().addReadyVM(j.newVM());
         Assert.assertFalse(i.equals(j));
+        j.getAttributes().put(vm, "bar", false);
+        Assert.assertFalse(i.equals(j));
+        j.setAttributes(i.getAttributes());
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testEqualsAndHashCode", "testAttachView", "testDetachView", "testAttributes"})

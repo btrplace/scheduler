@@ -101,10 +101,10 @@ public class DefaultAttributesTest {
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
     public void testIsSet() {
         Attributes attrs = new DefaultAttributes();
-
         Assert.assertFalse(attrs.isSet(vms.get(0), "foo"));
         attrs.put(vms.get(0), "foo", "bar");
         Assert.assertTrue(attrs.isSet(vms.get(0), "foo"));
+
     }
 
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
@@ -163,6 +163,14 @@ public class DefaultAttributesTest {
         }
         attrs.clear();
         Assert.assertTrue(attrs.getDefined().isEmpty());
+        attrs.put(nodes.get(0), "foo", true);
+        attrs.put(vms.get(0), "bar", true);
+        attrs.clear(nodes.get(0));
+        Assert.assertTrue(attrs.isSet(vms.get(0), "bar"));
+        Assert.assertFalse(attrs.isSet(nodes.get(0), "foo"));
+        attrs.clear(vms.get(0));
+        Assert.assertFalse(attrs.isSet(vms.get(0), "bar"));
+
     }
 
     @Test

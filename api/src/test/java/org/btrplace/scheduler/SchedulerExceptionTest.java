@@ -36,5 +36,10 @@ public class SchedulerExceptionTest {
         SchedulerException ex = new SchedulerException(mo, "foo");
         Assert.assertEquals(ex.getModel(), mo);
         Assert.assertEquals(ex.getMessage(), "foo");
+
+        SchedulerException ex2 = new SchedulerException(mo, "foo", ex);
+        Assert.assertEquals(ex2.getModel(), mo);
+        Assert.assertEquals(ex2.getMessage(), "foo");
+        Assert.assertEquals(ex2.getCause(), ex);
     }
 }
