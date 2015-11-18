@@ -349,9 +349,7 @@ public class Issues {
         InstanceConverter ic = new InstanceConverter();
         Instance i = ic.fromJSON(input);
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(3);
         s.setTimeLimit(-1);
-        s.doOptimize(true);
         i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "mem"));
         i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "cpu"));
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -384,8 +382,24 @@ public class Issues {
             ma.addRunningVM(v, nodes.get(1));
         }
         DefaultParameters ps = new DefaultParameters();
-        ps.setVerbosity(4);//.doRepair(true).doOptimize(true);
+        //ps.setVerbosity(4);//.doRepair(true).doOptimize(true);
         ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
+    }
+
+    @Test
+    public void issue72c() throws Exception {
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        InstanceConverter ic = new InstanceConverter();
+        Instance i = ic.fromJSON(buf);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        System.out.println(i.getModel());
+        s.doOptimize(true);
+        ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        System.out.println(p);
+        Assert.assertTrue(p.getActions().isEmpty());
+        s.doRepair(true);
+        p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        Assert.assertTrue(p.getActions().isEmpty());
     }
 }

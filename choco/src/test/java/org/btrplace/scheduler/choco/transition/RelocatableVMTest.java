@@ -325,7 +325,6 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
-        ps.setVerbosity(3);
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));

@@ -139,19 +139,23 @@ public class VectorPackingKPSimpleDecorator {
      * @param bin the full bin
      * @throws ContradictionException
      */
-    private void filterFullBin(int bin) throws ContradictionException {
+    private void filterFullDim(int bin, int dim) throws ContradictionException {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
             //assert p.bins[i].contains(bin) : p.bins[i] + " bin=" + bin + " item=" + i;
-            p.bins[i].removeValue(bin, p.getACause());
-            if (p.bins[i].isInstantiated()) {
-                p.assignItem(i, p.bins[i].getValue());
+            if (p.iSizes[dim][i] > 0) {
+                p.bins[i].removeValue(bin, p.getACause());
+                if (p.bins[i].isInstantiated()) {
+                    p.assignItem(i, p.bins[i].getValue());
+                }
+                candidate.get(bin).clear(i);
             }
         }
-        candidate.get(bin).clear();
-        for (int d = 0; d < p.nbDims; d++) {
-            p.potentialLoad[d][bin].set(p.assignedLoad[d][bin].get());
-            p.filterLoadSup(d, bin, p.potentialLoad[d][bin].get());
-        }
+        //candidate.get(bin).clear();
+        //for (int d = 0; d < p.nbDims; d++) {
+        p.potentialLoad[dim][bin].set(p.assignedLoad[dim][bin].get());
+        assert p.loads[dim][bin].getUB() == p.potentialLoad[dim][bin].get();
+        //p.filterLoadSup(dim, bin, p.potentialLoad[dim][bin].get());
+        //}
     }
 
     /**
@@ -182,14 +186,21 @@ public class VectorPackingKPSimpleDecorator {
         if (candidate.get(bin).get(item)) { //TODO stop the recursive loop without this (see test2DWithUnorderedItems(seed=120))
             candidate.get(bin).clear(item);
             for (int d = 0; d < p.nbDims; d++) {
-                if (p.iSizes[d][item] > 0 && p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
+                if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
                     assert p.loads[d][bin].isInstantiated();
-                    filterFullBin(bin);
-                    return;
+                    filterFullDim(bin, d);
+                    //return;
+                    if (candidate.get(bin).isEmpty()) {
+                        for (int d2 = 0; d2 < p.nbDims; d2++) {
+                            p.potentialLoad[d2][bin].set(p.assignedLoad[d2][bin].get());
+                            //assert p.loads[d2][bin].getUB() == p.potentialLoad[d2][bin].get();
+                            p.filterLoadSup(d2, bin, p.potentialLoad[d2][bin].get());
+                        }
+                        return;
+                    }
                 }
             }
+
         }
     }
-
-
 }

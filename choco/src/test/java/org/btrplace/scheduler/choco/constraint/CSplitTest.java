@@ -162,7 +162,6 @@ public class CSplitTest {
         for (VM v : map.getRunningVMs(n1)) {
             cstrs.add(new Fence(v, Collections.singleton(n3)));
         }
-        cra.setVerbosity(3);
         //cra.setTimeLimit(2);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

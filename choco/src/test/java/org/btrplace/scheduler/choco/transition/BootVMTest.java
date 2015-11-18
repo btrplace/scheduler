@@ -63,7 +63,6 @@ public class BootVMTest {
         map.addReadyVM(vm1);
 
         Parameters ps = new DefaultParameters();
-        ps.setVerbosity(3);
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
