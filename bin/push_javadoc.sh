@@ -26,7 +26,6 @@ cd ${LOCAL}
 rm -rf *
 cd -
 #Generate and copy
-#mvn -q compile -Dmaven.repo.local=/tmp/cache -DskipTests javadoc:aggregate||exit 1
 mvn -q compile -DskipTests javadoc:aggregate||exit 1
 cp -r target/site/apidocs/* ${LOCAL}/
 echo ${HEAD} > ${LOCAL}/.commit

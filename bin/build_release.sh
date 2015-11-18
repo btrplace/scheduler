@@ -11,8 +11,7 @@ function warn() {
     cat $2    
 }
 
-function getVersion() {    
-#    mvn ${MVN_ARGS} -Dmaven.repo.local=/tmp/cache org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
+function getVersion() {
     mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
 }
 
