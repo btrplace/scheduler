@@ -39,6 +39,7 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
 
     private boolean random;
 
+
     /**
      * Make a new partitioning algorithm.
      *
@@ -72,11 +73,10 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     public List<Instance> split(Parameters ps, Instance i) throws SchedulerException {
         Mapping map = i.getModel().getMapping();
 
-        setPartitions(random ? randomPartitions(map) : linearPartitions(map));
+        setPartitions(random ? randomPartitions(ps.getRandomSeed(), map) : linearPartitions(map));
         return super.split(ps, i);
     }
 
-    private static Random rnd = new Random();
 
     private List<Collection<Node>> linearPartitions(Mapping map) {
         List<Collection<Node>> partOfNodes = new ArrayList<>();
@@ -93,7 +93,8 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
         return partOfNodes;
     }
 
-    private List<Collection<Node>> randomPartitions(Mapping map) {
+    private List<Collection<Node>> randomPartitions(long seed, Mapping map) {
+        Random rnd = new Random(seed);
         List<Node> unselectedNodes = new ArrayList<>(map.getNbNodes());
         unselectedNodes.addAll(map.getOnlineNodes());
         unselectedNodes.addAll(map.getOfflineNodes());

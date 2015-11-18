@@ -26,6 +26,7 @@ import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -119,7 +120,7 @@ public class ConstraintMapperTest {
 
 
         @Override
-        public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+        public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
             throw new UnsupportedOperationException();
         }
 

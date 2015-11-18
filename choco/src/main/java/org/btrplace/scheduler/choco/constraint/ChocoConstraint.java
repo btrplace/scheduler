@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.MisplacedVMsEstimator;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
 /**
@@ -32,9 +33,11 @@ public interface ChocoConstraint extends MisplacedVMsEstimator {
     /**
      * Inject the constraint into the problem.
      *
+     *
+     * @param ps the scheduler parameters
      * @param rp the problem
      * @return {@code true} if the injection succeeded, {@code false} if the problem is sure to not have a solution
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred while injecting.
      */
-    boolean inject(ReconfigurationProblem rp) throws SchedulerException;
+    boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException;
 }

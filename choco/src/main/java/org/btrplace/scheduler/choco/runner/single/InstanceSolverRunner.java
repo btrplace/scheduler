@@ -216,7 +216,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private boolean injectConstraints() throws SchedulerException {
         try {
             for (ChocoConstraint cc : cConstraints) {
-                if (!cc.inject(rp)) {
+                if (!cc.inject(params, rp)) {
                     return false;
                 }
             }

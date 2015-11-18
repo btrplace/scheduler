@@ -26,6 +26,7 @@ import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -55,7 +56,7 @@ public class CSplitAmong implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         if (cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
@@ -77,7 +78,7 @@ public class CSplitAmong implements ChocoConstraint {
             //nodes can move to another group. It also means the group of VMs will never overlap
             a.setContinuous(cstr.isContinuous());
             CAmong ca = new CAmong(a);
-            if (!ca.inject(rp)) {
+            if (!ca.inject(ps, rp)) {
                 return false;
             }
 

@@ -151,7 +151,7 @@ public class DefaultChocoSchedulerTest {
             @Override
             public ChocoConstraint build(Constraint cstr) {
                 return new ChocoConstraint() {
-                    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+                    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
                         Mapping map = rp.getSourceModel().getMapping();
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
@@ -223,7 +223,7 @@ public class DefaultChocoSchedulerTest {
             @Override
             public ChocoConstraint build(Constraint cstr) {
                 return new ChocoConstraint() {
-                    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+                    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
                         return true;
                     }
 

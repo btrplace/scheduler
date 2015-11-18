@@ -25,6 +25,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.SliceUtils;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
@@ -67,7 +68,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem p) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         costActivated = false;
         List<IntVar> mttrs = new ArrayList<>();
@@ -94,12 +95,12 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         /*if (p.getVMs().length > 0) {
             SMF.geometrical(s, p.getVMs().length * 2, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
         }*/
-        injectPlacementHeuristic(p, cost);
+        injectPlacementHeuristic(p, ps, cost);
         postCostConstraints();
         return true;
     }
 
-    private void injectPlacementHeuristic(ReconfigurationProblem p, IntVar cost) {
+    private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
 
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
@@ -139,11 +140,11 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
             }
             IntVar[] scopes = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
 
-            strategies.add(new IntStrategy(scopes, new MovingVMs(p, map, actions), new RandomVMPlacement(p, pla, true)));
+            strategies.add(new IntStrategy(scopes, new MovingVMs(p, map, actions), new RandomVMPlacement(p, pla, true, ps.getRandomSeed())));
         }
 
-        placeVMs(strategies, badActions, schedHeuristic, pla);
-        placeVMs(strategies, goodActions, schedHeuristic, pla);
+        placeVMs(ps, strategies, badActions, schedHeuristic, pla);
+        placeVMs(ps, strategies, goodActions, schedHeuristic, pla);
 
         //VMs to run
 /*        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
@@ -173,9 +174,9 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     /*
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
-    private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
+    private void placeVMs(Parameters ps, List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         //IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
-        IntValueSelector rnd = new RandomVMPlacement(rp, map, true);
+        IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
         if (actions.length > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {

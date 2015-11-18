@@ -238,4 +238,14 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     public Collection<SolverViewBuilder> getSolverViews() {
         return params.getSolverViews();
     }
+
+    @Override
+    public Parameters setRandomSeed(long s) {
+        return params.setRandomSeed(s);
+    }
+
+    @Override
+    public long getRandomSeed() {
+        return params.getRandomSeed();
+    }
 }

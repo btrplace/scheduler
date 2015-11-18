@@ -24,6 +24,7 @@ import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Cause;
@@ -53,7 +54,7 @@ public class CPreserve implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         CShareableResource map = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (map == null) {
             throw new SchedulerException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +

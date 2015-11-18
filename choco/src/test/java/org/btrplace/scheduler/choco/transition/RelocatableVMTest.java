@@ -246,7 +246,7 @@ public class RelocatableVMTest {
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
 
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -299,7 +299,7 @@ public class RelocatableVMTest {
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -342,7 +342,7 @@ public class RelocatableVMTest {
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getRelocationMethod().instantiateTo(1, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         Chatterbox.showDecisions(rp.getSolver());
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -398,7 +398,7 @@ public class RelocatableVMTest {
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getRelocationMethod().instantiateTo(0, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);

@@ -34,6 +34,21 @@ import java.util.Collection;
 public interface Parameters {
 
     /**
+     * Set a seed to use from every random number generators.
+     *
+     * @param s the seed
+     * @return @{code this}
+     */
+    Parameters setRandomSeed(long s);
+
+    /**
+     * Get the seed used by the random number generators.
+     *
+     * @return the seed
+     */
+    long getRandomSeed();
+
+    /**
      * State if the algorithm only have to repair the model instead
      * of rebuilding a complete new solution.
      *

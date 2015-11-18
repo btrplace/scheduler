@@ -25,6 +25,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Lonely;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.Disjoint;
 import org.btrplace.scheduler.choco.extensions.Precedences;
@@ -53,7 +54,7 @@ public class CLonely implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         //Remove non future-running VMs
         List<IntVar> myHosts = new ArrayList<>();
         List<IntVar> otherHosts = new ArrayList<>();

@@ -9,7 +9,7 @@ Release notes
   parallelism is no longer naive. See the associated [tutorial](https://github.com/btrplace/scheduler/wiki/Network-and-migrations-scheduling)
 - Upgrade to Choco 3.2.2
 - Improve the performance of the slice scheduler when nodes must be turned off
-- Fix issues #70, #69, #68, #66, #65, #64, #54, #53
+- Fix issues #70, #69, #68, #66, #65, #64, #54, #53, #72, #73
 
 0.41 - 12 Feb 2015
 ----------------------

@@ -258,7 +258,7 @@ public class Issues {
         solver.post(IntConstraintFactory.arithm(sum, "=", 0));
         System.err.flush();
         CMinMTTR obj = new CMinMTTR();
-        obj.inject(rp);
+        obj.inject(new DefaultParameters(), rp);
         //System.err.println(solver.toString());
         //ChocoLogging.setLoggingMaxDepth(100);
         ReconfigurationPlan plan = rp.solve(0, false);

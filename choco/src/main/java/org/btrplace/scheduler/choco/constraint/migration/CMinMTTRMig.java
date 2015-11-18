@@ -23,6 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
@@ -62,7 +63,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     public CMinMTTRMig() { costConstraints = new ArrayList<>(); }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         this.rp = rp;
         List<IntVar> endVars = new ArrayList<IntVar>();

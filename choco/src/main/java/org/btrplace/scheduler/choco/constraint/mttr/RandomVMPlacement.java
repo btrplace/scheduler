@@ -57,9 +57,10 @@ public class RandomVMPlacement implements IntValueSelector {
      * @param p           the problem to rely on
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
+     * @param seed the seed to use to initialize the random number generator
      */
-    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, boolean stayFirst) {
-        this(p, pVarMapping, null, stayFirst);
+    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, boolean stayFirst, long seed) {
+        this(p, pVarMapping, null, stayFirst, seed);
     }
 
     /**
@@ -69,11 +70,12 @@ public class RandomVMPlacement implements IntValueSelector {
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param priorities  a list of favorites servers. Servers in rank i will be favored wrt. servers in rank i + 1
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
+     * @param seed the seed to use to initialize the random number generator
      */
-    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, TIntHashSet[] priorities, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, TIntHashSet[] priorities, boolean stayFirst, long seed) {
         stay = stayFirst;
         this.rp = p;
-        rnd = new Random();
+        rnd = new Random(seed);
         vmPlacement = pVarMapping;
         this.ranks = priorities;
     }

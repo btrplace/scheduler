@@ -53,6 +53,8 @@ public class DefaultParameters implements Parameters {
 
     private boolean optimize = false;
 
+    private long seed = 0;
+
     /**
      * No time limit by default.
      */
@@ -115,6 +117,17 @@ public class DefaultParameters implements Parameters {
     public Parameters setViewMapper(ModelViewMapper m) {
         viewMapper = m;
         return this;
+    }
+
+    @Override
+    public Parameters setRandomSeed(long s) {
+        seed = s;
+        return this;
+    }
+
+    @Override
+    public long getRandomSeed() {
+        return seed;
     }
 
     @Override
