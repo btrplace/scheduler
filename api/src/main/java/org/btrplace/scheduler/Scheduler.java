@@ -34,13 +34,13 @@ import java.util.Collection;
 public interface Scheduler {
 
     /**
-     * Compute a reconfiguration plan to reach a solution to the model
+     * Compute a reconfiguration plan to reach a solution to the model.
      *
      * @param i     the current model
      * @param cstrs the satisfaction-oriented constraints that must be considered
      * @param obj   the optimization-oriented constraint that must be considered
-     * @return the plan to execute to reach the new solution or {@code null} if there is no
-     * solution.
+     * @return {@code null} if there is no solution or the plan to execute to reach a new solution that satisfies every constraints.
+     * Accordingly, an empty plan denotes a model that already satisfies all the constraints
      * @throws SchedulerException if an error occurred while trying to solve the problem
      */
     ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint obj) throws SchedulerException;
@@ -49,8 +49,8 @@ public interface Scheduler {
      * Compute a reconfiguration plan to reach a solution to an instance
      *
      * @param i the instance to solve
-     * @return the plan to execute to reach the new solution or {@code null} if there is no
-     * solution.
+     * @return {@code null} if there is no solution or the plan to execute to reach a new solution that satisfies every constraints.
+     * Accordingly, an empty plan denotes a model that already satisfies all the constraints
      * @throws SchedulerException if an error occurred while trying to solve the problem
      */
     ReconfigurationPlan solve(Instance i) throws SchedulerException;
