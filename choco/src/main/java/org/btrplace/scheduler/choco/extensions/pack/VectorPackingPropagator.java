@@ -34,6 +34,8 @@ import org.chocosolver.util.iterators.DisposableValueIterator;
 import org.chocosolver.util.procedure.UnaryIntProcedure;
 import org.chocosolver.util.tools.ArrayUtils;
 
+import java.util.Arrays;
+
 /**
  * Lighter but faster version of a multi dimension vector packing that does not provide the knapsack filtering
  * enforce:
@@ -558,42 +560,42 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             int sls = 0;
             for (int b = 0; b < rs[d].length; b++) {
                 if (rs[d][b] != assignedLoad[d][b].get()) {
-                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
+                    System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                     check = false;
                 }
                 if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
-                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
+                    System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
                 if (loads[d][b].getLB() < rs[d][b]) {
-                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
+                    System.err.println(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
                     check = false;
                 }
                 if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
-                    //LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                    System.err.println(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
                 sli += loads[d][b].getLB();
                 sls += loads[d][b].getUB();
             }
             if (this.sumLoadInf[d].get() != sli) {
-                //LOGGER.warn(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+                System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
                 check = false;
             }
             if (this.sumLoadSup[d].get() != sls) {
-                //LOGGER.warn(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+                System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
                 check = false;
             }
-            /*if (!check) {
+            if (!check) {
                 for (int b = 0; b < rs[d].length; b++) {
-                    LOGGER.error(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " (" + rs[d][b] + ") potential=" + potentialLoad[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
+                    System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " (" + rs[d][b] + ") potential=" + potentialLoad[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
                 }
-                LOGGER.error(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
-                LOGGER.error(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
+                System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
+                System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
                 for (IntVar v : bins) {
-                    LOGGER.info(v.toString());
+                    System.err.println(v.toString());
                 }
-            }*/
+            }
         }
         return check;
     }

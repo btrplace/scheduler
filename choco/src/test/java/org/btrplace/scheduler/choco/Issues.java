@@ -349,7 +349,6 @@ public class Issues {
         InstanceConverter ic = new InstanceConverter();
         Instance i = ic.fromJSON(input);
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(3);
         s.setTimeLimit(-1);
         i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "mem"));
         i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "cpu"));
@@ -383,7 +382,7 @@ public class Issues {
             ma.addRunningVM(v, nodes.get(1));
         }
         DefaultParameters ps = new DefaultParameters();
-        ps.setVerbosity(4);//.doRepair(true).doOptimize(true);
+        //ps.setVerbosity(4);//.doRepair(true).doOptimize(true);
         ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
     }
@@ -395,7 +394,6 @@ public class Issues {
         Instance i = ic.fromJSON(buf);
         ChocoScheduler s = new DefaultChocoScheduler();
         System.out.println(i.getModel());
-        s.setVerbosity(3);
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         System.out.println(p);
