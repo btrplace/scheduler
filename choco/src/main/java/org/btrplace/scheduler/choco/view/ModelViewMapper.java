@@ -49,7 +49,6 @@ public class ModelViewMapper {
         ModelViewMapper map = new ModelViewMapper();
         map.register(new CShareableResource.Builder());
         map.register(new CNetwork.Builder());
-        map.register(new CEnergyView.Builder());
         return map;
     }
 

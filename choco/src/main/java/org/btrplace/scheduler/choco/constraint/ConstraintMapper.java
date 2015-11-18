@@ -19,8 +19,6 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.constraint.Constraint;
-import org.btrplace.scheduler.choco.constraint.energy.CMinEnergyObjective;
-import org.btrplace.scheduler.choco.constraint.energy.CPowerBudget;
 import org.btrplace.scheduler.choco.constraint.migration.*;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 
@@ -81,8 +79,6 @@ public class ConstraintMapper {
         map.register(new CPrecedence.Builder());
         map.register(new CSerialize.Builder());
         map.register(new CSync.Builder());
-        map.register(new CMinEnergyObjective.Builder());
-        map.register(new CPowerBudget.Builder());
         return map;
     }
 
