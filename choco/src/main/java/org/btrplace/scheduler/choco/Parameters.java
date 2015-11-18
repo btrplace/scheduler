@@ -58,8 +58,11 @@ public interface Parameters {
     Parameters doRepair(boolean b);
 
     /**
-     * Indicate if the algorithm repair the model.
-     *
+     * Indicate if the algorithm repairs the model.
+     * Each constraint will scan the model to detect the minimum set of VMs
+     * that should be managed to get able to get a solution.
+     * This approach can reduce drastically the solving duration but might be too aggressive
+     * then remove possible solutions.
      * @return {@code true} iff it repairs the model.
      */
     boolean doRepair();

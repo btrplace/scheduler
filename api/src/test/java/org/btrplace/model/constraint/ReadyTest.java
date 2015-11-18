@@ -23,6 +23,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link Ready}.
@@ -72,5 +73,17 @@ public class ReadyTest {
         Assert.assertEquals(d.isSatisfied(i), false);
         c.remove(v);
         Assert.assertEquals(d.isSatisfied(i), false);
+    }
+
+    @Test
+    public void testReady() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Ready> c = Ready.newReady(vms);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertFalse(q.isContinuous());
+        });
     }
 }

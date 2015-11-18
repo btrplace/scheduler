@@ -98,4 +98,16 @@ public class OfflineTest {
         Assert.assertEquals(new Offline(ns.get(0)).hashCode(), s.hashCode());
         Assert.assertFalse(new Offline(ns.get(1)).equals(s));
     }
+
+    @Test
+    public void testOfflines() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Offline> c = Offline.newOffline(ns);
+        Assert.assertEquals(ns.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(ns.containsAll(q.getInvolvedNodes()));
+            Assert.assertFalse(q.isContinuous());
+        });
+    }
 }

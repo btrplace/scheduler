@@ -85,4 +85,18 @@ public class FenceTest {
         Assert.assertFalse(new Fence(mo.newVM(), nodes).equals(f));
         Assert.assertEquals(new Fence(v, nodes).hashCode(), f.hashCode());
     }
+
+    @Test
+    public void testFences() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Fence> c = Fence.newFence(vms, ns);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertEquals(ns, q.getInvolvedNodes());
+            Assert.assertFalse(q.isContinuous());
+        });
+    }
 }

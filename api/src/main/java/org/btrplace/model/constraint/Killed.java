@@ -18,6 +18,7 @@
 
 package org.btrplace.model.constraint;
 
+
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 

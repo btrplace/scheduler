@@ -109,4 +109,20 @@ public class PreserveTest {
         plan.add(mig);
         Assert.assertTrue(p.isSatisfied(plan));
     }
+
+    @Test
+    public void testPreserves() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Fence> c = Fence.newFence(vms, ns);
+        ShareableResource rc = new ShareableResource("foo", 0, 0);
+        mo.attach(rc);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertEquals(ns, q.getInvolvedNodes());
+            Assert.assertFalse(q.isContinuous());
+        });
+    }
 }

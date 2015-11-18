@@ -68,4 +68,16 @@ public class OnlineTest {
         Assert.assertEquals(new Online(n).hashCode(), s.hashCode());
         Assert.assertFalse(new Online(mo.newNode()).equals(s));
     }
+
+    @Test
+    public void testOnlines() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Online> c = Online.newOnline(ns);
+        Assert.assertEquals(ns.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(ns.containsAll(q.getInvolvedNodes()));
+            Assert.assertFalse(q.isContinuous());
+        });
+    }
 }

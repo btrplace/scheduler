@@ -93,4 +93,18 @@ public class BanTest {
         Assert.assertEquals(new Ban(v, nodes).hashCode(), b.hashCode());
         Assert.assertNotEquals(new Ban(m.newVM(), nodes), b);
     }
+
+    @Test
+    public void testBans() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Ban> c = Ban.newBan(vms, ns);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertEquals(ns, q.getInvolvedNodes());
+            Assert.assertFalse(q.isContinuous());
+        });
+    }
 }

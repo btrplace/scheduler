@@ -74,4 +74,16 @@ public class RunningTest {
         c.remove(vm);
         Assert.assertEquals(d.isSatisfied(i), false);
     }
+
+    @Test
+    public void testRunnings() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Running> c = Running.newRunning(vms);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertFalse(q.isContinuous());
+        });
+    }
 }
