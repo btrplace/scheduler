@@ -4,6 +4,11 @@ Release notes
 ??????
 ----------------------
 - The API allows know to indicate a bandwidth to allocate for VM migration (#52)
+- @vincent-k released his migration model to estimate precisely the VM migration duration depending
+  on its workload and the network topology. It now infers efficient and realistic reconfiguration plans where the
+  parallelism is no longer naive. See the associated [tutorial](https://github.com/btrplace/scheduler/wiki/Network-and-migrations-scheduling)
+- Upgrade to Choco 3.2.2
+- Fix issues #70, #69, #68, #66, #65, #64, #54, #53
 
 0.41 - 12 Feb 2015
 ----------------------
