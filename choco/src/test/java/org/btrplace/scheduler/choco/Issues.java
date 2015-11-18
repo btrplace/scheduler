@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco;
 
+import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Offline;
@@ -30,8 +31,6 @@ import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
@@ -40,6 +39,8 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.*;
 
@@ -340,5 +341,51 @@ public class Issues {
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertEquals(plan, null);
+    }
+
+    @Test
+    public void issue72() throws Exception {
+        String input = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":70,\"17\":0,\"18\":60,\"19\":0,\"0\":100,\"1\":0,\"2\":0,\"3\":0,\"4\":0,\"5\":0,\"6\":0,\"7\":0,\"8\":90,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        InstanceConverter ic = new InstanceConverter();
+        Instance i = ic.fromJSON(input);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        s.setVerbosity(3);
+        s.setTimeLimit(-1);
+        s.doOptimize(true);
+        i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "mem"));
+        i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "cpu"));
+        List<SatConstraint> cstrs = new ArrayList<>();
+        ReconfigurationPlan p = s.solve(i.getModel(), cstrs, i.getOptConstraint());
+        System.out.println(p);
+
+        Assert.assertTrue(p.getActions().isEmpty());
+    }
+
+    @Test
+    public void issue72b() throws SchedulerException {
+        Model mo = new DefaultModel();
+        Mapping ma = mo.getMapping();
+        ShareableResource rcCPU = new ShareableResource("cpu", 2, 0);
+        mo.attach(rcCPU);
+        List<Node> nodes = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            nodes.add(mo.newNode());
+            ma.addOnlineNode(nodes.get(i));
+        }
+        List<VM> vms = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            VM v = mo.newVM();
+            vms.add(v);
+            ma.addRunningVM(v, nodes.get(0));
+        }
+        for (int i = 0; i < 2; i++) {
+            VM v = mo.newVM();
+            vms.add(v);
+            ma.addRunningVM(v, nodes.get(1));
+        }
+        DefaultParameters ps = new DefaultParameters();
+        ps.setVerbosity(4);//.doRepair(true).doOptimize(true);
+        ReconfigurationPlan p = new DefaultChocoScheduler(ps).solve(mo, new ArrayList<>());
+        Assert.assertNotNull(p);
     }
 }

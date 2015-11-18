@@ -182,7 +182,7 @@ public class VectorPackingKPSimpleDecorator {
         if (candidate.get(bin).get(item)) { //TODO stop the recursive loop without this (see test2DWithUnorderedItems(seed=120))
             candidate.get(bin).clear(item);
             for (int d = 0; d < p.nbDims; d++) {
-                if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
+                if (p.iSizes[d][item] > 0 && p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
                     assert p.loads[d][bin].isInstantiated();
                     filterFullBin(bin);
                     return;
