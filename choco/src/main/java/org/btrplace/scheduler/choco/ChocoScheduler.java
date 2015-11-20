@@ -69,5 +69,18 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      */
     void setInstanceSolver(InstanceSolver p);
 
+    /**
+     * Set the scheduler parameters.
+     *
+     * @param ps the parameters
+     * @return this
+     */
+    ChocoScheduler setParameters(Parameters ps);
 
+    /**
+     * Get the scheduler parameters.
+     *
+     * @return the registered parameters
+     */
+    Parameters getParameters();
 }

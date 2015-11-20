@@ -114,6 +114,17 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
+    public DefaultChocoScheduler setParameters(Parameters p) {
+        params = p;
+        return this;
+    }
+
+    @Override
+    public Parameters getParameters() {
+        return params;
+    }
+
+    @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
         
         // If a network view is attached, ensure that all the migrations' destination node are defined
