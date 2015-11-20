@@ -34,7 +34,7 @@ solver Choco
 
 ## Getting Started ##
 
-See the tutorials [tutorials](https://github.com/btrplace/scheduler/wiki/Tutorials)
+See the [tutorials](https://github.com/btrplace/scheduler/wiki/Tutorials)
 
 ## Documentation ##
 
