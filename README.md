@@ -8,8 +8,6 @@ Contact: fabien.hermenier@unice.fr
 
 ## Usage ##
 
-### Inside a maven project ###
-
 Releases are available via Maven Central (see http://search.maven.org/#search%7Cga%7C1%7Corg.btrplace).
 
 Snapshot versions are only available through a dedicated repository.
@@ -34,10 +32,25 @@ solver Choco
 * `org.btrplace:btrpsl`: a scripting language to express constraints
 * `org.btrplace:bench`: a simple CLI to perform benchmarks
 
+## Getting Started ##
+
+See the tutorials [tutorials](https://github.com/btrplace/scheduler/wiki/Tutorials)
+
 ## Documentation ##
+
+### API documentation ###
 
 The javadoc for every version is available as a jar in the repository.
 The javadoc for the last released version is always available at http://www.btrplace.org/apidocs
+
+### General documentation ###
+
+See the [wiki](https://github.com/btrplace/scheduler/wiki)
+
+## Contributing ##
+
+Anyone can contribute to the project, from the source code to the documentation.
+In order to ease the process, see the [contribution guide](CONTRIBUTING.md).
 
 ## Building from sources ##
 
@@ -56,4 +69,4 @@ If the build succeeded, the resulting jars will be automatically installed in yo
 
 
 ## Copyright ##
-Copyright (c) 2014 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
+Copyright (c) 2015 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
