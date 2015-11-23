@@ -42,7 +42,7 @@ function getVersion() {
     ./bin/deploy.sh >deploy.out 2>&1 ||err "Unable to release" deploy.out        
     
     echo "** Deploying the javadoc **"
-    ./bin/push_javadoc.sh btrplace/apidocs.git ${VERSION} >javadoc.out 2>&1  || warn "Unable to push the javadoc" javadoc.out    
+    ./bin/push_javadoc.sh btrplace/apidocs.git >javadoc.out 2>&1  || warn "Unable to push the javadoc" javadoc.out
 
     #Clean      
     git push deploy --delete release >delete_release.out 2>&1 || warn "Unable to delete the remote release branch" delete_release.out    

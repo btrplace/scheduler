@@ -1,11 +1,20 @@
 #!/bin/bash
+
+function getVersionToRelease() {
+	#blank execution as this command is very fragile and bug if there is sth to download
+mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version > /dev/null
+CURRENT_VERSION=`mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"`
+echo ${CURRENT_VERSION%%-SNAPSHOT}
+}
+
+
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 repos"
 	exit 1
 fi
 LOCAL=`mktemp -d -t btrplace.XXX`
 REPOS=$1
-VERSION=$2
+VERSION=$(getVersionToRelease)
 HEAD=$(git rev-parse HEAD)
 git -C ${LOCAL} init
 git -C ${LOCAL} remote add origin git@github.com:${REPOS}||exit 1
