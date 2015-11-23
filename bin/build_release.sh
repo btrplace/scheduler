@@ -54,7 +54,7 @@ function getVersion() {
     git checkout -b master deploy/master >>master.out 2>&1 ||warn "No master branch" master.out
     git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT} 2>&1 >> master.out ||warn "Unable to integrate to master" master.out
     echo "\tMerged"
-    ./bin/set_version.sh --next ${VERSION} >version.out 2>&1 ||warn "Unable to set the new version" version.out
+    ./bin/set_version.sh --next >version.out 2>&1 ||warn "Unable to set the new version" version.out
     NEW_VERSION=$(getVersion)    
     git commit -m "Prepare the code for the next version ${NEW_VERSION}" -a 2>&1 >> master.out || warn "Unable to commit" master.out
     echo "\tCommitted new version ${NEW_VERSION}"
