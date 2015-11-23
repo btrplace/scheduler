@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-??????
+0.42 - 23 Nov 2015
 ----------------------
 - The API allows know to indicate a bandwidth to allocate for VM migration (#52)
 - @vincent-k released his migration model to estimate precisely the VM migration duration depending
