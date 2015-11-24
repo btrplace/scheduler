@@ -236,13 +236,13 @@ public class CNetwork implements ChocoView {
                         tasksList.toArray(new Task[tasksList.size()]),
                         heightsList.toArray(new IntVar[heightsList.size()]),
                         VF.fixed(l.getCapacity(), solver),
-                        true,
+                        true/*,
                         // Try to tune the filters to improve the constraint efficiency
                         Cumulative.Filter.TIME,
                         //Cumulative.Filter.SWEEP,
                         //Cumulative.Filter.SWEEP_HEI_SORT,
                         Cumulative.Filter.NRJ,
-                        Cumulative.Filter.HEIGHTS
+                        Cumulative.Filter.HEIGHTS*/
                 ));
             }
             tasksList.clear();
