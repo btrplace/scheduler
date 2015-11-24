@@ -30,11 +30,11 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.constraints.nary.cumulative.Cumulative;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
@@ -184,8 +184,16 @@ public class CNetwork implements ChocoView {
                     s.post(ICF.table(bandwidth, duration, tpl, ""));*/
 
                     // USING A SINGLE BW PER MIGRATION
-                    s.post(new Arithmetic(duration, Operator.EQ, durEnum.get(0)));
-                    s.post(new Arithmetic(bandwidth, Operator.EQ, bwEnum.get(0)));
+                    try {
+                        duration.instantiateTo(durEnum.get(0), Cause.Null);
+                        bandwidth.instantiateTo(bwEnum.get(0), Cause.Null);
+                    } catch (ContradictionException e) {
+                        rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
+                                " duration variables for " + vm + " migration: " + e.getMessage());
+                        return false;
+                    }
+                    //s.post(new Arithmetic(duration, Operator.EQ, durEnum.get(0)));
+                    //s.post(new Arithmetic(bandwidth, Operator.EQ, bwEnum.get(0)));
                     
                 } else {
                     // Show a warning and throw an exception
