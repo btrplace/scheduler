@@ -127,14 +127,13 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
             }
 
             if (!endVars.isEmpty()) {
-                //endVars.add(rp.getNodeAction(n).getHostingEnd());
-                /*strategies.add(ISF.custom(
-                        ISF.maxDomainSize_var_selector(),
-                        ISF.mid_value_selector(),//.max_value_selector(),
+                strategies.add(ISF.custom(
+                        ISF.minDomainSize_var_selector(),
+                        ISF.min_value_selector(),
                         ISF.split(), // Split from max
                         endVars.toArray(new IntVar[endVars.size()])
-                ));*/
-                strategies.add(ISF.minDom_LB(endVars.toArray(new IntVar[endVars.size()])));
+                ));
+                //strategies.add(ISF.minDom_LB(endVars.toArray(new IntVar[endVars.size()])));
             }
         }
 
