@@ -3,7 +3,7 @@ Release notes
 
 0.43-SNAPSHOT - 23 Nov 2015
 ----------------------
-
+- Improved scalability of the Network model
 
 0.42 - 23 Nov 2015
 ----------------------
