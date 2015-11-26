@@ -29,8 +29,6 @@ before_install:
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 - pip install --user codecov
-install:
-- mvn -Dgpg.passphrase=${GPG_PASSPHRASE} install -DskipTests
 jdk:
 - oraclejdk8
 language: java

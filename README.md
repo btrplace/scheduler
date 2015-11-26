@@ -41,7 +41,10 @@ See the [tutorials](https://github.com/btrplace/scheduler/wiki/Tutorials)
 ### API documentation ###
 
 The javadoc for every version is available as a jar in the repository.
-The javadoc for the last released version is always available at http://www.btrplace.org/apidocs
+the HTML javadoc is available at:
+
+* http://www.btrplace.org/apidocs for the last release
+* http://www.btrplace.org/apidocs-next for the next version to release (the code in the `master` branch)
 
 ### General documentation ###
 
