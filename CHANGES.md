@@ -4,6 +4,7 @@ Release notes
 0.43-SNAPSHOT - 23 Nov 2015
 ----------------------
 - Improved scalability of the Network model
+- the apidocs of the master branch is always available online at http://www.btrplace.org/apidocs-next/
 
 0.42 - 23 Nov 2015
 ----------------------
