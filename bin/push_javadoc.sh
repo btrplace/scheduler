@@ -1,25 +1,23 @@
 #!/bin/bash
 
-function getVersionToRelease() {
-	#blank execution as this command is very fragile and bug if there is sth to download
-mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version > /dev/null
-CURRENT_VERSION=`mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version | grep -v "\[INFO\]"`
-echo ${CURRENT_VERSION%%-SNAPSHOT}
-}
-
+source bin/commons.sh
 
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 repos"
+	echo "the github token must be provided through environment variable GH_TOKEN"
 	exit 1
 fi
+
+[ -z "$GH_TOKEN" ] && echo "Missing environment variable GH_TOKEN" && exit 1;
+
 LOCAL=`mktemp -d -t btrplace.XXX`
 REPOS=$1
 VERSION=$(getVersionToRelease)
 HEAD=$(git rev-parse HEAD)
 git -C ${LOCAL} init
-git -C ${LOCAL} remote add origin git@github.com:${REPOS}||exit 1
-git -C ${LOCAL} pull origin gh-pages||exit 1
-git -C ${LOCAL} checkout gh-pages||exit 1
+git -C ${LOCAL} remote add origin "https://$GH_TOKEN@github.com/${REPOS}"||exit 1
+git -C ${LOCAL} fetch origin||exit 1
+git -C ${LOCAL} checkout gh-pages||git -C ${LOCAL} checkout -b gh-pages
 
 #Don't generate if not needed
 if [ -f ${LOCAL}/.commit ]; then
@@ -46,5 +44,5 @@ git add .commit
 cd -
 
 git -C ${LOCAL} commit -m "apidoc for version ${VERSION}" -a||exit 1
-git -C ${LOCAL} push origin gh-pages||exit 1
+git -C ${LOCAL} push --force --quiet origin gh-pages||exit 1
 rm -rf ${LOCAL}

@@ -1,19 +1,6 @@
 #!/bin/bash
 
-function err() {
-    echo "ERROR: $1"
-    cat $2
-    exit 1
-}
-
-function warn() {    
-    echo "WARNING: $1"
-    cat $2    
-}
-
-function getVersion() {
-    mvn ${MVN_ARGS} org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
-}
+source bin/commons.sh
 
     #Extract the version
     VERSION=$(getVersion)
@@ -23,9 +10,7 @@ function getVersion() {
     #Quit if tag already exists
     git ls-remote --exit-code --tags origin ${TAG} 2>&1 > /dev/null
     if [ $? -ne 0 ]; then
-        echo "Tag ${TAG} does not exist. Retry"        
-        #Working version ?
-        #mvn -Dmaven.repo.local=/tmp/cache clean test >tests.out 2>&1 ||err "Unstable build" tests.out 
+        echo "Tag ${TAG} does not exist. Retry"
         mvn clean test >tests.out 2>&1 ||err "Unstable build" tests.out 
         echo "Tests are ok"   
         git tag ${TAG} >tag.out 2>&1 ||err "Unable to tag with ${TAG}" tag.out        
