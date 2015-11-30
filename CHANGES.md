@@ -6,6 +6,7 @@ version 0.43 - soon come
 See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
 
 - Improved scalability of the Network model
+- the apidocs of the master branch is always available online at http://www.btrplace.org/apidocs-next/
 
 version 0.42 - 23 Nov 2015
 ----------------------
