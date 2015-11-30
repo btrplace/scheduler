@@ -12,12 +12,16 @@ if [ $? -eq 0 ]; then
     exit 1
 fi
 echo "Ok"
-VERSION=$(getVersionToRelease)
+VERSION=`./bin/version.py --release`
 echo "Version to release: ${VERSION}"
 git checkout -b release || exit 1
 
-#Establish the version, maven side, misc. side
-./bin/set_version.sh ${VERSION}
+#Establish the version, maven side ...
+mvn versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false||exit 1
+#... and changelog side
+./bin/changelog.py timestamp||exit 1
+
+#commit and go
 git commit -m "initiate release ${VERSION}" -a
 git push origin release || exit 1
 git checkout -

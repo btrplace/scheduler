@@ -28,7 +28,9 @@ before_install:
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
-- pip install --user codecov
+- export PYTHONPATH=".:./bin:$PYTHONPATH"
+- pip3 install --user codecov
+- pip3 install --user requests
 install:
 - true
 jdk:

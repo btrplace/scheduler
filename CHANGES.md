@@ -1,11 +1,13 @@
 Release notes
 ======================
 
-0.43-SNAPSHOT - 23 Nov 2015
+version 0.43 - soon come
 ----------------------
+See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
+
 - Improved scalability of the Network model
 
-0.42 - 23 Nov 2015
+version 0.42 - 23 Nov 2015
 ----------------------
 - The API allows know to indicate a bandwidth to allocate for VM migration (#52)
 - @vincent-k released his migration model to estimate precisely the VM migration duration depending
@@ -15,7 +17,7 @@ Release notes
 - Improve the performance of the slice scheduler when nodes must be turned off
 - Fix issues #70, #69, #68, #66, #65, #64, #54, #53, #72, #73
 
-0.41 - 12 Feb 2015
+version 0.41 - 12 Feb 2015
 ----------------------
 - Speed up tasks scheduling. This improves the resolution of problems that manipulate the node states. See #62
 - Refer to the associated [issue tracker](https://github.com/btrplace/scheduler/issues?q=milestone%3A%22release+0.41%22+is%3Aclosed) to get the closed issues
@@ -277,3 +279,6 @@ inform nodes about additional operations to execute
 
 #### version 0.3 - 08 Feb 2013 ####
 - Synchronize with solver-api
+
+
+
