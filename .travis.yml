@@ -33,8 +33,8 @@ before_install:
 - export MAVEN_OPTS=-Xmx512m
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
 - curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py > get-pip.py
+- ls -lR
 - python3 get-pip.py
-- ls -R ~/.local
 - pip-3.3 install --user codecov
 - pip-3.3 install --user requests
 install:
