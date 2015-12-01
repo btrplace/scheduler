@@ -28,6 +28,8 @@ before_install:
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
+- curl http://python-distribute.org/distribute_setup.py | sudo python3
+- curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | sudo python3
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
 - pip3 install --user codecov
 - pip3 install --user requests
