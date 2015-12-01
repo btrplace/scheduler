@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 cache:
   directories:
     - $HOME/.m2
@@ -13,7 +13,6 @@ env:
   - secure: IaL7OXZlR7H/9CiAXik2i8sj83EflxBHhGncamJ4DmyzanXHB4djE65skBLueLe5uZTI2uEVDkasYSfeUUQoEXkawHW4P17yiDG23i+oBJGORUH4RUY0U/cWRKC6mb1ESKYmMBahuHXxg9NuwsaMQWYti+KILUh5xaHDZVedCCg=
   - secure: kUYIHVHjuB5GIym8Wv1B32zn6rcTZ+ZPX3Wfu4zZ+OuTWMv3/hCJpsV0IexmTbb/1erpO+r3MrKuwbzSmfMI1Bm7AF1ZrihjnSgR7a7Diae72zFRIGzDFoHAxQT6+8uvPDJsz/3Cj1tS+3IGQCo38SwxFnp3xFKSt6yDtIN3XJU=
   - secure: u1H7J1NyT2RLDzo9M2A8rCEc9YAw/pg4j6uPimC9d85vIpcDDwN6FpZ8NbOEPKdy0M3uComObWv7b00FQvEB2d7WdRlRRIjlbSqwtiQQj0JjOWyrPdxUQvNt2Hp1G3du5o/beqJ7f8EuC0ZsSlSnI606nf7iqKHV8EqlCFJsu9g=
-  - secure: i5X9JGrW04KMnNkqs/XN0SOUFYuwVPTdZZVYQfdoWNYUyRE8c8VC8wkRyQzJoR08iBK1whnaY09NmdPS5wO/jBdwXNZjWBUEsL1jFd+fOtxAnJ1tlopVIdGxVAf1cs3laLwKlRmt0BjbAJqWEYAnN4+QUrCkU6zFfb8j08SIDyQ=
   - secure: "sy2TMU/DxUn4rOPnOW+lNrqnBoh1Dyui8MzOpjY/aIp58/y9gF3QhCK7wq/KFADAj0BzB4DgPrca9erR76tiyyRZGCH0FnzDkE363+uTHuowVXCGwMsV2bylUxMLKGfp25GJOXZvuggk9I63yna8VnyxMu/qSMbai4AJiKFgPe8="
 addons:
   apt:
@@ -34,6 +33,7 @@ before_install:
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
+- sudo apt-get install python3-pip
 - pip3 install --user codecov
 - pip3 install --user requests
 install:
