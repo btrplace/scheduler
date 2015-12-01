@@ -35,8 +35,8 @@ before_install:
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
 - curl http://python-distribute.org/distribute_setup.py | sudo python3
 - curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | sudo python3
-- pip3 install --user codecov
-- pip3 install --user requests
+- pip-3.3 install --user codecov
+- pip-3.3 install --user requests
 install:
 - true
 jdk:
