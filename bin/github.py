@@ -4,6 +4,7 @@ import sys
 import requests
 import os
 import re
+import string
 from bin import version
 
 
@@ -11,7 +12,7 @@ REPOS = "btrplace/scheduler"
 TAG_HEADER = "btrplace-scheduler-"
 
 def header():
-	return "{'Content-Type' : 'application/json', 'Authorization':'token %s'}" % os.environ.get('GH_TOKEN')
+	return {'Content-Type' : 'application/json', 'Authorization':'token %s' %os.environ.get('GH_TOKEN')} 
 
 def api():
 	return "https://api.github.com/repos/" + REPOS 
@@ -21,22 +22,16 @@ def getRelease(tag):
 	r = requests.get(api() + "/releases/tags/%s%s" %(TAG_HEADER,tag))
 	if r.status_code == 200:
 		return r.json()
-	print ("Unable to get the release object:\n" + r.text, file=sys.stderr)
+	print ("Unable to get the release object: %d\n%s" % (r.status_code, r.text), file=sys.stderr)
 	return False	
 
-def pushChanges(r, changes):	
-	data = changes.translate(str.maketrans({"-":  r"\-",
-                                          "]":  r"\]",
-                                          "\\": r"\\",
-                                          "^":  r"\^",
-                                          "$":  r"\$",
-                                          "*":  r"\*",
-                                          ".":  r"\."}))
-	dta = "{\"draft\":false, body: \"%s\"}" %data
-	r = requests.patch(api() + "/releases/%s" %  r["id"], data=dta, headers= header())
+def pushChanges(r, changes):		
+	data = changes.replace('"', '\\"')	
+	dta = {"draft":False, "body": changes}	
+	r = requests.patch(api() + "/releases/%s" %  r["id"], json=dta, headers= header())
 	if r.status_code == 200:
 		return True
-	print("Error %d: %s" % (r.status_code, r.text), file=sys.stderr)
+	print("ERROR %d: %s" % (r.status_code, r.text), file=sys.stderr)
 
 def getMilestoneId(v):
 	res = requests.get(api() + "/milestones")
@@ -68,8 +63,10 @@ def closeMilestone(ms):
 
 def getLog(v):	
 	f = open('CHANGES.md', 'r')
-	cnt=""	
-	for line in f:		
+	cnt=""
+	while True:	
+		line = f.readline()
+		if not line: break
 		if re.match("version "+v, line):									
 			f.readline()
 			while True:
@@ -114,16 +111,15 @@ if __name__ == "__main__":
 		if not closeMilestone(os.environ['GH_TOKEN'], ms):
 			exit(1)
 	elif (op =="push-changelog"):
+		r = getRelease(v)
+		if not r:
+			exit(1)		
 		log = getLog(v)
 		if not log:
 			print("No log for version '" + v + "'", file=sys.stderr)
 			exit(1)
 		print("Captured log:")		
-		print(log)		
-		
-		r = getRelease(v)
-		if not r:
-			exit(1)		
+		print(log)							
 		if not pushChanges(r, log):
 			exit(1)			
 	else:
