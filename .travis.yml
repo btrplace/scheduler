@@ -23,11 +23,13 @@ before_install:
 - gpg --import etc/gpg
 - chmod 600 etc/autobot
 - ssh-add etc/autobot
+- pip
 - git config --global user.name "Build Bot"
 - git config --global user.email "buildbot@btrplace.org"
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
+- pip install --user codecov
 install:
 - true
 jdk:
