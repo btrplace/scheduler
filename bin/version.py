@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #Script to get the maven project version and manipulate it a bit
 #basically, it is faster and more robust than mvn versions
-
+from __future__ import print_function
 import xml.etree.ElementTree as ET
 import re
 import sys
 import subprocess 
+
 
 def toRelease(v):
 	if v.endswith("-SNAPSHOT"):
