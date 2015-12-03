@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #Script to manipulate the changelog: create a new entry or put a timestamp on an entry
-
+from __future__ import print_function
 import re
 import sys
 from datetime import date
