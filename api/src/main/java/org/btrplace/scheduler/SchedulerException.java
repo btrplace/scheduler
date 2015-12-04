@@ -21,11 +21,11 @@ package org.btrplace.scheduler;
 import org.btrplace.model.Model;
 
 /**
- * An exception that indicate an error in the scheduler.
+ * An exception that indicate a programing error in the scheduler.
  *
  * @author Fabien Hermenier
  */
-public class SchedulerException extends Exception {
+public class SchedulerException extends RuntimeException {
 
     private Model model;
 
