@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force the given VM, when running,
@@ -57,6 +54,16 @@ public class Fence extends SatConstraint {
      */
     public Fence(VM vm, Collection<Node> nodes) {
         this(vm, nodes, false);
+    }
+
+    /**
+     * Make a new discrete constraint.
+     *
+     * @param vm the involved VM
+     * @param n  the involved nodes
+     */
+    public Fence(VM vm, Node... n) {
+        this(vm, Arrays.asList(n), false);
     }
 
     /**
