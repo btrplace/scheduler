@@ -84,6 +84,10 @@ public class CMaxOnline implements ChocoConstraint {
                 if (!rp.addView(view)) {
                     throw new SchedulerException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
                 }
+                if (!view.inject(ps, rp)) {
+                    throw new SchedulerException(rp.getSourceModel(), "Unable to inject view '" + CPowerView.VIEW_ID + "'");
+                }
+
             }
 
             int numberOfTasks = constraint.getInvolvedNodes().size();
@@ -133,6 +137,11 @@ public class CMaxOnline implements ChocoConstraint {
         solver.post(IntConstraintFactory.arithm(mySum, "<=", constraint.getAmount()));
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return constraint.toString();
     }
 
     /**
