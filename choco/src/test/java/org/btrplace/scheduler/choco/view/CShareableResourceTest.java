@@ -19,16 +19,11 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Overbook;
-import org.btrplace.model.constraint.Preserve;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.*;
-import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
@@ -69,7 +64,8 @@ public class CShareableResourceTest {
         rc.setConsumption(vm2, 3);
         rc.setCapacity(n1, 4);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        CShareableResource rcm = new CShareableResource(rp, rc);
+        CShareableResource rcm = new CShareableResource(rc);
+        rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
         Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getLB());
         Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getLB());
@@ -118,19 +114,16 @@ public class CShareableResourceTest {
         rc.setCapacity(n2, 3);
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        VMTransition avm2 = rp.getVMActions()[rp.getVM(vm2)];
-        avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
-        avm2.getDSlice().getHoster().instantiateTo(1, Cause.Null);
-        CShareableResource rcm = (CShareableResource) rp.getView(org.btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
-        //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm1)].updateLowerBound(2, Cause.Null);
-        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(3, Cause.Null);
-        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Fence(vm1, n1));
+        cstrs.add(new Fence(vm2, n2));
+        ReconfigurationPlan p = s.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
-        Assert.assertTrue(rcm.getVirtualUsage(1).isInstantiatedTo(3));
+        Model res = p.getResult();
+        rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "foo");
+        Assert.assertEquals(2, rc.getConsumption(vm1));//rcm.getVirtualUsage(0).isInstantiatedTo(2));
+        Assert.assertEquals(3, rc.getConsumption(vm2));//rcm.getVirtualUsage(1).isInstantiatedTo(3));
     }
 
     @Test
@@ -153,17 +146,9 @@ public class CShareableResourceTest {
         mo.attach(rc);
 
         Parameters ps = new DefaultParameters();
-        ModelViewMapper vMapper = ps.getViewMapper();
-        vMapper.register(new CShareableResource.Builder());
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setParams(ps)
-                .build();
-        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
-        //Check the amount of allocated resources on the RP
-        CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getValue(), 5);
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getValue(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();
@@ -191,13 +176,11 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
-        CShareableResource rcm = (CShareableResource) rp.getView(org.btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
-        //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(4, Cause.Null);
-        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Fence(vm1, n1));
+        cstrs.add(new Preserve(vm2, "foo", 4));
+        ReconfigurationPlan p = s.solve(mo, cstrs);//rp.solve(0, false);
         Assert.assertNull(p);
     }
 
@@ -232,7 +215,7 @@ public class CShareableResourceTest {
         System.out.println(p);
     }
 
-    @Test(expectedExceptions = SchedulerException.class)
+    @Test
     public void testInitiallyUnsatisfied() throws SchedulerException {
         Model mo = new DefaultModel();
         Node n1 = mo.newNode();
@@ -246,7 +229,11 @@ public class CShareableResourceTest {
         mo.getMapping().addRunningVM(v2, n1);
         mo.attach(rc);
         ChocoScheduler s = new DefaultChocoScheduler();
-        Assert.assertNull(s.solve(mo, new ArrayList<>()));
-        Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
+        try {
+            Assert.assertNull(s.solve(mo, new ArrayList<>()));
+            Assert.fail("Should have thrown an exception");
+        } catch (SchedulerException e) {
+            Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
+        }
     }
 }

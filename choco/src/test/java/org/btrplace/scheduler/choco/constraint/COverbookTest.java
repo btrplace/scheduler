@@ -31,9 +31,9 @@ import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -234,6 +234,7 @@ public class COverbookTest {
         cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
+        System.out.println(p);
         Assert.assertEquals(p.getSize(), 2);
         //An allocate action at the moment the vm2 leaved.
         Action al = null;

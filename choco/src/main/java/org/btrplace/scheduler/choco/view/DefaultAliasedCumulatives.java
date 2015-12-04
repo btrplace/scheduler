@@ -21,6 +21,8 @@ package org.btrplace.scheduler.choco.view;
 import gnu.trove.list.array.TIntArrayList;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.AliasedCumulatives;
 import org.chocosolver.solver.search.solution.Solution;
@@ -56,9 +58,13 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
         super(p);
         capacities = new TIntArrayList();
         aliases = new ArrayList<>();
-
     }
 
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        super.inject(ps, rp);
+        return true;
+    }
 
     /**
      * Add a constraint

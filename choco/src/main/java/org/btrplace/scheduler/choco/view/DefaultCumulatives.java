@@ -20,6 +20,8 @@ package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
@@ -57,6 +59,11 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         capacities = new ArrayList<>();
     }
 
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        super.inject(ps, rp);
+        return true;
+    }
 
     @Override
     public String getIdentifier() {

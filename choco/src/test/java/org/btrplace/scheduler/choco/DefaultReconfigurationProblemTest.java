@@ -25,7 +25,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.ICF;
@@ -578,48 +578,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNode.class, a.getClass());
     }
-
-    @Test
-    public void testGetResourceMapping() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        ShareableResource rc = new ShareableResource("cpu", 0, 0);
-        for (Node n : mo.getMapping().getAllNodes()) {
-            rc.setCapacity(n, 4);
-        }
-
-        for (VM vm : mo.getMapping().getReadyVMs()) {
-            rc.setConsumption(vm, 2);
-        }
-        mo.attach(rc);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + "cpu");
-        Assert.assertNotNull(rcm);
-        Assert.assertNull(rp.getView("bar"));
-        Assert.assertEquals("cpu", rcm.getResourceIdentifier());
-        Assert.assertEquals(rc, rcm.getSourceResource());
-    }
-
+    /*
     @Test
     public void testViewMapping() throws SchedulerException {
         Model mo = new DefaultModel();
@@ -686,7 +645,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Assert.assertNull(rp.getView("mock"));
     }
-
+*/
     /**
      * Check the consistency between the variables counting the number of VMs on
      * each node, and the placement variable.

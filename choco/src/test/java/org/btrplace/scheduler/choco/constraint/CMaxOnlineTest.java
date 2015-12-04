@@ -94,6 +94,7 @@ public class CMaxOnlineTest {
         cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
+        Assert.assertNotNull(plan);
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
     }
 

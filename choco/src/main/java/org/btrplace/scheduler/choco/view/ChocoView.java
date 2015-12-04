@@ -21,8 +21,12 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Injectable;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.search.solution.Solution;
+
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -32,7 +36,7 @@ import org.chocosolver.solver.search.solution.Solution;
  *
  * @author Fabien Hermenier
  */
-public interface ChocoView {
+public interface ChocoView extends Injectable {
 
     /**
      * Get the view unique identifier.
@@ -69,4 +73,15 @@ public interface ChocoView {
      * @return {@code true} iff the view validate the cloning process.
      */
     boolean cloneVM(VM vm, VM clone);
+
+    /**
+     * Get the view dependencies.
+     * The dependencies will be injected in prior.
+     *
+     * @return a list of view identifier that may be empty
+     */
+    default List<String> getDependencies() {
+        return Collections.emptyList();
+    }
+
 }

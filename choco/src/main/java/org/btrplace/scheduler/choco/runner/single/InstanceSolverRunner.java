@@ -23,9 +23,8 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
+import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.ReconfigurationPlanChecker;
-import org.btrplace.plan.ReconfigurationPlanCheckerException;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
@@ -34,12 +33,14 @@ import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
+import org.btrplace.scheduler.choco.view.*;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.measure.IMeasures;
 import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
 import org.chocosolver.solver.search.solution.ISolutionRecorder;
+import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.trace.Chatterbox;
 
 import java.util.*;
@@ -77,6 +78,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      */
     private List<ChocoConstraint> cConstraints;
 
+    private List<ChocoView> views;
     /**
      * Make a new runner.
      *
@@ -109,9 +111,21 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //Customize the core problem
         speRPDuration = -System.currentTimeMillis();
-        if (!injectConstraints()) {
+
+        if (!views.stream().allMatch((v) -> v.inject(params, rp))) {
             return new InstanceResult(null, getStatistics());
         }
+
+        views.forEach(rp::addView);
+
+        if (!cConstraints.stream().allMatch((c) -> c.inject(params, rp))) {
+            return new InstanceResult(null, getStatistics());
+        }
+
+        if (!views.stream().allMatch((v) -> v.beforeSolve(rp))) {
+            return new InstanceResult(null, getStatistics());
+        }
+
         speRPDuration += System.currentTimeMillis();
 
         //statistics
@@ -121,23 +135,20 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //The solution monitor to store the measures at each solution
         solutions = new AllSolutionsRecorder(rp.getSolver());
-        rp.getSolver().plugMonitor(new IMonitorSolution() {
-            @Override
-            public void onSolution() {
-                IMeasures m = rp.getSolver().getMeasures();
-                SolutionStatistics sol;
-                if (m.hasObjective()) {
-                    sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                            (long) (m.getTimeCount() * 1000),
-                            m.getBestSolutionValue().intValue());
-                } else {
-                    sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                            (long) (m.getTimeCount() * 1000));
-                }
-                measures.add(sol);
+        rp.getSolver().plugMonitor((IMonitorSolution) () -> {
+            IMeasures m = rp.getSolver().getMeasures();
+            SolutionStatistics sol;
+            if (m.hasObjective()) {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        (long) (m.getTimeCount() * 1000),
+                        m.getBestSolutionValue().intValue());
+            } else {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        (long) (m.getTimeCount() * 1000));
             }
+            measures.add(sol);
         });
 
         if (params.getVerbosity() >=1) {
@@ -155,6 +166,11 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
+
+        if (p != null) {
+            Solution s = solutions.getLastSolution();
+            views.forEach(v -> v.insertActions(rp, s, p));
+        }
         return new InstanceResult(p, getStatistics());
     }
 
@@ -192,8 +208,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
             cConstraints.add(buildSatConstraint(cstr));
         }
-
         cConstraints.add(buildOptConstraint());
+
+        views = makeViews();
 
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
@@ -210,20 +227,22 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         return rpb.build();
     }
 
-    /**
-     * Inject the constraints inside the problem.
-     */
-    private boolean injectConstraints() throws SchedulerException {
-        try {
-            for (ChocoConstraint cc : cConstraints) {
-                if (!cc.inject(params, rp)) {
-                    return false;
-                }
+    private List<ChocoView> makeViews() throws SchedulerException {
+        List<ChocoView> l = new ArrayList<>();
+        ModelViewMapper vm = params.getViewMapper();
+        for (ModelView v : this.origin.getViews()) {
+            ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
+            if (modelViewBuilder != null) {
+                SolverViewBuilder sb = modelViewBuilder.build(v);
+                ChocoView cv = sb.build(null);
+                l.add(cv);
             }
-        } catch (UnsupportedOperationException ex) {
-            return false;
         }
-        return true;
+        List<String> base = new ArrayList<>();
+        for (SolverViewBuilder vb : params.getSolverViews()) {
+            base.add(vb.getKey());
+        }
+        return ChocoViews.resolveDependencies(origin, l, base);
     }
 
     /**
@@ -260,18 +279,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                     + obj.getClass().getSimpleName() + "'");
         }
         return cObj;
-    }
-
-    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SchedulerException {
-        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
-        for (SatConstraint c : cs) {
-            chk.addChecker(c.getChecker());
-        }
-        try {
-            chk.check(p);
-        } catch (ReconfigurationPlanCheckerException ex) {
-            throw new SchedulerException(p.getOrigin(), ex.getMessage(), ex);
-        }
     }
 
     private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {

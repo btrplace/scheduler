@@ -28,6 +28,7 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.*;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.RoundedUpDivision;
@@ -80,11 +81,14 @@ public class CShareableResource implements ChocoView {
     /**
      * Make a new mapping.
      *
-     * @param p the problem to rely on
      * @param r the resource to consider
      */
-    public CShareableResource(ReconfigurationProblem p, ShareableResource r) throws SchedulerException {
+    public CShareableResource(ShareableResource r) throws SchedulerException {
         this.rc = r;
+    }
+
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         this.references = new HashMap<>();
         this.clones = new HashMap<>();
@@ -94,12 +98,12 @@ public class CShareableResource implements ChocoView {
         phyRcUsage = new IntVar[nodes.length];
         virtRcUsage = new IntVar[nodes.length];
         this.ratios = new RealVar[nodes.length];
-        id = ShareableResource.VIEW_ID_BASE + r.getResourceIdentifier();
+        id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
             Node nId = p.getNode(i);
-            phyRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, r.getCapacity(nodes[i]), p.getSolver());
-            virtRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("virtRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, p.getSolver());
-            ratios[i] = VariableFactory.real(p.makeVarLabel("overbook('", r.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01, p.getSolver());
+            phyRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nodes[i]), p.getSolver());
+            virtRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, p.getSolver());
+            ratios[i] = VariableFactory.real(p.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01, p.getSolver());
         }
 
 
@@ -115,11 +119,11 @@ public class CShareableResource implements ChocoView {
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation[i] = VariableFactory.fixed(p.makeVarLabel("cste -- " + "vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "'"), 0, s);
+                vmAllocation[i] = VariableFactory.fixed(p.makeVarLabel("cste -- " + "vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0, s);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmAllocation[i] = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE / 1000, s);
+                vmAllocation[i] = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE / 1000, s);
                 notNullUsage.add(vmAllocation[i]);
                 hosts.add(slice.getHoster());
             }
@@ -130,11 +134,11 @@ public class CShareableResource implements ChocoView {
         if (v == null) {
             throw new SchedulerException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
-        ((Packing) v).addDim(r.getResourceIdentifier(),
+        ((Packing) v).addDim(rc.getResourceIdentifier(),
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
                 hosts.toArray(new IntVar[hosts.size()]));
-
+        return true;
     }
 
     /**
@@ -482,6 +486,11 @@ public class CShareableResource implements ChocoView {
         return true;
     }
 
+    @Override
+    public List<String> getDependencies() {
+        return Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID);
+    }
+
     /**
      * Builder associated to the constraint.
      */
@@ -496,7 +505,7 @@ public class CShareableResource implements ChocoView {
             return new DelegatedBuilder(v.getIdentifier(), Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID)) {
                 @Override
                 public ChocoView build(ReconfigurationProblem r) throws SchedulerException {
-                    return new CShareableResource(r, (ShareableResource) v);
+                    return new CShareableResource((ShareableResource) v);
                 }
             };
         }

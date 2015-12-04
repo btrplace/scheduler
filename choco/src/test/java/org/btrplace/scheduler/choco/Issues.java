@@ -396,6 +396,7 @@ public class Issues {
         System.out.println(i.getModel());
         s.doOptimize(false);
         ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        Assert.assertNotNull(p);
         System.out.println(p);
         Assert.assertTrue(p.getActions().isEmpty());
         s.doRepair(true);
@@ -412,6 +413,7 @@ public class Issues {
         System.out.println(i.getModel());
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        Assert.assertNotNull(p);
         System.out.println(p);
         Assert.assertTrue(p.getActions().isEmpty());
         s.doRepair(true);

@@ -27,6 +27,7 @@ import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -76,11 +77,17 @@ public class CNetwork implements ChocoView {
      */
     public CNetwork(ReconfigurationProblem p, Network n) throws SchedulerException {
         net = n;
-        rp = p;
-        solver = p.getSolver();
-        source = p.getSourceModel();
         tasksList = new ArrayList<>();
         heightsList = new ArrayList<>();
+    }
+
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        this.rp = rp;
+        solver = rp.getSolver();
+        source = rp.getSourceModel();
+
+        return true;
     }
 
     @Override

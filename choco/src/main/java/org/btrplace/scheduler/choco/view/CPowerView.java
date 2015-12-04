@@ -21,6 +21,8 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
@@ -57,6 +59,11 @@ public class CPowerView implements ChocoView {
      * @param rp the problem to rely on
      */
     public CPowerView(ReconfigurationProblem rp) {
+
+    }
+
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         powerStarts = new HashMap<>(rp.getNodes().length);
         powerEnds = new HashMap<>(rp.getNodes().length);
 
@@ -73,6 +80,7 @@ public class CPowerView implements ChocoView {
                 powerEnds.put(rp.getNode(n), /*na.getHostingEnd()*/rp.getEnd());
             }
         }
+        return true;
     }
 
     /**

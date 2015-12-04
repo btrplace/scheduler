@@ -22,7 +22,6 @@ package org.btrplace.scheduler.choco;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.btrplace.model.*;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -104,8 +103,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private TransitionFactory amFactory;
 
-    private SolverViewsManager viewsManager;
+    //private SolverViewsManager viewsManager;
 
+    private Map<String, ChocoView> coreViews;
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -153,37 +153,36 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-        makeViews(ps);
+        //viewsManager = new SolverViewsManager(this);
+        makeCoreViews(ps);
         linkCardinalityWithSlices();
 
     }
 
-    private void makeViews(Parameters ps) throws SchedulerException {
-        List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
-        ModelViewMapper vm = ps.getViewMapper();
-        for (ModelView v : model.getViews()) {
-            ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
-            if (modelViewBuilder != null) {
-                SolverViewBuilder sb = modelViewBuilder.build(v);
-                viewBuilders.add(sb);
-            }
+    private void makeCoreViews(Parameters ps) throws SchedulerException {
+        coreViews = new HashMap<>();
+        for (SolverViewBuilder b : ps.getSolverViews()) {
+            ChocoView v = b.build(this);
+            addView(v);
         }
-        viewsManager = new SolverViewsManager(this);
-        viewsManager.build(viewBuilders);
+        /*List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
+        for (SolverViewBuilder svb : viewBuilders) {
+            addView(svb.build(this));
+        }*/
     }
 
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
+
 
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }
         addContinuousResourceCapacities();
 
-        if (!viewsManager.beforeSolve()) {
-            return null;
-        }
-
+        getView(Packing.VIEW_ID).beforeSolve(this);
+        getView(Cumulatives.VIEW_ID).beforeSolve(this);
+        getView(AliasedCumulatives.VIEW_ID).beforeSolve(this);
         //Set the timeout
         if (timeLimit > 0) {
             SMF.limitTime(solver, timeLimit * 1000);
@@ -252,7 +251,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             action.insertActions(s, plan);
         }
 
-        viewsManager.insertActions(s, plan);
+        //viewsManager.insertActions(s, plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(s, plan);
@@ -315,17 +314,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
-    /**
-     * Create the cardinality variables.
-     */
-    private void makeCardinalityVariables() {
-        vmsCountOnNodes = new IntVar[nodes.length];
-        int nbVMs = vms.length;
-        for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = VariableFactory.bounded(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs, solver);
-        }
-    }
-
     private void linkCardinalityWithSlices() throws SchedulerException {
         IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
@@ -337,6 +325,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw new SchedulerException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
         }
         ((Packing) v).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
+    }
+
+    /**
+     * Create the cardinality variables.
+     */
+    private void makeCardinalityVariables() {
+        vmsCountOnNodes = new IntVar[nodes.length];
+        int nbVMs = vms.length;
+        for (int i = 0; i < vmsCountOnNodes.length; i++) {
+            vmsCountOnNodes[i] = VariableFactory.bounded(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs, solver);
+        }
     }
 
     @Override
@@ -472,17 +471,23 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public final ChocoView getView(String id) {
-        return viewsManager.get(id);
+        return coreViews.get(id);
+        //return viewsManager.get(id);
     }
 
     @Override
     public Collection<String> getViews() {
-        return viewsManager.getKeys();
+        return coreViews.keySet();
     }
 
     @Override
     public boolean addView(ChocoView v) {
-        return viewsManager.add(v);
+        if (coreViews.containsKey(v.getIdentifier())) {
+            return false;
+        }
+        coreViews.put(v.getIdentifier(), v);
+        ;
+        return true;
     }
 
     @Override
@@ -672,7 +677,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (newVM == null) {
             return null;
         }
-        viewsManager.cloneVM(vm, newVM);
+        for (Map.Entry<String, ChocoView> e : coreViews.entrySet()) {
+            e.getValue().cloneVM(vm, newVM);
+        }
         return newVM;
     }
 

@@ -19,6 +19,8 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.VM;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.LocalTaskScheduler;
@@ -35,7 +37,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public abstract class AbstractCumulatives {
+public abstract class AbstractCumulatives implements ChocoView {
 
     protected ReconfigurationProblem rp;
 
@@ -125,5 +127,71 @@ public abstract class AbstractCumulatives {
             int[] assoc = e.getValue();
             associations[assoc[0]] = assoc[1];
         }
+    }
+
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        /*this.rp = rp;
+        cUsages = new ArrayList<>();
+        dUsages = new ArrayList<>();
+
+        List<Slice> dS = new ArrayList<>();
+        List<Slice> cS = new ArrayList<>();
+
+
+        non = new HashMap<>();
+
+        int dIdx = 0, cIdx = 0;
+
+        for (VMTransition a : rp.getVMActions()) {
+            Slice c = a.getCSlice();
+            Slice d = a.getDSlice();
+
+            if (d != null && c != null) {
+                non.put(a.getVM(), new int[]{dIdx, cIdx});
+            }
+            if (d != null) {
+                dS.add(dIdx, d);
+                dIdx++;
+            }
+
+            if (c != null) {
+                cS.add(cIdx, c);
+                cIdx++;
+            }
+        }
+
+
+        int i = 0;
+        cHosts = new IntVar[cS.size()];
+        cEnds = new IntVar[cS.size()];
+        for (Slice s : cS) {
+            cHosts[i] = s.getHoster();
+            cEnds[i] = s.getEnd();
+            i++;
+
+        }
+
+        i = 0;
+        dStarts = new IntVar[dS.size()];
+        dHosts = new IntVar[dS.size()];
+
+        for (Slice s : dS) {
+            dHosts[i] = s.getHoster();
+            dStarts[i] = s.getStart();
+            i++;
+        }
+
+
+        associations = new int[dHosts.length];
+        //No associations task by default, then we create the associations.
+        for (i = 0; i < associations.length; i++) {
+            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
+        }
+        for (Map.Entry<VM, int[]> e : non.entrySet()) {
+            int[] assoc = e.getValue();
+            associations[assoc[0]] = assoc[1];
+        }*/
+        return true;
     }
 }
