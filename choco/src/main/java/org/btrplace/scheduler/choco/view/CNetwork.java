@@ -67,13 +67,11 @@ public class CNetwork implements ChocoView {
     List<IntVar> heightsList;
 
     /**
-     * Make a new network view
+     * Make a new network view.
      *
-     * @param p the reconfiguration problem
      * @param n the network view we rely on
-     * @throws SchedulerException   if one or more needed VM attributes are not defined
      */
-    public CNetwork(ReconfigurationProblem p, Network n) throws SchedulerException {
+    public CNetwork(Network n) throws SchedulerException {
         net = n;
         tasksList = new ArrayList<>();
         heightsList = new ArrayList<>();
@@ -308,7 +306,7 @@ public class CNetwork implements ChocoView {
 
         @Override
         public ChocoView build(final ModelView v) throws SchedulerException {
-            return new CNetwork(null, (Network) v);
+            return new CNetwork((Network) v);
         }
     }
 }

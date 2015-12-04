@@ -152,7 +152,7 @@ public class CMaxOnline implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
 
         @Override
-        public ChocoConstraint build(Constraint cstr) {
+        public CMaxOnline build(Constraint cstr) {
             return new CMaxOnline((MaxOnline) cstr);
         }
 
