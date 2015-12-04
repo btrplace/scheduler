@@ -29,8 +29,6 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-
 
 /**
  * Unit tests for {@link org.btrplace.scheduler.choco.view.ModelViewMapper}.
@@ -96,7 +94,7 @@ public class ModelViewMapperTest {
 
         @Override
         public SolverViewBuilder build(ModelView v) throws SchedulerException {
-            return new DelegatedBuilder("mock", Collections.<String>emptyList()) {
+            return new DelegatedBuilder("mock") {
                 @Override
                 public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
                     return new CMockView();

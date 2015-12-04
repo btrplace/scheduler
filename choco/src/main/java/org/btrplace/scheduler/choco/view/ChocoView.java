@@ -63,7 +63,9 @@ public interface ChocoView extends Injectable {
      * @param p  the computed plan
      * @return {@code true} iff the insertion succeeded
      */
-    boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p);
+    default boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
+        return true;
+    }
 
     /**
      * Notify a new VM will be a clone of an already known VM.
@@ -72,7 +74,9 @@ public interface ChocoView extends Injectable {
      * @param clone the clone identifier
      * @return {@code true} iff the view validate the cloning process.
      */
-    boolean cloneVM(VM vm, VM clone);
+    default boolean cloneVM(VM vm, VM clone) {
+        return true;
+    }
 
     /**
      * Get the view dependencies.

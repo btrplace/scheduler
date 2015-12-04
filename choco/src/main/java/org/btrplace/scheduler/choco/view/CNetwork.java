@@ -25,7 +25,6 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
-import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -36,7 +35,6 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.constraints.nary.cumulative.Cumulative;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
 import org.chocosolver.solver.variables.VF;
@@ -299,12 +297,6 @@ public class CNetwork implements ChocoView {
         return true;
     }
 
-    @Override
-    public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) { return true; }
-
-    @Override
-    public boolean cloneVM(VM vm, VM clone) { return true; }
-
     /**
      * Builder associated to the constraint.
      */
@@ -316,7 +308,7 @@ public class CNetwork implements ChocoView {
 
         @Override
         public SolverViewBuilder build(final ModelView v) throws SchedulerException {
-            return new DelegatedBuilder(v.getIdentifier(), Collections.emptyList()) {
+            return new DelegatedBuilder(v.getIdentifier()) {
                 @Override
                 public ChocoView build(ReconfigurationProblem r) throws SchedulerException {
                     return new CNetwork(r, (Network) v);

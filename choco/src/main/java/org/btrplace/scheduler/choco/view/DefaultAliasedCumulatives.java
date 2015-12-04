@@ -29,7 +29,6 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -136,11 +135,5 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
         public org.btrplace.scheduler.choco.view.AliasedCumulatives build(ReconfigurationProblem p) {
             return new DefaultAliasedCumulatives(p);
         }
-
-        @Override
-        public List<String> getDependencies() {
-            return Collections.emptyList();
-        }
-
     }
 }

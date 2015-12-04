@@ -19,7 +19,6 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.VM;
-import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -31,12 +30,10 @@ import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,16 +65,6 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     @Override
     public String getIdentifier() {
         return Cumulatives.VIEW_ID;
-    }
-
-    @Override
-    public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
-        return true;
-    }
-
-    @Override
-    public boolean cloneVM(VM vm, VM clone) {
-        return true;
     }
 
     /**
@@ -239,11 +226,6 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         @Override
         public Cumulatives build(ReconfigurationProblem p) {
             return new DefaultCumulatives(p);
-        }
-
-        @Override
-        public List<String> getDependencies() {
-            return Collections.emptyList();
         }
     }
 }

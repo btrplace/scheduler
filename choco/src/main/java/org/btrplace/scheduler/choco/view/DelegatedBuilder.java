@@ -21,8 +21,6 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
-import java.util.List;
-
 /**
  * Kind of a builder that is used when {@link org.btrplace.scheduler.choco.view.ChocoModelViewBuilder} cannot
  * instantiate {@link org.btrplace.scheduler.choco.view.SolverViewBuilder} out of the box.
@@ -33,17 +31,13 @@ public abstract class DelegatedBuilder extends SolverViewBuilder {
 
     private String key;
 
-    private List<String> deps;
-
     /**
      * New builder.
      *
      * @param k the view identifier.
-     * @param d the dependencies for the building process
      */
-    public DelegatedBuilder(String k, List<String> d) {
+    public DelegatedBuilder(String k) {
         this.key = k;
-        this.deps = d;
     }
 
     @Override
@@ -54,8 +48,4 @@ public abstract class DelegatedBuilder extends SolverViewBuilder {
     @Override
     public abstract ChocoView build(ReconfigurationProblem rp) throws SchedulerException;
 
-    @Override
-    public List<String> getDependencies() {
-        return deps;
-    }
 }

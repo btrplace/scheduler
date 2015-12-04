@@ -21,8 +21,6 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
-import java.util.List;
-
 /**
  * To build solver-side views.
  *
@@ -44,17 +42,4 @@ public abstract class SolverViewBuilder {
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred while building the view
      */
     public abstract ChocoView build(ReconfigurationProblem rp) throws SchedulerException;
-
-    /**
-     * Get the view dependencies.
-     * The dependencies will be build in prior.
-     *
-     * @return a list of view identifier that may be empty
-     */
-    public abstract List<String> getDependencies();
-
-    @Override
-    public String toString() {
-        return getKey() + " requires " + getDependencies();
-    }
 }

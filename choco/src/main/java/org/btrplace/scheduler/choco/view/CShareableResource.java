@@ -502,7 +502,7 @@ public class CShareableResource implements ChocoView {
 
         @Override
         public SolverViewBuilder build(final ModelView v) throws SchedulerException {
-            return new DelegatedBuilder(v.getIdentifier(), Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID)) {
+            return new DelegatedBuilder(v.getIdentifier()) {
                 @Override
                 public ChocoView build(ReconfigurationProblem r) throws SchedulerException {
                     return new CShareableResource((ShareableResource) v);

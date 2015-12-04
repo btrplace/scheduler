@@ -19,8 +19,6 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -28,7 +26,6 @@ import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -113,13 +110,4 @@ public class CPowerView implements ChocoView {
         return true;
     }
 
-    @Override
-    public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
-        return true;
-    }
-
-    @Override
-    public boolean cloneVM(VM vm, VM clone) {
-        return true;
-    }
 }
