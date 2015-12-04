@@ -260,6 +260,11 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         }
     }
 
+    
+    @Override
+    public String toString() {
+        return ("minimizeMTTR()");
+    }
     /**
      * Builder associated to the constraint.
      */
