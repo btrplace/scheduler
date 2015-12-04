@@ -36,7 +36,7 @@ import java.util.Map;
  * <li>the view mapper comes from {@link org.btrplace.scheduler.choco.view.ModelViewMapper#newBundle()}</li>
  * <li>the duration evaluator is {@link org.btrplace.scheduler.choco.duration.DurationEvaluators#newBundle()}</li>
  * <li>the constraint mapper is {@link org.btrplace.scheduler.choco.constraint.ConstraintMapper#newBundle()}</li>
- * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.DefaultPacking}</li>
+ * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.VectorPacking}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Cumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultCumulatives}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.AliasedCumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives}</li>
  * </ul>
