@@ -43,5 +43,5 @@ public interface ChocoModelViewBuilder {
      * @param v the model constraint
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred while building the view
      */
-    SolverViewBuilder build(ModelView v) throws SchedulerException;
+    ChocoView build(ModelView v) throws SchedulerException;
 }

@@ -82,7 +82,7 @@ public interface ChocoView extends Injectable {
      * Get the view dependencies.
      * The dependencies will be injected in prior.
      *
-     * @return a list of view identifier that may be empty
+     * @return a list of view identifiers that may be empty
      */
     default List<String> getDependencies() {
         return Collections.emptyList();

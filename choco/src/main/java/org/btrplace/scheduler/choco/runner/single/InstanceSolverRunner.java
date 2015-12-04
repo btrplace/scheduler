@@ -233,9 +233,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         for (ModelView v : this.origin.getViews()) {
             ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
             if (modelViewBuilder != null) {
-                SolverViewBuilder sb = modelViewBuilder.build(v);
-                ChocoView cv = sb.build(null);
-                l.add(cv);
+                l.add(modelViewBuilder.build(v));
             }
         }
         List<String> base = new ArrayList<>();

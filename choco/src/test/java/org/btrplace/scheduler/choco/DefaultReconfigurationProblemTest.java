@@ -578,74 +578,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNode.class, a.getClass());
     }
-    /*
-    @Test
-    public void testViewMapping() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
 
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-
-        Parameters ps = new DefaultParameters();
-        ModelViewMapper mapper = new ModelViewMapper();
-        ps.setViewMapper(mapper);
-        mapper.register(new ChocoModelViewBuilder() {
-            @Override
-            public Class<? extends ModelView> getKey() {
-                return MockView.class;
-            }
-
-            @Override
-            public SolverViewBuilder build(ModelView v) throws SchedulerException {
-                return new DelegatedBuilder("cmock", Collections.<String>emptyList()) {
-                    @Override
-                    public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
-                        return new ModelViewMapperTest.CMockView();
-                    }
-                };
-            }
-        });
-
-        MockView v = new MockView();
-        mo.attach(v);
-
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setParams(ps)
-                .build();
-
-        Assert.assertNotNull(rp.getView("mock"));
-        Assert.assertTrue(rp.getView("mock") instanceof ModelViewMapperTest.CMockView);
-    }
-
-    @Test
-    public void testNoViewImplementation() throws SchedulerException {
-        Model mo = new DefaultModel();
-
-        MockView v = new MockView();
-        mo.attach(v);
-
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        Assert.assertNull(rp.getView("mock"));
-    }
-*/
     /**
      * Check the consistency between the variables counting the number of VMs on
      * each node, and the placement variable.

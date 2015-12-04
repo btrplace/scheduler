@@ -93,13 +93,8 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public SolverViewBuilder build(ModelView v) throws SchedulerException {
-            return new DelegatedBuilder("mock") {
-                @Override
-                public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
+        public ChocoView build(ModelView v) throws SchedulerException {
                     return new CMockView();
-                }
-            };
         }
 
     }

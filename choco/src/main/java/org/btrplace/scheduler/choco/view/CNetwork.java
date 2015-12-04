@@ -307,13 +307,8 @@ public class CNetwork implements ChocoView {
         }
 
         @Override
-        public SolverViewBuilder build(final ModelView v) throws SchedulerException {
-            return new DelegatedBuilder(v.getIdentifier()) {
-                @Override
-                public ChocoView build(ReconfigurationProblem r) throws SchedulerException {
-                    return new CNetwork(r, (Network) v);
-                }
-            };
+        public ChocoView build(final ModelView v) throws SchedulerException {
+            return new CNetwork(null, (Network) v);
         }
     }
 }
