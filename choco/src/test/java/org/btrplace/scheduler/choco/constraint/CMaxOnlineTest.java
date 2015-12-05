@@ -92,7 +92,7 @@ public class CMaxOnlineTest {
         constraints.add(maxon2);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(4);
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
@@ -112,7 +112,7 @@ public class CMaxOnlineTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.setTimeLimit(5);
         cra.setMaxEnd(4);
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         System.out.println(plan.toString());
@@ -143,7 +143,7 @@ public class CMaxOnlineTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.setTimeLimit(3);
         cra.setMaxEnd(3);
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxon.isSatisfied(plan));
@@ -182,7 +182,7 @@ public class CMaxOnlineTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
         cra.setMaxEnd(10);
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxOn.isSatisfied(plan));

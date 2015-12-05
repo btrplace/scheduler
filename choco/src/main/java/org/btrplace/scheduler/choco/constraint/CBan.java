@@ -23,7 +23,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
@@ -97,20 +96,5 @@ public class CBan implements ChocoConstraint {
     @Override
     public String toString() {
         return ban.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Ban.class;
-        }
-
-        @Override
-        public CBan build(Constraint cstr) {
-            return new CBan((Ban) cstr);
-        }
     }
 }

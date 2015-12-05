@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -80,20 +79,5 @@ public class COnline implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Online.class;
-        }
-
-        @Override
-        public COnline build(Constraint c) {
-            return new COnline((Online) c);
-        }
     }
 }

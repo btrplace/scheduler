@@ -257,7 +257,7 @@ public class Issues {
         // idle should be less than Amount for MaxSN (0, in this case)
         solver.post(IntConstraintFactory.arithm(sum, "=", 0));
         System.err.flush();
-        CMinMTTR obj = new CMinMTTR();
+        CMinMTTR obj = new CMinMTTR(null);
         obj.inject(new DefaultParameters(), rp);
         //System.err.println(solver.toString());
         //ChocoLogging.setLoggingMaxDepth(100);

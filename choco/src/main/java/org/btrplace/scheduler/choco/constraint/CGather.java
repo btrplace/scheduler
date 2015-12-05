@@ -22,7 +22,6 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Gather;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -146,20 +145,5 @@ public class CGather implements ChocoConstraint {
             return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Gather.class;
-        }
-
-        @Override
-        public CGather build(Constraint c) {
-            return new CGather((Gather) c);
-        }
     }
 }

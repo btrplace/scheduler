@@ -23,7 +23,6 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.ResourceCapacity;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
@@ -177,20 +176,5 @@ public class CResourceCapacity implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return ResourceCapacity.class;
-        }
-
-        @Override
-        public CResourceCapacity build(Constraint c) {
-            return new CResourceCapacity((ResourceCapacity) c);
-        }
     }
 }

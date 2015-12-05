@@ -28,7 +28,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.SliceUtils;
-import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -63,8 +62,12 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     /**
      * Make a new objective.
      */
-    public CMinMTTR() {
+    public CMinMTTR(MinMTTR m) {
         costConstraints = new ArrayList<>();
+    }
+
+    public CMinMTTR() {
+        this(null);
     }
 
     @Override
@@ -264,19 +267,5 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     @Override
     public String toString() {
         return ("minimizeMTTR()");
-    }
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends org.btrplace.model.constraint.Constraint> getKey() {
-            return MinMTTR.class;
-        }
-
-        @Override
-        public CMinMTTR build(org.btrplace.model.constraint.Constraint cstr) {
-            return new CMinMTTR();
-        }
     }
 }

@@ -22,7 +22,6 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.RunningCapacity;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -149,20 +148,5 @@ public class CRunningCapacity implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return RunningCapacity.class;
-        }
-
-        @Override
-        public CRunningCapacity build(Constraint c) {
-            return new CRunningCapacity((RunningCapacity) c);
-        }
     }
 }

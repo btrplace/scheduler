@@ -23,7 +23,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -101,20 +100,5 @@ public class CFence implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Fence.class;
-        }
-
-        @Override
-        public CFence build(Constraint c) {
-            return new CFence((Fence) c);
-        }
     }
 }

@@ -23,7 +23,6 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Split;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -182,20 +181,5 @@ public class CSplit implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Split.class;
-        }
-
-        @Override
-        public CSplit build(Constraint c) {
-            return new CSplit((Split) c);
-        }
     }
 }

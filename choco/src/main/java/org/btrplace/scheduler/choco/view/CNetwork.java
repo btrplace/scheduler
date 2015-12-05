@@ -60,7 +60,7 @@ public class CNetwork implements ChocoView {
     public static final String VIEW_ID = "NetworkView";
 
     private Network net;
-    private ReconfigurationProblem rp;
+
     private Solver solver;
     private Model source;
     List<Task> tasksList;
@@ -79,7 +79,6 @@ public class CNetwork implements ChocoView {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-        this.rp = rp;
         solver = rp.getSolver();
         source = rp.getSourceModel();
 

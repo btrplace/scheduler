@@ -25,7 +25,6 @@ import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -60,7 +59,13 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     /**
      * Make a new Objective.
      */
-    public CMinMTTRMig() { costConstraints = new ArrayList<>(); }
+    public CMinMTTRMig(MinMTTRMig m) {
+        costConstraints = new ArrayList<>();
+    }
+
+    public CMinMTTRMig() {
+        this(null);
+    }
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
@@ -303,21 +308,5 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
-    }
-
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends org.btrplace.model.constraint.Constraint> getKey() {
-            return MinMTTRMig.class;
-        }
-
-        @Override
-        public CMinMTTRMig build(org.btrplace.model.constraint.Constraint cstr) {
-            return new CMinMTTRMig();
-        }
     }
 }

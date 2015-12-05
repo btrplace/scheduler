@@ -21,9 +21,7 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.MaxOnline;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -143,24 +141,4 @@ public class CMaxOnline implements ChocoConstraint {
     public String toString() {
         return constraint.toString();
     }
-
-    /**
-     * The builder associated to this constraint.
-     *
-     * @author Tu Huynh Dang
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-
-        @Override
-        public CMaxOnline build(Constraint cstr) {
-            return new CMaxOnline((MaxOnline) cstr);
-        }
-
-        @Override
-        public Class<? extends SatConstraint> getKey() {
-            return MaxOnline.class;
-        }
-
-    }
-
 }

@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint.migration;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.migration.Sync;
 import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
@@ -29,7 +28,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
-import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
@@ -159,20 +157,5 @@ public class CSync implements ChocoConstraint {
         }
 
         return true;
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Sync.class;
-        }
-
-        @Override
-        public CSync build(Constraint c) {
-            return new CSync((Sync) c);
-        }
     }
 }

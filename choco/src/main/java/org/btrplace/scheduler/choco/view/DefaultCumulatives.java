@@ -216,7 +216,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     /**
      * Builder associated to this constraint.
      */
-    public static class Builder extends SolverViewBuilder {
+    public static class Builder implements SolverViewBuilder {
 
         @Override
         public String getKey() {

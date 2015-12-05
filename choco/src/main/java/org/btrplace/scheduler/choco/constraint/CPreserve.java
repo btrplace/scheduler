@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
@@ -92,20 +91,5 @@ public class CPreserve implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Preserve.class;
-        }
-
-        @Override
-        public CPreserve build(Constraint c) {
-            return new CPreserve((Preserve) c);
-        }
     }
 }

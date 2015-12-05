@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.NoDelay;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -108,20 +107,5 @@ public class CNoDelay implements ChocoConstraint {
             ChocoUtils.postImplies(s, move, c);
         }
         return true;
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return NoDelay.class;
-        }
-
-        @Override
-        public CNoDelay build(Constraint c) {
-            return new CNoDelay((NoDelay) c);
-        }
     }
 }

@@ -26,14 +26,14 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
  *
  * @author Fabien Hermenier
  */
-public abstract class SolverViewBuilder {
+public interface SolverViewBuilder {
 
     /**
      * Get the identifier of the view that is handled by this builder.
      *
      * @return a string
      */
-    public abstract String getKey();
+    String getKey();
 
     /**
      * Build the {@link ChocoView}
@@ -41,5 +41,5 @@ public abstract class SolverViewBuilder {
      * @param rp the problem to add
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred while building the view
      */
-    public abstract ChocoView build(ReconfigurationProblem rp) throws SchedulerException;
+    ChocoView build(ReconfigurationProblem rp) throws SchedulerException;
 }

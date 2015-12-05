@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Ban;
+import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.NoDelay;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
@@ -78,7 +79,7 @@ public class CNoDelayTest {
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNotNull(plan);
@@ -120,7 +121,7 @@ public class CNoDelayTest {
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNotNull(plan);
@@ -162,7 +163,7 @@ public class CNoDelayTest {
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNull(plan);

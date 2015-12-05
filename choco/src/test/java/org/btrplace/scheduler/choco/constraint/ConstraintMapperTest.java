@@ -22,7 +22,6 @@ import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.scheduler.SchedulerException;
@@ -52,27 +51,18 @@ public class ConstraintMapperTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
-    public void testGetBuilder() {
-        ConstraintMapper map = ConstraintMapper.newBundle();
-        ChocoConstraintBuilder b = map.getBuilder(Spread.class);
-        Assert.assertEquals(b.getClass(), CSpread.Builder.class);
-
-        Assert.assertNull(map.getBuilder(MockSatConstraint.class));
+    public void testRegister() {
+        ConstraintMapper map = new ConstraintMapper();
+        map.register(MockSatConstraint.class, MockCConstraint.class);
+        Assert.assertTrue(map.isRegistered(MockSatConstraint.class));
     }
+
 
     @Test(dependsOnMethods = {"testInstantiate", "testRegister"})
     public void testUnregister() {
         ConstraintMapper map = new ConstraintMapper();
-        Assert.assertNull(map.getBuilder(MockSatConstraint.class));
+        Assert.assertFalse(map.isRegistered(MockSatConstraint.class));
         Assert.assertFalse(map.unRegister(MockSatConstraint.class));
-    }
-
-    @Test(dependsOnMethods = {"testInstantiate", "testGetBuilder"})
-    public void testRegister() {
-        ConstraintMapper map = new ConstraintMapper();
-        Builder cb = new Builder();
-        Assert.assertTrue(map.register(cb));
-        Assert.assertEquals(map.getBuilder(MockSatConstraint.class), cb);
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
@@ -84,8 +74,7 @@ public class ConstraintMapperTest {
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
         map.unRegister(Spread.class);
-        CSpread.Builder cb = new CSpread.Builder();
-        map.register(cb);
+        map.register(Spread.class, CSpread.class);
         c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
@@ -104,20 +93,10 @@ public class ConstraintMapperTest {
         }
     }
 
-    public class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return MockSatConstraint.class;
-        }
-
-        @Override
-        public ChocoConstraint build(Constraint cstr) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     public static class MockCConstraint implements ChocoConstraint {
 
+        public MockCConstraint(MockSatConstraint m) {
+        }
 
         @Override
         public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {

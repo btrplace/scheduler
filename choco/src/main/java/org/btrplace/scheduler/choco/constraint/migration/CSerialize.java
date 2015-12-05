@@ -20,13 +20,11 @@ package org.btrplace.scheduler.choco.constraint.migration;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.migration.Serialize;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
-import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
@@ -106,20 +104,5 @@ public class CSerialize implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Serialize.class;
-        }
-
-        @Override
-        public CSerialize build(Constraint c) {
-            return new CSerialize((Serialize) c);
-        }
     }
 }

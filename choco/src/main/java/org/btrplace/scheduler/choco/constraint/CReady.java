@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Ready;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -74,21 +73,5 @@ public class CReady implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Ready.class;
-        }
-
-        @Override
-        public CReady build(Constraint c) {
-            return new CReady((Ready) c);
-        }
     }
 }

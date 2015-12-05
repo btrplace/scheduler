@@ -30,7 +30,7 @@ import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
-import org.btrplace.scheduler.choco.constraint.ChocoConstraintBuilder;
+import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
 import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.view.*;
@@ -206,9 +206,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
-            cConstraints.add(buildSatConstraint(cstr));
+            cConstraints.add(build(cstr));
         }
-        cConstraints.add(buildOptConstraint());
+        cConstraints.add(build(obj));
 
         views = makeViews();
 
@@ -250,33 +250,17 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * @return the solver-side constraint
      * @throws org.btrplace.scheduler.SchedulerException if the process failed
      */
-    private ChocoConstraint buildSatConstraint(SatConstraint cstr) throws SchedulerException {
-        ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(cstr.getClass());
-        if (ccBuilder == null) {
+    private ChocoConstraint build(Constraint cstr) throws SchedulerException {
+        ConstraintMapper mapper = params.getConstraintMapper();
+        if (!mapper.isRegistered(cstr.getClass())) {
             throw new SchedulerException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
         }
-        ChocoConstraint cc = ccBuilder.build(cstr);
+        ChocoConstraint cc = mapper.map(cstr);
         if (cc == null) {
             throw new SchedulerException(origin, "Error while mapping the constraint '"
                     + cstr.getClass().getSimpleName() + "'");
         }
         return cc;
-    }
-
-    /**
-     * Make the optimization constraint
-     */
-    private ChocoConstraint buildOptConstraint() throws SchedulerException {
-        ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(obj.getClass());
-        if (ccBuilder == null) {
-            throw new SchedulerException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
-        }
-        ChocoConstraint cObj = ccBuilder.build(obj);
-        if (cObj == null) {
-            throw new SchedulerException(origin, "Error while mapping the constraint '"
-                    + obj.getClass().getSimpleName() + "'");
-        }
-        return cObj;
     }
 
     private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {

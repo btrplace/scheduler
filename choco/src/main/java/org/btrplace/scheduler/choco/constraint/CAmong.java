@@ -198,19 +198,4 @@ public class CAmong implements ChocoConstraint {
     public String toString() {
         return cstr.toString();
     }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends org.btrplace.model.constraint.Constraint> getKey() {
-            return Among.class;
-        }
-
-        @Override
-        public CAmong build(org.btrplace.model.constraint.Constraint c) {
-            return new CAmong((Among) c);
-        }
-    }
 }

@@ -23,7 +23,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Among;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -144,20 +143,5 @@ public class CSplitAmong implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return SplitAmong.class;
-        }
-
-        @Override
-        public CSplitAmong build(Constraint c) {
-            return new CSplitAmong((SplitAmong) c);
-        }
     }
 }
