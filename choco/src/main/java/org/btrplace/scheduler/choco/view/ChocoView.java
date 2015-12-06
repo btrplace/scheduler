@@ -18,25 +18,30 @@
 
 package org.btrplace.scheduler.choco.view;
 
+import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Injectable;
+import org.btrplace.scheduler.choco.MisplacedVMsEstimator;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.search.solution.Solution;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 
 /**
- * Interface denoting the Choco implementation of a View. Such a view might be
- * generated from a {@link org.btrplace.model.view.ModelView} thanks to the {@link org.btrplace.scheduler.choco.view.ChocoModelViewBuilder}
- * or might be a solver-only view provided through {@link org.btrplace.scheduler.choco.Parameters}.
+ * Interface denoting the Choco implementation of a View. Such a view will be automatically
+ * instantiated from {@link org.btrplace.scheduler.choco.constraint.ChocoMapper} using
+ * the api-side view provided as a parameter or using a default constructor if this class
+ * is a solver-only view provided by {@link Parameters#getChocoViews()}.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoView extends Injectable {
+public interface ChocoView extends Injectable, MisplacedVMsEstimator {
 
     /**
      * Get the view unique identifier.
@@ -52,7 +57,9 @@ public interface ChocoView extends Injectable {
      * @return {@code false} iff there will be no solution to the RP.
      * @throws SchedulerException if an error occurred while building the problem
      */
-    boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException;
+    default boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
+        return true;
+    }
 
     /**
      * Allow the insertion of actions on the plan computed for a given problem.
@@ -88,4 +95,14 @@ public interface ChocoView extends Injectable {
         return Collections.emptyList();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param m the model to use to inspect the VMs.
+     * @return all the model VMs.
+     */
+    @Override
+    default Set<VM> getMisPlacedVMs(Model m) {
+        return m.getMapping().getAllVMs();
+    }
 }

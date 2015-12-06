@@ -28,12 +28,12 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,7 +61,7 @@ public class SuspendVMTest {
         dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
+                .setNextVMsStates(new HashSet<>(), new HashSet<>(), map.getAllVMs(), new HashSet<>())
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         SuspendVM m = (SuspendVM) rp.getVMActions()[0];
@@ -100,7 +100,7 @@ public class SuspendVMTest {
         dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
+                .setNextVMsStates(new HashSet<>(), new HashSet<>(), map.getAllVMs(), new HashSet<>())
                 .build();
         SuspendVM m1 = (SuspendVM) rp.getVMActions()[rp.getVM(vm1)];
         SuspendVM m2 = (SuspendVM) rp.getVMActions()[rp.getVM(vm2)];

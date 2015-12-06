@@ -36,7 +36,7 @@ public class ChocoViews {
                 }
             }
             if (blocked) {
-                throw new SchedulerException(mo, "Cyclic dependencies among the following views: " + remaining);
+                throw new SchedulerException(mo, "Missing dependencies or cyclic dependencies prevent from using: " + remaining);
             }
         }
         return solved;

@@ -75,7 +75,7 @@ public class COverbookTest {
         c.add(new Preserve(vms[0], "cpu", 1));
         c.addAll(Online.newOnline(m.getAllNodes()));
         DefaultChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(Overbook.class, COverbook.class);
+        cra.getMapper().mapConstraint(Overbook.class, COverbook.class);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
     }

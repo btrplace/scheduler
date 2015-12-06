@@ -74,8 +74,6 @@ public class RelocatableVM implements KeepRunningVM {
     private ReconfigurationProblem rp;
     private BoolVar state, stay;
     private IntVar duration, start, end, bandwidth;
-    private IntVar migrationDuration;
-    private int reInstantiateDuration;
     private Node src;
     private boolean manageable = true;
     private boolean postCopy = false;
@@ -160,11 +158,12 @@ public class RelocatableVM implements KeepRunningVM {
         int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm);
 
         // Compute the re-instantiation duration
-        reInstantiateDuration = bootDuration + forgeD;
+        int reInstantiateDuration = bootDuration + forgeD;
         reInstantiateDuration = forgeD; // Compliant with CMaxOnlineTest and others
         
         // Get the networking view if attached
         Network network = (Network) mo.getView(Network.VIEW_ID);
+        IntVar migrationDuration;
         if (network != null) {
 
             // Set the migration algorithm

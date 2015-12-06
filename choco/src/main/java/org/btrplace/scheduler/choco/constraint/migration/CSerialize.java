@@ -71,8 +71,7 @@ public class CSerialize implements ChocoConstraint {
         }
 
         // Get all migrations involved
-        for (Iterator<VM> ite = ser.getInvolvedVMs().iterator(); ite.hasNext();) {
-            VM vm = ite.next();
+        for (VM vm : ser.getInvolvedVMs()) {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
                 migrationList.add((RelocatableVM) vt);

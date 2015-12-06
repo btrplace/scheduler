@@ -18,14 +18,16 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.ChocoView;
+import org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives;
+import org.btrplace.scheduler.choco.view.DefaultCumulatives;
+import org.btrplace.scheduler.choco.view.VectorPacking;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default implementation of {@link Parameters}.
@@ -33,9 +35,8 @@ import java.util.Map;
  * <li>repair mode is disabled</li>
  * <li>no time limit</li>
  * <li>the transition factory comes from {@link org.btrplace.scheduler.choco.transition.TransitionFactory#newBundle()}</li>
- * <li>the view mapper comes from {@link org.btrplace.scheduler.choco.view.ModelViewMapper#newBundle()}</li>
  * <li>the duration evaluator is {@link org.btrplace.scheduler.choco.duration.DurationEvaluators#newBundle()}</li>
- * <li>the constraint mapper is {@link org.btrplace.scheduler.choco.constraint.ConstraintMapper#newBundle()}</li>
+ * <li>the api to choco element mapper is {@link ChocoMapper#newBundle()}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.VectorPacking}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Cumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultCumulatives}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.AliasedCumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives}</li>
@@ -45,9 +46,7 @@ import java.util.Map;
  */
 public class DefaultParameters implements Parameters {
 
-    private ModelViewMapper viewMapper;
-
-    private ConstraintMapper cstrMapper;
+    private ChocoMapper mapper;
 
     private TransitionFactory amf;
 
@@ -55,6 +54,7 @@ public class DefaultParameters implements Parameters {
 
     private long seed = 0;
 
+    private List<Class<? extends ChocoView>> views;
     /**
      * No time limit by default.
      */
@@ -68,22 +68,18 @@ public class DefaultParameters implements Parameters {
 
     private int verbosityLevel;
 
-    private Map<String, SolverViewBuilder> solverViewsBuilder;
-
     /**
      * New set of parameters.
      */
     public DefaultParameters() {
-        cstrMapper = ConstraintMapper.newBundle();
+        mapper = ChocoMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
-        viewMapper = ModelViewMapper.newBundle();
         amf = TransitionFactory.newBundle();
-        solverViewsBuilder = new HashMap<>();
         //Default solver views
-        solverViewsBuilder.put(Packing.VIEW_ID, new VectorPacking.Builder());
-        solverViewsBuilder.put(Cumulatives.VIEW_ID, new DefaultCumulatives.Builder());
-        solverViewsBuilder.put(AliasedCumulatives.VIEW_ID, new DefaultAliasedCumulatives.Builder());
-
+        views = new ArrayList<>();
+        views.add(VectorPacking.class);
+        views.add(DefaultCumulatives.class);
+        views.add(DefaultAliasedCumulatives.class);
     }
 
     @Override
@@ -109,17 +105,6 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public ModelViewMapper getViewMapper() {
-        return viewMapper;
-    }
-
-    @Override
-    public Parameters setViewMapper(ModelViewMapper m) {
-        viewMapper = m;
-        return this;
-    }
-
-    @Override
     public Parameters setRandomSeed(long s) {
         seed = s;
         return this;
@@ -142,13 +127,13 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public ConstraintMapper getConstraintMapper() {
-        return cstrMapper;
+    public ChocoMapper getMapper() {
+        return mapper;
     }
 
     @Override
-    public Parameters setConstraintMapper(ConstraintMapper map) {
-        cstrMapper = map;
+    public Parameters setMapper(ChocoMapper map) {
+        mapper = map;
         return this;
     }
 
@@ -196,17 +181,22 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public void addSolverViewBuilder(SolverViewBuilder b) {
-        solverViewsBuilder.put(b.getKey(), b);
+    public boolean addChocoView(Class<? extends ChocoView> c) {
+        try {
+            c.getDeclaredConstructor();
+            return views.add(c);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("No default constructor available for '" + c.getName() + "'");
+        }
     }
 
     @Override
-    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
-        return solverViewsBuilder.remove(b.getKey()) != null;
+    public boolean removeChocoView(Class<? extends ChocoView> v) {
+        return views.remove(v);
     }
 
     @Override
-    public Collection<SolverViewBuilder> getSolverViews() {
-        return solverViewsBuilder.values();
+    public List<Class<? extends ChocoView>> getChocoViews() {
+        return views;
     }
 }

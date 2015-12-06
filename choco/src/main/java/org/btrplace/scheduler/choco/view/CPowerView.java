@@ -52,10 +52,8 @@ public class CPowerView implements ChocoView {
 
     /**
      * Make a new view.
-     *
-     * @param rp the problem to rely on
      */
-    public CPowerView(ReconfigurationProblem rp) {
+    public CPowerView() {
 
     }
 

@@ -119,7 +119,7 @@ public class Bench {
         sp.forEachPartition(new IterateProcedure<Node>() {
             @Override
             public boolean extract(SplittableElementSet<Node> index, int key, int from, int to) {
-                return splits.add(new ElementSubSet<Node>(index, key, from, to));
+                return splits.add(new ElementSubSet<>(index, key, from, to));
             }
         });
         return splits;

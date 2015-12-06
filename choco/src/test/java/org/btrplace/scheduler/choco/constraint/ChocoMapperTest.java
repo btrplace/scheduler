@@ -35,51 +35,51 @@ import java.util.Set;
 
 
 /**
- * Unit tests for {@link ConstraintMapper}.
+ * Unit tests for {@link ChocoMapper}.
  *
  * @author Fabien Hermenier
  */
-public class ConstraintMapperTest {
+public class ChocoMapperTest {
 
     @Test
     public void testInstantiate() {
-        ConstraintMapper map = ConstraintMapper.newBundle();
+        ChocoMapper map = ChocoMapper.newBundle();
 
         //Only check if the default mapper are here
-        Assert.assertTrue(map.isRegistered(Spread.class));
-        Assert.assertTrue(map.isRegistered(Ban.class));
+        Assert.assertTrue(map.constraintHasMapping(Spread.class));
+        Assert.assertTrue(map.constraintHasMapping(Ban.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testRegister() {
-        ConstraintMapper map = new ConstraintMapper();
-        map.register(MockSatConstraint.class, MockCConstraint.class);
-        Assert.assertTrue(map.isRegistered(MockSatConstraint.class));
+        ChocoMapper map = new ChocoMapper();
+        map.mapConstraint(MockSatConstraint.class, MockCConstraint.class);
+        Assert.assertTrue(map.constraintHasMapping(MockSatConstraint.class));
     }
 
 
     @Test(dependsOnMethods = {"testInstantiate", "testRegister"})
     public void testUnregister() {
-        ConstraintMapper map = new ConstraintMapper();
-        Assert.assertFalse(map.isRegistered(MockSatConstraint.class));
-        Assert.assertFalse(map.unRegister(MockSatConstraint.class));
+        ChocoMapper map = new ChocoMapper();
+        Assert.assertFalse(map.constraintHasMapping(MockSatConstraint.class));
+        Assert.assertFalse(map.unMapConstraint(MockSatConstraint.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
         Model mo = new DefaultModel();
-        ConstraintMapper map = ConstraintMapper.newBundle();
+        ChocoMapper map = ChocoMapper.newBundle();
         Spread s = new Spread(Collections.singleton(mo.newVM()));
-        ChocoConstraint c = map.map(s);
+        ChocoConstraint c = map.get(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
-        map.unRegister(Spread.class);
-        map.register(Spread.class, CSpread.class);
-        c = map.map(s);
+        map.unMapConstraint(Spread.class);
+        map.mapConstraint(Spread.class, CSpread.class);
+        c = map.get(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
         MockSatConstraint b = new MockSatConstraint();
-        Assert.assertNull(map.map(b));
+        Assert.assertNull(map.get(b));
     }
 
     public static class MockSatConstraint extends SatConstraint {

@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.runner.disjoint.splitter;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Sleeping;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -80,8 +79,8 @@ public class SleepingSplitterTest {
         m1.getMapping().addSleepingVM(vm3, n2);
         m1.getMapping().addRunningVM(vm4, n2);
 
-        instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
-        instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
+        instances.add(new Instance(m0, new ArrayList<>(), new MinMTTR()));
+        instances.add(new Instance(m1, new ArrayList<>(), new MinMTTR()));
 
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());

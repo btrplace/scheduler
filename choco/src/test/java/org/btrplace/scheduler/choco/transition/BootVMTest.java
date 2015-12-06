@@ -32,7 +32,6 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.trace.Chatterbox;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -82,8 +81,6 @@ public class BootVMTest {
         Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
-        Chatterbox.showDecisions(rp.getSolver());
-        Chatterbox.showStatistics(rp.getSolver());
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         org.btrplace.plan.event.BootVM a = (org.btrplace.plan.event.BootVM) p.getActions().iterator().next();
@@ -118,7 +115,7 @@ public class BootVMTest {
         dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
+                .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
                 .build();
         BootVM m1 = (BootVM) rp.getVMActions()[rp.getVM(vm1)];
         BootVM m2 = (BootVM) rp.getVMActions()[rp.getVM(vm2)];

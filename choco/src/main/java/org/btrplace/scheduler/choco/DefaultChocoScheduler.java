@@ -28,14 +28,13 @@ import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.view.ModelViewMapper;
-import org.btrplace.scheduler.choco.view.SolverViewBuilder;
+import org.btrplace.scheduler.choco.view.ChocoView;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -161,8 +160,8 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ConstraintMapper getConstraintMapper() {
-        return params.getConstraintMapper();
+    public ChocoMapper getMapper() {
+        return params.getMapper();
     }
 
     @Override
@@ -186,23 +185,13 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ModelViewMapper getViewMapper() {
-        return params.getViewMapper();
-    }
-
-    @Override
-    public Parameters setViewMapper(ModelViewMapper m) {
-        return params.setViewMapper(m);
-    }
-
-    @Override
     public Parameters setVerbosity(int lvl) {
         return params.setVerbosity(lvl);
     }
 
     @Override
-    public Parameters setConstraintMapper(ConstraintMapper map) {
-        return params.setConstraintMapper(map);
+    public Parameters setMapper(ChocoMapper map) {
+        return params.setMapper(map);
     }
 
     @Override
@@ -235,20 +224,6 @@ public class DefaultChocoScheduler implements ChocoScheduler {
         return params.getTransitionFactory();
     }
 
-    @Override
-    public void addSolverViewBuilder(SolverViewBuilder b) {
-        params.addSolverViewBuilder(b);
-    }
-
-    @Override
-    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
-        return params.removeSolverViewBuilder(b);
-    }
-
-    @Override
-    public Collection<SolverViewBuilder> getSolverViews() {
-        return params.getSolverViews();
-    }
 
     @Override
     public Parameters setRandomSeed(long s) {
@@ -258,5 +233,20 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     @Override
     public long getRandomSeed() {
         return params.getRandomSeed();
+    }
+
+    @Override
+    public boolean addChocoView(Class<? extends ChocoView> v) {
+        return params.addChocoView(v);
+    }
+
+    @Override
+    public boolean removeChocoView(Class<? extends ChocoView> v) {
+        return params.removeChocoView(v);
+    }
+
+    @Override
+    public List<Class<? extends ChocoView>> getChocoViews() {
+        return params.getChocoViews();
     }
 }

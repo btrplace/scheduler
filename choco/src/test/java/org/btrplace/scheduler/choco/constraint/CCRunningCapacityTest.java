@@ -115,9 +115,7 @@ public class CCRunningCapacityTest {
         x.setContinuous(true);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        for (SatConstraint c : l) {
-            System.out.println(c);
-        }
+        l.forEach(System.out::println);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);

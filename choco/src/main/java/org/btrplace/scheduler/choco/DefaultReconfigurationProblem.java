@@ -27,7 +27,10 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.AliasedCumulatives;
+import org.btrplace.scheduler.choco.view.ChocoView;
+import org.btrplace.scheduler.choco.view.Cumulatives;
+import org.btrplace.scheduler.choco.view.Packing;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -103,8 +106,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private TransitionFactory amFactory;
 
-    //private SolverViewsManager viewsManager;
-
     private Map<String, ChocoView> coreViews;
     /**
      * Make a new RP where the next state for every VM is indicated.
@@ -153,36 +154,30 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-        //viewsManager = new SolverViewsManager(this);
-        makeCoreViews(ps);
-        linkCardinalityWithSlices();
-
-    }
-
-    private void makeCoreViews(Parameters ps) throws SchedulerException {
         coreViews = new HashMap<>();
-        for (SolverViewBuilder b : ps.getSolverViews()) {
-            ChocoView v = b.build(this);
-            addView(v);
+        for (Class<? extends ChocoView> c : ps.getChocoViews()) {
+            try {
+                ChocoView v = c.newInstance();
+                v.inject(ps, this);
+                addView(v);
+            } catch (Exception e) {
+                throw new SchedulerException(model, "Unable to instantiate solver-only view '" + c.getSimpleName() + "'", e);
+            }
         }
-        /*List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
-        for (SolverViewBuilder svb : viewBuilders) {
-            addView(svb.build(this));
-        }*/
     }
 
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
 
-
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }
+        linkCardinalityWithSlices();
         addContinuousResourceCapacities();
-
         getView(Packing.VIEW_ID).beforeSolve(this);
         getView(Cumulatives.VIEW_ID).beforeSolve(this);
         getView(AliasedCumulatives.VIEW_ID).beforeSolve(this);
+
         //Set the timeout
         if (timeLimit > 0) {
             SMF.limitTime(solver, timeLimit * 1000);
@@ -196,7 +191,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
-            solver.getSearchLoop().plugSearchMonitor((IMonitorSolution) () -> {
+            solver.plugMonitor((IMonitorSolution) () -> {
                 int v = objective.getValue();
                 String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
                 solver.post(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
@@ -486,7 +481,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             return false;
         }
         coreViews.put(v.getIdentifier(), v);
-        ;
         return true;
     }
 

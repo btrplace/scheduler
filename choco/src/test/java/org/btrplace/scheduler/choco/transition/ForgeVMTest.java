@@ -29,10 +29,10 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.Collections;
 
@@ -105,7 +105,6 @@ public class ForgeVMTest {
         //Force the node to get offline
         ShutdownableNode n = (ShutdownableNode) rp.getNodeAction(n1);
         n.getState().instantiateTo(0, Cause.Null);
-        System.out.println(rp.getSolver());
         ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);

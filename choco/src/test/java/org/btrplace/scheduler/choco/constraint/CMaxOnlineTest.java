@@ -84,15 +84,15 @@ public class CMaxOnlineTest {
         MappingUtils.fill(map, model.getMapping());
         Set<Node> nodes = map.getAllNodes();
         MaxOnline maxon = new MaxOnline(nodes, 2);
-        Set<Node> nodes2 = new HashSet<Node>(Arrays.asList(n1, n2));
+        Set<Node> nodes2 = new HashSet<>(Arrays.asList(n1, n2));
 
         MaxOnline maxon2 = new MaxOnline(nodes2, 1);
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(maxon);
         constraints.add(maxon2);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(4);
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
@@ -106,13 +106,13 @@ public class CMaxOnlineTest {
         model.getMapping().addOnlineNode(n1);
         model.getMapping().addOfflineNode(n2);
         MaxOnline maxOnline = new MaxOnline(model.getMapping().getAllNodes(), 1, true);
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(maxOnline);
         constraints.add(new Online(n2));
         ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.setTimeLimit(5);
         cra.setMaxEnd(4);
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         System.out.println(plan.toString());
@@ -137,13 +137,13 @@ public class CMaxOnlineTest {
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
         MaxOnline maxon = new MaxOnline(map.getAllNodes(), 2, true);
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(maxon);
         constraints.add(new Online(n2));
         ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.setTimeLimit(3);
         cra.setMaxEnd(3);
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxon.isSatisfied(plan));
@@ -173,8 +173,8 @@ public class CMaxOnlineTest {
         model.attach(resources);
 
         MaxOnline maxOn = new MaxOnline(map.getAllNodes(), 4, true);
-        MaxOnline maxOn2 = new MaxOnline(new HashSet<Node>(Arrays.asList(n2, n3, n4)), 2, true);
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        MaxOnline maxOn2 = new MaxOnline(new HashSet<>(Arrays.asList(n2, n3, n4)), 2, true);
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(maxOn);
         constraints.add(maxOn2);
         constraints.addAll(Online.newOnline(Arrays.asList(n4, n5)));
@@ -182,7 +182,7 @@ public class CMaxOnlineTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
         cra.setMaxEnd(10);
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxOn.isSatisfied(plan));

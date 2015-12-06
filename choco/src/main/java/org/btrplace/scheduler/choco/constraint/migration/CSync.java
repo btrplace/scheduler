@@ -34,7 +34,10 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.migration.Sync} constraint.
@@ -77,11 +80,10 @@ public class CSync implements ChocoConstraint {
         }
 
         // Get all migrations involved
-        for (Iterator<VM> ite = sec.getInvolvedVMs().iterator(); ite.hasNext();) {
-            VM vm = ite.next();
+        for (VM vm : sec.getInvolvedVMs()) {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
-                migrationList.add((RelocatableVM)vt);
+                migrationList.add((RelocatableVM) vt);
             }
         }
 

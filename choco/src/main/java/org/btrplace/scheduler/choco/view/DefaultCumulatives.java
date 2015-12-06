@@ -49,16 +49,14 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     /**
      * Make a new builder.
      *
-     * @param p the associated problem
      */
-    public DefaultCumulatives(ReconfigurationProblem p) {
-        super(p);
-        capacities = new ArrayList<>();
+    public DefaultCumulatives() {
     }
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         super.inject(ps, rp);
+        capacities = new ArrayList<>();
         return true;
     }
 
@@ -87,8 +85,9 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      * @return the resulting constraint
      */
     @Override
-    public boolean beforeSolve(ReconfigurationProblem p) {
-        if (p.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {
+    public boolean beforeSolve(ReconfigurationProblem rp) {
+        super.beforeSolve(rp);
+        if (rp.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {
             return true;
         }
 
@@ -129,7 +128,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             }
             d++;
         }
-        symmetryBreakingForStayingVMs();
+        symmetryBreakingForStayingVMs(rp);
         IntVar[] earlyStarts = TransitionUtils.getHostingStarts(rp.getNodeActions());
         IntVar[] lastEnd = TransitionUtils.getHostingEnds(rp.getNodeActions());
         rp.getSolver().post(
@@ -175,7 +174,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      *
      * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
      */
-    private boolean symmetryBreakingForStayingVMs() {
+    private boolean symmetryBreakingForStayingVMs(ReconfigurationProblem rp) {
         for (VM vm : rp.getFutureRunningVMs()) {
             VMTransition a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
@@ -184,11 +183,11 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                 BoolVar stay = ((KeepRunningVM) a).isStaying();
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
-                if (Boolean.TRUE.equals(ret) && !zeroDuration(stay, cSlice)) {
+                if (Boolean.TRUE.equals(ret) && !zeroDuration(rp, stay, cSlice)) {
                     return false;
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
-                } else if (Boolean.FALSE.equals(ret) && !zeroDuration(stay, dSlice)) {
+                } else if (Boolean.FALSE.equals(ret) && !zeroDuration(rp, stay, dSlice)) {
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
@@ -199,7 +198,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         return true;
     }
 
-    private boolean zeroDuration(BoolVar stay, Slice s) {
+    private boolean zeroDuration(ReconfigurationProblem rp, BoolVar stay, Slice s) {
         if (stay.isInstantiatedTo(1)) {
             try {
                 s.getDuration().instantiateTo(0, Cause.Null);
@@ -211,21 +210,5 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             rp.getSolver().post(new FastImpliesEq(stay, s.getDuration(), 0));
         }
         return true;
-    }
-
-    /**
-     * Builder associated to this constraint.
-     */
-    public static class Builder implements SolverViewBuilder {
-
-        @Override
-        public String getKey() {
-            return Cumulatives.VIEW_ID;
-        }
-
-        @Override
-        public Cumulatives build(ReconfigurationProblem p) {
-            return new DefaultCumulatives(p);
-        }
     }
 }

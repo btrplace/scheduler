@@ -25,7 +25,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Overbook;
-import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -55,8 +54,8 @@ public class OverbookSplitterTest {
         m1.getMapping().addOnlineNode(m1.newNode(2));
         m1.getMapping().addOnlineNode(m1.newNode(3));
 
-        instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
-        instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
+        instances.add(new Instance(m0, new ArrayList<>(), new MinMTTR()));
+        instances.add(new Instance(m1, new ArrayList<>(), new MinMTTR()));
 
         Set<Node> all = new HashSet<>(m0.getMapping().getAllNodes());
         all.addAll(m1.getMapping().getAllNodes());

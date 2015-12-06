@@ -18,13 +18,12 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.view.ModelViewMapper;
-import org.btrplace.scheduler.choco.view.SolverViewBuilder;
+import org.btrplace.scheduler.choco.view.ChocoView;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Parameters for a {@link ChocoScheduler}.
@@ -81,23 +80,6 @@ public interface Parameters {
      * @return {@code true} iff it try to improve the solution
      */
     boolean doOptimize();
-    
-    /**
-     * Get the mapper that is used to associate the {@link org.btrplace.model.view.ModelView}
-     * to the {@link org.btrplace.scheduler.choco.view.ChocoView}.
-     *
-     * @return the mapper
-     */
-    ModelViewMapper getViewMapper();
-
-    /**
-     * Set the mapper to use to associate the {@link org.btrplace.model.view.ModelView}
-     * to the {@link org.btrplace.scheduler.choco.view.ChocoView}.
-     *
-     * @param m the mapper to use
-     * @return the current instance
-     */
-    Parameters setViewMapper(ModelViewMapper m);
 
     /**
      * Set the timeout value for the solving process.
@@ -117,19 +99,19 @@ public interface Parameters {
     int getTimeLimit();
 
     /**
-     * Get the mapper that converts {@link org.btrplace.model.constraint.Constraint} to {@link org.btrplace.scheduler.choco.constraint.ChocoConstraint}.
+     * Get the mapper that converts api-side elements to their choco implementation.
      *
      * @return the mapper.
      */
-    ConstraintMapper getConstraintMapper();
+    ChocoMapper getMapper();
 
     /**
-     * Set the mapper that converts {@link org.btrplace.model.constraint.Constraint} to {@link org.btrplace.scheduler.choco.constraint.ChocoConstraint}.
+     * set the mapper that converts api-side elements to their choco implementation.
      *
      * @param map the mapper to use
      * @return the current instance
      */
-    Parameters setConstraintMapper(ConstraintMapper map);
+    Parameters setMapper(ChocoMapper map);
 
     /**
      * Get the evaluator that is used to indicate the estimated duration of each action.
@@ -204,24 +186,27 @@ public interface Parameters {
     TransitionFactory getTransitionFactory();
 
     /**
-     * Declare a builder that create solve-only views.
+     * Declare a standalone view to be plugged inside the solver.
+     * The class will be automatically instantiated at the beginning of the solver
+     * specialisation phase. It must provided a default constructor
      *
-     * @param b the builder to add
+     * @param v the class of the view to add
+     * @return {@code true} if the view has been added
      */
-    void addSolverViewBuilder(SolverViewBuilder b);
+    boolean addChocoView(Class<? extends ChocoView> v);
 
     /**
-     * Remove a builder dedicated to solver-only views.
+     * Remove a standalone view already plugged.
      *
-     * @param b the builder to remove
-     * @return {@code true} iff the builder has been removed
+     * @param v the view to remove
+     * @return {@code true} if the view has been removed
      */
-    boolean removeSolverViewBuilder(SolverViewBuilder b);
+    boolean removeChocoView(Class<? extends ChocoView> v);
 
     /**
-     * Get the solver-only view builders.
+     * Get the standalone views.
      *
-     * @return a collection that may be empty
+     * @return a list of views that may be empty
      */
-    Collection<SolverViewBuilder> getSolverViews();
+    List<Class<? extends ChocoView>> getChocoViews();
 }

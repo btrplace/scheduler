@@ -71,7 +71,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         this.rp = rp;
-        List<IntVar> endVars = new ArrayList<IntVar>();
+        List<IntVar> endVars = new ArrayList<>();
 
         // Define the cost constraint: sum of all actions' end time
         for (Transition m : rp.getVMActions()) { endVars.add(m.getEnd()); }
@@ -103,7 +103,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
         List<AbstractStrategy> strategies = new ArrayList<>();
 
         // Init a list of vars
-        List<IntVar> endVars = new ArrayList<IntVar>();
+        List<IntVar> endVars = new ArrayList<>();
 
         // Per node to decommission (Boot dst node -> Migrate all VMs -> Shutdown src node) strategy
         for (Node n : rp.getNodes()) {
@@ -299,9 +299,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             Solver s = rp.getSolver();
-            for (Constraint c : costConstraints) {
-                s.post(c);
-            }
+            costConstraints.forEach(s::post);
         }
     }
 

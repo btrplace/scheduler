@@ -114,7 +114,7 @@ public class VectorPackingHeapDecorator {
      * if loadSlack > sumBinLoadSup - sumItemSizes then update inf(binLoad) = sumItemSizes - (sumBinLoadSup - sup(binLoad))
      * check each rule against the bin with the maximum loadSlack and continue until it does not apply
      *
-     * @throws solver.exception.ContradictionException if a contradiction (rules 1) is raised
+     * @throws ContradictionException if a contradiction (rules 1) is raised
      */
     public void fixPoint(boolean loadsHaveChanged) throws ContradictionException {
         for (int d = 0; d < p.nbDims; d++) {

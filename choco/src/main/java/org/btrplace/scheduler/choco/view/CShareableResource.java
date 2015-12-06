@@ -23,7 +23,6 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.*;
@@ -85,6 +84,7 @@ public class CShareableResource implements ChocoView {
      */
     public CShareableResource(ShareableResource r) throws SchedulerException {
         this.rc = r;
+        this.id = r.getIdentifier();
     }
 
     @Override
@@ -491,18 +491,4 @@ public class CShareableResource implements ChocoView {
         return Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID);
     }
 
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoModelViewBuilder {
-        @Override
-        public Class<? extends ModelView> getKey() {
-            return ShareableResource.class;
-        }
-
-        @Override
-        public ChocoView build(final ModelView v) throws SchedulerException {
-            return new CShareableResource((ShareableResource) v);
-        }
-    }
 }

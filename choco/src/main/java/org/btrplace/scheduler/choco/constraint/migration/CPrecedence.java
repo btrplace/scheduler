@@ -31,7 +31,10 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.migration.Precedence} constraint.
@@ -70,11 +73,10 @@ public class CPrecedence implements ChocoConstraint {
         }
 
         // Get all migrations involved
-        for (Iterator<VM> ite = pr.getInvolvedVMs().iterator(); ite.hasNext();) {
-            VM vm = ite.next();
+        for (VM vm : pr.getInvolvedVMs()) {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
-                migrationList.add((RelocatableVM)vt);
+                migrationList.add((RelocatableVM) vt);
             }
         }
 

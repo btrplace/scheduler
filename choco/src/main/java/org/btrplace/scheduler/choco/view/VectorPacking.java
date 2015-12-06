@@ -18,6 +18,8 @@
 
 package org.btrplace.scheduler.choco.view;
 
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
@@ -36,8 +38,6 @@ import java.util.List;
  */
 public class VectorPacking extends Packing {
 
-    private ReconfigurationProblem rp;
-
     private List<IntVar[]> loads;
 
     private List<IntVar[]> bins;
@@ -49,17 +49,20 @@ public class VectorPacking extends Packing {
     private int dim;
 
     /**
-     * A new constraint.
-     *
-     * @param p the associated problem
+     * A new packing view.
      */
-    public VectorPacking(ReconfigurationProblem p) {
+    public VectorPacking() {
+
+    }
+
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         loads = new ArrayList<>();
         bins = new ArrayList<>();
         sizes = new ArrayList<>();
         names = new ArrayList<>();
-        this.rp = p;
         dim = 0;
+        return true;
     }
 
     @Override
@@ -73,7 +76,8 @@ public class VectorPacking extends Packing {
 
     @Override
     public boolean beforeSolve(ReconfigurationProblem p) {
-        Solver solver = rp.getSolver();
+        super.beforeSolve(p);
+        Solver solver = p.getSolver();
         int[][] aSizes = new int[dim][sizes.get(0).length];
         IntVar[][] aLoads = new IntVar[dim][];
         String[] aNames = new String[dim];
@@ -88,31 +92,15 @@ public class VectorPacking extends Packing {
                 try {
                     ss.instantiateTo(ss.getLB(), Cause.Null);
                 } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable post the vector packing constraint");
+                    p.getLogger().error("Unable post the vector packing constraint");
                     return false;
                 }
             }
         }
-        if (!rp.getFutureRunningVMs().isEmpty()) {
+        if (!p.getFutureRunningVMs().isEmpty()) {
             solver.post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
             //IntConstraintFactory.bin_packing(bins.get(0), iSizes[i], loads.get(i), 0));
         }
         return true;
-    }
-
-    /**
-     * Builder associated to this constraint.
-     */
-    public static class Builder implements SolverViewBuilder {
-
-        @Override
-        public String getKey() {
-            return Packing.VIEW_ID;
-        }
-
-        @Override
-        public Packing build(ReconfigurationProblem p) {
-            return new VectorPacking(p);
-        }
     }
 }

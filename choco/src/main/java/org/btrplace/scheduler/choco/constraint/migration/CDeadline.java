@@ -32,7 +32,10 @@ import org.chocosolver.solver.constraints.Operator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.migration.Deadline} constraint.
@@ -101,8 +104,7 @@ public class CDeadline implements ChocoConstraint {
         }
 
         // Get all migrations involved
-        for (Iterator<VM> ite = dl.getInvolvedVMs().iterator(); ite.hasNext();) {
-            VM vm = ite.next();
+        for (VM vm : dl.getInvolvedVMs()) {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
                 rp.getSolver().post(new Arithmetic(vt.getEnd(), Operator.LE, deadline));

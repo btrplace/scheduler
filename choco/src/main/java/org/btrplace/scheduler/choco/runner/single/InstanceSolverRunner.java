@@ -23,17 +23,17 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.ChocoView;
+import org.btrplace.scheduler.choco.view.ChocoViews;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
@@ -100,6 +100,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         //Build the core problem
         coreRPDuration = -System.currentTimeMillis();
         rp = buildRP();
+        //The core views have been instantiated and available through rp.getViews()
+
         //Set the maximum duration
         try {
             rp.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
@@ -112,11 +114,13 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         //Customize the core problem
         speRPDuration = -System.currentTimeMillis();
 
+        //Resolve the view dependencies, add them and inject them
+        views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
+        views.forEach(rp::addView);
         if (!views.stream().allMatch((v) -> v.inject(params, rp))) {
             return new InstanceResult(null, getStatistics());
         }
 
-        views.forEach(rp::addView);
 
         if (!cConstraints.stream().allMatch((c) -> c.inject(params, rp))) {
             return new InstanceResult(null, getStatistics());
@@ -218,9 +222,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         if (params.doRepair()) {
             Set<VM> toManage = new HashSet<>();
-            for (ChocoConstraint cstr : cConstraints) {
-                toManage.addAll(cstr.getMisPlacedVMs(origin));
-            }
+            cConstraints.forEach(c -> toManage.addAll(c.getMisPlacedVMs(origin)));
+            views.forEach(v -> toManage.addAll(v.getMisPlacedVMs(origin)));
             rpb.setManageableVMs(toManage);
         }
 
@@ -229,18 +232,14 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private List<ChocoView> makeViews() throws SchedulerException {
         List<ChocoView> l = new ArrayList<>();
-        ModelViewMapper vm = params.getViewMapper();
-        for (ModelView v : this.origin.getViews()) {
-            ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
-            if (modelViewBuilder != null) {
-                l.add(modelViewBuilder.build(v));
-            }
-        }
-        List<String> base = new ArrayList<>();
-        for (SolverViewBuilder vb : params.getSolverViews()) {
+        ChocoMapper mapper = params.getMapper();
+        origin.getViews().forEach(v -> l.add(mapper.get(v)));
+        return l;
+        //List<String> base = new ArrayList<>();
+        /*for (SolverViewBuilder vb : params.getSolverViews()) {
             base.add(vb.getKey());
-        }
-        return ChocoViews.resolveDependencies(origin, l, base);
+        }*/
+        //return ChocoViews.resolveDependencies(origin, l, base);
     }
 
     /**
@@ -248,17 +247,13 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      *
      * @param cstr the model-side constraint
      * @return the solver-side constraint
-     * @throws org.btrplace.scheduler.SchedulerException if the process failed
+     * @throws SchedulerException if the process failed
      */
     private ChocoConstraint build(Constraint cstr) throws SchedulerException {
-        ConstraintMapper mapper = params.getConstraintMapper();
-        if (!mapper.isRegistered(cstr.getClass())) {
-            throw new SchedulerException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
-        }
-        ChocoConstraint cc = mapper.map(cstr);
+        ChocoMapper mapper = params.getMapper();
+        ChocoConstraint cc = mapper.get(cstr);
         if (cc == null) {
-            throw new SchedulerException(origin, "Error while mapping the constraint '"
-                    + cstr.getClass().getSimpleName() + "'");
+            throw new SchedulerException(origin, "No implementation mapped to '" + cstr.getClass().getSimpleName() + "'");
         }
         return cc;
     }

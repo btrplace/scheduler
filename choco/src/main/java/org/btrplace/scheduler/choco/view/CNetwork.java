@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
@@ -292,20 +291,5 @@ public class CNetwork implements ChocoView {
         }
 
         return true;
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoModelViewBuilder {
-        @Override
-        public Class<? extends ModelView> getKey() {
-            return Network.class;
-        }
-
-        @Override
-        public ChocoView build(final ModelView v) throws SchedulerException {
-            return new CNetwork((Network) v);
-        }
     }
 }

@@ -75,11 +75,11 @@ public class CNoDelayTest {
 
         // 1 solution (priority to vm3): vm3 to n2 ; vm4 to n2 ; vm1 to n3
 
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNotNull(plan);
@@ -117,11 +117,11 @@ public class CNoDelayTest {
 
         // 1 solution (priority to vm4): vm4 to n2 ; vm3 to n2 ; vm1 to n3
 
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNotNull(plan);
@@ -159,11 +159,11 @@ public class CNoDelayTest {
 
         // No solution: unable to migrate vm1 at t=0
 
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(MaxOnline.class, CMaxOnline.class);
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNull(plan);

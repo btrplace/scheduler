@@ -26,7 +26,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
-import org.btrplace.scheduler.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -62,11 +61,6 @@ public class DefaultChocoSchedulerTest {
 
         cra.setVerbosity(3);
         Assert.assertEquals(cra.getVerbosity(), 3);
-
-        Assert.assertNotNull(cra.getViewMapper());
-        ModelViewMapper m = new ModelViewMapper();
-        cra.setViewMapper(m);
-        Assert.assertEquals(cra.getViewMapper(), m);
     }
 
     @Test(expectedExceptions = {SchedulerException.class})
@@ -137,9 +131,9 @@ public class DefaultChocoSchedulerTest {
             }
         };
 
-        ChocoConstraint co =  new ConstraintMapperTest.MockCConstraint() {
+        ChocoConstraint co =  new ChocoMapperTest.MockCConstraint() {
 
-            public ConstraintMapperTest.MockCConstraint(OptConstraint f) {}
+            public ChocoMapperTest.MockCConstraint(OptConstraint f) {}
             @Override
             public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
                 return false;
@@ -150,7 +144,7 @@ public class DefaultChocoSchedulerTest {
                 return Collections.emptySet();
             }
         };
-        cra.getConstraintMapper().register(o.getClass(), co.getClass());
+        cra.getMapper().register(o.getClass(), co.getClass());
 
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), o);
         Mapping res = p.getResult().getMapping();
@@ -204,7 +198,7 @@ public class DefaultChocoSchedulerTest {
                 return new HashSet<>(Arrays.asList(vm2, vm3));
             }
         };
-        cra.getConstraintMapper().register(o.getClass(), co.getClass());
+        cra.getMapper().register(o.getClass(), co.getClass());
         cra.doRepair(true);
         cra.doOptimize(false);
 

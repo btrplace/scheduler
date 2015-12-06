@@ -25,7 +25,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Ready;
-import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -56,8 +55,8 @@ public class ReadySplitterTest {
         m1.getMapping().addRunningVM(m1.newVM(5), m1.newNode(3));
 
 
-        instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
-        instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
+        instances.add(new Instance(m0, new ArrayList<>(), new MinMTTR()));
+        instances.add(new Instance(m1, new ArrayList<>(), new MinMTTR()));
 
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());

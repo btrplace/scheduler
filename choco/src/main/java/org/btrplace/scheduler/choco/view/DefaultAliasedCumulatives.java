@@ -51,17 +51,16 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
     /**
      * Make a new builder.
      *
-     * @param p the associated problem
      */
-    public DefaultAliasedCumulatives(ReconfigurationProblem p) {
-        super(p);
-        capacities = new TIntArrayList();
-        aliases = new ArrayList<>();
+    public DefaultAliasedCumulatives() {
     }
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         super.inject(ps, rp);
+        capacities = new TIntArrayList();
+        aliases = new ArrayList<>();
+
         return true;
     }
 
@@ -88,6 +87,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
      */
     @Override
     public boolean beforeSolve(ReconfigurationProblem r) {
+        super.beforeSolve(r);
         for (int i = 0; i < aliases.size(); i++) {
             int capa = capacities.get(i);
             int[] alias = aliases.get(i);
@@ -96,7 +96,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
             for (IntVar dUseDim : dUsages.get(i)) {
                 dUses[i++] = dUseDim.getLB();
             }
-            rp.getSolver().post(new AliasedCumulatives(alias,
+            r.getSolver().post(new AliasedCumulatives(alias,
                     new int[]{capa},
                     cHosts, new int[][]{cUse}, cEnds,
                     dHosts, new int[][]{dUses}, dStarts,
@@ -119,21 +119,5 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
     @Override
     public boolean cloneVM(VM vm, VM clone) {
         return true;
-    }
-
-    /**
-     * Builder associated to this constraint.
-     */
-    public static class Builder implements SolverViewBuilder {
-
-        @Override
-        public String getKey() {
-            return org.btrplace.scheduler.choco.view.AliasedCumulatives.VIEW_ID;
-        }
-
-        @Override
-        public org.btrplace.scheduler.choco.view.AliasedCumulatives build(ReconfigurationProblem p) {
-            return new DefaultAliasedCumulatives(p);
-        }
     }
 }

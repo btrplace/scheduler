@@ -78,7 +78,7 @@ public class CMaxOnline implements ChocoConstraint {
         if (constraint.isContinuous()) {
             CPowerView view = (CPowerView) rp.getView(CPowerView.VIEW_ID);
             if (view == null) {
-                view = new CPowerView(rp);
+                view = new CPowerView();
                 if (!rp.addView(view)) {
                     throw new SchedulerException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
                 }
