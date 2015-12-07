@@ -138,21 +138,21 @@ public class CNetwork implements ChocoView {
                     // Enumerate different possible values for the bandwidth to allocate (< maxBW)
                     // MULTIPLE BW; eg.(step=maxBW/2) split the max BW in 2 and allow to migrate 2 migrations per link
                     // SINGLE BW: (step=maxBW) the bandwidth can not be reduced below maxBW (always migrate at max BW)
-                    int step = maxBW;
+                    /*int step = maxBW;
                     List<Integer> bwEnum = new ArrayList<>();
                     for (int i = step; i <= maxBW; i += step) {
                         if (i > Math.round(hotDirtySize / hotDirtyDuration)) {
                             bwEnum.add(i);
                         }
-                    }
+                    }*/
 
                     // Compute the duration related to each enumerated bandwidth
                     double durationMin, durationColdPages, durationHotPages, durationTotal;
-                    List<Integer> durEnum = new ArrayList<>();
-                    for (Integer bw : bwEnum) {
+                    /*List<Integer> durEnum = new ArrayList<>();
+                    for (Integer bw : bwEnum) {*/
 
                         // Cheat a bit, real is less than theoretical (8->9)
-                        double bandwidth_octet = bw / 9;
+                        double bandwidth_octet = maxBW / 9;
 
                         // Estimate the duration for the current bandwidth
                         durationMin = memUsed / bandwidth_octet;
@@ -167,8 +167,8 @@ public class CNetwork implements ChocoView {
                             durationTotal = durationMin + (((hotDirtySize / hotDirtyDuration) * durationMin) /
                                     (bandwidth_octet - (hotDirtySize / hotDirtyDuration)));
                         }
-                        durEnum.add((int) Math.round(durationTotal));
-                    }
+                        /*durEnum.add((int) Math.round(durationTotal));
+                    }*/
 
                     /*// USING MULTIPLE BW FOR EACH MIGRATION
                     // Create the enumerated vars
@@ -186,8 +186,8 @@ public class CNetwork implements ChocoView {
 
                     // USING A SINGLE BW PER MIGRATION
                     try {
-                        duration.instantiateTo(durEnum.get(0), Cause.Null);
-                        bandwidth.instantiateTo(bwEnum.get(0), Cause.Null);
+                        duration.instantiateTo((int) Math.round(durationTotal), Cause.Null);
+                        bandwidth.instantiateTo(maxBW, Cause.Null);
                     } catch (ContradictionException e) {
                         rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
                                 " duration variables for " + vm + " migration: " + e.getMessage());
