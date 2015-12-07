@@ -25,6 +25,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.SliceUtils;
+import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -32,6 +33,7 @@ import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
@@ -153,6 +155,14 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
 
         placeVMs(strategies, runActions, schedHeuristic, pla);
   */
+        //Reinstantations. Try to reinstantiate first
+        List<IntVar> migs = new ArrayList<>();
+        for (VMTransition t : rp.getVMActions()) {
+            if (t instanceof RelocatableVM) {
+                migs.add(((RelocatableVM) t).getRelocationMethod());
+            }
+        }
+        strategies.add(ISF.lexico_UB(migs.toArray(new IntVar[migs.size()])));
 
         if (p.getNodeActions().length > 0) {
             //Boot some nodes if needed
@@ -243,7 +253,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     public void postCostConstraints() {
         //TODO: Delay insertion
         if (!costActivated) {
-            System.err.println("Cost constraints");
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             Solver s = rp.getSolver();
