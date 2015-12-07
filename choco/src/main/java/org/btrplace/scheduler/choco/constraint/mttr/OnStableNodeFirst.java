@@ -158,10 +158,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     @Override
     public IntVar getVariable(IntVar[] scope) {
-
-        // TODO: test last == null ? test coherence between scope and the variable returned
-        if (last == null) return null;
-
         makeIncoming();
         IntVar v = getVMtoLeafNode();
         if (v == null) {

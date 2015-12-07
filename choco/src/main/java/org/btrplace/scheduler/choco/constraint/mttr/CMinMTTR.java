@@ -18,10 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
@@ -99,7 +96,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
             SMF.geometrical(s, p.getVMs().length * 2, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
         }*/
         injectPlacementHeuristic(p, ps, cost);
-        postCostConstraints();
         return true;
     }
 
@@ -236,7 +232,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
     }
 
@@ -247,6 +243,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     public void postCostConstraints() {
         //TODO: Delay insertion
         if (!costActivated) {
+            System.err.println("Cost constraints");
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             Solver s = rp.getSolver();
