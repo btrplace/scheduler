@@ -19,8 +19,8 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import gnu.trove.list.array.TIntArrayList;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Lonely;
@@ -118,11 +118,11 @@ public class CLonely implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         Set<VM> bad = new HashSet<>();
         Set<Node> hosts = new HashSet<>();
         Collection<VM> vms = cstr.getInvolvedVMs();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         for (VM vm : vms) {
             if (map.isRunning(vm)) {
                 hosts.add(map.getVMLocation(vm));

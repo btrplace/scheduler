@@ -19,10 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Spread;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -107,9 +104,10 @@ public class CSpreadTest {
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
 
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).isEmpty());
         vms.add(vm3);
-        Assert.assertEquals(map.getRunningVMs(n1), cs.getMisPlacedVMs(mo));
+        Assert.assertEquals(map.getRunningVMs(n1), cs.getMisPlacedVMs(i));
     }
 
     /**

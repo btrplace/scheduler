@@ -19,7 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Overbook;
@@ -76,9 +76,9 @@ public class COverbook implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rc == null) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        //ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
+        /*if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
             Node n = cstr.getInvolvedNodes().iterator().next();
             return m.getMapping().getRunningVMs(n);
@@ -94,7 +94,12 @@ public class COverbook implements ChocoConstraint {
                 }
             }
 
-        }
+        }*/
+  /*      CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
+        if (rcm == null) {
+            throw new SchedulerException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
+        }*/
+
         return Collections.emptySet();
     }
 

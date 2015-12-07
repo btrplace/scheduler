@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Spread;
@@ -132,10 +132,10 @@ public class CSpread implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         Map<Node, Set<VM>> spots = new HashMap<>();
         Set<VM> bad = new HashSet<>();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
             Node h = map.getVMLocation(vm);
             if (map.isRunning(vm)) {

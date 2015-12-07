@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Split;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -71,15 +72,16 @@ public class CSplitTest {
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
 
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).isEmpty());
 
         map.addRunningVM(vm5, n1);
-        Set<VM> bad = cs.getMisPlacedVMs(mo);
+        Set<VM> bad = cs.getMisPlacedVMs(i);
         Assert.assertEquals(bad.size(), 3);
 
         Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2) && bad.contains(vm5));
         map.addRunningVM(vm6, n3);
-        bad = cs.getMisPlacedVMs(mo);
+        bad = cs.getMisPlacedVMs(i);
         Assert.assertTrue(bad.contains(vm4) && bad.contains(vm5) && bad.contains(vm6));
 
     }

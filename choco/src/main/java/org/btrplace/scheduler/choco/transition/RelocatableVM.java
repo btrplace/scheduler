@@ -210,6 +210,7 @@ public class RelocatableVM implements KeepRunningVM {
 
             // Be sure that doReinstantiation will be instantiated
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
+            //s.post(ICF.arithm(doReinstantiation, "=", 0));
         }
         // The VM either migrate or stay but won't be re-instantiated for sure
         else {

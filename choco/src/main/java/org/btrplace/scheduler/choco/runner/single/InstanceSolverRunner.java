@@ -23,6 +23,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
+import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
@@ -64,6 +65,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private Model origin;
 
+    private Instance instance;
+
     private long coreRPDuration;
 
     private long speRPDuration;
@@ -86,6 +89,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * @param i  the instance to solve
      */
     public InstanceSolverRunner(Parameters ps, Instance i) {
+        instance = i;
         cstrs = i.getSatConstraints();
         obj = i.getOptConstraint();
         origin = i.getModel();
@@ -222,8 +226,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         if (params.doRepair()) {
             Set<VM> toManage = new HashSet<>();
-            cConstraints.forEach(c -> toManage.addAll(c.getMisPlacedVMs(origin)));
-            views.forEach(v -> toManage.addAll(v.getMisPlacedVMs(origin)));
+            cConstraints.forEach(c -> toManage.addAll(c.getMisPlacedVMs(instance)));
+            views.forEach(v -> toManage.addAll(v.getMisPlacedVMs(instance)));
             rpb.setManageableVMs(toManage);
         }
 
@@ -233,7 +237,10 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private List<ChocoView> makeViews() throws SchedulerException {
         List<ChocoView> l = new ArrayList<>();
         ChocoMapper mapper = params.getMapper();
-        origin.getViews().forEach(v -> l.add(mapper.get(v)));
+        for (ModelView v : origin.getViews()) {
+            ChocoView cv = mapper.get(v);
+        }
+        origin.getViews().stream().filter(v -> mapper.viewHasMapping(v.getClass())).forEach(v -> l.add(mapper.get(v)));
         return l;
         //List<String> base = new ArrayList<>();
         /*for (SolverViewBuilder vb : params.getSolverViews()) {

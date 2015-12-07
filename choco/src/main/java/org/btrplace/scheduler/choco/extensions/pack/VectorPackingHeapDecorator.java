@@ -166,9 +166,6 @@ public class VectorPackingHeapDecorator {
     private int filterLoads(int d, int delta, boolean isSup) throws ContradictionException {
         assert maxSlackBinHeap != null;
         int nChanges = 0;
-        if (maxSlackBinHeap == null || maxSlackBinHeap.get(d) == null || maxSlackBinHeap.get(d).isEmpty()) {
-            System.out.println("coucou");
-        }
         if (loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta) {
             do {
                 int b = maxSlackBinHeap.get(d).poll();

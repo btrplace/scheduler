@@ -236,4 +236,29 @@ public class CShareableResourceTest {
             Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
         }
     }
+
+    @Test
+    public void testMisplaced() throws SchedulerException {
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        ShareableResource rc = new ShareableResource("cpu", 10, 1);
+        VM v1 = mo.newVM();
+        VM v2 = mo.newVM();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addRunningVM(v1, n1);
+        mo.getMapping().addRunningVM(v2, n1);
+        mo.attach(rc);
+        List<SatConstraint> l = new ArrayList<>();
+        l.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 5));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        s.setVerbosity(3);
+        s.doRepair(true);
+        ReconfigurationPlan p = s.solve(mo, l);
+        Assert.assertEquals(s.getStatistics().getNbManagedVMs(), 0);
+        Assert.assertEquals(p.getResult().getMapping(), mo.getMapping());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 2);
+    }
 }

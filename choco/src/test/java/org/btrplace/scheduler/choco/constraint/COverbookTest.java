@@ -35,10 +35,7 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Unit tests for {@link COverbook}.
@@ -174,9 +171,10 @@ public class COverbookTest {
         COverbook co1 = new COverbook(o1);
         COverbook co2 = new COverbook(o2);
         COverbook co3 = new COverbook(o3);
-        Assert.assertTrue(co1.getMisPlacedVMs(mo).isEmpty());
-        Assert.assertTrue(co2.getMisPlacedVMs(mo).isEmpty());
-        Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(mo));
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(co1.getMisPlacedVMs(i).isEmpty());
+        Assert.assertTrue(co2.getMisPlacedVMs(i).isEmpty());
+        Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(i));
     }
 
 

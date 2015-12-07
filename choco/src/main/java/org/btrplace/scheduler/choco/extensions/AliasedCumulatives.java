@@ -299,7 +299,7 @@ public class AliasedCumulatives extends Constraint {
                 cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
             }
 
-            //A hashmap to save the changes of the resource (relatives to the previous moment) in the resources distribution
+            //A map to save the changes of the resource (relatives to the previous moment) in the resources distribution
             TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
 
             for (int i = 0; i < nbDims; i++) {

@@ -19,10 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Ready;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
@@ -67,13 +64,14 @@ public class CFenceTest {
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vm1, ns));
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         ns.add(mo.newNode());
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         vms.add(vm3);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         vms.add(vm4);
-        Set<VM> bad = new CFence(new Fence(vm4, ns)).getMisPlacedVMs(mo);
+        Set<VM> bad = new CFence(new Fence(vm4, ns)).getMisPlacedVMs(i);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
     }

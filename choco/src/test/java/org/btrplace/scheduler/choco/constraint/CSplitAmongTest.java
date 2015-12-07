@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -78,24 +79,24 @@ public class CSplitAmongTest {
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
-
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).isEmpty());
 
 
         map.remove(vm7);
         map.addRunningVM(vm6, n5);
         //vg2 is on 2 group of nodes, the whole group is mis-placed
 
-        Assert.assertEquals(cs.getMisPlacedVMs(mo), vg2);
+        Assert.assertEquals(cs.getMisPlacedVMs(i), vg2);
 
 
         map.addRunningVM(vm7, n5);
         //vg1 and vg2 overlap on n1. The two groups are mis-placed
         map.addRunningVM(vm6, n2);
 
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).containsAll(vg1));
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).containsAll(vg2));
-        Assert.assertEquals(cs.getMisPlacedVMs(mo).size(), vg1.size() + vg2.size());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).containsAll(vg1));
+        Assert.assertTrue(cs.getMisPlacedVMs(i).containsAll(vg2));
+        Assert.assertEquals(cs.getMisPlacedVMs(i).size(), vg1.size() + vg2.size());
     }
 
     @Test

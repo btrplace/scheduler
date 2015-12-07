@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Gather;
@@ -140,8 +140,8 @@ public class CGather implements ChocoConstraint {
 
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        if (!cstr.isSatisfied(m)) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        if (!cstr.isSatisfied(i.getModel())) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();

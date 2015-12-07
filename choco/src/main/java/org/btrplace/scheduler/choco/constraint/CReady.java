@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ready;
 import org.btrplace.scheduler.choco.Parameters;
@@ -60,9 +60,9 @@ public class CReady implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         VM v = cstr.getInvolvedVMs().iterator().next();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         if (!map.isReady(v)) {
             return Collections.singleton(v);
         }

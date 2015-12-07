@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.RunningCapacity;
@@ -129,8 +129,8 @@ public class CRunningCapacity implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping map = i.getModel().getMapping();
         Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
         for (Node n : cstr.getInvolvedNodes()) {

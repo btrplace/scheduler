@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Among;
@@ -107,11 +107,11 @@ public class CSplitAmong implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         //contains the set of VMs hosted on a group id.
         Collection<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
 
         Set<VM> bad = new HashSet<>();
         for (Collection<VM> vms : cstr.getGroupsOfVMs()) {

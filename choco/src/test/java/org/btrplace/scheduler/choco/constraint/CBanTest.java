@@ -19,10 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
@@ -30,10 +27,7 @@ import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link CBan}.
@@ -102,11 +96,12 @@ public class CBanTest {
         Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
 
         CBan c = new CBan(new Ban(vm1, ns));
-        org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        org.testng.Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         ns.add(mo.newNode());
-        org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        org.testng.Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         ns.add(n1);
-        Set<VM> bad = c.getMisPlacedVMs(mo);
+        Set<VM> bad = c.getMisPlacedVMs(i);
         org.testng.Assert.assertEquals(1, bad.size());
         org.testng.Assert.assertTrue(bad.contains(vm1));
     }

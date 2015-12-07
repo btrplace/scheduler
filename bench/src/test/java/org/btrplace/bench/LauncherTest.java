@@ -35,9 +35,9 @@ public class LauncherTest {
 
         Launcher.main(new String[]{
                 "--repair",
-                "--timeout", "500",
+                "--timeout", "300",
                 "-i", path + "wkld-tdsc/li/r6/p5000/c0/1.gz",
-                "-o", path + "nr-r3-p5000-c66-1.csv"
+                "-o", path + "nr-r6-p5000-c66-1.csv"
         });
         System.err.flush();
         System.out.flush();

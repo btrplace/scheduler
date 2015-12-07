@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MaxOnline;
@@ -58,15 +58,15 @@ public class CMaxOnline implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model model) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         int on = 0;
         for (Node n : constraint.getInvolvedNodes()) {
-            if (model.getMapping().isOnline(n)) {
+            if (i.getModel().getMapping().isOnline(n)) {
                 on++;
             }
         }
         if (on > constraint.getAmount()) {
-            return model.getMapping().getRunningVMs(constraint.getInvolvedNodes());
+            return i.getModel().getMapping().getRunningVMs(constraint.getInvolvedNodes());
         }
         return Collections.emptySet();
     }

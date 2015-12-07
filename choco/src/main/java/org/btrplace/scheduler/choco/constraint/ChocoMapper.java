@@ -120,7 +120,7 @@ public class ChocoMapper {
         views.put(c, cc);
     }
 
-    private void checkInstantiable(Class c, Class cc) {
+    private void checkInstantiable(Class<?> c, Class<?> cc) {
         try {
             cc.getDeclaredConstructor(c);
         } catch (Exception e) {

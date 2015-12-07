@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.NoDelay;
 import org.btrplace.scheduler.choco.Parameters;
@@ -56,7 +56,7 @@ public class CNoDelay implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model model) {
+    public Set<VM> getMisPlacedVMs(Instance model) {
         return Collections.emptySet();
         //return new HashSet<VM>(noDelay.getInvolvedVMs());
     }

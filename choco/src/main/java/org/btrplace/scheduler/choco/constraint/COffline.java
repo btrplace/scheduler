@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Offline;
@@ -88,8 +88,8 @@ public class COffline implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping mapping = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping mapping = i.getModel().getMapping();
         return mapping.getRunningVMs(cstr.getInvolvedNodes().iterator().next());
     }
 

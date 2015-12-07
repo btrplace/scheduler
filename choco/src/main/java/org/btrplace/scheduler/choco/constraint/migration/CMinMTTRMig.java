@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint.migration;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.migration.MinMTTRMig;
@@ -304,7 +304,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
     }
 }

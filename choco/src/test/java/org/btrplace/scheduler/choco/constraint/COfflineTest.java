@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -84,10 +85,11 @@ public class COfflineTest {
         Offline off = new Offline(n1);
         COffline coff = new COffline(off);
 
-        Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(coff.getMisPlacedVMs(i).isEmpty());
 
         map.addRunningVM(vm1, n1);
-        Assert.assertEquals(coff.getMisPlacedVMs(mo), map.getAllVMs());
+        Assert.assertEquals(coff.getMisPlacedVMs(i), map.getAllVMs());
     }
 
     @Test

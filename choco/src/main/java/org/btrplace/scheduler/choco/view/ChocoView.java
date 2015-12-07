@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.view;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -98,11 +98,11 @@ public interface ChocoView extends Injectable, MisplacedVMsEstimator {
     /**
      * {@inheritDoc}
      *
-     * @param m the model to use to inspect the VMs.
+     * @param i the model to use to inspect the VMs.
      * @return all the model VMs.
      */
     @Override
-    default Set<VM> getMisPlacedVMs(Model m) {
-        return m.getMapping().getAllVMs();
+    default Set<VM> getMisPlacedVMs(Instance i) {
+        return i.getModel().getMapping().getAllVMs();
     }
 }

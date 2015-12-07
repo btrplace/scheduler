@@ -18,8 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.scheduler.SchedulerException;
@@ -61,9 +61,9 @@ public class CRunning implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         VM vm = cstr.getInvolvedVMs().iterator().next();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         if (!map.isRunning(vm)) {
             return Collections.singleton(vm);
         }

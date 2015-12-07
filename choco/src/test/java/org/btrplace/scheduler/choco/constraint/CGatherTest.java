@@ -19,10 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Gather;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -94,14 +91,15 @@ public class CGatherTest {
         Node n2 = mo.newNode();
 
         Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         Gather g = new Gather(map.getAllVMs());
         CGather c = new CGather(g);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm1, n2);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
 
         map.addRunningVM(vm1, n1);
-        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getAllVMs());
+        Assert.assertEquals(c.getMisPlacedVMs(i), map.getAllVMs());
     }
 
     @Test

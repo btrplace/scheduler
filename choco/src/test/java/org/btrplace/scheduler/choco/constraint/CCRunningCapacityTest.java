@@ -177,12 +177,13 @@ public class CCRunningCapacityTest {
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4).ready(vm5).get();
 
-        org.btrplace.model.constraint.RunningCapacity c = new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
+        RunningCapacity c = new RunningCapacity(map.getAllNodes(), 4);
         CRunningCapacity cc = new CRunningCapacity(c);
 
-        Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cc.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm5, n3);
-        Assert.assertEquals(cc.getMisPlacedVMs(mo), map.getAllVMs());
+        Assert.assertEquals(cc.getMisPlacedVMs(i), map.getAllVMs());
     }
 
     @Test
@@ -273,8 +274,9 @@ public class CCRunningCapacityTest {
         RunningCapacity c = new RunningCapacity(Collections.singleton(n1), 1);
         CRunningCapacity cc = new CRunningCapacity(c);
 
-        Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cc.getMisPlacedVMs(i).isEmpty());
         m.addRunningVM(vm4, n1);
-        Assert.assertEquals(m.getRunningVMs(n1), cc.getMisPlacedVMs(mo));
+        Assert.assertEquals(m.getRunningVMs(n1), cc.getMisPlacedVMs(i));
     }
 }

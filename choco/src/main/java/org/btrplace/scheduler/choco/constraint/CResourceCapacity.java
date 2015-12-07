@@ -19,8 +19,8 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import gnu.trove.list.array.TIntArrayList;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.ResourceCapacity;
@@ -40,10 +40,7 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of {@link org.btrplace.model.constraint.ResourceCapacity}.
@@ -151,26 +148,30 @@ public class CResourceCapacity implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
-        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rc == null) {
-            return map.getRunningVMs(cstr.getInvolvedNodes());
-        }
-        Set<VM> bad = new HashSet<>();
-        int remainder = cstr.getAmount();
-        for (Node n : cstr.getInvolvedNodes()) {
-            for (VM v : map.getRunningVMs(n)) {
-                remainder -= rc.getConsumption(v);
-                if (remainder < 0) {
-                    for (Node n2 : cstr.getInvolvedNodes()) {
-                        bad.addAll(map.getRunningVMs(n2));
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        if (cstr.getInvolvedNodes().size() > 1) {
+            Mapping map = i.getModel().getMapping();
+            ShareableResource rc = (ShareableResource) i.getModel().getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
+            if (rc == null) {
+                return map.getRunningVMs(cstr.getInvolvedNodes());
+            }
+            Set<VM> bad = new HashSet<>();
+            int remainder = cstr.getAmount();
+            for (Node n : cstr.getInvolvedNodes()) {
+                for (VM v : map.getRunningVMs(n)) {
+                    remainder -= rc.getConsumption(v);
+                    if (remainder < 0) {
+                        for (Node n2 : cstr.getInvolvedNodes()) {
+                            bad.addAll(map.getRunningVMs(n2));
+                        }
+                        return bad;
                     }
-                    return bad;
                 }
             }
+            return bad;
         }
-        return bad;
+        //If there is only a single node, we delegate this work to CShareableResource.
+        return Collections.emptySet();
     }
 
     @Override

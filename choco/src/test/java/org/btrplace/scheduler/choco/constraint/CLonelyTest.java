@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Lonely;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -118,8 +119,9 @@ public class CLonelyTest {
 
 
         CLonely c = new CLonely(new Lonely(mine));
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm2, n2);
-        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getRunningVMs(n2));
+        Assert.assertEquals(c.getMisPlacedVMs(i), map.getRunningVMs(n2));
     }
 }

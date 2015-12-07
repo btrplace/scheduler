@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint.migration;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
@@ -64,7 +65,7 @@ public class CSync implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model model) {
+    public Set<VM> getMisPlacedVMs(Instance model) {
         return Collections.emptySet();
     }
 

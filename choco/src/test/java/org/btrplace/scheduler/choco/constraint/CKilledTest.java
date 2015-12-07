@@ -20,9 +20,12 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Killed;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Collections;
 
 /**
  * Unit tests for {@link CKilled}.
@@ -41,44 +44,14 @@ public class CKilledTest {
         Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2).get();
 
         CKilled k = new CKilled(new Killed(vm5));
-        Assert.assertTrue(k.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(k.getMisPlacedVMs(i).isEmpty());
         k = new CKilled(new Killed(vm2));
-        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
-        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm2));
+        Assert.assertEquals(1, k.getMisPlacedVMs(i).size());
+        Assert.assertTrue(k.getMisPlacedVMs(i).contains(vm2));
 
         k = new CKilled(new Killed(vm1));
-        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
-        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
+        Assert.assertEquals(1, k.getMisPlacedVMs(i).size());
+        Assert.assertTrue(k.getMisPlacedVMs(i).contains(vm1));
     }
-/*
-    @Test
-    public void testFromReady() throws Exception {
-        Model mo = new DefaultModel();
-        VM v = mo.newVM();
-        mo.getMapping().addReadyVM(v);
-        ChocoScheduler cra = new DefaultChocoScheduler();
-        Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
-    }
-
-    @Test
-    public void testFromRunning() throws Exception {
-        Model mo = new DefaultModel();
-        VM v = mo.newVM();
-        Node n = mo.newNode();
-        mo.getMapping().addOnlineNode(n);
-        mo.getMapping().addRunningVM(v, n);
-        ChocoScheduler cra = new DefaultChocoScheduler();
-        Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
-    }
-
-    @Test
-    public void testFromSleeping() throws Exception {
-        Model mo = new DefaultModel();
-        VM v = mo.newVM();
-        Node n = mo.newNode();
-        mo.getMapping().addOnlineNode(n);
-        mo.getMapping().addSleepingVM(v, n);
-        ChocoScheduler cra = new DefaultChocoScheduler();
-        Assert.assertNotNull(cra.solve(mo, Arrays.<SatConstraint>asList(new Killed(v))));
-    }     */
 }

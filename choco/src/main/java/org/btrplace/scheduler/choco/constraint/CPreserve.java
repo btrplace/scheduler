@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.view.ShareableResource;
@@ -73,18 +73,15 @@ public class CPreserve implements ChocoConstraint {
         return true;
     }
 
+    /**
+     * {@inheritDoc}.
+     * This implementation is just a stub. A proper estimation will be made directly by {@link CShareableResource#getMisPlacedVMs(Instance)}.
+     *
+     * @param i the instance to inspect
+     * @return an empty set
+     */
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rc == null) {
-            return Collections.singleton(cstr.getInvolvedVMs().iterator().next());
-        } else {
-            VM vm = cstr.getInvolvedVMs().iterator().next();
-            int x = rc.getConsumption(vm);
-            if (x < cstr.getAmount()) {
-                return Collections.singleton(vm);
-            }
-        }
+    public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
     }
 

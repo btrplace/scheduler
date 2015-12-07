@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
@@ -104,7 +105,7 @@ public class ChocoMapperTest {
         }
 
         @Override
-        public Set<VM> getMisPlacedVMs(Model m) {
+        public Set<VM> getMisPlacedVMs(Instance i) {
             throw new UnsupportedOperationException();
         }
     }
