@@ -5,8 +5,18 @@ version 0.43 - soon come
 ----------------------
 See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
 
+This release proposes significant performance improvement in both placement
+oriented problems and migration oriented problems. It also simplifies the code
+that map choco objects to their api-side equivalent.
+
 - Improved scalability of the Network model
-- the apidocs of the master branch is always available online at http://www.btrplace.org/apidocs-next/
+- Improved the scalability of the placement model (#67)
+- rewrite the constraint and the view mapping process (#79,#80,#81).
+  No more builders, only dynamic invokation.
+- ChocoViews can now provided an estimated of misplaced VMs (#77)
+- bug fixes
+- the apidocs of the master branch is always available online at
+  http://www.btrplace.org/apidocs-next/
 
 version 0.42 - 23 Nov 2015
 ----------------------
