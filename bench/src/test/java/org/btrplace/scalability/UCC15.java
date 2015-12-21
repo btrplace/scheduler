@@ -30,8 +30,29 @@ public class UCC15 {
 
     String path = new File("").getAbsolutePath() +
             "/bench/src/test/java/org/btrplace/scalability/";
-    
+
     @Test
+    public void decommissioning10Gb() throws ContradictionException {
+        System.out.println(decommissioning_10gb());
+    }
+
+    @Test
+    public void decommissioning20Gb() throws ContradictionException {
+        System.out.println(decommissioning_20gb());
+    }
+
+    @Test
+    public void decommissioning40Gb() throws ContradictionException {
+        System.out.println(decommissioning_40gb());
+    }
+
+    @Test
+    public void decommissioning100Gb() throws ContradictionException {
+        System.out.println(decommissioning_100gb());
+    }
+
+
+    /*@Test
     public void go() throws Exception {
         StringBuilder res = new StringBuilder("SIZE;DURATION\n");
         int nb = 1;
@@ -48,7 +69,7 @@ public class UCC15 {
             res.append("x10;" + duration(decommissioning_100gb()) + "\n");
         }
         System.err.println(res);
-    }
+    }*/
 
     public double duration(SolvingStatistics s) {
         SolutionStatistics x= s.getSolutions().get(0);
