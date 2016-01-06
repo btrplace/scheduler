@@ -59,7 +59,7 @@ public class CRunningCapacity implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         Solver s = rp.getSolver();
-        if (cstr.getInvolvedVMs().size() == 1) {
+        if (cstr.getInvolvedNodes().size() == 1) {
             return filterWithSingleNode(rp);
         }
         if (cstr.isContinuous() && !injectContinuous(rp)) {
@@ -116,16 +116,15 @@ public class CRunningCapacity implements ChocoConstraint {
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(v, "<=", cstr.getAmount()));
 
-        //Continuous in practice ?
-        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
-            try {
-                v.updateUpperBound(cstr.getAmount(), Cause.Null);
-            } catch (ContradictionException e) {
-                rp.getLogger().error("Unable to cap the amount of VMs on '{}' to {}, : ", n, cstr.getAmount(), e.getMessage());
-                return false;
-            }
+        try {
+            v.updateUpperBound(cstr.getAmount(), Cause.Null);
+        } catch (ContradictionException e) {
+            rp.getLogger().error("Unable to cap the amount of VMs on '{}' to {}, : ", n, cstr.getAmount(), e.getMessage());
+            return false;
         }
-        return true;
+
+        //Continuous in practice ?
+        return !(cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel()));
     }
 
     @Override

@@ -20,10 +20,7 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Offline;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Spread;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -419,6 +416,40 @@ public class Issues {
         s.doRepair(true);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertTrue(p.getActions().isEmpty());
+    }
+
+    @Test
+    public void testIssue86() throws Exception {
+        Model mo = new DefaultModel();
+        mo.getMapping().addReadyVM(mo.newVM());
+        mo.getMapping().addReadyVM(mo.newVM());
+        mo.getMapping().addReadyVM(mo.newVM());
+        mo.getMapping().addOnlineNode(mo.newNode());
+        mo.getMapping().addOnlineNode(mo.newNode());
+        mo.getMapping().addOnlineNode(mo.newNode());
+
+        List<SatConstraint> cstrs = new ArrayList<>();
+        for (VM v : mo.getMapping().getAllVMs()) {
+            cstrs.add(new Running(v));
+        }
+        cstrs.add(new Spread(mo.getMapping().getAllVMs(), false));
+        for (Node n : mo.getMapping().getOnlineNodes()) {
+            cstrs.add(new RunningCapacity(n, 1));
+        }
+        Instance i = new Instance(mo, cstrs, new MinMTTR());
+        ChocoScheduler s = new DefaultChocoScheduler();
+        System.out.println(i.getModel());
+        s.doOptimize(false);
+        s.doRepair(false);
+        s.setVerbosity(3);
+        ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(3, p.getActions().size());
+        System.out.println(p);
+        s.doRepair(true);
+        p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(3, p.getActions().size());
 
     }
 }
