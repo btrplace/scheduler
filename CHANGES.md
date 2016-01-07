@@ -14,7 +14,7 @@ that map choco objects to their api-side equivalent.
 - rewrite the constraint and the view mapping process (#79,#80,#81).
   No more builders, only dynamic invokation.
 - ChocoViews can now provided an estimated of misplaced VMs (#77)
-- bug fixes
+- bug fixes: #87
 - the apidocs of the master branch is always available online at
   http://www.btrplace.org/apidocs-next/
 

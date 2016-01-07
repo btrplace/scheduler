@@ -159,7 +159,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     @Override
     public IntVar getVariable(IntVar[] scope) {
         makeIncoming();
-        obj.postCostConstraints();
         IntVar v = getVMtoLeafNode();
         if (v == null) {
             last = null;
@@ -168,7 +167,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
         v = getMovingVM();
         if (v != null) {
-            obj.postCostConstraints();
             return v;
         }
 
@@ -218,10 +216,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                     }
                 }
             }
-        }
-        if (best == null) {
-            //Plug the cost constraints
-            obj.postCostConstraints();
         }
         return best;
     }
