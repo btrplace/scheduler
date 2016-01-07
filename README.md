@@ -31,6 +31,7 @@ solver Choco
 * `org.btrplace:scheduler-json`: to serialize models using JSON
 * `org.btrplace:btrpsl`: a scripting language to express constraints
 * `org.btrplace:bench`: a simple CLI to perform benchmarks
+* `org.btrplace:scheduler-examples`: the examples illustrated in the [tutorials](https://github.com/btrplace/scheduler/wiki/Tutorials) section
 
 ## Getting Started ##
 
