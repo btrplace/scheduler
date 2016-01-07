@@ -167,7 +167,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
         v = getMovingVM();
         if (v != null) {
-            obj.postCostConstraints();
             return v;
         }
 
@@ -217,10 +216,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                     }
                 }
             }
-        }
-        if (best == null) {
-            //Plug the cost constraints
-            obj.postCostConstraints();
         }
         return best;
     }
