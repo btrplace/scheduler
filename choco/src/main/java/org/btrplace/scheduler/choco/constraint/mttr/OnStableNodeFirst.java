@@ -159,6 +159,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     @Override
     public IntVar getVariable(IntVar[] scope) {
         makeIncoming();
+        obj.postCostConstraints();
         IntVar v = getVMtoLeafNode();
         if (v == null) {
             last = null;

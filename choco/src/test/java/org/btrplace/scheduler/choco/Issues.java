@@ -419,6 +419,19 @@ public class Issues {
         s.doRepair(true);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertTrue(p.getActions().isEmpty());
+    }
 
+    @Test
+    public void issue87() throws Exception {
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[3,2],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[4]},\"3\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[]},\"constraints\":[{\"vm\":0,\"continuous\":false,\"id\":\"running\"},{\"vm\":1,\"continuous\":false,\"id\":\"running\"},{\"vm\":2,\"continuous\":false,\"id\":\"running\"},{\"vm\":3,\"continuous\":false,\"id\":\"running\"},{\"vm\":4,\"continuous\":false,\"id\":\"running\"},{\"amount\":1,\"nodes\":[0],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":1,\"nodes\":[1],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":1,\"nodes\":[2],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":2,\"nodes\":[3],\"continuous\":false,\"id\":\"runningCapacity\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
+        InstanceConverter ic = new InstanceConverter();
+        Instance i = ic.fromJSON(buf);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        s.doOptimize(true);
+        ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+        System.out.println(s.getStatistics());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 2);
+        System.out.println(p);
     }
 }
