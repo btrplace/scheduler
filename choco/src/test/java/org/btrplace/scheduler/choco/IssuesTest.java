@@ -49,7 +49,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Issues {
+public class IssuesTest {
 
     /**
      * Another test related to issue #5.
