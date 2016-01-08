@@ -140,19 +140,23 @@ public class VectorPackingKPSimpleDecorator {
      * @throws ContradictionException
      */
     private void filterFullDim(int bin, int dim) throws ContradictionException {
+        System.out.println(bin + " is full on dim " + dim);
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
             //assert p.bins[i].contains(bin) : p.bins[i] + " bin=" + bin + " item=" + i;
-            if (p.iSizes[dim][i] > 0) {
-                p.bins[i].removeValue(bin, p.getACause());
+            if (/*p.bins[i].contains(bin) && */p.iSizes[dim][i] > 0) {
+                boolean b = p.bins[i].removeValue(bin, p.getACause());
+                System.out.println("KP Remove item " + i + " from bin " + bin + ": " + b);
                 if (p.bins[i].isInstantiated()) {
+                    System.out.println("\tnow assigned to " + p.bins[i].getValue());
                     p.assignItem(i, p.bins[i].getValue());
                 }
-                candidate.get(bin).clear(i);
             }
+            candidate.get(bin).clear(i);
         }
         //candidate.get(bin).clear();
         //for (int d = 0; d < p.nbDims; d++) {
         p.potentialLoad[dim][bin].set(p.assignedLoad[dim][bin].get());
+        System.out.println("potentialLoad dim=" + dim + ", bin=" + bin + " -> " + p.assignedLoad[dim][bin].get());
         assert p.loads[dim][bin].getUB() == p.potentialLoad[dim][bin].get();
         //p.filterLoadSup(dim, bin, p.potentialLoad[dim][bin].get());
         //}
@@ -187,12 +191,14 @@ public class VectorPackingKPSimpleDecorator {
             candidate.get(bin).clear(item);
             for (int d = 0; d < p.nbDims; d++) {
                 if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
-                    assert p.loads[d][bin].isInstantiated();
+                    //assert p.loads[d][bin].isInstantiated();
                     filterFullDim(bin, d);
                     //return;
                     if (candidate.get(bin).isEmpty()) {
+                        System.out.println("No more candidates for " + bin);
                         for (int d2 = 0; d2 < p.nbDims; d2++) {
                             p.potentialLoad[d2][bin].set(p.assignedLoad[d2][bin].get());
+                            System.out.println("potentialLoad dim=" + d2 + ", bin=" + bin + " -> " + p.assignedLoad[d2][bin].get());
                             //assert p.loads[d2][bin].getUB() == p.potentialLoad[d2][bin].get();
                             p.filterLoadSup(d2, bin, p.potentialLoad[d2][bin].get());
                         }

@@ -301,6 +301,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         if (delta >= 0) {
             return false;
         }
+        System.out.println("filterLoadSup dim=" + dim + ", bin=" + bin + " -> " + newLoadSup + " ; current=" + loads[dim][bin]);
         loads[dim][bin].updateUpperBound(newLoadSup, this);
         if (sumISizes[dim] > sumLoadSup[dim].add(delta)) {
             contradiction(null, "");
@@ -315,6 +316,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
+        System.out.println("Removed item " + item + " from bin " + bin);
         for (int d = 0; d < nbDims; d++) {
             filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
         }
@@ -347,6 +349,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     public void propagate(int idx, int mask) throws ContradictionException {
         if (idx < bins.length) {
             deltaMonitor[idx].freeze();
+            System.out.println("remproc " + deltaMonitor[idx].toString() +  " for item="  + idx);
             deltaMonitor[idx].forEachRemVal(remProc.set(idx));
             deltaMonitor[idx].unfreeze();
             if (vars[idx].isInstantiated()) {
@@ -377,6 +380,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         @Override
         public void execute(int val) throws ContradictionException {
+            System.out.println("Remproc " + val);
             p.removeItem(idxVar, val);
         }
     }
@@ -457,7 +461,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         loadsHaveChanged = getSolver().getEnvironment().makeBool(false);
 
-        if (decoKPSimple != null) decoKPSimple.postInitialize();
+        if (decoKPSimple != null) {
+            decoKPSimple.postInitialize();
+        }
 
 //        detectEntailedDimensions(sumFreeSize);
 
