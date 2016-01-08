@@ -15,6 +15,8 @@ that map choco objects to their api-side equivalent.
   No more builders, only dynamic invokation.
 - ChocoViews can now provided an estimated of misplaced VMs (#77)
 - bug fixes: #87
+- remove the standalone examples runner. Now Examples have to be launched as
+  unit tests from an IDE
 - the apidocs of the master branch is always available online at
   http://www.btrplace.org/apidocs-next/
 
