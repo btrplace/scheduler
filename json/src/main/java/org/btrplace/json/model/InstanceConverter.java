@@ -20,12 +20,18 @@ package org.btrplace.json.model;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.ConstraintsConverter;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.OptConstraint;
+import org.btrplace.model.constraint.SatConstraint;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * A JSON converter for {@link org.btrplace.model.Instance}.
@@ -34,6 +40,90 @@ import org.btrplace.model.constraint.OptConstraint;
  */
 
 public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
+
+    /**
+     * Quick deserialization for a pure legacy BtrPlace instance.
+     *
+     * @param in the json version of the instance
+     * @return the resulting instance
+     * @throws IllegalArgumentException if the json format is incorrect
+     */
+    public static Instance quickFromJSON(JSONObject in) {
+        try {
+            return new InstanceConverter().fromJSON(in);
+        } catch (JSONConverterException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Quick deserialization for a pure legacy BtrPlace instance.
+     *
+     * @param path the file containing the json message
+     * @return the resulting instance
+     * @throws IllegalArgumentException if the json format is incorrect
+     */
+    public static Instance quickFromJSON(File path) throws IllegalArgumentException {
+        try (FileReader in = new FileReader(path)) {
+            return quickFromJSON(in);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Quick deserialization for a pure legacy BtrPlace instance.
+     *
+     * @param buf the json message
+     * @return the resulting instance
+     * @throws IllegalArgumentException if the json format is incorrect
+     */
+    public static Instance quickFromJSON(String buf) throws IllegalArgumentException {
+        try (StringReader in = new StringReader(buf)) {
+            return quickFromJSON(in);
+        }
+    }
+
+    public static Instance quickFromJSON(Reader r) throws IllegalArgumentException {
+        try {
+            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+            Object o = p.parse(r);
+            if (!(o instanceof JSONObject)) {
+                throw new IllegalArgumentException("Unable to parse a JSON object");
+            }
+            return quickFromJSON((JSONObject) o);
+        } catch (ParseException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Quick serialization of a pure legacy BtrPlace instance.
+     *
+     * @param in the instance
+     * @return the resulting JSON Object
+     * @throws IllegalArgumentException if the json format is incorrect
+     */
+    public static JSONObject quickToJSON(Instance in) {
+        try {
+            return new InstanceConverter().toJSON(in);
+        } catch (JSONConverterException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    /**
+     * Quick serialization of a pure legacy BtrPlace instance.
+     *
+     * @param mo    the model
+     * @param cstrs the sat-constraints
+     * @param o     the optimisation constraint
+     * @return {@code quickToJSON(new Instance(mo, cstrs, o)}
+     * @throws IllegalArgumentException if the json format is incorrect
+     */
+    public static JSONObject quickToJSON(Model mo, List<SatConstraint> cstrs, OptConstraint o) {
+        return quickToJSON(new Instance(mo, cstrs, o));
+    }
 
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
