@@ -50,7 +50,7 @@ echo "** Prepare master for the next version **"
 git fetch deploy master:refs/remotes/deploy/master >master.out 2>&1 ||warn "Unable to fetch master" master.out
 git checkout -b master deploy/master >>master.out 2>&1 ||warn "No master branch" master.out
 git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT} 2>&1 >> master.out ||warn "Unable to integrate to master" master.out
-echo "Merged"
+echo "     Merged"
 
 #Prepare the new version
 NEW_VERSION="${VERSION}-SNAPSHOT"
@@ -58,7 +58,7 @@ mvn versions:set -DnewVersion=${NEW_VERSION} -DgenerateBackupPoms=false >version
 ./bin/changelog.py new ${VERSION}
 ./bin/github.py milestone-open ${NEW_VERSION}||exit 1
 git commit -m "Prepare the code for the next version ${NEW_VERSION}" -a 2>&1 >> master.out || warn "Unable to commit" master.out
-echo "\tCommitted new version ${NEW_VERSION}"
+echo "     Committed new version ${NEW_VERSION}"
 git push deploy master >> master.out 2>&1||warn "Unable to push master" master.out
-echo "\tPushed"
+echo "     Pushed"
 rm -rf *.out > /dev/null
