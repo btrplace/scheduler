@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version 0.43 - soon come
+version 0.43 - 12 Jan 2016
 ----------------------
 See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
 
