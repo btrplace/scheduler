@@ -5,7 +5,6 @@ import requests
 import os
 import re
 import string
-from bin import version
 
 
 REPOS = "btrplace/scheduler"

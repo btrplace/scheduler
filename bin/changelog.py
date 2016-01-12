@@ -4,7 +4,6 @@ from __future__ import print_function
 import re
 import sys
 from datetime import date
-from bin import version
 
 def newChangelog(v):
 	f = open("CHANGES.md")
