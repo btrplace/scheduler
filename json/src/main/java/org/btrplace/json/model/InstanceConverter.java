@@ -31,7 +31,7 @@ import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 
 import java.io.*;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * A JSON converter for {@link org.btrplace.model.Instance}.
@@ -121,7 +121,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
      * @return {@code quickToJSON(new Instance(mo, cstrs, o)}
      * @throws IllegalArgumentException if the json format is incorrect
      */
-    public static JSONObject quickToJSON(Model mo, List<SatConstraint> cstrs, OptConstraint o) {
+    public static JSONObject quickToJSON(Model mo, Collection<SatConstraint> cstrs, OptConstraint o) {
         return quickToJSON(new Instance(mo, cstrs, o));
     }
 

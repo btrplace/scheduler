@@ -259,7 +259,7 @@ public class RelocatableVM implements KeepRunningVM {
                 else {
                     a = new MigrateVM(vm, src, dst, st, ed);
                 }
-                plan.add(a);
+                assert plan.add(a);
             // Re-instantiation
             } else {
                 try {
