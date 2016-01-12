@@ -53,6 +53,7 @@ def timestamp(v):
 	for l in lines:
 		f.write(l)
 	f.close()
+	return True
 	
 def usage():
 		print("Usage %s [new|timestamp] version?" % sys.argv[0], file=sys.stderr)
@@ -80,6 +81,7 @@ if __name__ == "__main__":
 	elif (op == "timestamp"):
 		if not timestamp(v):
 			exit(1)
+		print("Changelog timestamped to version " + v)
 	else:
 		print("Unsupported operation '%s'" % op, file=sys.stderr)
 		exit(1)
