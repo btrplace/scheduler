@@ -5,7 +5,7 @@ import requests
 import os
 import re
 import string
-
+import version
 
 REPOS = "btrplace/scheduler"
 TAG_HEADER = "btrplace-scheduler-"

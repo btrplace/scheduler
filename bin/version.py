@@ -19,7 +19,7 @@ def nextVersion(v):
 		nbs = v.split('.')
 		last = int(nbs[-1])
 		last += 1
-		nbs[-1] = string(last)
+		nbs[-1] = str(last)
 		return ".".join(nbs)
 
 def parseVersion():
