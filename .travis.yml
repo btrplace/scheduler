@@ -30,6 +30,7 @@ before_install:
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
+- python --version
 - pip install --user codecov
 install:
 - true

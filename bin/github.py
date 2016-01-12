@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import sys
+import ssl
+ssl.HAS_SNI = False
 import requests
 import os
 import re
@@ -33,7 +35,7 @@ def pushChanges(r, changes):
 	print("ERROR %d: %s" % (r.status_code, r.text), file=sys.stderr)
 
 def getMilestoneId(v):
-	res = requests.get(api() + "/milestones")
+	res = requests.get(api() + "/milestones?state=all")
 	if res.status_code != 200:
 		print("ERROR %d\n:%s" % (res.status_code, res.text), file=sys.stderr)
 		return False
@@ -52,6 +54,9 @@ def openMilestone(v):
 		return False
 	
 def closeMilestone(ms):
+	if (ms["state"] == "closed"):
+		print("Milestone '%s' already closed")
+		return True	
 	if (ms["open_issues"] != 0):
 		print ("DENIED: %d open issue(s)" % ms["open_issues"], file=sys.stderr)	
 		return False				
