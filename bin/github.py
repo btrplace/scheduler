@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import sys
+import ssl
+ssl.HAS_SNI = False
 import requests
 import os
 import re
