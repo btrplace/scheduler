@@ -6,8 +6,6 @@ import os
 import re
 import string
 import version
-import urllib3
-urllib3.disable_warnings()
 
 REPOS = "btrplace/scheduler"
 TAG_HEADER = "btrplace-scheduler-"
