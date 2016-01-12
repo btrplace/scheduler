@@ -107,7 +107,7 @@ if __name__ == "__main__":
 		if not ms:
 			print("ERROR: milestone '%s' unknown" % v, file=sys.stderr)
 			exit(1)
-		if not closeMilestone(os.environ['GH_TOKEN'], ms):
+		if not closeMilestone(ms):
 			exit(1)
 	elif (op =="push-changelog"):
 		r = getRelease(v)
