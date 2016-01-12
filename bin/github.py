@@ -8,8 +8,6 @@ import os
 import re
 import string
 import version
-import urllib3
-urllib3.disable_warnings()
 
 REPOS = "btrplace/scheduler"
 TAG_HEADER = "btrplace-scheduler-"
@@ -21,11 +19,25 @@ def api():
 	return "https://api.github.com/repos/" + REPOS 
 
 
+def createRelease(tag, changes):
+	dta = {
+	"draft" : False,
+	"tag_name" : tag,
+	"name":tag,
+	"body": changes,
+	}
+	r = requests.post(api() + "/releases", json=dta, headers=header())	
+	if r.status_code == 201:
+		return True	
+	print("ERROR %d\n:%s" % (r.status_code, r.text), file=sys.stderr)
+	return False
+
+
 def getRelease(tag):
 	r = requests.get(api() + "/releases/tags/%s%s" %(TAG_HEADER,tag))
 	if r.status_code == 200:
 		return r.json()
-	print ("Unable to get the release object: %d\n%s" % (r.status_code, r.text), file=sys.stderr)
+	print ("Unable to get the release object '%s%s': %d\n%s" % (TAG_HEADER,tag, r.status_code, r.text), file=sys.stderr)
 	return False	
 
 def pushChanges(r, changes):		
@@ -56,8 +68,7 @@ def openMilestone(v):
 		return False
 	
 def closeMilestone(ms):
-	if (ms["state"] == "closed"):
-		print("Milestone '%s' already closed")
+	if (ms["state"] == "closed"):		
 		return True	
 	if (ms["open_issues"] != 0):
 		print ("DENIED: %d open issue(s)" % ms["open_issues"], file=sys.stderr)	
@@ -70,6 +81,7 @@ def closeMilestone(ms):
 def getLog(v):	
 	f = open('CHANGES.md', 'r')
 	cnt=""
+	cpt=0
 	while True:	
 		line = f.readline()
 		if not line: break
@@ -77,8 +89,13 @@ def getLog(v):
 			f.readline()
 			while True:
 				log = f.readline()
-				if not log or log == "\n":					
-					return cnt
+				#2 consecutive empty lines == we stop
+				if not log or log == "\n":
+					cpt=cpt+1
+					if cpt == 2:
+						return cnt
+				else:
+					cpt = 0
 				cnt += log
 	return False
 
@@ -128,6 +145,16 @@ if __name__ == "__main__":
 		print(log)							
 		if not pushChanges(r, log):
 			exit(1)			
+	elif (op =="release"):		
+		log = getLog(v)
+		if not log:
+			print("No log for version '" + v + "'", file=sys.stderr)
+			exit(1)
+		print("Captured log:")		
+		print(log)							
+		if not createRelease(v, log):
+			exit(1)	
+
 	else:
 		print("Unsupported operation '" + op + "'", file=sys.stderr)
 		usage()		

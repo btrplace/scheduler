@@ -5,6 +5,7 @@ version 0.44 - soon come
 ----------------------
 See milestone [0.44](https://github.com/btrplace/scheduler/milestones/0.44)
 
+
 version 0.43 - 12 Jan 2016
 ----------------------
 See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
@@ -24,6 +25,7 @@ that map choco objects to their api-side equivalent.
 - the apidocs of the master branch is always available online at
   http://www.btrplace.org/apidocs-next/
 
+
 version 0.42 - 23 Nov 2015
 ----------------------
 - The API allows know to indicate a bandwidth to allocate for VM migration (#52)
@@ -34,16 +36,19 @@ version 0.42 - 23 Nov 2015
 - Improve the performance of the slice scheduler when nodes must be turned off
 - Fix issues #70, #69, #68, #66, #65, #64, #54, #53, #72, #73
 
+
 version 0.41 - 12 Feb 2015
 ----------------------
 - Speed up tasks scheduling. This improves the resolution of problems that manipulate the node states. See #62
 - Refer to the associated [issue tracker](https://github.com/btrplace/scheduler/issues?q=milestone%3A%22release+0.41%22+is%3Aclosed) to get the closed issues
+
 
 version 0.40 - 16 Jan 2015
 ----------------------
 - update to choco 3.3.0
 - fix #53
 - Refer to the associated [issue tracker](https://github.com/btrplace/scheduler/issues?q=milestone%3A%22release+0.40%22+is%3Aclosed) to get the closed issues
+
 
 version 0.39 - 07 Oct 2014
 ----------------------
@@ -67,15 +72,18 @@ version 0.39 - 07 Oct 2014
 - upgrade to choco-3.2.0
 - remove the logback dependency
 
+
 version 0.38.2 - 19 Jun 2014
 ----------------------
 - Minor release to fix copyrights
+
 
 version 0.38.1 - 06 May 2014
 ----------------------
 - fix the release script ? (issue #35)
 - the javadoc is now deployed according to the maven conventions
 - fix copyright headers (Issue #41)
+
 
 version 0.37 - 14 Apr 2014
 ----------------------
@@ -93,6 +101,7 @@ version 0.37 - 14 Apr 2014
     considered at building time in the solver
 - improve the overall code quality a bit when possible and needed
 
+
 version 0.36 - 28 Mar 2014
 ----------------------
 - Homogenize constraints signature in API
@@ -101,6 +110,7 @@ version 0.36 - 28 Mar 2014
 - a basic NamingService to associate a unique name to elements (#34)
 - minor improvements and bug fix in the API
 
+
 version 0.35 - 18 Feb 2014
 ----------------------
 - Move to choco 3. The scalability will be affected temporary but choco 2 is no longer maintained
@@ -108,16 +118,19 @@ version 0.35 - 18 Feb 2014
 - Simplify the signature of constraints to reduce the signature to the minimum needed (#29)
 - SingleRunningCapacity and SingleResourceCapacity are now merged in RunningCapacity and ResourceCapacity respectively. (#24)
 
+
 version 0.34 - 26 Nov 2013
 ----------------------
 - Update dependencies
 - Bug fix in NodeStateConstraint.toString()
 - Additional getters to tune the JSON serialisation of ReconfigurationPlan
 
+
 version 0.33 - 28 Oct 2013
 ----------------------
 - Bug fix in the json un-marshalling
 - API change: ModelViewConverter.getSupportedConstraint() becomes ModelViewConverter.getSupportedView()
+
 
 version 0.32 - 12 Sep 2013
 ----------------------
@@ -129,6 +142,7 @@ version 0.32 - 12 Sep 2013
 - new constraint: [MaxOnline](http://btrp.inria.fr/apidocs/releases/btrplace/solver/last/index.html?btrplace/model/constraint/MaxOnline.html)
 - API changes due to spell checking
 
+
 version 0.31 - 16 Jul 2013
 ----------------------
 - Bugs fix
@@ -138,6 +152,7 @@ version 0.31 - 16 Jul 2013
   This will be used later to integrate the parallel resolution of partitioned
   instances.
 
+
 version 0.30 - 04 Jun 2013
 ----------------------
 - Bugs fix
@@ -145,6 +160,7 @@ version 0.30 - 04 Jun 2013
 - MAJOR API change: Type system for elements. No more UUIDS.
 - Simplify json package
 - 2 new tutorials on customizing a Model and a ChocoReconfigurationAlgorithm.
+
 
 version 0.29 - 07 May 2013
 ----------------------
@@ -161,6 +177,7 @@ version 0.29 - 07 May 2013
 - Move most of the interface and abstract classes to the package of their
   implementations
 
+
 version 0.28 - 29 Mar 2013
 ----------------------
 - migration to JDK 7
@@ -170,6 +187,7 @@ version 0.28 - 29 Mar 2013
 - When resources are manipulated, it is no longer a necessary to state a
 Overbook constraint. An overbooking ratio of 1 is assumed
 
+
 version 0.27 - 22 Mar 2013
 ----------------------
 - Bug fix
@@ -178,6 +196,7 @@ version 0.27 - 22 Mar 2013
 - API documentation
 - Interface to specify application protocols for a ReconfigurationPlan.
 - close #2, #3, #4
+
 
 version 0.26 - 20 Mar 2013
 ----------------------
@@ -189,11 +208,13 @@ online tutorials
 - A zipped version of the Javadoc is generated and deployed
 - improve the node state management.
 
+
 version 0.25 - 11 Mar 2013
 ----------------------
 - New release to fit with the website arrival
 - ChocoReconfigurationAlgorithm#setVerbosityLevel to indicate the level of
 verbosity
+
 
 version 0.24 - 08 Mar 2013
 ----------------------
@@ -201,14 +222,17 @@ version 0.24 - 08 Mar 2013
 - improve performance
 - re-organize the code to provide a module dedicated to test helpers
 
+
 version 0.23 - 28 Feb 2013
 ----------------------
 - code refactoring for the JSON parser
+
 
 version 0.20 - 25 Feb 2013
 ----------------------
 - merge repositories for solver-api, solver-choco and solver-json
   into a single repository
+
 
 versions prior to 0.20
 ----------------------
