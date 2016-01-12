@@ -68,10 +68,10 @@ if __name__ == "__main__":
 	if len(sys.argv) > 2:
 		v = sys.argv[2]
 	else:
+	#the timestamp is the current version. Might be a snapshot but not my problem
 		v = version.parseVersion()
 		if not v:
 			exit(1)
-		v = version.nextVersion(v)
 
 	op = sys.argv[1]
 	if (op == "new"):

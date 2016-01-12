@@ -10,7 +10,9 @@ import subprocess
 
 def toRelease(v):
 	if v.endswith("-SNAPSHOT"):
-		return v[0:-1*len("-SNAPSHOT")]		
+		return v[0:-1*len("-SNAPSHOT")]
+	#This is already a release
+    return v
 
 def nextVersion(v):
 	if v.endswith("-SNAPSHOT"):
