@@ -54,10 +54,9 @@ def openMilestone(v):
 		return False
 	
 def closeMilestone(ms):
-	if (ms["state"] == "closed") {
+	if (ms["state"] == "closed"):
 		print("Milestone '%s' already closed")
-		return True
-	}
+		return True	
 	if (ms["open_issues"] != 0):
 		print ("DENIED: %d open issue(s)" % ms["open_issues"], file=sys.stderr)	
 		return False				
