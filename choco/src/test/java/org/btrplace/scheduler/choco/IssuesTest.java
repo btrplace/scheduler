@@ -20,10 +20,7 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Offline;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Spread;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -429,5 +426,72 @@ public class IssuesTest {
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);
         System.out.println(p);
+    }
+
+    @Test
+    public void testIssue89() throws Exception {
+        final Model model = new DefaultModel();
+        final Mapping mapping = model.getMapping();
+
+        final Node node3 = model.newNode(3);
+        final int[] ids3 = {2, 66, 86, 85, 37, 32, 29, 27, 26, 72, 24, 70, 22, 19, 65, 17, 59, 58, 56, 7, 49};
+        final Node node2 = model.newNode(2);
+        final int[] ids2 = {21, 67, 42, 36, 35, 33, 76, 74, 23, 69, 68, 20, 61, 12, 11, 10, 5, 51};
+        final Node node1 = model.newNode(1);
+        final int[] ids1 = {84, 83, 81, 77, 73, 71, 64, 63, 62, 57, 53, 52, 47, 46, 44, 41, 34, 31, 28, 25, 13, 8, 6, 4, 3, 0};
+        final Node node0 = model.newNode(0);
+        final int[] ids0 = {1, 45, 43, 40, 39, 38, 82, 80, 79, 78, 30, 75, 18, 16, 15, 14, 60, 9, 55, 54, 50, 48};
+
+        final ShareableResource cpu = new ShareableResource("cpu", 45, 1);
+        final ShareableResource mem = new ShareableResource("mem", 90, 2);
+
+        populateNodeVm(model, mapping, node0, ids0, cpu, mem);
+        populateNodeVm(model, mapping, node1, ids1, cpu, mem);
+        populateNodeVm(model, mapping, node2, ids2, cpu, mem);
+        populateNodeVm(model, mapping, node3, ids3, cpu, mem);
+        model.attach(cpu);
+        model.attach(mem);
+
+        final Collection<SatConstraint> satConstraints =
+                new ArrayList<SatConstraint>();
+        // We want to cause Node 3 to go offline to see how the VMs hosted on that
+        // node will get rebalanced.
+        satConstraints.add(new Offline(node3));
+        final OptConstraint optConstraint = new MinMTTR();
+        DefaultChocoScheduler scheduler = new DefaultChocoScheduler();
+        scheduler.doOptimize(false);
+        scheduler.doRepair(true);
+        ReconfigurationPlan plan = scheduler.solve(
+                model, satConstraints, optConstraint);
+        System.out.println(scheduler.getStatistics());
+        System.out.println(plan.getActions());
+        System.out.println(plan.isApplyable());
+
+        satConstraints.clear();
+        // This is somewhat similar to making Node 3 going offline by ensuring that
+        // all VMs can no longer get hosted on that node.
+        for (final VM vm : mapping.getAllVMs()) {
+            satConstraints.add(new Ban(vm, Arrays.asList(node3)));
+        }
+
+        scheduler = new DefaultChocoScheduler();
+        scheduler.doOptimize(false);
+        scheduler.doRepair(true);
+        plan = scheduler.solve(model, satConstraints, optConstraint);
+        System.out.println(scheduler.getStatistics());
+        System.out.println(plan.getActions());
+        System.out.println(plan.isApplyable());
+        System.out.println(plan.getResult().getMapping());
+    }
+
+    private static void populateNodeVm(final Model model,
+                                       final Mapping mapping, final Node node, final int[] ids,
+                                       final ShareableResource cpu, final ShareableResource mem) {
+
+        mapping.addOnlineNode(node);
+        for (final int id : ids) {
+            final VM vm = model.newVM(id);
+            mapping.addRunningVM(vm, node);
+        }
     }
 }
