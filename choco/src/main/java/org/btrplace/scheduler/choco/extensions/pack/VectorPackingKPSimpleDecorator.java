@@ -142,20 +142,23 @@ public class VectorPackingKPSimpleDecorator {
     private void filterFullDim(int bin, int dim) throws ContradictionException {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
             //assert p.bins[i].contains(bin) : p.bins[i] + " bin=" + bin + " item=" + i;
-            if (/*p.bins[i].contains(bin) && */p.iSizes[dim][i] > 0) {
-                boolean b = p.bins[i].removeValue(bin, p.getACause());
+            // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
+            // ie. !p.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
+            if (p.bins[i].contains(bin) && p.iSizes[dim][i] > 0) {
+                p.bins[i].removeValue(bin, p.getACause());
+                candidate.get(bin).clear(i);
+                p.potentialLoad[dim][bin].add(-1 * p.iSizes[dim][i]);
                 if (p.bins[i].isInstantiated()) {
                     p.assignItem(i, p.bins[i].getValue());
                 }
             }
-            candidate.get(bin).clear(i);
         }
-        //candidate.get(bin).clear();
-        //for (int d = 0; d < p.nbDims; d++) {
-        p.potentialLoad[dim][bin].set(p.assignedLoad[dim][bin].get());
-        assert p.loads[dim][bin].getUB() == p.potentialLoad[dim][bin].get();
-        //p.filterLoadSup(dim, bin, p.potentialLoad[dim][bin].get());
-        //}
+        if (candidate.get(bin).isEmpty()) {
+            //for (int d = 0; d < p.nbDims; d++) {
+            assert p.potentialLoad[dim][bin].get() == p.assignedLoad[dim][bin].get();
+            assert p.loads[dim][bin].getUB() == p.potentialLoad[dim][bin].get();
+            //p.filterLoadSup(dim, bin, p.potentialLoad[dim][bin].get());
+        }
     }
 
     /**
