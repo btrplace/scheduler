@@ -130,7 +130,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         return this.vm.equals(that.vm) &&
                 this.src.equals(that.src) &&
                 this.dst.equals(that.dst) &&
-                (this.bw < 0 && that.bw < 0) ||(this.bw == that.bw);
+                this.bw == that.bw;
     }
 
     @Override

@@ -433,14 +433,14 @@ public class IssuesTest {
         final Model model = new DefaultModel();
         final Mapping mapping = model.getMapping();
 
-        final Node node3 = model.newNode(3);
-        final int[] ids3 = {2, 66, 86, 85, 37, 32, 29, 27, 26, 72, 24, 70, 22, 19, 65, 17, 59, 58, 56, 7, 49};
-        final Node node2 = model.newNode(2);
-        final int[] ids2 = {21, 67, 42, 36, 35, 33, 76, 74, 23, 69, 68, 20, 61, 12, 11, 10, 5, 51};
-        final Node node1 = model.newNode(1);
-        final int[] ids1 = {84, 83, 81, 77, 73, 71, 64, 63, 62, 57, 53, 52, 47, 46, 44, 41, 34, 31, 28, 25, 13, 8, 6, 4, 3, 0};
         final Node node0 = model.newNode(0);
         final int[] ids0 = {1, 45, 43, 40, 39, 38, 82, 80, 79, 78, 30, 75, 18, 16, 15, 14, 60, 9, 55, 54, 50, 48};
+        final Node node1 = model.newNode(1);
+        final int[] ids1 = {84, 83, 81, 77, 73, 71, 64, 63, 62, 57, 53, 52, 47, 46, 44, 41, 34, 31, 28, 25, 13, 8, 6, 4, 3, 0};
+        final Node node2 = model.newNode(2);
+        final int[] ids2 = {21, 67, 42, 36, 35, 33, 76, 74, 23, 69, 68, 20, 61, 12, 11, 10, 5, 51};
+        final Node node3 = model.newNode(3);
+        final int[] ids3 = {2, 66, 86, 85, 37, 32, 29, 27, 26, 72, 24, 70, 22, 19, 65, 17, 59, 58, 56, 7, 49};
 
         final ShareableResource cpu = new ShareableResource("cpu", 45, 1);
         final ShareableResource mem = new ShareableResource("mem", 90, 2);
@@ -461,11 +461,12 @@ public class IssuesTest {
         DefaultChocoScheduler scheduler = new DefaultChocoScheduler();
         scheduler.doOptimize(false);
         scheduler.doRepair(true);
+
         ReconfigurationPlan plan = scheduler.solve(
                 model, satConstraints, optConstraint);
-        System.out.println(scheduler.getStatistics());
+        Assert.assertTrue(plan.isApplyable());
         System.out.println(plan.getActions());
-        System.out.println(plan.isApplyable());
+
 
         satConstraints.clear();
         // This is somewhat similar to making Node 3 going offline by ensuring that
@@ -478,9 +479,8 @@ public class IssuesTest {
         scheduler.doOptimize(false);
         scheduler.doRepair(true);
         plan = scheduler.solve(model, satConstraints, optConstraint);
-        System.out.println(scheduler.getStatistics());
+        Assert.assertTrue(plan.isApplyable());
         System.out.println(plan.getActions());
-        System.out.println(plan.isApplyable());
         System.out.println(plan.getResult().getMapping());
     }
 
