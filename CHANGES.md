@@ -5,6 +5,11 @@ version 0.44 - soon come
 ----------------------
 See milestone [0.44](https://github.com/btrplace/scheduler/milestones/0.44)
 
+A maintenance release but on a critical heisenbug bug that prevented migrations to
+be added to plans.
+
+- bug fixes: #91
+
 
 version 0.43 - 12 Jan 2016
 ----------------------

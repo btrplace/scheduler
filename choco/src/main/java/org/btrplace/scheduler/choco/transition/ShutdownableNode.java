@@ -97,7 +97,6 @@ public class ShutdownableNode implements NodeTransition {
      */
     public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SchedulerException {
         this.node = e;
-
         Solver s = rp.getSolver();
 
         /*

@@ -259,7 +259,8 @@ public class RelocatableVM implements KeepRunningVM {
                 else {
                     a = new MigrateVM(vm, src, dst, st, ed);
                 }
-                assert plan.add(a);
+                boolean b = plan.add(a);
+                assert b;
             // Re-instantiation
             } else {
                 try {
@@ -275,7 +276,8 @@ public class RelocatableVM implements KeepRunningVM {
                             s.getIntVal(dSlice.getStart())
                     );
                     //forge the new VM from a template
-                    plan.add(fvm);
+                    boolean b = plan.add(fvm);
+                    assert b;
                     //Boot the new VM
                     int endForging = fvm.getEnd();
                     org.btrplace.plan.event.BootVM boot = new org.btrplace.plan.event.BootVM(

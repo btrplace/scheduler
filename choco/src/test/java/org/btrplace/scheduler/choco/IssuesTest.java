@@ -462,8 +462,11 @@ public class IssuesTest {
         System.out.println(p);
     }
 
+    public static void main(String[] args) throws Exception {
+        testIssue89();
+    }
     @Test
-    public void testIssue89() throws Exception {
+    public static void testIssue89() throws Exception {
         final Model model = new DefaultModel();
         final Mapping mapping = model.getMapping();
 
@@ -495,11 +498,10 @@ public class IssuesTest {
         DefaultChocoScheduler scheduler = new DefaultChocoScheduler();
         scheduler.doOptimize(false);
         scheduler.doRepair(true);
-
+        scheduler.setTimeLimit(60000);
         ReconfigurationPlan plan = scheduler.solve(
                 model, satConstraints, optConstraint);
         Assert.assertTrue(plan.isApplyable());
-        System.out.println(plan.getActions());
 
 
         satConstraints.clear();
@@ -514,8 +516,6 @@ public class IssuesTest {
         scheduler.doRepair(true);
         plan = scheduler.solve(model, satConstraints, optConstraint);
         Assert.assertTrue(plan.isApplyable());
-        System.out.println(plan.getActions());
-        System.out.println(plan.getResult().getMapping());
     }
 
     private static void populateNodeVm(final Model model,
