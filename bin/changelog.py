@@ -30,7 +30,7 @@ def newChangelog(v):
 	f.write("See milestone [%s](https://github.com/btrplace/scheduler/milestones/%s)\n\n" %(v,v))
 	for l in lines:
 		f.write(l)
-	f.write("\n")
+	f.write("\n\n")
 	f.close()
 	
 def timestamp(v):
