@@ -53,7 +53,8 @@ git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT} 2>&1 >> master.
 echo " release merged with master"
 
 #Prepare the new version
-NEW_VERSION="${VERSION}-SNAPSHOT"
+N=`./bin/version.py --next`
+NEW_VERSION="${N}-SNAPSHOT"
 echo " new development version: ${NEW_VERSION}"
 mvn versions:set -DnewVersion=${NEW_VERSION} -DgenerateBackupPoms=false >version.out 2>&1 ||warn "Unable to set the new version" version.out
 ./bin/changelog.py new ${NEW_VERSION}

@@ -34,9 +34,14 @@ def parseVersion():
 		return None
 
 if __name__ == "__main__":
-	version=parseVersion()
-	if not version:
-		exit(1)
+
+	version=""
+	if len(sys.argv) > 2:
+		version = sys.argv[2]
+	else:
+		version = parseVersion()		
+		if not version:
+			exit(1)
 		
 	if (len(sys.argv) == 1):
 		print(version)
