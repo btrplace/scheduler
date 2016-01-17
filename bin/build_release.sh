@@ -39,7 +39,7 @@ echo "** Deploying the javadoc **"
 ./bin/push_javadoc.sh btrplace/apidocs.git >javadoc.out 2>&1  || warn "  unable to push the javadoc" javadoc.out
 
 echo "** Push the changelog **"
-./bin/github.py push-changelog ${VERSION}
+./bin/github.py release ${VERSION}
 
 #Clean      
 git push deploy --delete release >delete_release.out 2>&1 || warn "  unable to delete the remote release branch" delete_release.out    
