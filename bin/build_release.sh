@@ -53,14 +53,14 @@ git merge -m "merging with version ${VERSION}" --no-ff ${COMMIT} 2>&1 >> master.
 echo " release merged with master"
 
 #Prepare the new version
-N=`./bin/version.py --next`
-NEW_VERSION="${N}-SNAPSHOT"
-echo " new development version: ${NEW_VERSION}"
-mvn versions:set -DnewVersion=${NEW_VERSION} -DgenerateBackupPoms=false >version.out 2>&1 ||warn "Unable to set the new version" version.out
+NEW_VERSION=`./bin/version.py --next`
+DEV_VERSION="${NEW_VERSION}-SNAPSHOT"
+echo " new development version: ${DEV_VERSION}"
+mvn versions:set -DnewVersion=${DEV_VERSION} -DgenerateBackupPoms=false >version.out 2>&1 ||warn "Unable to set the new version" version.out
 ./bin/changelog.py new ${NEW_VERSION}
 ./bin/github.py milestone-open ${NEW_VERSION}||exit 1
 git commit -m "Prepare the code for the next version ${NEW_VERSION}" -a 2>&1 >> master.out || warn "Unable to commit" master.out
-echo "  committed new version ${NEW_VERSION}"
+echo "  committed new dev version ${DEV_VERSION}"
 git push deploy master >> master.out 2>&1||warn "Unable to push master" master.out
 echo "  pushed"
 rm -rf *.out > /dev/null
