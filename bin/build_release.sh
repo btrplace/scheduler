@@ -6,10 +6,12 @@ source bin/commons.sh
 
 
 #Tests are passing
-mvn test||exit 1
+echo "Testing"
+mvn test >tests.out 2>&1 ||err "Unable to push the javadoc" tests.out
 
 #No open issues in the current milestone
 VERSION=`./bin/version.py --release`
+echo "Version to release: ${VERSION}"
 ./bin/github.py milestone-close ${VERSION}||exit 1
 echo "Milestone ${VERSION} closed"
 

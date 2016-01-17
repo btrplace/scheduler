@@ -23,7 +23,7 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>scheduler</artifactId>
-    <version>0.44-SNAPSHOT</version>
+    <version>0.44</version>
     <name>scheduler</name>
     <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
