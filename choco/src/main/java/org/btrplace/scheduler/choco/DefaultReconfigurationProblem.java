@@ -141,7 +141,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver = new Solver();
         solver.set(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
-        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, DEFAULT_MAX_TIME, solver);
+        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), solver);
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
