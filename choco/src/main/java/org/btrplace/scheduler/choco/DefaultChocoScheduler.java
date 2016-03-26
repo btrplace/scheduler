@@ -20,10 +20,7 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.OptConstraint;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
@@ -36,6 +33,7 @@ import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -140,14 +138,22 @@ public class DefaultChocoScheduler implements ChocoScheduler {
             // Remember each migration's destination node
             if (!p.getActions().isEmpty()) {
 
-                // Add fence constraints for each destination node chosen
+                // Add Fence constraints for each destination node chosen
                 List<SatConstraint> newCstrs = p.getActions().stream()
                         .filter(a -> a instanceof MigrateVM)
                         .map(a -> new Fence(((MigrateVM) a).getVM(),
                                             Collections.singleton(((MigrateVM) a).getDestinationNode())))
                         .collect(Collectors.toList());
 
-                // Add the new Fence constraints to the list
+                // Add Root constraints to other staying VMs
+                newCstrs.addAll(i.getMapping().getAllVMs().stream()
+                    .filter(v -> !newCstrs.stream()
+                            .map(c -> new ArrayList<>(c.getInvolvedVMs()).get(0))
+                            .collect(Collectors.toList()).contains(v))
+                    .map(Root::new)
+                    .collect(Collectors.toList()));
+
+                // Add the new constraints to the list
                 if (!newCstrs.isEmpty()) cstrs.addAll(newCstrs);
             }
 
