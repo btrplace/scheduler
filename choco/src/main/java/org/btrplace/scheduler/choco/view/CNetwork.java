@@ -96,7 +96,7 @@ public class CNetwork implements ChocoView {
         // Pre-compute duration and bandwidth for each VM migration
         for (VMTransition migration : rp.getVMActions()) {
 
-            if (migration instanceof RelocatableVM && ((RelocatableVM) migration).isStaying().isInstantiatedTo(1)) {
+            if (migration instanceof RelocatableVM && ((RelocatableVM) migration).isStaying().isInstantiatedTo(0)) {
                 
                 // Get vars from migration
                 VM vm = migration.getVM();
@@ -211,7 +211,7 @@ public class CNetwork implements ChocoView {
             for (VM vm : rp.getVMs()) {
                 VMTransition a = rp.getVMAction(vm);
 
-                if (a != null && a instanceof RelocatableVM && ((RelocatableVM) a).isStaying().isInstantiatedTo(1)) {
+                if (a != null && a instanceof RelocatableVM && ((RelocatableVM) a).isStaying().isInstantiatedTo(0)) {
                     
                     if (a.getDSlice().getHoster().isInstantiated()) {
 
@@ -259,7 +259,7 @@ public class CNetwork implements ChocoView {
                 for (VM vm : rp.getVMs()) {
                     VMTransition a = rp.getVMAction(vm);
 
-                    if (a != null && a instanceof RelocatableVM && ((RelocatableVM) a).isStaying().isInstantiatedTo(1)) {
+                    if (a != null && a instanceof RelocatableVM && ((RelocatableVM) a).isStaying().isInstantiatedTo(0)) {
 
                         if (a.getDSlice().getHoster().isInstantiated()) {
 
