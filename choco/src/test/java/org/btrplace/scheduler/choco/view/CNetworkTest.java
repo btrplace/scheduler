@@ -91,7 +91,7 @@ public class CNetworkTest {
         Assert.assertNotNull(p);
         
         // The switch is non-blocking
-        Assert.assertTrue(swMain.getCapacity() == -1);
+        Assert.assertEquals(swMain.getCapacity(), -1);
         
         // Check the migration path and bandwidth
         MigrateVM mig = null;
@@ -99,9 +99,9 @@ public class CNetworkTest {
             mig = (MigrateVM) a;
             Assert.assertTrue(net.getRouting().getPath(((MigrateVM) a).getSourceNode(),
                     ((MigrateVM) a).getDestinationNode()).containsAll(net.getLinks()));
-            Assert.assertTrue(net.getRouting().getMaxBW(((MigrateVM) a).getSourceNode(),
-                    ((MigrateVM) a).getDestinationNode()) == bw);
-            Assert.assertTrue(((MigrateVM) a).getBandwidth() == bw);
+            Assert.assertEquals(net.getRouting().getMaxBW(((MigrateVM) a).getSourceNode(),
+                    ((MigrateVM) a).getDestinationNode()), bw);
+            Assert.assertEquals(((MigrateVM) a).getBandwidth(), bw);
             break;
         }}
 
@@ -113,6 +113,6 @@ public class CNetworkTest {
         durationHotPages = ((hotDirtySize / bandwidth_octet) * ((hotDirtySize / hotDirtyDuration) /
                 (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
         durationTotal = durationMin + durationColdPages + durationHotPages;
-        Assert.assertTrue((mig.getEnd() - mig.getStart()) == (int) Math.round(durationTotal));
+        Assert.assertEquals((mig.getEnd() - mig.getStart()), (int) Math.round(durationTotal));
     }
 }
