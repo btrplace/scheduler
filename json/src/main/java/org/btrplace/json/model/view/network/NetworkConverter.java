@@ -240,7 +240,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         String type = requiredString(o, "type");
         switch (type) {
             case "node":
-                return getOrMakeNode(requiredInt(o, "id"));
+                return requiredNode(o, "id");
             case "switch":
                 return getSwitch(net, requiredInt(o, "id"));
         }
