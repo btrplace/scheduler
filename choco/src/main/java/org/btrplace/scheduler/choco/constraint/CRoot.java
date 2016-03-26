@@ -26,8 +26,9 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.Collections;
 import java.util.Set;
@@ -59,7 +60,12 @@ public class CRoot implements ChocoConstraint {
         Slice cSlice = m.getCSlice();
         Slice dSlice = m.getDSlice();
         if (cSlice != null && dSlice != null) {
-            s.post(IntConstraintFactory.arithm(cSlice.getHoster(), "=", dSlice.getHoster()));
+            try {
+                dSlice.getHoster().instantiateTo(cSlice.getHoster().getValue(), Cause.Null);
+            } catch (ContradictionException ex) {
+                rp.getLogger().error("Unable to force VM '{}' to be running on node '{}'", vm, rp.getSourceModel().getMapping().getVMLocation(vm));
+                return false;
+            }
         }
         return true;
     }
