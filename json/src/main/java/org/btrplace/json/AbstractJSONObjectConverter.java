@@ -353,11 +353,11 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
         }
-        VM v = new VM(vmID);
-        if (!mo.contains(v)) {
-            throw new JSONConverterException("Undeclared VM '" + v.id() + "'");
+        if (!mo.containsVM(vmID)) {
+            throw new JSONConverterException("Undeclared vm '" + vmID + "'");
         }
-        return v;
+        VM v = mo.getMapping().getVMById(vmID);
+        return v == null ? new VM(vmID) : v;
     }
 
     /**
@@ -372,11 +372,11 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         if (mo == null) {
             throw new JSONConverterException("Unable to extract Nodes without a model to use as a reference");
         }
-        Node n = new Node(nodeID);
-        if (!mo.contains(n)) {
-            throw new JSONConverterException("Undeclared node '" + n.id() + "'");
+        if (!mo.containsNode(nodeID)) {
+            throw new JSONConverterException("Undeclared node '" + nodeID + "'");
         }
-        return n;
+        Node n = mo.getMapping().getNodeById(nodeID);
+        return n == null ? new Node(nodeID) : n;
     }
 
     @Override

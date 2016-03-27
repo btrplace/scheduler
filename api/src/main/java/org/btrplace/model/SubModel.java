@@ -200,8 +200,18 @@ public class SubModel implements Model {
     }
 
     @Override
+    public boolean containsVM(int id) {
+        return parent.containsVM(id);
+    }
+
+    @Override
     public boolean contains(Node n) {
         return parent.contains(n);
+    }
+
+    @Override
+    public boolean containsNode(int id) {
+        return parent.containsNode(id);
     }
 
     @Override

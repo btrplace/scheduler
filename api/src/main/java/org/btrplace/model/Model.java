@@ -93,6 +93,38 @@ public interface Model extends Cloneable, ElementBuilder {
     void setAttributes(Attributes attrs);
 
     /**
+     * Check if a VM is in the model.
+     *
+     * @param vm the VM.
+     * @return {@code true} if the VM is in.
+     */
+    boolean contains(VM vm);
+
+    /**
+     * Check if a VM with the given identifier is in the model.
+     *
+     * @param id the VM identifier.
+     * @return {@code true} if the VM is in.
+     */
+    boolean containsVM(int id);
+
+    /**
+     * Check if a node is in the model.
+     *
+     * @param node the node.
+     * @return {@code true} if the node is in.
+     */
+    boolean contains(Node node);
+
+    /**
+     * Check if a node with the given identifier is in the model.
+     *
+     * @param id the node identifier.
+     * @return {@code true} if the node is in.
+     */
+    boolean containsNode(int id);
+
+    /**
      * Clone a model.
      *
      * @return a new model

@@ -428,4 +428,20 @@ public class SubMapping implements Mapping {
         }
         return null;
     }
+
+    @Override
+    public Node getNodeById(int id) {
+        for (Node n : getAllNodes()) {
+            if (n.id() == id) return n;
+        }
+        return null;
+    }
+
+    @Override
+    public VM getVMById(int id) {
+        for (VM v : getAllVMs()) {
+            if (v.id() == id) return v;
+        }
+        return null;
+    }
 }

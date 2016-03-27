@@ -182,7 +182,17 @@ public class DefaultModel implements Model, Cloneable {
     }
 
     @Override
+    public boolean containsVM(int id) {
+        return elemBuilder.containsVM(id);
+    }
+
+    @Override
     public boolean contains(Node n) {
         return elemBuilder.contains(n);
+    }
+
+    @Override
+    public boolean containsNode(int id) {
+        return elemBuilder.containsNode(id);
     }
 }
