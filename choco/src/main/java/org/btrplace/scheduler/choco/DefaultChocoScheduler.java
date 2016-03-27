@@ -33,7 +33,6 @@ import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -145,11 +144,10 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                                             Collections.singleton(((MigrateVM) a).getDestinationNode())))
                         .collect(Collectors.toList());
 
-                // Add Root constraints to other staying VMs
+                // Add Root constraints to all staying VMs
                 newCstrs.addAll(i.getMapping().getAllVMs().stream()
-                    .filter(v -> !newCstrs.stream()
-                            .map(c -> new ArrayList<>(c.getInvolvedVMs()).get(0))
-                            .collect(Collectors.toList()).contains(v))
+                    .filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
+                            p.getResult().getMapping().getVMLocation(v).id())
                     .map(Root::new)
                     .collect(Collectors.toList()));
 
