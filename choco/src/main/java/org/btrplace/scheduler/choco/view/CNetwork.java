@@ -233,12 +233,12 @@ public class CNetwork implements ChocoView {
             if (!tasksList.isEmpty()) {
                 
                 // Post the cumulative constraint for the current link
-                solver.post(new Cumulative(
+                solver.post(ICF.cumulative(
                         tasksList.toArray(new Task[tasksList.size()]),
                         heightsList.toArray(new IntVar[heightsList.size()]),
                         VF.fixed(l.getCapacity(), solver),
-                        true/*,
-                        // Try to tune the filters to improve the constraint efficiency
+                        true
+                        /* Try to tune the filters to improve the constraint efficiency
                         Cumulative.Filter.TIME,
                         //Cumulative.Filter.SWEEP,
                         //Cumulative.Filter.SWEEP_HEI_SORT,
