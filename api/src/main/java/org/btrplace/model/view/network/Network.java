@@ -274,10 +274,10 @@ public class Network implements ModelView, Cloneable {
     public List<Link> getConnectedLinks(PhysicalElement pe) {
         List<Link> links = new ArrayList<>();
         for (Link l : this.links) {
-            if (l.getElement() == pe) {
+            if (l.getElement().equals(pe)) {
                 links.add(l);
             }
-            else if (l.getSwitch() == pe) {
+            else if (l.getSwitch().equals(pe)) {
                 links.add(l);
             }
         }
