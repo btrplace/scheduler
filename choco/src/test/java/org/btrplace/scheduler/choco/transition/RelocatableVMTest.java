@@ -37,7 +37,6 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.solution.Solution;
-import org.chocosolver.solver.trace.Chatterbox;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -341,7 +340,6 @@ public class RelocatableVMTest {
         am.getRelocationMethod().instantiateTo(1, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(new DefaultParameters(), rp);
-        Chatterbox.showDecisions(rp.getSolver());
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
