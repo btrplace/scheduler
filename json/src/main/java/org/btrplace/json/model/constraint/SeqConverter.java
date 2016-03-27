@@ -50,7 +50,7 @@ public class SeqConverter extends ConstraintConverter<Seq> {
         checkId(o);
         List<VM> s = new ArrayList<>();
         for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(getOrMakeVM((Integer) ob));
+            s.add(getVM((Integer) ob));
         }
         return new Seq(s);
     }

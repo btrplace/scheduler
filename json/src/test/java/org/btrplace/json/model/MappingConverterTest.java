@@ -51,7 +51,7 @@ public class MappingConverterTest {
         c.addOnlineNode(n3);
         c.addRunningVM(vm4, n3);
         MappingConverter json = new MappingConverter();
-        json.setModel(mo);
+        json.setModel(new DefaultModel());
         String ob = json.toJSONString(c);
         Mapping c2 = json.fromJSON(ob);
         Assert.assertEquals(c, c2);

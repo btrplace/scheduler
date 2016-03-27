@@ -44,13 +44,15 @@ public class InstanceConverterTest {
         Mapping ma = mo.getMapping();
         Node n1 = mo.newNode();
         VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n1);
         ma.addReadyVM(vm1);
+        ma.addReadyVM(vm2);
 
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnline(ma.getAllNodes()));
-        cstrs.add(new Running(mo.newVM()));
+        cstrs.add(new Running(vm2));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
 
         InstanceConverter conv = new InstanceConverter();

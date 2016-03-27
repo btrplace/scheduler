@@ -48,8 +48,10 @@ public class NetworkConverterTest {
         Model mo = new DefaultModel();
         Network net = new Network();
         Switch s = net.newSwitch(1000);
-        Node n1 = new Node(1);
-        Node n2 = new Node(2);
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
         net.connect(1000, s, n1, n2);
         mo.attach(net);
         
@@ -70,8 +72,10 @@ public class NetworkConverterTest {
         Model mo = new DefaultModel();
         Network net = new Network(new StaticRouting());
         Switch s = net.newSwitch(1000);
-        Node n1 = new Node(1);
-        Node n2 = new Node(2);
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
         net.connect(1000, s, n1, n2);
         ((StaticRouting) net.getRouting()).setStaticRoute(new StaticRouting.NodesMap(n1, n2), net.getLinks());
         mo.attach(net);

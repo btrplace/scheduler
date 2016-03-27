@@ -5,9 +5,9 @@ version 0.45 - soon come
 ----------------------
 See milestone [0.45](https://github.com/btrplace/scheduler/milestones/0.45)
 
-A maintenant release that makes the new migration scheduler more robust.
+A maintenance release that makes the new migration scheduler more robust.
 
-- bug fixes: #93, #94
+- bug fixes: #92, #93, #94
 
 version 0.44 - 17 Jan 2016
 ----------------------

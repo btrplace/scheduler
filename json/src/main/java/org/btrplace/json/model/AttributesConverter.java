@@ -62,7 +62,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             if (vms != null) {
                 for (Map.Entry<String, Object> e : vms.entrySet()) {
                     String el = e.getKey();
-                    VM vm = getOrMakeVM(Integer.parseInt(el));
+                    VM vm = getVM(Integer.parseInt(el));
                     JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, vm, entries);
                 }
@@ -72,7 +72,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             if (nodes != null) {
                 for (Map.Entry<String, Object> e : nodes.entrySet()) {
                     String el = e.getKey();
-                    Node n = getOrMakeNode(Integer.parseInt(el));
+                    Node n = getNode(Integer.parseInt(el));
                     JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, n, entries);
                 }
