@@ -32,7 +32,6 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.constraints.nary.cumulative.Cumulative;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
@@ -96,7 +95,7 @@ public class CNetwork implements ChocoView {
         // Pre-compute duration and bandwidth for each VM migration
         for (VMTransition migration : rp.getVMActions()) {
 
-            if (migration instanceof RelocatableVM && ((RelocatableVM) migration).isStaying().isInstantiatedTo(0)) {
+            if (migration instanceof RelocatableVM) {
                 
                 // Get vars from migration
                 VM vm = migration.getVM();
@@ -108,6 +107,7 @@ public class CNetwork implements ChocoView {
                 Node dst;
                 if (migration.getDSlice().getHoster().isInstantiated()) {
                     dst = rp.getNode(migration.getDSlice().getHoster().getValue());
+                    if (src.equals(dst)) continue;
                 }
                 else {
                     // Show a warning and throw an exception
@@ -211,7 +211,7 @@ public class CNetwork implements ChocoView {
             for (VM vm : rp.getVMs()) {
                 VMTransition a = rp.getVMAction(vm);
 
-                if (a != null && a instanceof RelocatableVM && ((RelocatableVM) a).isStaying().isInstantiatedTo(0)) {
+                if (a != null && a instanceof RelocatableVM) {
                     
                     if (a.getDSlice().getHoster().isInstantiated()) {
 
@@ -259,7 +259,7 @@ public class CNetwork implements ChocoView {
                 for (VM vm : rp.getVMs()) {
                     VMTransition a = rp.getVMAction(vm);
 
-                    if (a != null && a instanceof RelocatableVM && ((RelocatableVM) a).isStaying().isInstantiatedTo(0)) {
+                    if (a != null && a instanceof RelocatableVM) {
 
                         if (a.getDSlice().getHoster().isInstantiated()) {
 
