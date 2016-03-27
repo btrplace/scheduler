@@ -92,7 +92,6 @@ public class RelocatableVMTest {
         Solver s = rp.getSolver();
 
         s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs()[rp.getNode(n1)], "=", 0));
-        System.out.println(s);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -477,7 +476,6 @@ public class RelocatableVMTest {
         Assert.assertTrue(m1.getDuration().isInstantiatedTo(0));
         Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
         Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));
-        System.out.println(rp.getSolver().toString());
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);

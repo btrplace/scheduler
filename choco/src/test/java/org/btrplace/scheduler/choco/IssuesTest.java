@@ -438,7 +438,6 @@ public class IssuesTest {
         System.out.println(i.getModel());
         s.doOptimize(false);
         s.doRepair(false);
-        s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertNotNull(p);
         Assert.assertEquals(3, p.getActions().size());

@@ -253,7 +253,6 @@ public class CShareableResourceTest {
         List<SatConstraint> l = new ArrayList<>();
         l.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 5));
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(3);
         s.doRepair(true);
         ReconfigurationPlan p = s.solve(mo, l);
         Assert.assertEquals(s.getStatistics().getNbManagedVMs(), 0);
