@@ -25,6 +25,7 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 
@@ -81,6 +82,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         c.register(new SpreadConverter());
         c.register(new MaxOnlineConverter());
         c.register(new MinMTTRConverter());
+        c.register(new MinMTTRMigConverter());
         return c;
     }
 
