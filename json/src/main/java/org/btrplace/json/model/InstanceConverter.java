@@ -31,6 +31,7 @@ import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 /**
@@ -58,13 +59,13 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
 
     /**
      * Quick deserialization for a pure legacy BtrPlace instance.
-     *
+     * The file must be encoded in UTF-8.
      * @param path the file containing the json message
      * @return the resulting instance
      * @throws IllegalArgumentException if the json format is incorrect
      */
     public static Instance quickFromJSON(File path) throws IllegalArgumentException {
-        try (FileReader in = new FileReader(path)) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
             return quickFromJSON(in);
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);
@@ -128,8 +129,9 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
+        moc.setCharset(getCharset());
         ConstraintsConverter cConverter = ConstraintsConverter.newBundle();
-
+        cConverter.setCharset(getCharset());
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
         cConverter.setModel(mo);
         return new Instance(mo, cConverter.listFromJSON((JSONArray) in.get("constraints")),
@@ -139,7 +141,9 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     @Override
     public JSONObject toJSON(Instance instance) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
+        moc.setCharset(getCharset());
         ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
+        cstrc.setCharset(getCharset());
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
         ob.put("constraints", cstrc.toJSON(instance.getSatConstraints()));

@@ -28,6 +28,8 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,11 +37,17 @@ import java.util.Set;
 /**
  * Basic abstract scheduler-API/JSON objects converter.
  *
+ * By default, the charset used to encode and decode string is {@link StandardCharsets#UTF_8}.
  * @author Fabien Hermenier
  */
 public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
 
     private Model mo;
+
+    /**
+     * The charset to use by default.
+     */
+    private Charset charset = StandardCharsets.UTF_8;
 
     /**
      * New converters without any model as
@@ -74,6 +82,24 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         } catch (Exception e) {
             throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
         }
+    }
+
+    /**
+     * Get the associated charset.
+     *
+     * @return the current charset
+     */
+    public Charset getCharset() {
+        return charset;
+    }
+
+    /**
+     * Set the charset to use to encode/decode streams
+     *
+     * @param c the charset to use
+     */
+    public void setCharset(Charset c) {
+        this.charset = c;
     }
 
     /**
@@ -313,7 +339,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
 
     @Override
     public E fromJSON(File path) throws IOException, JSONConverterException {
-        try (FileReader in = new FileReader(path)) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), charset))) {
             return fromJSON(in);
         }
     }
@@ -389,7 +415,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
 
     @Override
     public void toJSON(E e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), charset))) {
             toJSON(e, out);
         }
     }
