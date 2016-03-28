@@ -487,4 +487,9 @@ public class Network implements ModelView, Cloneable {
     public boolean substituteVM(VM curId, VM nextId) {
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return viewId.hashCode();
+    }
 }

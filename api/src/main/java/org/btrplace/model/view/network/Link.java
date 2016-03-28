@@ -92,4 +92,9 @@ public class Link implements NetworkElement {
         // Only check the id (there should be no duplicate)
         return id == l.id();
     }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

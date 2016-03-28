@@ -175,5 +175,10 @@ public class StaticRouting extends Routing {
             }
             return (((NodesMap) o).getSrc().equals(n1) && ((NodesMap) o).getDst().equals(n2));
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(n1, n2);
+        }
     }
 }
