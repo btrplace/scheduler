@@ -39,6 +39,7 @@ import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -534,6 +535,19 @@ public class IssuesTest {
         Instance i = InstanceConverter.quickFromJSON(buf);
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
+        ReconfigurationPlan p = s.solve(i);
+        System.out.println(s.getStatistics());
+        Assert.assertNotNull(p);
+        System.out.println(p);
+    }
+
+    @Test
+    public void testAditya() {
+        Instance i = InstanceConverter.quickFromJSON(new File("choco/src/test/resources/net.json"));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        s.setVerbosity(2);
+        s.doRepair(true);
+        s.doOptimize(false);
         ReconfigurationPlan p = s.solve(i);
         System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
