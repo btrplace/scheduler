@@ -24,7 +24,7 @@ package org.btrplace.model.view.network;
  *
  * @author Vincent Kherbache
  */
-public interface SwitchBuilder {
+public interface SwitchBuilder extends Cloneable {
 
     /**
      * Generate a new non-blocking Switch.

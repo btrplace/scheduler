@@ -129,7 +129,7 @@ public class Launcher {
         try {
             i = conv.fromJSON(o);
         } catch (JSONConverterException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException(e);
         }
 
         //Set custom actions durations

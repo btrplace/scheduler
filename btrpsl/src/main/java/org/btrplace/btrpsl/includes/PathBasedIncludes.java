@@ -99,7 +99,7 @@ public class PathBasedIncludes implements Includes {
             String base = name.substring(0, name.length() - 2).replaceAll("\\.", File.separator);
             for (File path : paths) {
                 File f = new File(path.getPath() + File.separator + base);
-                if (f.isDirectory()) {
+                if (f.isDirectory() && f.listFiles() != null) {
                     for (File sf : f.listFiles()) {
                         if (sf.getName().endsWith(Script.EXTENSION)) {
 
