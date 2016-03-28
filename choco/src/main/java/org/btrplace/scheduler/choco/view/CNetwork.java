@@ -90,7 +90,6 @@ public class CNetwork implements ChocoView {
     public boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
         
         Model mo = rp.getSourceModel();
-        Solver s = rp.getSolver();
         
         // Pre-compute duration and bandwidth for each VM migration
         for (VMTransition migration : rp.getVMActions()) {

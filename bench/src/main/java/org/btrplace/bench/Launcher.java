@@ -201,67 +201,65 @@ public class Launcher {
 
     public static void savePlan(String fileName, ReconfigurationPlan plan) throws IOException {
         // Write the plan in a specific file
-        FileWriter writerPlan = new FileWriter(fileName);
-        writerPlan.append(plan.toString());
-        writerPlan.flush();
-        writerPlan.close();
+        try (FileWriter writerPlan = new FileWriter(fileName)) {
+            writerPlan.append(plan.toString());
+            writerPlan.flush();
+            writerPlan.close();
+        }
     }
 
     public static void createCSV(String fileName, ReconfigurationPlan plan, ChocoScheduler cra) throws IOException, SchedulerException {
 
-        FileWriter writer = new FileWriter(fileName);
-        SolvingStatistics stats = cra.getStatistics();
+        try (FileWriter writer = new FileWriter(fileName)) {
+            SolvingStatistics stats = cra.getStatistics();
 
-        // Set header
-        if (plan != null) {
-            writer.append("planDuration;planSize;planActionsSize;");
-        }
-        if (stats != null) {
-            writer.append("craStart;craNbSolutions;");
-            if (stats.getSolutions().size() > 0) {
-                writer.append("craSolutionTime;");
+            // Set header
+            if (plan != null) {
+                writer.append("planDuration;planSize;planActionsSize;");
             }
-            writer.append("craCoreRPBuildDuration;" +
-                            "craSpeRPDuration;" +
-                            "craSolvingDuration;" +
-                            "craNbBacktracks;" +
-                            "craNbConstraints;" +
-                            "craNbManagedVMs;" +
-                            "craNbNodes;" +
-                            "craNbSearchNodes;" +
-                            "craNbVMs" + '\n'
-            );
-        }
-
-        // Store values
-        if (plan != null) {
-            writer.append(String.valueOf(plan.getDuration()) + ';' +
-                            String.valueOf(plan.getSize()) + ';' +
-                            String.valueOf(plan.getActions().size()) + ';'
-            );
-        }
-        if (stats != null) {
-            writer.append(String.valueOf(stats.getStart()) + ';' +
-                            String.valueOf(stats.getSolutions().size()) + ';'
-            );
-            if (stats.getSolutions().size() > 0) {
-                writer.append(String.valueOf(stats.getSolutions().get(0).getTime()) + ';');
+            if (stats != null) {
+                writer.append("craStart;craNbSolutions;");
+                if (stats.getSolutions().size() > 0) {
+                    writer.append("craSolutionTime;");
+                }
+                writer.append("craCoreRPBuildDuration;" +
+                        "craSpeRPDuration;" +
+                        "craSolvingDuration;" +
+                        "craNbBacktracks;" +
+                        "craNbConstraints;" +
+                        "craNbManagedVMs;" +
+                        "craNbNodes;" +
+                        "craNbSearchNodes;" +
+                        "craNbVMs" + '\n'
+                );
             }
-            writer.append(String.valueOf(stats.getCoreRPBuildDuration()) + ';' +
-                            String.valueOf(stats.getSpeRPDuration()) + ';' +
-                            String.valueOf(stats.getSolvingDuration()) + ';' +
-                            String.valueOf(stats.getNbBacktracks()) + ';' +
-                            String.valueOf(stats.getNbConstraints()) + ';' +
-                            String.valueOf(stats.getNbManagedVMs()) + ';' +
-                            String.valueOf(stats.getNbNodes()) + ';' +
-                            String.valueOf(stats.getNbSearchNodes()) + ';' +
-                            String.valueOf(stats.getNbVMs()) + '\n'
-            );
-        }
 
-        // Close the file
-        writer.flush();
-        writer.close();
+            // Store values
+            if (plan != null) {
+                writer.append(String.valueOf(plan.getDuration()) + ';' +
+                        String.valueOf(plan.getSize()) + ';' +
+                        String.valueOf(plan.getActions().size()) + ';'
+                );
+            }
+            if (stats != null) {
+                writer.append(String.valueOf(stats.getStart()) + ';' +
+                        String.valueOf(stats.getSolutions().size()) + ';'
+                );
+                if (stats.getSolutions().size() > 0) {
+                    writer.append(String.valueOf(stats.getSolutions().get(0).getTime()) + ';');
+                }
+                writer.append(String.valueOf(stats.getCoreRPBuildDuration()) + ';' +
+                        String.valueOf(stats.getSpeRPDuration()) + ';' +
+                        String.valueOf(stats.getSolvingDuration()) + ';' +
+                        String.valueOf(stats.getNbBacktracks()) + ';' +
+                        String.valueOf(stats.getNbConstraints()) + ';' +
+                        String.valueOf(stats.getNbManagedVMs()) + ';' +
+                        String.valueOf(stats.getNbNodes()) + ';' +
+                        String.valueOf(stats.getNbSearchNodes()) + ';' +
+                        String.valueOf(stats.getNbVMs()) + '\n'
+                );
+            }
+        }
     }
 
     public static String stripExtension(final String s) {

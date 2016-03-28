@@ -27,7 +27,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.Collections;
@@ -54,7 +53,6 @@ public class CRoot implements ChocoConstraint {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-        Solver s = rp.getSolver();
         VM vm = cstr.getInvolvedVMs().iterator().next();
         VMTransition m = rp.getVMAction(vm);
         Slice cSlice = m.getCSlice();

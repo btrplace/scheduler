@@ -33,7 +33,6 @@ import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
-import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
 import java.util.Collections;
@@ -71,7 +70,7 @@ public class CNoDelay implements ChocoConstraint {
         // For each vm involved in the constraint
         VMTransition vt = rp.getVMAction(v);
         // Get the VMTransition start time
-        IntVar start = vt.getStart();
+        //IntVar start = vt.getStart();
 
                 /*
                 //TODO: Something wrong with "vt.getDuration().getValue()" (not instanciated)

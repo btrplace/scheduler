@@ -62,9 +62,7 @@ public class SeqLauncher {
             return;
         }
 
-        try {
-            FileInputStream in = new FileInputStream(inputFile);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile)))) {
             String strLine;
 
             while ((strLine = br.readLine()) != null) {
