@@ -23,7 +23,7 @@ package org.btrplace.model;
  *
  * @author Fabien Hermenier
  */
-public class SynchronizedElementBuilder implements ElementBuilder {
+public class SynchronizedElementBuilder implements ElementBuilder,Cloneable {
 
     private ElementBuilder base;
 

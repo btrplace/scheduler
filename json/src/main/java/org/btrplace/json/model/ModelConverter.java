@@ -73,6 +73,9 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
         cfgParser.setModel(i);
         attrsParser.setModel(i);
 
+        viewsConverter.setCharset(getCharset());
+        attrsParser.setCharset(getCharset());
+        cfgParser.setCharset(getCharset());
         JSONArray rcs = new JSONArray();
         for (ModelView v : i.getViews()) {
             rcs.add(viewsConverter.toJSON(v));
@@ -87,6 +90,9 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
 
     @Override
     public Model fromJSON(JSONObject o) throws JSONConverterException {
+        viewsConverter.setCharset(getCharset());
+        attrsParser.setCharset(getCharset());
+        cfgParser.setCharset(getCharset());
         if (!o.containsKey("mapping")) {
             throw new JSONConverterException("Missing required mapping as a value of the key 'mapping'");
         }

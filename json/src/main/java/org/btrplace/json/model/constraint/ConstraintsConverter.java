@@ -163,7 +163,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
 
     @Override
     public List<SatConstraint> listFromJSON(File path) throws IOException, JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
         }
 
@@ -202,7 +202,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
 
     @Override
     public void toJSON(Collection<SatConstraint> e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
         }
     }

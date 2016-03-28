@@ -26,7 +26,7 @@ import java.util.BitSet;
  *
  * @author Fabien Hermenier
  */
-public class DefaultElementBuilder implements ElementBuilder {
+public class DefaultElementBuilder implements ElementBuilder, Cloneable {
 
     private BitSet usedVMIds;
 

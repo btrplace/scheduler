@@ -405,7 +405,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
-        int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, this);
             bins[i].updateUpperBound(nbBins - 1, this);
@@ -420,7 +419,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                         int b = it.next();
                         for (int d = 0; d < nbDims; d++) {
                             cLoads[d][b] += iSizes[d][i];
-                            cs[b]++;
                         }
                     }
                 } finally {

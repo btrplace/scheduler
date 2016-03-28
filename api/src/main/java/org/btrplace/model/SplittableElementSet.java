@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplittableElementSet<E extends Element> implements Comparator<E>, Serializable {
+public class SplittableElementSet<E extends Element> implements Comparator<E> {
 
     private TIntIntHashMap index;
 

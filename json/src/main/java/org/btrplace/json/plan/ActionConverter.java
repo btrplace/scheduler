@@ -422,7 +422,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
 
     @Override
     public List<Action> listFromJSON(File path) throws IOException, JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
         }
 
@@ -461,7 +461,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
 
     @Override
     public void toJSON(Collection<Action> e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
         }
     }
