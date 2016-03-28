@@ -356,8 +356,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         if (!mo.containsVM(vmID)) {
             throw new JSONConverterException("Undeclared vm '" + vmID + "'");
         }
-        VM v = mo.getMapping().getVMById(vmID);
-        return v == null ? new VM(vmID) : v;
+        return new VM(vmID);
     }
 
     /**
@@ -375,8 +374,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         if (!mo.containsNode(nodeID)) {
             throw new JSONConverterException("Undeclared node '" + nodeID + "'");
         }
-        Node n = mo.getMapping().getNodeById(nodeID);
-        return n == null ? new Node(nodeID) : n;
+        return new Node(nodeID);
     }
 
     @Override
