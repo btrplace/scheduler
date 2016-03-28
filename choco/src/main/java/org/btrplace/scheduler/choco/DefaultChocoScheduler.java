@@ -132,8 +132,9 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
             // Solve a first time using placement oriented MinMTTR optimisation constraint
             ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
-            if (p == null) return null;
-
+            if (p == null) {
+                return null;
+            }
             // Remember each migration's destination node
             if (!p.getActions().isEmpty()) {
 
@@ -144,10 +145,14 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                                             Collections.singleton(((MigrateVM) a).getDestinationNode())))
                         .collect(Collectors.toList());
 
+                Model result = p.getResult();
+                if (result == null) {
+                    throw new SchedulerException(p.getOrigin(), "The plan is not viable");
+                }
                 // Add Root constraints to all staying VMs
-                newCstrs.addAll(i.getMapping().getAllVMs().stream()
+                newCstrs.addAll(i.getMapping().getRunningVMs().stream()
                     .filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
-                            p.getResult().getMapping().getVMLocation(v).id())
+                            result.getMapping().getVMLocation(v).id())
                     .map(Root::new)
                     .collect(Collectors.toList()));
 
@@ -158,7 +163,6 @@ public class DefaultChocoScheduler implements ChocoScheduler {
             // Re-attach the network view
             i.attach(net);
         }
-
         // Solve and return the computed plan
         return runner.solve(params, new Instance(i, cstrs, opt));
     }
