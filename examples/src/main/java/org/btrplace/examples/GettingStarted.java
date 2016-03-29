@@ -132,15 +132,17 @@ public class GettingStarted implements Example {
         ChocoScheduler ra = new DefaultChocoScheduler();
         try {
             ReconfigurationPlan plan = ra.solve(model, cstrs);
-            System.out.println("Time-based plan:");
-            System.out.println(new TimeBasedPlanApplier().toString(plan));
-            System.out.println("\nDependency based plan:");
-            System.out.println(new DependencyBasedPlanApplier().toString(plan));
-            return (plan != null);
+            if (plan != null) {
+                System.out.println("Time-based plan:");
+                System.out.println(new TimeBasedPlanApplier().toString(plan));
+                System.out.println("\nDependency based plan:");
+                System.out.println(new DependencyBasedPlanApplier().toString(plan));
+                return true;
+            }
         } catch (SchedulerException ex) {
             System.err.println(ex.getMessage());
-            return false;
         }
+        return false;
     }
 
     @Override
