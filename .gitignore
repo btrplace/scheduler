@@ -5,3 +5,4 @@ target
 *~
 .private
 *.pyc
+*.log
