@@ -2,7 +2,9 @@
 
 This repository contains the main sources of the flexible VM scheduler BtrPlace (see http://www.btrplace.org)
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/btrplace/chat?utm_source=share-link&utm_medium=link&utm_campaign=share-link) [![Build Status](https://api.travis-ci.org/btrplace/scheduler.svg)](https://travis-ci.org/btrplace/scheduler) [![codecov.io](https://codecov.io/github/btrplace/scheduler/coverage.svg?branch=master)](https://codecov.io/github/btrplace/scheduler?branch=master) [![Coverity](https://scan.coverity.com/projects/8380/badge.svg)](https://scan.coverity.com/projects/btrplace-scheduler)
+Chat with us on Gitter: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/btrplace/chat?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+
+[![Build Status](https://api.travis-ci.org/btrplace/scheduler.svg)](https://travis-ci.org/btrplace/scheduler) [![codecov.io](https://codecov.io/github/btrplace/scheduler/coverage.svg?branch=master)](https://codecov.io/github/btrplace/scheduler?branch=master) [![Coverity](https://scan.coverity.com/projects/8380/badge.svg)](https://scan.coverity.com/projects/btrplace-scheduler)[![Dependency Status](https://www.versioneye.com/user/projects/56fa5da135630e003e0a8aed/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56fa5da135630e003e0a8aed)
 
 Contact: fabien.hermenier@unice.fr
 
