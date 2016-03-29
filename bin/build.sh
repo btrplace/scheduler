@@ -16,6 +16,9 @@ master)
 travis_dbg)
 	./bin/push_javadoc.sh btrplace/apidocs|| exit 1
 	;;
+coverity)
+    echo "Skip coverity branch. Done by the add-on"
+	;;
 *)
 	echo "No CI for branch ${BRANCH}"
 	exit 1
