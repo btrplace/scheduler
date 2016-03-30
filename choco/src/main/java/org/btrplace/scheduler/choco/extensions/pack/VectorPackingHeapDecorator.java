@@ -169,8 +169,12 @@ public class VectorPackingHeapDecorator {
         if (loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta) {
             do {
                 int b = maxSlackBinHeap.get(d).poll();
-                if (isSup) p.filterLoadSup(d, b, delta + p.loads[d][b].getLB());
-                else p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
+                if (isSup) {
+                    p.filterLoadSup(d, b, delta + p.loads[d][b].getLB());
+                }
+                else {
+                    p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
+                }
                 assert (loadSlack(d, b) == delta);
                 maxSlackBinHeap.get(d).offer(b);
                 nChanges++;
