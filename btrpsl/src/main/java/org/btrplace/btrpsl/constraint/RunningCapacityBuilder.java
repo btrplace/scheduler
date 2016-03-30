@@ -54,12 +54,12 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
 
-        if (v != null && Math.rint(v.doubleValue()) != v.doubleValue()) {
+        if (Math.rint(v.doubleValue()) != v.doubleValue()) {
             t.ignoreError("Parameter '" + params[1].getName() + "' expects an integer, not a real number (" + v + " given)");
             return Collections.emptyList();
         }
 
-        return (ns != null && v != null) ?
+        return (ns != null) ?
                 (List) Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
                 Collections.emptyList();
     }

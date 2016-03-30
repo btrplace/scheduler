@@ -59,12 +59,12 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
                 return Collections.emptyList();
             }
 
-            if (v != null && Math.rint(v.doubleValue()) != v.doubleValue()) {
+            if (Math.rint(v.doubleValue()) != v.doubleValue()) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects an integer, not a real number (" + v + " given)");
                 return Collections.emptyList();
             }
 
-            if (ns == null || v == null) {
+            if (ns == null) {
                 return Collections.emptyList();
             }
             Set<Node> s = new HashSet<>(ns);
