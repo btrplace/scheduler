@@ -60,6 +60,7 @@ addons:
     build_command_prepend: "mvn clean"
     build_command:   "mvn -DskipTests=true compile"
     branch_pattern: master
+    notification_email: fabien.hermenier@unice.fr
 after_success:
 - codecov
 - curl http://testr-1154.appspot.com/assets/testR.py |python
