@@ -23,6 +23,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -32,7 +33,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class StartOnLeafNodes implements VariableSelector<IntVar> {
+public class StartOnLeafNodes implements VariableSelector<IntVar>, Serializable {
 
     private MovementGraph graph;
 

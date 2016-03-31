@@ -27,18 +27,19 @@ import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.BitSet;
 
 /**
  * @author Fabien Hermenier
  */
-public class LocalTaskScheduler {
+public class LocalTaskScheduler implements Serializable {
 
     public static final int DEBUG = -3;
     public static final int DEBUG_ALL = -2;
     public static final int NO_ASSOCIATIONS = -1;
-    private final Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
     private int me;
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -96,24 +97,24 @@ public class LocalTaskScheduler {
         this.early = early;
         this.last = last;
         this.aCause = iCause;
-        this.associateCTask = associateCTask;
+        this.associateCTask = associateCTask.clone();
         this.me = me;
-        this.cEnds = cEnds;
-        this.cHosters = cHosters;
+        this.cEnds = Arrays.copyOf(cEnds, cEnds.length);
+        this.cHosters = Arrays.copyOf(cHosters, cHosters.length);
 
-        this.capacities = capacities;
-        this.cUsages = cUsages;
-        this.dUsages = dUsages;
+        this.capacities = capacities.clone();
+        this.cUsages = cUsages.clone();
+        this.dUsages = dUsages.clone();
 
         this.nbDims = capacities[0].length;
         assert this.cUsages.length == 0 || this.cUsages[0].length == nbDims;
         assert this.dUsages.length == 0 || this.dUsages[0].length == nbDims;
 
-        this.dStarts = dStarts;
-        this.dHosters = dHosters;
+        this.dStarts = Arrays.copyOf(dStarts, dStarts.length);
+        this.dHosters = Arrays.copyOf(dHosters, dHosters.length);
         this.vIn = vIn;
         this.out = outs;
-        this.associateDTask = associateDTask;
+        this.associateDTask = associateDTask.clone();
 
 
         //The amount of free resources at startup

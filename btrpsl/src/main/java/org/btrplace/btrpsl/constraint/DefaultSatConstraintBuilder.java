@@ -106,10 +106,11 @@ public abstract class DefaultSatConstraintBuilder implements SatConstraintBuilde
         for (int i = 0; i < ops.size(); i++) {
             BtrpOperand o = ops.get(i);
             ConstraintParam p = params[i];
+            if (o == IgnorableOperand.getInstance()) {
+                return false;
+            }
             if (!p.isCompatibleWith(t, o)) {
-                if (o != IgnorableOperand.getInstance()) {
-                    t.ignoreError("'" + pretty(ops) + "' cannot be casted to '" + getSignature() + "'");
-                }
+                t.ignoreError("'" + pretty(ops) + "' cannot be casted to '" + getSignature() + "'");
                 return false;
             }
         }

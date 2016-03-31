@@ -27,6 +27,7 @@ import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.iterators.DisposableValueIterator;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
@@ -77,7 +78,9 @@ public class RandomVMPlacement implements IntValueSelector {
         this.rp = p;
         rnd = new Random(seed);
         vmPlacement = pVarMapping;
-        this.ranks = priorities;
+        if (priorities != null) {
+            this.ranks = Arrays.copyOf(priorities, priorities.length);
+        }
     }
 
     /**

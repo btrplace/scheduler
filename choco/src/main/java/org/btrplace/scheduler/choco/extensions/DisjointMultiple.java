@@ -245,7 +245,9 @@ public class DisjointMultiple extends Constraint {
             if (e == s + 1) {
                 return s;
             }
-            int m = (s + e) / 2;
+            //Complicated average computation that should
+            // prevent an overflow from findbug point of view
+            int m = (s + e) >>> 1;
             if (idx >= groupIdx[m]) {
                 return getGroup(idx, m, e);
             }

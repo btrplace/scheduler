@@ -48,7 +48,7 @@ public interface ConstraintParam<E> {
      * @param cb   the associated constraint
      * @param tree the tree use to propagate errors
      * @param op   the operand to transform
-     * @return the transformed parameter.
+     * @return the transformed parameter. {@code null if the transformation is not possible}
      */
     E transform(SatConstraintBuilder cb, BtrPlaceTree tree, BtrpOperand op);
 
