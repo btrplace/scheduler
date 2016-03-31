@@ -29,7 +29,6 @@ import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -58,8 +57,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private BitSet[] ins;
 
-    private CObjective obj;
-
     private IStateInt firstFree;
 
     private IntVar last;
@@ -73,20 +70,19 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     public OnStableNodeFirst(ReconfigurationProblem rp, CObjective o) {
 
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
-        this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
-        VMTransition[] vmActions = rp.getVMActions();
+        List<VMTransition> vmActions = rp.getVMActions();
 
         List<IntVar> hosts = new ArrayList<>();
         List<IntVar> starts = new ArrayList<>();
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
-        oldPos = new int[vmActions.length];
-        outs = new BitSet[rp.getNodes().length];
-        ins = new BitSet[rp.getNodes().length];
-        for (int i = 0; i < rp.getNodes().length; i++) {
+        oldPos = new int[vmActions.size()];
+        outs = new BitSet[rp.getNodes().size()];
+        ins = new BitSet[rp.getNodes().size()];
+        for (int i = 0; i < rp.getNodes().size(); i++) {
             outs[i] = new BitSet();
             ins[i] = new BitSet();
         }

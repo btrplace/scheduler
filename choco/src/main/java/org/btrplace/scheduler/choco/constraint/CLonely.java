@@ -73,7 +73,7 @@ public class CLonely implements ChocoConstraint {
         Solver s = rp.getSolver();
         s.post(new Disjoint(myHosts.toArray(new IntVar[myHosts.size()]),
                 otherHosts.toArray(new IntVar[otherHosts.size()]),
-                rp.getNodes().length));
+                rp.getNodes().size()));
 
         if (cstr.isContinuous()) {
             //Get the position of all the others c-slices and their associated end moment

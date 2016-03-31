@@ -74,7 +74,7 @@ public class CSplit implements ChocoConstraint {
             }
         }
         Solver s = rp.getSolver();
-        int nbNodes = rp.getNodes().length;
+        int nbNodes = rp.getNodes().size();
         IntVar[][] vars = new IntVar[groups.size()][];
         for (int i = 0; i < groups.size(); i++) {
             vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);

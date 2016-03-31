@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class DefaultCumulatives extends AbstractCumulatives implements Cumulatives {
 
-    private List<IntVar[]> capacities;
+    private List<List<IntVar>> capacities;
 
     /**
      * Make a new builder.
@@ -67,13 +67,12 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
 
     /**
      * Add a dimension.
-     *
-     * @param c    the resource capacity of each of the nodes
+     *  @param c    the resource capacity of each of the nodes
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
     @Override
-    public void addDim(IntVar[] c, int[] cUse, IntVar[] dUse) {
+    public void addDim(List<IntVar> c, int[] cUse, IntVar[] dUse) {
         capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -92,15 +91,15 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         }
 
         int nbDims = capacities.size();
-        int nbRes = capacities.get(0).length;
+        int nbRes = capacities.get(0).size();
 
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[nbRes][nbDims];
         int d = 0;
-        for (IntVar[] capaDim : capacities) {
-            assert capaDim.length == nbRes;
-            for (int j = 0; j < capaDim.length; j++) {
-                capas[j][d] = capaDim[j].getUB();
+        for (List<IntVar> capaDim : capacities) {
+            assert capaDim.size() == nbRes;
+            for (int j = 0; j < capaDim.size(); j++) {
+                capas[j][d] = capaDim.get(j).getUB();
             }
             d++;
         }

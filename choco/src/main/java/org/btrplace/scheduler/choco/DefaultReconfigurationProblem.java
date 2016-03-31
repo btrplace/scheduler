@@ -84,21 +84,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Set<VM> manageable;
 
-    private VM[] vms;
+    private List<VM> vms;
     private TObjectIntHashMap<VM> revVMs;
 
-    private Node[] nodes;
+    private List<Node> nodes;
     private TObjectIntHashMap<Node> revNodes;
 
     private IntVar start;
     private IntVar end;
 
-    private VMTransition[] vmActions;
-    private NodeTransition[] nodeActions;
+    private List<VMTransition> vmActions;
+    private List<NodeTransition> nodeActions;
 
     private DurationEvaluators durEval;
 
-    private IntVar[] vmsCountOnNodes;
+    private List<IntVar> vmsCountOnNodes;
 
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
@@ -292,8 +292,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void addContinuousResourceCapacities() throws SchedulerException {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
-        for (int j = 0; j < getVMs().length; j++) {
-            VMTransition a = vmActions[j];
+        for (int j = 0; j < getVMs().size(); j++) {
+            VMTransition a = vmActions.get(j);
             if (a.getDSlice() != null) {
                 iUse.add(VariableFactory.one(solver));
             }
@@ -326,11 +326,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Create the cardinality variables.
      */
     private void makeCardinalityVariables() {
-        vmsCountOnNodes = new IntVar[nodes.length];
-        int nbVMs = vms.length;
-        for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = VariableFactory.bounded(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs, solver);
+        vmsCountOnNodes = new ArrayList<>(nodes.size());
+        int nbVMs = vms.size();
+        for (Node n : nodes) {
+            vmsCountOnNodes.add(VariableFactory.bounded(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, solver));
         }
+        vmsCountOnNodes = Collections.unmodifiableList(vmsCountOnNodes);
     }
 
     @Override
@@ -360,34 +361,35 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
         allVMs.addAll(ready);
 
-        vms = new VM[allVMs.size()];
+        vms = new ArrayList<>(allVMs.size());
         //0.5f is a default load factor in trove.
         revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1);
 
         int i = 0;
         for (VM vm : allVMs) {
-            vms[i] = vm;
+            vms.add(vm);
             revVMs.put(vm, i++);
         }
-
-        nodes = new Node[model.getMapping().getOnlineNodes().size() + model.getMapping().getOfflineNodes().size()];
-        revNodes = new TObjectIntHashMap<>(nodes.length, 0.5f, -1);
+        vms = Collections.unmodifiableList(vms);
+        //nodes = new Node[model.getMapping().getOnlineNodes().size() + model.getMapping().getOfflineNodes().size()];
+        nodes = new ArrayList<>();
+        revNodes = new TObjectIntHashMap<>(nodes.size(), 0.5f, -1);
         i = 0;
         for (Node n : model.getMapping().getOnlineNodes()) {
-            nodes[i] = n;
+            nodes.add(n);
             revNodes.put(n, i++);
         }
         for (Node n : model.getMapping().getOfflineNodes()) {
-            nodes[i] = n;
+            nodes.add(n);
             revNodes.put(n, i++);
         }
+        nodes = Collections.unmodifiableList(nodes);
     }
 
     private void makeVMTransitions() throws SchedulerException {
         Mapping map = model.getMapping();
-        vmActions = new VMTransition[vms.length];
-        for (int i = 0; i < vms.length; i++) {
-            VM vmId = vms[i];
+        vmActions = new ArrayList<>(vms.size());
+        for (VM vmId : vms) {
             VMState curState = VMState.INIT;
             if (map.isRunning(vmId)) {
                 curState = VMState.RUNNING;
@@ -419,8 +421,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (am == null) {
                 throw new SchedulerException(model, "No model available for VM transition " + curState + " -> " + nextState);
             }
-            vmActions[i] = am.build(this, vmId);
-            if (vmActions[i].isManaged()) {
+            VMTransition t = am.build(this, vmId);
+            vmActions.add(t);
+            if (t.isManaged()) {
                 manageable.add(vmId);
             }
         }
@@ -429,15 +432,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void makeNodeTransitions() throws SchedulerException {
 
         Mapping m = model.getMapping();
-        nodeActions = new NodeTransition[nodes.length];
-        for (int i = 0; i < nodes.length; i++) {
-            Node nId = nodes[i];
+        nodeActions = new ArrayList<>(nodes.size());
+        for (Node nId : nodes) {
             NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
             NodeTransitionBuilder b = amFactory.getBuilder(state);
             if (b == null) {
                 throw new SchedulerException(model, "No model available for a node transition " + state + " -> (offline|online)");
             }
-            nodeActions[i] = b.build(this, nId);
+            nodeActions.add(b.build(this, nId));
         }
     }
 
@@ -460,7 +462,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntVar[] getNbRunningVMs() {
+    public List<IntVar> getNbRunningVMs() {
         return vmsCountOnNodes;
     }
 
@@ -491,7 +493,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeHostVariable(Object... n) {
-        return VariableFactory.enumerated(makeVarLabel(n), 0, nodes.length - 1, solver);
+        return VariableFactory.enumerated(makeVarLabel(n), 0, nodes.size() - 1, solver);
     }
 
     @Override
@@ -564,7 +566,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public NodeTransition[] getNodeActions() {
+    public List<NodeTransition> getNodeActions() {
         return nodeActions;
     }
 
@@ -574,12 +576,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Node[] getNodes() {
+    public List<Node> getNodes() {
         return nodes;
     }
 
     @Override
-    public VM[] getVMs() {
+    public List<VM> getVMs() {
         return vms;
     }
 
@@ -625,7 +627,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public VM getVM(int idx) {
-        return vms[idx];
+        return vms.get(idx);
     }
 
     @Override
@@ -635,20 +637,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Node getNode(int idx) {
-        return nodes[idx];
+        return nodes.get(idx);
     }
 
     @Override
-    public VMTransition[] getVMActions() {
+    public List<VMTransition> getVMActions() {
         return vmActions;
     }
 
     @Override
-    public VMTransition[] getVMActions(Collection<VM> ids) {
-        VMTransition[] trans = new VMTransition[ids.size()];
-        int i = 0;
+    public List<VMTransition> getVMActions(Collection<VM> ids) {
+        List<VMTransition> trans = new ArrayList<>(ids.size());//VMTransition[ids.size()];
         for (VM v : ids) {
-            trans[i++] = getVMAction(v);
+            trans.add(getVMAction(v));
         }
         return trans;
     }
@@ -656,13 +657,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public VMTransition getVMAction(VM id) {
         int idx = getVM(id);
-        return idx < 0 ? null : vmActions[idx];
+        return idx < 0 ? null : vmActions.get(idx);
     }
 
     @Override
     public NodeTransition getNodeAction(Node id) {
         int idx = getNode(id);
-        return idx < 0 ? null : nodeActions[idx];
+        return idx < 0 ? null : nodeActions.get(idx);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class StartOnLeafNodes implements VariableSelector<IntVar>, Serializable 
 
     private MovementGraph graph;
 
-    private Node[] nodes;
+    private List<Node> nodes;
 
     /**
      * Make a new heuristics

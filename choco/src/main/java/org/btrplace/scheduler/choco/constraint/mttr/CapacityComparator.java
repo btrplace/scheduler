@@ -22,8 +22,8 @@ public class CapacityComparator implements Comparator<Node>, Serializable {
 
     @Override
     public int compare(Node n1, Node n2) {
-        IntVar c1 = rp.getNbRunningVMs()[rp.getNode(n1)];
-        IntVar c2 = rp.getNbRunningVMs()[rp.getNode(n2)];
+        IntVar c1 = rp.getNbRunningVMs().get(rp.getNode(n1));
+        IntVar c2 = rp.getNbRunningVMs().get(rp.getNode(n2));
         return order * (c1.getLB() - c2.getLB());
     }
 }

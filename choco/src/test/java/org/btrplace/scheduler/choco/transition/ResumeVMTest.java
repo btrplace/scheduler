@@ -68,9 +68,9 @@ public class ResumeVMTest {
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
-        ResumeVM m = (ResumeVM) rp.getVMActions()[0];
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
+        ResumeVM m = (ResumeVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(10));
@@ -116,10 +116,10 @@ public class ResumeVMTest {
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
                 .build();
-        ResumeVM m1 = (ResumeVM) rp.getVMActions()[rp.getVM(vm1)];
-        ResumeVM m2 = (ResumeVM) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        ResumeVM m1 = (ResumeVM) rp.getVMActions().get(rp.getVM(vm1));
+        ResumeVM m2 = (ResumeVM) rp.getVMActions().get(rp.getVM(vm2));
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 

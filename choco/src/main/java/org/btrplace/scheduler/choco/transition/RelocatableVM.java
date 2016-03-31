@@ -63,7 +63,7 @@ import org.chocosolver.solver.variables.VariableFactory;
  * the migration duration, then re-instantiation will be preferred.
  * <p>
  *
- * @author Fabien Hermenier
+ * @author Vincent Kherbache
  */
 public class RelocatableVM implements KeepRunningVM {
 

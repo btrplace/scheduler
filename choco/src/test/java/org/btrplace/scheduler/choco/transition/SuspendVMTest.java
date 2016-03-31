@@ -63,8 +63,8 @@ public class SuspendVMTest {
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), new HashSet<>(), map.getAllVMs(), new HashSet<>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        SuspendVM m = (SuspendVM) rp.getVMActions()[0];
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        SuspendVM m = (SuspendVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
@@ -102,9 +102,9 @@ public class SuspendVMTest {
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), new HashSet<>(), map.getAllVMs(), new HashSet<>())
                 .build();
-        SuspendVM m1 = (SuspendVM) rp.getVMActions()[rp.getVM(vm1)];
-        SuspendVM m2 = (SuspendVM) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        SuspendVM m1 = (SuspendVM) rp.getVMActions().get(rp.getVM(vm1));
+        SuspendVM m2 = (SuspendVM) rp.getVMActions().get(rp.getVM(vm2));
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 
