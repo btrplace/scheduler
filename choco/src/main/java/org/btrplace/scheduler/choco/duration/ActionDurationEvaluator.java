@@ -21,13 +21,15 @@ package org.btrplace.scheduler.choco.duration;
 import org.btrplace.model.Element;
 import org.btrplace.model.Model;
 
+import java.io.Serializable;
+
 
 /**
  * Interface to specify the duration evaluator for a possible action on an element.
  *
  * @author Fabien Hermenier
  */
-public interface ActionDurationEvaluator<E extends Element> {
+public interface ActionDurationEvaluator<E extends Element> extends Serializable {
 
     /**
      * Evaluate the duration of the action on a given element.

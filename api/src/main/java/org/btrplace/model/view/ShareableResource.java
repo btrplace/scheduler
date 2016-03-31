@@ -21,6 +21,7 @@ package org.btrplace.model.view;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -44,7 +45,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResource implements ModelView, Cloneable {
+public class ShareableResource implements ModelView, Cloneable, Serializable {
 
     /**
      * The base of the view identifier. Once instantiated, it is completed

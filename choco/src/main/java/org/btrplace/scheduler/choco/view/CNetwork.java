@@ -122,15 +122,19 @@ public class CNetwork implements ChocoView {
                     int memUsed = mo.getAttributes().getInteger(vm, "memUsed");
                     
                     // Get VM memory activity attributes if defined, otherwise set an idle workload on the VM
-                    int hotDirtySize = mo.getAttributes().isSet(vm, "hotDirtySize") ?
-                            mo.getAttributes().getInteger(vm, "hotDirtySize") :
-                            5; // Minimal observed value on idle VM
-                    int hotDirtyDuration = mo.getAttributes().isSet(vm, "hotDirtyDuration") ?
-                            mo.getAttributes().getInteger(vm, "hotDirtyDuration") :
-                            2; // Minimal observed value on idle VM
-                    double coldDirtyRate = mo.getAttributes().isSet(vm, "coldDirtyRate") ?
-                            mo.getAttributes().getDouble(vm, "coldDirtyRate") :
-                            0; // Minimal observed value on idle VM
+                    double hotDirtySize = 5.0;// Minimal observed value on idle VM
+                    if (mo.getAttributes().isSet(vm, "hotDirtySize")) {
+                        hotDirtySize = mo.getAttributes().getInteger(vm, "hotDirtySize");
+                    }
+                    double hotDirtyDuration = 2.0; // Minimal observed value on idle VM
+                    if (mo.getAttributes().isSet(vm, "hotDirtyDuration")) {
+                        hotDirtyDuration = mo.getAttributes().getInteger(vm, "hotDirtyDuration");
+                    }
+
+                    double coldDirtyRate = 0;
+                    if (mo.getAttributes().isSet(vm, "coldDirtyRate")) {
+                        coldDirtyRate = mo.getAttributes().getDouble(vm, "coldDirtyRate");
+                    }
 
                     // Get the maximal bandwidth available on the migration path
                     int maxBW = net.getRouting().getMaxBW(src, dst);
@@ -151,7 +155,7 @@ public class CNetwork implements ChocoView {
                     for (Integer bw : bwEnum) {*/
 
                         // Cheat a bit, real is less than theoretical (8->9)
-                        double bandwidth_octet = maxBW / 9;
+                        double bandwidth_octet = maxBW / 9.0;
 
                         // Estimate the duration for the current bandwidth
                         durationMin = memUsed / bandwidth_octet;

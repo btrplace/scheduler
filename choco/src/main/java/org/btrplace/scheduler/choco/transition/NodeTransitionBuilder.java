@@ -23,12 +23,14 @@ import org.btrplace.model.NodeState;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
+import java.io.Serializable;
+
 /**
  * A builder to instantiate a {@link NodeTransitionBuilder}
  *
  * @author Fabien Hermenier
  */
-public abstract class NodeTransitionBuilder {
+public abstract class NodeTransitionBuilder implements Serializable {
 
     /**
      * The initial state of the node.

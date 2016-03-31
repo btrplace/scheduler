@@ -19,6 +19,8 @@
 package org.btrplace.scheduler.choco;
 
 
+import java.io.Serializable;
+
 /**
  * A class to provide a method to customize the optimisation process of the solver.
  * Instead of trying all the possible values, you will be able to choose the value to try
@@ -29,7 +31,7 @@ package org.btrplace.scheduler.choco;
  *
  * @author Fabien Hermenier
  */
-public interface ObjectiveAlterer {
+public interface ObjectiveAlterer extends Serializable {
 
     /**
      * compute the new bound to apply to the best value computed so far

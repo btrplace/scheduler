@@ -18,12 +18,14 @@
 
 package org.btrplace.model;
 
+import java.io.Serializable;
+
 /**
  * An element managed by BtrPlace.
  *
  * @author Fabien Hermenier
  */
-public interface Element {
+public interface Element extends Serializable {
 
     /**
      * The element identifier.

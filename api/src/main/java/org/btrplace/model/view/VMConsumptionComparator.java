@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class VMConsumptionComparator implements Comparator<VM> {
+public class VMConsumptionComparator implements Comparator<VM>, Serializable {
 
     /**
      * The resources to use to make the comparison.
