@@ -54,7 +54,7 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
         if (checkConformance(t, args)) {
             List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
             Number v = (Number) params[1].transform(this, t, args.get(1));
-            if (v.doubleValue() < 0) {
+            if (v == null || v.doubleValue() < 0) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a positive integer (" + v + " given)");
                 return Collections.emptyList();
             }
