@@ -32,7 +32,7 @@ import java.util.List;
  * @author Vincent Kherbache
  * @see #setNetwork(Network)
  */
-public abstract class Routing {
+public abstract class Routing implements Cloneable {
 
     protected Network net;
     

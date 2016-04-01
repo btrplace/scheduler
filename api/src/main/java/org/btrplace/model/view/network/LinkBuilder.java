@@ -26,7 +26,7 @@ import org.btrplace.model.PhysicalElement;
  *
  * @author Vincent Kherbache
  */
-public interface LinkBuilder {
+public interface LinkBuilder extends Cloneable {
 
     /**
      * Generate a new Link with unlimited BW.

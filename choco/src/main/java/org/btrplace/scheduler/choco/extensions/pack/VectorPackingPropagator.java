@@ -123,12 +123,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
-        this.name = labels;
-        this.loads = l;
+        this.name = labels.clone();
+        this.loads = Arrays.copyOf(l, l.length);
         this.nbBins = l[0].length;
         this.nbDims = l.length;
-        this.bins = b;
-        this.iSizes = s;
+        this.bins = Arrays.copyOf(b, b.length);
+        this.iSizes = s.clone();
         this.remProc = new RemProc(this);
         this.deltaMonitor = new IIntDeltaMonitor[b.length];
         for (int i = 0; i < deltaMonitor.length; i++) {

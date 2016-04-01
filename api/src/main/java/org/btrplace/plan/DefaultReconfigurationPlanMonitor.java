@@ -89,7 +89,11 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     @Override
     public Model getCurrentModel() {
-        return curModel;
+        Model cpy;
+        synchronized (lock) {
+            cpy = curModel.clone();
+        }
+        return cpy;
     }
 
     @Override
@@ -133,6 +137,14 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     @Override
     public ReconfigurationPlan getReconfigurationPlan() {
-        return plan;
+        ReconfigurationPlan cpy;
+        synchronized (lock) {
+            cpy = new DefaultReconfigurationPlan(plan.getOrigin().clone());
+            for (Action a : plan) {
+                //Cannot clone an action. Sad
+                cpy.add(a);
+            }
+        }
+        return cpy;
     }
 }

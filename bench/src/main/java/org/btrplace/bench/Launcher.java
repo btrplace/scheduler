@@ -39,6 +39,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -62,7 +63,7 @@ public class Launcher {
         new Launcher().parseArgs(args);
     }
 
-    public void parseArgs(String[] args) {
+    public void parseArgs(String[] args) throws IOException {
 
         // Parse the cmdline arguments
         CmdLineParser cmdParser = new CmdLineParser(this);
@@ -82,7 +83,7 @@ public class Launcher {
         launch(repair, optimize, timeout, src, dst);
     }
 
-    public static void launch(boolean repair, boolean optimize, int timeout, String src, String dst) {
+    public static void launch(boolean repair, boolean optimize, int timeout, String src, String dst) throws IOException {
 
         // Create and customize a scheduler
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -106,30 +107,32 @@ public class Launcher {
         // Read the input JSON instance
         JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
         Object obj = null;
+        Reader r = null;
         try {
             // Check for gzip extension
             if (src.endsWith(".gz")) {
-                obj = parser.parse(new InputStreamReader(new GZIPInputStream(new FileInputStream(src))));
+                r = new InputStreamReader(new GZIPInputStream(new FileInputStream(src)), StandardCharsets.UTF_8);
             } else {
-                obj = parser.parse(new FileReader(src));
+                r = new BufferedReader(new InputStreamReader(new FileInputStream(src), StandardCharsets.UTF_8));
             }
+            obj = parser.parse(r);
 
         } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException(e);
+        } finally {
+            if (r != null) {
+                r.close();
+            }
         }
         JSONObject o = (JSONObject) obj;
 
         // Convert the json object to an instance
         InstanceConverter conv = new InstanceConverter();
-        Instance i = null;
+        Instance i;
         try {
             i = conv.fromJSON(o);
         } catch (JSONConverterException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException(e);
         }
 
         //Set custom actions durations
@@ -141,34 +144,17 @@ public class Launcher {
             cra.setVerbosity(2);
             plan = cra.solve(i.getModel(), i.getSatConstraints());
             if (plan == null) {
-                System.err.println("No solution !");
-                throw new RuntimeException();
+                throw new RuntimeException("No solution !");
             }
-        } catch (SchedulerException e) {
-            e.printStackTrace();
         } finally {
-            try {
-                System.out.println(cra.getStatistics());
-            } catch (SchedulerException ex) {
-                ex.printStackTrace();
-            }
+            System.out.println(cra.getStatistics());
         }
 
         // Save stats to a CSV file
-        try {
-            createCSV(dst, plan, cra);
-        } catch (IOException | SchedulerException e) {
-            e.printStackTrace();
-        }
+        createCSV(dst, plan, cra);
 
         //Save the plan
-        if (plan != null) {
-            try {
-                savePlan(stripExtension(dst) + ".plan", plan);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        savePlan(stripExtension(dst) + ".plan", plan);
     }
 
     public static void setAttributes(Instance i, DurationEvaluators dev) {
@@ -201,67 +187,74 @@ public class Launcher {
 
     public static void savePlan(String fileName, ReconfigurationPlan plan) throws IOException {
         // Write the plan in a specific file
-        FileWriter writerPlan = new FileWriter(fileName);
-        writerPlan.append(plan.toString());
-        writerPlan.flush();
-        writerPlan.close();
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8))) {
+            out.append(plan.toString());
+        }
     }
 
     public static void createCSV(String fileName, ReconfigurationPlan plan, ChocoScheduler cra) throws IOException, SchedulerException {
 
-        FileWriter writer = new FileWriter(fileName);
-        SolvingStatistics stats = cra.getStatistics();
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8))) {
+            SolvingStatistics stats = cra.getStatistics();
 
-        // Set header
-        if (plan != null) {
-            writer.append("planDuration;planSize;planActionsSize;");
-        }
-        if (stats != null) {
-            writer.append("craStart;craNbSolutions;");
-            if (stats.getSolutions().size() > 0) {
-                writer.append("craSolutionTime;");
+            // Set header
+            if (plan != null) {
+                writer.append("planDuration;planSize;planActionsSize;");
             }
-            writer.append("craCoreRPBuildDuration;" +
-                            "craSpeRPDuration;" +
-                            "craSolvingDuration;" +
-                            "craNbBacktracks;" +
-                            "craNbConstraints;" +
-                            "craNbManagedVMs;" +
-                            "craNbNodes;" +
-                            "craNbSearchNodes;" +
-                            "craNbVMs" + '\n'
-            );
-        }
-
-        // Store values
-        if (plan != null) {
-            writer.append(String.valueOf(plan.getDuration()) + ';' +
-                            String.valueOf(plan.getSize()) + ';' +
-                            String.valueOf(plan.getActions().size()) + ';'
-            );
-        }
-        if (stats != null) {
-            writer.append(String.valueOf(stats.getStart()) + ';' +
-                            String.valueOf(stats.getSolutions().size()) + ';'
-            );
-            if (stats.getSolutions().size() > 0) {
-                writer.append(String.valueOf(stats.getSolutions().get(0).getTime()) + ';');
+            if (stats != null) {
+                writer.append("craStart;craNbSolutions;");
+                if (stats.getSolutions().size() > 0) {
+                    writer.append("craSolutionTime;");
+                }
+                writer.append("craCoreRPBuildDuration;")
+                        .append("craSpeRPDuration;")
+                        .append("craSolvingDuration;")
+                        .append("craNbBacktracks;")
+                        .append("craNbConstraints;")
+                        .append("craNbManagedVMs;")
+                        .append("craNbNodes;")
+                        .append("craNbSearchNodes;")
+                        .append("craNbVMs")
+                        .append('\n');
             }
-            writer.append(String.valueOf(stats.getCoreRPBuildDuration()) + ';' +
-                            String.valueOf(stats.getSpeRPDuration()) + ';' +
-                            String.valueOf(stats.getSolvingDuration()) + ';' +
-                            String.valueOf(stats.getNbBacktracks()) + ';' +
-                            String.valueOf(stats.getNbConstraints()) + ';' +
-                            String.valueOf(stats.getNbManagedVMs()) + ';' +
-                            String.valueOf(stats.getNbNodes()) + ';' +
-                            String.valueOf(stats.getNbSearchNodes()) + ';' +
-                            String.valueOf(stats.getNbVMs()) + '\n'
-            );
-        }
 
-        // Close the file
-        writer.flush();
-        writer.close();
+            // Store values
+            if (plan != null) {
+                writer.append(String.valueOf(plan.getDuration()))
+                        .append(';')
+                        .append(String.valueOf(plan.getSize()))
+                        .append(';')
+                        .append(String.valueOf(plan.getActions().size()))
+                        .append(';');
+            }
+            if (stats != null) {
+                writer.append(String.valueOf(stats.getStart()))
+                        .append(';')
+                        .append(String.valueOf(stats.getSolutions().size()));
+                if (stats.getSolutions().size() > 0) {
+                    writer.append(String.valueOf(stats.getSolutions().get(0).getTime()))
+                            .append(';');
+                }
+                writer.append(String.valueOf(stats.getCoreRPBuildDuration()))
+                        .append(';')
+                        .append(String.valueOf(stats.getSpeRPDuration()))
+                        .append(';')
+                        .append(String.valueOf(stats.getSolvingDuration()))
+                        .append(';')
+                        .append(String.valueOf(stats.getNbBacktracks()))
+                        .append(';')
+                        .append(String.valueOf(stats.getNbConstraints()))
+                        .append(';')
+                        .append(String.valueOf(stats.getNbManagedVMs()))
+                        .append(';')
+                        .append(String.valueOf(stats.getNbNodes()))
+                        .append(';')
+                        .append(String.valueOf(stats.getNbSearchNodes()))
+                        .append(';')
+                        .append(String.valueOf(stats.getNbVMs()))
+                        .append('\n');
+            }
+        }
     }
 
     public static String stripExtension(final String s) {

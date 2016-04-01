@@ -51,16 +51,16 @@ public class ResourceCapacityBuilder extends DefaultSatConstraintBuilder {
         String rcId = (String) params[1].transform(this, t, args.get(1));
         Number v = (Number) params[2].transform(this, t, args.get(2));
 
-        if (v.doubleValue() < 0) {
+        if (v == null || v.doubleValue() < 0) {
             t.ignoreError("Parameter '" + params[2].getName() + "' expects a positive integer (" + v + " given)");
             return Collections.emptyList();
         }
-        if (v != null && Math.rint(v.doubleValue()) != v.doubleValue()) {
+        if (Math.rint(v.doubleValue()) != v.doubleValue()) {
             t.ignoreError("Parameter '" + params[2].getName() + "' expects an integer, not a real number (" + v + " given)");
             return Collections.emptyList();
         }
 
-        return (ns != null && v != null ?
+        return (ns != null ?
                 (List) Collections.singletonList(new ResourceCapacity(new HashSet<>(ns), rcId, v.intValue())) : Collections.emptyList());
     }
 }

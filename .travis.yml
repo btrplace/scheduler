@@ -7,6 +7,7 @@ branches:
   - master
   - release
   - travis_dbg
+  - coverity
 env:
   global:
   - secure: fIpwqTk0CaukDz2gGEW8R7Pwa+dLPuPA5hcDm5d5vuqNH2FA02oX09fUrqZWPBlM79ve6UmRTt0TNM2kKCMuZQB175dY/CCPHO22aOw+uMP7ywFkq2FIK8+1qvkTUwWmNsA+sHTMrdmNBM4unguwBq8v3627dik8FAOAkqVWtUI=
@@ -15,6 +16,8 @@ env:
   - secure: u1H7J1NyT2RLDzo9M2A8rCEc9YAw/pg4j6uPimC9d85vIpcDDwN6FpZ8NbOEPKdy0M3uComObWv7b00FQvEB2d7WdRlRRIjlbSqwtiQQj0JjOWyrPdxUQvNt2Hp1G3du5o/beqJ7f8EuC0ZsSlSnI606nf7iqKHV8EqlCFJsu9g=
   - secure: "sy2TMU/DxUn4rOPnOW+lNrqnBoh1Dyui8MzOpjY/aIp58/y9gF3QhCK7wq/KFADAj0BzB4DgPrca9erR76tiyyRZGCH0FnzDkE363+uTHuowVXCGwMsV2bylUxMLKGfp25GJOXZvuggk9I63yna8VnyxMu/qSMbai4AJiKFgPe8="
   - secure: "eBGGglS+62RDvBESTBjqDM67wUBI7Dp7ZCo4yQqyDOwW1mLXxJuIx14Hzd1/tu2akd5FujJwy3O1KC1yZNXjI8GSoIkZEUJT+wIZcn7ue80lTkZqSJO/4+tRg3dmvVVkjbiTA0LgosuSD7M55VitqPlFVMBtYsgdENBozEagUWQ="
+  #Coverity
+  - secure: "hQp8o1ihvUxHps9CyohAncDYImybrkkeg//1UY+bn8pFIgbQDr7Pfu/osUiNfa5B+l7NZXzw4TqK+2lFFs2/aXpV1vMNOmY7e9awY2qSRhrUDMj/9ReJm+tL2HsIev6ZH1oS8hMEOYeUa3+qC7vOQhBn9GtHXIgSdqU8EHxJTdU="
 before_install:
 - openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
   -in etc/gpg.enc -out etc/gpg -d
@@ -49,6 +52,15 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 script: ./bin/build.sh
+addons:
+  coverity_scan:
+    project:
+      name: "btrplace/scheduler"
+      description: "Build submitted via Travis CI"
+    build_command_prepend: "mvn clean"
+    build_command:   "mvn -DskipTests=true compile"
+    branch_pattern: master
+    notification_email: fabien.hermenier@unice.fr
 after_success:
 - codecov
 - curl http://testr-1154.appspot.com/assets/testR.py |python

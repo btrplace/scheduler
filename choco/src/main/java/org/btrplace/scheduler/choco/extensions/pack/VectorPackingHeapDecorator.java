@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.extensions.pack;
 
 import org.chocosolver.solver.exception.ContradictionException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -31,7 +32,7 @@ import java.util.PriorityQueue;
  *
  * @author Sophie Demassey
  */
-public class VectorPackingHeapDecorator {
+public class VectorPackingHeapDecorator implements Serializable {
 
     /**
      * the core BinPacking propagator
@@ -92,7 +93,7 @@ public class VectorPackingHeapDecorator {
     /**
      * a comparator of load slacks
      */
-    static class LoadSlackComparator implements Comparator<Integer> {
+    static class LoadSlackComparator implements Comparator<Integer>, Serializable {
         private int dimension;
         private VectorPackingHeapDecorator hp;
 
@@ -169,8 +170,12 @@ public class VectorPackingHeapDecorator {
         if (loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta) {
             do {
                 int b = maxSlackBinHeap.get(d).poll();
-                if (isSup) p.filterLoadSup(d, b, delta + p.loads[d][b].getLB());
-                else p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
+                if (isSup) {
+                    p.filterLoadSup(d, b, delta + p.loads[d][b].getLB());
+                }
+                else {
+                    p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
+                }
                 assert (loadSlack(d, b) == delta);
                 maxSlackBinHeap.get(d).offer(b);
                 nChanges++;

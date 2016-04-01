@@ -72,4 +72,9 @@ public class Switch implements Element,PhysicalElement,NetworkElement {
 
         return id == sw.id();
     }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

@@ -154,7 +154,7 @@ public class RelocatableVM implements KeepRunningVM {
         DurationEvaluators dev = rp.getDurationEvaluators();
         int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);
         int bootDuration = dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, vm);
-        int shutdownDuration = dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ShutdownVM.class, vm);
+        //int shutdownDuration = dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ShutdownVM.class, vm);
         int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm);
 
         // Compute the re-instantiation duration

@@ -113,15 +113,14 @@ public class StaticRouting extends Routing {
         NodesMap nodesMap = new NodesMap(n1, n2);
 
         // Check for a static route
-        for (NodesMap nm : routes.keySet()) {
-            if (nm.equals(nodesMap)) {
-                return routes.get(nm);
-            }
+        List<Link> l = routes.get(nodesMap);
+        if (l != null) {
+            return l;
         }
 
         // If not found, return the first physical path found
         return getFirstPhysicalPath(
-                new ArrayList<>(Arrays.asList(net.getConnectedLinks(n1).get(0))), // Only one link per node
+                new ArrayList<>(Collections.singletonList(net.getConnectedLinks(n1).get(0))), // Only one link per node
                 net.getConnectedLinks(n1).get(0).getSwitch(), // A node is always connected to a switch
                 n2
         );
@@ -175,6 +174,11 @@ public class StaticRouting extends Routing {
                 return false;
             }
             return (((NodesMap) o).getSrc().equals(n1) && ((NodesMap) o).getDst().equals(n2));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(n1, n2);
         }
     }
 }

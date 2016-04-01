@@ -31,6 +31,7 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationProblem {
+public interface ReconfigurationProblem extends Serializable {
 
     /**
      * Get the current location of a running or a sleeping VM.
@@ -200,7 +201,6 @@ public interface ReconfigurationProblem {
 
     /**
      * Get all the nodes transition.
-     *
      * @return a list of transitions.
      */
     NodeTransition[] getNodeActions();

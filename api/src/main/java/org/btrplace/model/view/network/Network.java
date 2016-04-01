@@ -26,10 +26,15 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.NamingService;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -319,8 +324,7 @@ public class Network implements ModelView, Cloneable {
             nsSwitches = (NamingService<Switch>) mo.getView(NamingService.ID + "switch");
         }
 
-        try {
-            BufferedWriter dot = new BufferedWriter(new FileWriter(out));
+        try (BufferedWriter dot = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out), StandardCharsets.UTF_8))) {
             dot.append("digraph G {\n");
             if (fromLeftToRight) { dot.append("rankdir=LR;\n"); }
             // Draw nodes
@@ -361,8 +365,6 @@ public class Network implements ModelView, Cloneable {
                 }
             }
             dot.append("}\n");
-            dot.flush();
-            dot.close();
         } catch (IOException e) {
             return false;
         }
@@ -484,5 +486,10 @@ public class Network implements ModelView, Cloneable {
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return viewId.hashCode();
     }
 }

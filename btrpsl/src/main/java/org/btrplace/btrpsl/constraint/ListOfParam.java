@@ -25,6 +25,7 @@ import org.btrplace.btrpsl.element.IgnorableOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -87,14 +88,14 @@ public class ListOfParam extends DefaultConstraintParam<List> {
     public List transform(SatConstraintBuilder cb, BtrPlaceTree tree, BtrpOperand op) {
 
         if (op == IgnorableOperand.getInstance()) {
-            return null;
+            return Collections.emptyList();
         }
 
         List s = makeList(depth, op);
 
         if (!canBeEmpty && s.isEmpty()) {
             tree.ignoreError("In '" + cb.getFullSignature() + "', '" + getName() + "' expects a non-empty set");
-            return null;
+            return Collections.emptyList();
         }
         return s;
     }

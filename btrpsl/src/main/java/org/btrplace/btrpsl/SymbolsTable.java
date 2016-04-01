@@ -185,7 +185,6 @@ public class SymbolsTable {
                 Map.Entry<String, Integer> e = ite.next();
                 if (e.getValue() == currentLevel) {
                     ite.remove();
-                    level.remove(e.getKey());
                     type.remove(e.getKey());
                 }
             }

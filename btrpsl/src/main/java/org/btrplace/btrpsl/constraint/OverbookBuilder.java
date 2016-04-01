@@ -49,10 +49,10 @@ public class OverbookBuilder extends DefaultSatConstraintBuilder {
         List<Node> s = (List<Node>) params[0].transform(this, t, args.get(0));
         String rcId = (String) params[1].transform(this, t, args.get(1));
         Number v = (Number) params[2].transform(this, t, args.get(2));
-        if (v.doubleValue() < 0) {
+        if (v == null || v.doubleValue() < 0) {
             t.ignoreError("Parameter '" + params[1].getName() + "' expects a positive integer (" + v + " given)");
             return Collections.emptyList();
         }
-        return (s != null && v != null && rcId != null ? (List) Overbook.newOverbooks(s, rcId, v.doubleValue()) : Collections.emptyList());
+        return (s != null && rcId != null ? (List) Overbook.newOverbooks(s, rcId, v.doubleValue()) : Collections.emptyList());
     }
 }

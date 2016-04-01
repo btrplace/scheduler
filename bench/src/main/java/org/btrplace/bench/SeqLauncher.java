@@ -25,6 +25,7 @@ import org.kohsuke.args4j.Option;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by vkherbac on 18/09/14.
@@ -62,9 +63,7 @@ public class SeqLauncher {
             return;
         }
 
-        try {
-            FileInputStream in = new FileInputStream(inputFile);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), StandardCharsets.UTF_8))) {
             String strLine;
 
             while ((strLine = br.readLine()) != null) {

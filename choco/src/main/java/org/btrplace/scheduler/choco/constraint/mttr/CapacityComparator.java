@@ -4,12 +4,13 @@ import org.btrplace.model.Node;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Created by fhermeni on 18/02/2015.
  */
-public class CapacityComparator implements Comparator<Node> {
+public class CapacityComparator implements Comparator<Node>, Serializable {
 
     private ReconfigurationProblem rp;
 

@@ -22,6 +22,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 import org.btrplace.plan.event.*;
+import org.btrplace.scheduler.SchedulerException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -290,6 +291,9 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
             }
         }
         Model mo = p.getResult();
+        if (mo == null) {
+            throw new SchedulerException(p.getOrigin(), "The resulting reconfiguration plan is not applyable");
+        }
         checkModel(mo, false);
     }
 

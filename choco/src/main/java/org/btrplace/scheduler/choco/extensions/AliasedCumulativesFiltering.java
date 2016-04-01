@@ -28,13 +28,14 @@ import org.chocosolver.solver.ICause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.BitSet;
 
 /**
  * @author Fabien Hermenier
  */
-public class AliasedCumulativesFiltering {
+public class AliasedCumulativesFiltering implements Serializable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("solver");
 
@@ -102,18 +103,18 @@ public class AliasedCumulativesFiltering {
                                        int[] revAssocs,
                                        ICause aCause) {
 
-        this.associations = assocs;
-        this.cEnds = cEnds;
+        this.associations = assocs.clone();
+        this.cEnds = Arrays.copyOf(cEnds, cEnds.length);
         this.aCause = aCause;
-        this.capacities = capacities;
+        this.capacities = capacities.clone();
         this.nbDims = capacities.length;
-        this.cUsages = cUsages;
-        this.dUsages = dUsages;
+        this.cUsages = cUsages.clone();
+        this.dUsages = dUsages.clone();
 
-        this.dStarts = dStarts;
+        this.dStarts = Arrays.copyOf(dStarts, dStarts.length);
         this.vIn = vIn;
         this.out = outs;
-        revAssociations = revAssocs;
+        revAssociations = revAssocs.clone();
 
         //The amount of free resources at startup
 

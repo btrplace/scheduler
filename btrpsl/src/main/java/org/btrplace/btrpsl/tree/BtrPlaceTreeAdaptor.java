@@ -80,7 +80,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
     @Override
     public Object create(Token payload) {
         if (payload == null) {
-            return new BtrPlaceTree(payload, errors);
+            return new BtrPlaceTree(null, errors);
         }
         switch (payload.getType()) {
             case ANTLRBtrplaceSL2Lexer.RANGE:
