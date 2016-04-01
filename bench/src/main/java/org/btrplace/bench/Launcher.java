@@ -18,10 +18,6 @@
 
 package org.btrplace.bench;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.Attributes;
 import org.btrplace.model.Instance;
@@ -38,9 +34,11 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Created by vkherbac on 16/09/14.
@@ -90,51 +88,11 @@ public class Launcher {
         ReconfigurationPlan plan = null;
 
         // Manage options behaviors
-        if (repair) {
-            cra.doRepair(true);
-        } else {
-            cra.doRepair(false);
-        }
-        if (optimize) {
-            cra.doOptimize(true);
-        } else {
-            cra.doOptimize(false);
-        }
-        if (timeout > 0) {
-            cra.setTimeLimit(timeout);
-        }
+        cra.doRepair(repair);
+        cra.doOptimize(optimize);
+        cra.setTimeLimit(timeout);
 
-        // Read the input JSON instance
-        JSONParser parser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-        Object obj = null;
-        Reader r = null;
-        try {
-            // Check for gzip extension
-            if (src.endsWith(".gz")) {
-                r = new InputStreamReader(new GZIPInputStream(new FileInputStream(src)), StandardCharsets.UTF_8);
-            } else {
-                r = new BufferedReader(new InputStreamReader(new FileInputStream(src), StandardCharsets.UTF_8));
-            }
-            obj = parser.parse(r);
-
-        } catch (ParseException e) {
-            throw new IOException(e);
-        } finally {
-            if (r != null) {
-                r.close();
-            }
-        }
-        JSONObject o = (JSONObject) obj;
-
-        // Convert the json object to an instance
-        InstanceConverter conv = new InstanceConverter();
-        Instance i;
-        try {
-            i = conv.fromJSON(o);
-        } catch (JSONConverterException e) {
-            throw new IllegalArgumentException(e);
-        }
-
+        Instance i = InstanceConverter.quickFromJSON(src);
         //Set custom actions durations
         setAttributes(i, cra.getDurationEvaluators());
 

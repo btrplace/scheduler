@@ -33,6 +33,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.zip.GZIPInputStream;
 
 /**
  * A JSON converter for {@link org.btrplace.model.Instance}.
@@ -60,12 +61,19 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     /**
      * Quick deserialization for a pure legacy BtrPlace instance.
      * The file must be encoded in UTF-8.
-     * @param path the file containing the json message
+     * @param path the file containing the json message. If the file name ends with ".gz", a gzipped file is assumed
      * @return the resulting instance
      * @throws IllegalArgumentException if the json format is incorrect
      */
     public static Instance quickFromJSON(File path) throws IllegalArgumentException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
+        if (path.getName().endsWith(".gz")) {
+            try (Reader in = new InputStreamReader(new GZIPInputStream(new FileInputStream(path)), StandardCharsets.UTF_8)) {
+                return quickFromJSON(in);
+            } catch (IOException ex) {
+                throw new IllegalArgumentException(ex);
+            }
+        }
+        try (Reader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
             return quickFromJSON(in);
         } catch (IOException ex) {
             throw new IllegalArgumentException(ex);
