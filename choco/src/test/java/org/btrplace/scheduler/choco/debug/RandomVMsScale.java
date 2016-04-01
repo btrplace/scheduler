@@ -6,7 +6,6 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.Instance;
-import org.btrplace.model.VMState;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -17,7 +16,6 @@ import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
-import org.btrplace.scheduler.choco.transition.MigrateVMTransition;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -59,10 +57,6 @@ public class RandomVMsScale {
         ps.setTimeLimit(60);
         ps.setMaxEnd(7200);
         ps.doOptimize(false);
-
-        // Set the custom migration transition
-        ps.getTransitionFactory().remove(ps.getTransitionFactory().getBuilder(VMState.RUNNING, VMState.RUNNING));
-        ps.getTransitionFactory().add(new MigrateVMTransition.Builder());
 
         // Set a custom objective
         DefaultChocoScheduler sc = new DefaultChocoScheduler(ps);
