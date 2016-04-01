@@ -20,6 +20,7 @@ package org.btrplace.model.view.network;
 
 import org.btrplace.model.Node;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -35,7 +36,8 @@ import java.util.List;
 public abstract class Routing implements Cloneable {
 
     protected Network net;
-    
+    protected LinkedHashMap<Link, Boolean>[][] routingCache;
+
     /**
      * Set the network view (recursively).
      */
@@ -61,6 +63,16 @@ public abstract class Routing implements Cloneable {
      * @return  the bandwidth
      */
     abstract public int getMaxBW(Node n1, Node n2);
+
+    /**
+     * Get the direction of a crossed link between two given nodes
+     *
+     * @param n1    the source node
+     * @param n2    the destination node
+     * @param l     the link to check
+     * @return  null if *not* crossed, true for DownLink, false for UpLink
+     */
+    abstract public Boolean getLinkDirection(Node n1, Node n2, Link l);
 
     /**
      * Clone the routing.
