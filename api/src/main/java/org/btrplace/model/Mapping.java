@@ -277,13 +277,23 @@ public interface Mapping extends Cloneable, Serializable {
      */
     int getNbVMs();
 
+
     /**
      * Get the state of a VM
      *
      * @param v the VM
      * @return a state if the VM is known. {@code null} otherwise
      */
-    VMState getState(VM v);
+    default VMState getState(VM v) {
+        if (isRunning(v)) {
+            return VMState.RUNNING;
+        } else if (isSleeping(v)) {
+            return VMState.SLEEPING;
+        } else if (isReady(v)) {
+            return VMState.READY;
+        }
+        return null;
+    }
 
     /**
      * Get the state of a node
@@ -291,5 +301,12 @@ public interface Mapping extends Cloneable, Serializable {
      * @param n the node
      * @return a state if the node is known. {@code null} otherwise
      */
-    NodeState getState(Node n);
+    default NodeState getState(Node n) {
+        if (isOnline(n)) {
+            return NodeState.ONLINE;
+        } else if (isOffline(n)) {
+            return NodeState.OFFLINE;
+        }
+        return null;
+    }
 }

@@ -221,17 +221,14 @@ public class DefaultMapping extends AbstractMapping implements Cloneable {
     public boolean addReadyVM(VM vm) {
 
         Node n = place.remove(vm.id());
-        switch (st.get(vm.id())) {
-            case RUNNING_STATE:
-                //If was running, sync the state
-                host[RUNNING_STATE].get(n.id()).remove(vm);
-                break;
-            case SLEEPING_STATE:
+        int state = st.get(vm.id());
+        if (state == RUNNING_STATE) {
+            //If was running, sync the state
+            host[RUNNING_STATE].get(n.id()).remove(vm);
+        } else if (state == SLEEPING_STATE) {
                 //If was sleeping, sync the state
                 host[SLEEPING_STATE].get(n.id()).remove(vm);
-                break;
         }
-
         st.put(vm.id(), READY_STATE);
         vmReady.add(vm);
         return true;
@@ -492,28 +489,6 @@ public class DefaultMapping extends AbstractMapping implements Cloneable {
     @Override
     public int getNbVMs() {
         return st.size();
-    }
-
-    @Override
-    public VMState getState(VM v) {
-        if (isRunning(v)) {
-            return VMState.RUNNING;
-        } else if (isSleeping(v)) {
-            return VMState.SLEEPING;
-        } else if (isReady(v)) {
-            return VMState.READY;
-        }
-        return null;
-    }
-
-    @Override
-    public NodeState getState(Node n) {
-        if (isOnline(n)) {
-            return NodeState.ONLINE;
-        } else if (isOffline(n)) {
-            return NodeState.OFFLINE;
-        }
-        return null;
     }
 
 }

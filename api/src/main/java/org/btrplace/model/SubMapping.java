@@ -369,27 +369,4 @@ public class SubMapping extends AbstractMapping {
     public int getNbVMs() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public VMState getState(VM v) {
-        if (isRunning(v)) {
-            return VMState.RUNNING;
-        } else if (isSleeping(v)) {
-            return VMState.SLEEPING;
-        } else if (isReady(v)) {
-            return VMState.READY;
-        }
-        return null;
-    }
-
-    @Override
-    public NodeState getState(Node n) {
-        if (isOnline(n)) {
-            return NodeState.ONLINE;
-        } else if (isOffline(n)) {
-            return NodeState.OFFLINE;
-        }
-        return null;
-    }
-
 }

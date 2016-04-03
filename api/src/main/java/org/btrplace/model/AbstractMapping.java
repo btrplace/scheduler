@@ -44,4 +44,6 @@ public abstract class AbstractMapping implements Mapping {
         }
         return result;
     }
+
+    public abstract Mapping clone();
 }
