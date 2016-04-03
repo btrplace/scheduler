@@ -148,7 +148,7 @@ public class SubModel implements Model {
      */
     @Override
     public Model copy() {
-        DefaultModel m = new DefaultModel((Model) eb.copy());
+        DefaultModel m = new DefaultModel((ElementBuilder) eb.copy());
         MappingUtils.fill(sm, m.getMapping());
         for (ModelView rc : parent.getViews()) {
             m.attach(rc.copy());
