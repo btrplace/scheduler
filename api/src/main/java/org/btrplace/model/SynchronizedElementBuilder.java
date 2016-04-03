@@ -77,23 +77,9 @@ public class SynchronizedElementBuilder implements ElementBuilder,Cloneable {
     }
 
     @Override
-    public boolean containsVM(int id) {
-        synchronized (vmLock) {
-            return base.containsVM(id);
-        }
-    }
-
-    @Override
     public boolean contains(Node n) {
         synchronized (nodeLock) {
             return base.contains(n);
-        }
-    }
-
-    @Override
-    public boolean containsNode(int id) {
-        synchronized (nodeLock) {
-            return base.containsNode(id);
         }
     }
 

@@ -105,14 +105,4 @@ public class DefaultElementBuilder implements ElementBuilder, Cloneable {
     public boolean contains(Node n) {
         return usedNodeIds.get(n.id());
     }
-
-    @Override
-    public boolean containsVM(int id) {
-        return usedVMIds.get(id);
-    }
-
-    @Override
-    public boolean containsNode(int id) {
-        return usedNodeIds.get(id);
-    }
 }

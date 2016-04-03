@@ -238,28 +238,12 @@ public interface Mapping extends Cloneable {
     boolean contains(VM vm);
 
     /**
-     * Get a VM by its identifier.
-     *
-     * @param id the vm identifier.
-     * @return the VM if in, {@code null} otherwise
-     */
-    VM getVMById(int id);
-
-    /**
      * Check if a node is in the mapping.
      *
      * @param node the node.
      * @return {@code true} if the node is in.
      */
     boolean contains(Node node);
-
-    /**
-     * Get a Node by its identifier.
-     *
-     * @param id the node identifier.
-     * @return the Node if in, {@code null} otherwise
-     */
-    Node getNodeById(int id);
 
     /**
      * Remove all the nodes and the VMs in the mapping.
