@@ -23,7 +23,6 @@ import gnu.trove.set.hash.THashSet;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SubMapping implements Mapping {
+public class SubMapping extends AbstractMapping {
 
     private Mapping parent;
 
@@ -369,42 +368,6 @@ public class SubMapping implements Mapping {
     @Override
     public int getNbVMs() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        //TODO: not very efficient
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Mapping)) {
-            return false;
-        }
-
-        Mapping that = (Mapping) o;
-
-        if (!getOnlineNodes().equals(that.getOnlineNodes())
-                || !getOfflineNodes().equals(that.getOfflineNodes())
-                || !getReadyVMs().equals(that.getReadyVMs())) {
-            return false;
-        }
-
-        for (Node n : getOnlineNodes()) {
-            if (!getRunningVMs(n).equals(that.getRunningVMs(n))
-                    || !getSleepingVMs(n).equals(that.getSleepingVMs(n))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(getOfflineNodes(), getReadyVMs(), getOnlineNodes());
-        for (Node n : getOnlineNodes()) {
-            result += Objects.hash(n, getRunningVMs(n), getSleepingVMs(n));
-        }
-        return result;
     }
 
     @Override

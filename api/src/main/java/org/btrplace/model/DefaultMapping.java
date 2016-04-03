@@ -22,7 +22,10 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Default implementation of {@link Mapping}.
@@ -34,7 +37,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultMapping implements Mapping, Cloneable {
+public class DefaultMapping extends AbstractMapping implements Cloneable {
 
     private static final int RUNNING_STATE = 0;
 
@@ -447,41 +450,6 @@ public class DefaultMapping implements Mapping, Cloneable {
         for (TIntObjectHashMap<Set<VM>> h : host) {
             h.clear();
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Mapping)) {
-            return false;
-        }
-
-        Mapping that = (Mapping) o;
-
-        if (!getOnlineNodes().equals(that.getOnlineNodes())
-                || !getOfflineNodes().equals(that.getOfflineNodes())
-                || !getReadyVMs().equals(that.getReadyVMs())) {
-            return false;
-        }
-
-        for (Node n : getOnlineNodes()) {
-            if (!getRunningVMs(n).equals(that.getRunningVMs(n))
-                    || !getSleepingVMs(n).equals(that.getSleepingVMs(n))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(getOfflineNodes(), getReadyVMs(), getOnlineNodes());
-        for (Node n : getOnlineNodes()) {
-            result += Objects.hash(n, getRunningVMs(n), getSleepingVMs(n));
-        }
-        return result;
     }
 
     @Override
