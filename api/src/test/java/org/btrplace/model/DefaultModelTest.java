@@ -76,7 +76,7 @@ public class DefaultModelTest {
 
         VM vm = i.newVM();
         i.getAttributes().put(vm, "foo", true);
-        Model j = (Model) i.copy();
+        Model j = i.copy();
         j.getAttributes().put(vm, "foo", true);
         j.attach(rc);
         j.attach(b);

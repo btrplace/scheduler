@@ -64,7 +64,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     private void reset() {
         synchronized (lock) {
-            curModel = (Model) plan.getOrigin().copy();
+            curModel = plan.getOrigin().copy();
             pre.clear();
             nbCommitted = 0;
             for (Action a : plan) {
@@ -91,7 +91,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     public Model getCurrentModel() {
         Model cpy;
         synchronized (lock) {
-            cpy = (Model) curModel.copy();
+            cpy = curModel.copy();
         }
         return cpy;
     }
@@ -139,7 +139,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     public ReconfigurationPlan getReconfigurationPlan() {
         ReconfigurationPlan cpy;
         synchronized (lock) {
-            cpy = new DefaultReconfigurationPlan((Model) plan.getOrigin().copy());
+            cpy = new DefaultReconfigurationPlan(plan.getOrigin().copy());
             for (Action a : plan) {
                 //Cannot clone an action. Sad
                 cpy.add(a);

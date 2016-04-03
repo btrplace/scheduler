@@ -132,7 +132,7 @@ public class DefaultModel implements Model {
 
     @Override
     public Model copy() {
-        DefaultModel m = new DefaultModel((ElementBuilder) elemBuilder.copy());
+        DefaultModel m = new DefaultModel(elemBuilder.copy());
         MappingUtils.fill(cfg, m.cfg);
         for (ModelView rc : resources.values()) {
             m.attach(rc.copy());

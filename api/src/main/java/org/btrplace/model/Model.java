@@ -32,10 +32,9 @@ import java.util.Collection;
  * <p>
  * In addition, it is possible to declare attributes for specific elements.
  *
- * N.B: Model cannot extends the specialised Copyable as ElementBuilder is also Copyable
  * @author Fabien Hermenier
  */
-public interface Model extends ElementBuilder, Copyable, Serializable {
+public interface Model extends ElementBuilder, Copyable<ElementBuilder>, Serializable {
 
     /**
      * Get a view already attached to the model
@@ -94,4 +93,11 @@ public interface Model extends ElementBuilder, Copyable, Serializable {
      * @param attrs the attributes to set
      */
     void setAttributes(Attributes attrs);
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return a model copy
+     */
+    Model copy();
 }

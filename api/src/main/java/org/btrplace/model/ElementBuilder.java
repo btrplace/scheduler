@@ -25,10 +25,9 @@ import org.btrplace.Copyable;
  * Each created element is guarantee for being unique wrt. all the
  * created element with the same type.
  *
- * N.B: cannot use the specialisation for Copyable as Model is also copyable.
  * @author Fabien Hermenier
  */
-public interface ElementBuilder extends Copyable {
+public interface ElementBuilder extends Copyable<ElementBuilder> {
 
     /**
      * Generate a new VM.
