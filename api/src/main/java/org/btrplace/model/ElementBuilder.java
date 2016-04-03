@@ -18,14 +18,17 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
 /**
  * Interface to specify a builder to create node or VMs.
  * Each created element is guarantee for being unique wrt. all the
  * created element with the same type.
  *
+ * N.B: cannot use the specialisation for Copyable as Model is also copyable.
  * @author Fabien Hermenier
  */
-public interface ElementBuilder {
+public interface ElementBuilder extends Copyable {
 
     /**
      * Generate a new VM.
@@ -74,12 +77,4 @@ public interface ElementBuilder {
      * @return {@code true} iff the VM is booked
      */
     boolean contains(Node n);
-
-    /**
-     * Clone the builder.
-     *
-     * @return a new element builder
-     */
-    ElementBuilder clone();
-
 }

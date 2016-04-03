@@ -25,7 +25,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultAttributes implements Attributes, Cloneable {
+public class DefaultAttributes implements Attributes {
 
     private Map<VM, Map<String, Object>> vmAttrs;
     private Map<Node, Map<String, Object>> nodeAttrs;
@@ -98,7 +98,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public Attributes clone() {
+    public Attributes copy() {
         DefaultAttributes cpy = new DefaultAttributes();
         for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
             cpy.vmAttrs.put(e.getKey(), new HashMap<>(e.getValue()));

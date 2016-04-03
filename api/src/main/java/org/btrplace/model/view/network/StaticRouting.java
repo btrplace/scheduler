@@ -103,7 +103,7 @@ public class StaticRouting extends Routing {
     }
 
     @Override
-    public Routing clone() {
+    public Routing copy() {
         StaticRouting srouting = new StaticRouting();
         srouting.net = net; // Do not associate view->routing, only routing->view
         srouting.routes.putAll(routes);

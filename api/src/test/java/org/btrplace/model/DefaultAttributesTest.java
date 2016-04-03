@@ -127,7 +127,7 @@ public class DefaultAttributesTest {
             attrs.put(u, Integer.toString(i), i);
             l.add(u);
         }
-        Attributes attrs2 = attrs.clone();
+        Attributes attrs2 = attrs.copy();
 
         attrs.unset(l.get(0), "0");
         Assert.assertEquals((int) attrs2.getInteger(l.get(0), "0"), 0);
@@ -144,7 +144,7 @@ public class DefaultAttributesTest {
             attrs.put(vms.get(0), Integer.toString(i), i);
         }
         Assert.assertTrue(attrs.equals(attrs));
-        Attributes attrs2 = attrs.clone();
+        Attributes attrs2 = attrs.copy();
         Assert.assertTrue(attrs2.equals(attrs));
         Assert.assertTrue(attrs.equals(attrs));
         Assert.assertEquals(attrs.hashCode(), attrs2.hashCode());

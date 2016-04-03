@@ -18,6 +18,8 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
@@ -29,7 +31,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Mapping extends Cloneable, Serializable {
+public interface Mapping extends Copyable<Mapping>, Serializable {
 
     /**
      * Set a VM running on a node. The node must already be online.
@@ -222,13 +224,6 @@ public interface Mapping extends Cloneable, Serializable {
      * @return a set of VMs
      */
     Set<VM> getSleepingVMs(Collection<Node> ns);
-
-    /**
-     * Copy a mapping.
-     *
-     * @return the resulting copy
-     */
-    Mapping clone();
 
     /**
      * Check if a VM is in the mapping.

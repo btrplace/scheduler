@@ -64,7 +64,7 @@ public class InstanceTest {
         cstrs.addAll(Online.newOnline(ma.getAllNodes()));
         cstrs.add(new Running(vms.get(0)));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
-        Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs), new MinMTTR());
+        Instance i2 = new Instance((Model) mo.copy(), new ArrayList<>(cstrs), new MinMTTR());
 
         Assert.assertEquals(i, i2);
         Assert.assertTrue(i.equals(i));

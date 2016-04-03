@@ -226,7 +226,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         Solution s = solver.getSolutionRecorder().getLastSolution();
-        return buildReconfigurationPlan(s, model.clone());
+        return buildReconfigurationPlan(s, (Model) model.copy());
     }
 
     /**

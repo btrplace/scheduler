@@ -68,7 +68,7 @@ public class DefaultRouting extends Routing {
     }
 
     @Override
-    public Routing clone() {
+    public Routing copy() {
         DefaultRouting clone = new DefaultRouting();
         clone.net = net; // Do not associate view->routing, only routing->view
         return clone;

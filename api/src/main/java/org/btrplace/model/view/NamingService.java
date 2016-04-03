@@ -158,7 +158,7 @@ public final class NamingService<E extends Element> implements ModelView {
     }
 
     @Override
-    public NamingService<E> clone() {
+    public NamingService<E> copy() {
         NamingService<E> cpy = new NamingService<>(elemId);
         for (Map.Entry<String, E> e : resolve.entrySet()) {
             cpy.resolve.put(e.getKey(), e.getValue());

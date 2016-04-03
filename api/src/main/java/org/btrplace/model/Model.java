@@ -18,6 +18,7 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
 import org.btrplace.model.view.ModelView;
 
 import java.io.Serializable;
@@ -31,9 +32,10 @@ import java.util.Collection;
  * <p>
  * In addition, it is possible to declare attributes for specific elements.
  *
+ * N.B: Model cannot extends the specialised Copyable as ElementBuilder is also Copyable
  * @author Fabien Hermenier
  */
-public interface Model extends Cloneable, ElementBuilder, Serializable {
+public interface Model extends ElementBuilder, Copyable, Serializable {
 
     /**
      * Get a view already attached to the model
@@ -92,11 +94,4 @@ public interface Model extends Cloneable, ElementBuilder, Serializable {
      * @param attrs the attributes to set
      */
     void setAttributes(Attributes attrs);
-
-    /**
-     * Clone a model.
-     *
-     * @return a new model
-     */
-    Model clone();
 }

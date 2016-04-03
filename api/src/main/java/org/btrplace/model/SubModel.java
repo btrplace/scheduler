@@ -147,13 +147,13 @@ public class SubModel implements Model {
      * @return a mutable clone
      */
     @Override
-    public Model clone() {
-        DefaultModel m = new DefaultModel(eb.clone());
+    public Model copy() {
+        DefaultModel m = new DefaultModel((Model) eb.copy());
         MappingUtils.fill(sm, m.getMapping());
         for (ModelView rc : parent.getViews()) {
-            m.attach(rc.clone());
+            m.attach(rc.copy());
         }
-        m.setAttributes(this.getAttributes().clone());
+        m.setAttributes(this.getAttributes().copy());
         return m;
     }
 

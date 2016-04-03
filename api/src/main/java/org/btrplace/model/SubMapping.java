@@ -202,13 +202,8 @@ public class SubMapping extends AbstractMapping {
         return res;
     }
 
-    /**
-     * Clone this mapping using a {@link DefaultMapping}.
-     *
-     * @return a mutable clone
-     */
     @Override
-    public DefaultMapping clone() {
+    public DefaultMapping copy() {
         DefaultMapping c = new DefaultMapping();
         //Keep only the nodes inside the scope
         for (Node n : scope) {

@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class DefaultMapping extends AbstractMapping implements Cloneable {
+public class DefaultMapping extends AbstractMapping {
 
     private static final int RUNNING_STATE = 0;
 
@@ -397,7 +397,7 @@ public class DefaultMapping extends AbstractMapping implements Cloneable {
     }
 
     @Override
-    public Mapping clone() {
+    public Mapping copy() {
         return new DefaultMapping(this);
     }
 

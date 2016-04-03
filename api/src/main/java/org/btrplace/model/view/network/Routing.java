@@ -18,6 +18,7 @@
 
 package org.btrplace.model.view.network;
 
+import org.btrplace.Copyable;
 import org.btrplace.model.Node;
 
 import java.util.Collections;
@@ -33,7 +34,7 @@ import java.util.List;
  * @author Vincent Kherbache
  * @see #setNetwork(Network)
  */
-public abstract class Routing implements Cloneable {
+public abstract class Routing implements Copyable<Routing> {
 
     protected Network net;
     
@@ -64,13 +65,6 @@ public abstract class Routing implements Cloneable {
      * @return  the bandwidth
      */
     public abstract int getMaxBW(Node n1, Node n2);
-
-    /**
-     * Clone the routing.
-     *
-     * @return  a clone of the routing.
-     */
-    public abstract Routing clone();
 
     /**
      * Recursive method to get the first physical path found from a switch to a destination node.

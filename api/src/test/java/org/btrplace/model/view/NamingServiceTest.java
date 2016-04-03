@@ -77,7 +77,7 @@ public class NamingServiceTest {
         NamingService<Node> ns = NamingService.newNodeNS();
         Model mo = new DefaultModel();
         Node n = mo.newNode();
-        NamingService<Node> ns2 = ns.clone();
+        NamingService<Node> ns2 = ns.copy();
         Assert.assertTrue(ns2.register(n, "n0"));
         Assert.assertNull(ns.resolve(n));
         Assert.assertNull(ns.resolve("n0"));

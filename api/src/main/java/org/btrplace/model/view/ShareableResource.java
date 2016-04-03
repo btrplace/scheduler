@@ -45,7 +45,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResource implements ModelView, Cloneable, Serializable {
+public class ShareableResource implements ModelView, Serializable {
 
     /**
      * The base of the view identifier. Once instantiated, it is completed
@@ -291,7 +291,7 @@ public class ShareableResource implements ModelView, Cloneable, Serializable {
     }
 
     @Override
-    public ShareableResource clone() {
+    public ShareableResource copy() {
         ShareableResource rc = new ShareableResource(rcId, nodesNoValue, vmsNoValue);
         for (Map.Entry<VM, Integer> e : vmsConsumption.entrySet()) {
             rc.vmsConsumption.put(e.getKey(), e.getValue());
