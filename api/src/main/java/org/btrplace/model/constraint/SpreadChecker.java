@@ -35,6 +35,8 @@ import java.util.Set;
  */
 public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
 
+    private Set<Node> denied;
+
     /**
      * Make a new checker.
      *
@@ -45,7 +47,6 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         denied = new HashSet<>();
     }
 
-    private Set<Node> denied;
 
     @Override
     public boolean startsWith(Model mo) {

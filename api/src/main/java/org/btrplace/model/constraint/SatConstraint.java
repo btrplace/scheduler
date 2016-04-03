@@ -158,7 +158,7 @@ public abstract class SatConstraint implements Constraint {
      *
      * @return a non-null {@link SatConstraintChecker}
      */
-    public SatConstraintChecker<?> getChecker() {
+    public SatConstraintChecker<? extends SatConstraint> getChecker() {
         throw new UnsupportedOperationException();
     }
 

@@ -36,21 +36,6 @@ import java.util.List;
 public class Ban extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms   the VMs to integrate
-     * @param nodes the hosts to disallow
-     * @return the associated list of constraints
-     */
-    public static List<Ban> newBan(Collection<VM> vms, Collection<Node> nodes) {
-        List<Ban> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Ban(v, nodes));
-        }
-        return l;
-    }
-
-    /**
      * Make a new discrete constraint.
      *
      * @param vm    the VM identifiers
@@ -77,9 +62,22 @@ public class Ban extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Ban> getChecker() {
+    public BanChecker getChecker() {
         return new BanChecker(this);
     }
 
-
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Ban> newBan(Collection<VM> vms, Collection<Node> nodes) {
+        List<Ban> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Ban(v, nodes));
+        }
+        return l;
+    }
 }

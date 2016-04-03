@@ -235,9 +235,9 @@ public class DefaultAttributes implements Attributes, Cloneable {
     @Override
     public boolean castAndPut(Element e, String k, String v) {
         String x = v.toLowerCase().trim();
-        if (x.equals("true")) {
+        if ("true".equals(x)) {
             return put(e, k, true);
-        } else if (x.equals("false")) {
+        } else if ("false".equals(x)) {
             return put(e, k, false);
         }
         try {

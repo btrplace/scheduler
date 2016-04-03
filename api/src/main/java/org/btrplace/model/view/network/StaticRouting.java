@@ -85,20 +85,26 @@ public class StaticRouting extends Routing {
         // Iterate through the current switch's links
         for (Link l : net.getConnectedLinks(sw)) {
             // Wrong link
-            if (currentPath.contains(l)) continue;
+            if (currentPath.contains(l)) {
+                continue;
+            }
             // Go through the link
             currentPath.add(l);
             // Check what is after
             if (l.getElement() instanceof Node) {
                 // Node found, path complete
-                if (l.getElement().equals(dst)) return currentPath;
+                if (l.getElement().equals(dst)) {
+                    return currentPath;
+                }
             }
             else {
                 // Go to the next switch
                 List<Link> recall = getFirstPhysicalPath(
                         currentPath, l.getSwitch().equals(sw) ? (Switch) l.getElement() : l.getSwitch(), dst);
                 // Return the complete path if found
-                if (!recall.isEmpty()) return recall;
+                if (!recall.isEmpty()) {
+                    return recall;
+                }
             }
             // Wrong link, go back
             currentPath.remove(currentPath.size()-1);
@@ -150,7 +156,8 @@ public class StaticRouting extends Routing {
      * It allows to easily compare and differentiate and the nodes pair (src, dst).
      */
     public static class NodesMap {
-        private Node n1, n2;
+        private Node n1;
+        private Node n2;
 
         public NodesMap(Node n1, Node n2) {
             this.n1 = n1;
@@ -173,7 +180,7 @@ public class StaticRouting extends Routing {
             if (!(o instanceof NodesMap)) {
                 return false;
             }
-            return (((NodesMap) o).getSrc().equals(n1) && ((NodesMap) o).getDst().equals(n2));
+            return ((NodesMap) o).getSrc().equals(n1) && ((NodesMap) o).getDst().equals(n2);
         }
 
         @Override

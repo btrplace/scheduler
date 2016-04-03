@@ -37,7 +37,8 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     private VM vm;
 
-    private Node src, dst;
+    private Node src;
+    private Node dst;
 
     private int bw;
 
@@ -141,7 +142,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     @Override
     public String pretty() {
         String pretty = "migrate(vm=" + vm + ", from=" + src + ", to=" + dst;
-        if(bw > 0) { pretty += ", bw=" + bw; }
+        if (bw > 0) {
+            pretty += ", bw=" + bw;
+        }
         return pretty + ')';
     }
 

@@ -20,6 +20,7 @@ package org.btrplace.model;
 
 import org.btrplace.model.view.ModelView;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface Model extends Cloneable, ElementBuilder {
+public interface Model extends Cloneable, ElementBuilder, Serializable {
 
     /**
      * Get a view already attached to the model
@@ -91,22 +92,6 @@ public interface Model extends Cloneable, ElementBuilder {
      * @param attrs the attributes to set
      */
     void setAttributes(Attributes attrs);
-
-    /**
-     * Check if a VM is in the model.
-     *
-     * @param vm the VM.
-     * @return {@code true} if the VM is in.
-     */
-    boolean contains(VM vm);
-
-    /**
-     * Check if a node is in the model.
-     *
-     * @param node the node.
-     * @return {@code true} if the node is in.
-     */
-    boolean contains(Node node);
 
     /**
      * Clone a model.

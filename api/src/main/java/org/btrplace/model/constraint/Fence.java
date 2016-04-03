@@ -32,21 +32,6 @@ import java.util.*;
 public class Fence extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms   the VMs to integrate
-     * @param nodes the hosts to disallow
-     * @return the associated list of constraints
-     */
-    public static List<Fence> newFence(Collection<VM> vms, Collection<Node> nodes) {
-        List<Fence> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Fence(v, nodes));
-        }
-        return l;
-    }
-
-    /**
      * Make a new discrete constraint.
      *
      * @param vm    the involved VM
@@ -83,8 +68,22 @@ public class Fence extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Fence> getChecker() {
+    public FenceChecker getChecker() {
         return new FenceChecker(this);
     }
 
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Fence> newFence(Collection<VM> vms, Collection<Node> nodes) {
+        List<Fence> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Fence(v, nodes));
+        }
+        return l;
+    }
 }

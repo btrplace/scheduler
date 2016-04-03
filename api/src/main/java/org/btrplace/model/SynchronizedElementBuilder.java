@@ -27,7 +27,8 @@ public class SynchronizedElementBuilder implements ElementBuilder,Cloneable {
 
     private ElementBuilder base;
 
-    private final Object vmLock, nodeLock;
+    private final Object vmLock;
+    private final Object nodeLock;
 
     /**
      * Make a new builder.

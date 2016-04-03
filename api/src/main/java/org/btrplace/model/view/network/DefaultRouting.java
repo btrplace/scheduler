@@ -20,7 +20,9 @@ package org.btrplace.model.view.network;
 
 import org.btrplace.model.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Default implementation of {@link Routing}.
@@ -52,20 +54,26 @@ public class DefaultRouting extends Routing {
         // Iterate through the current switch's links
         for (Link l : net.getConnectedLinks(sw)) {
             // Wrong link
-            if (currentPath.contains(l)) continue;
+            if (currentPath.contains(l)) {
+                continue;
+            }
             // Go through the link
             currentPath.add(l);
             // Check what is after
             if (l.getElement() instanceof Node) {
                 // Node found, path complete
-                if (l.getElement().equals(dst)) return currentPath;
+                if (l.getElement().equals(dst)) {
+                    return currentPath;
+                }
             }
             else {
                 // Go to the next switch
                 List<Link> recall = getFirstPhysicalPath(
                         currentPath, l.getSwitch().equals(sw) ? (Switch) l.getElement() : l.getSwitch(), dst);
                 // Return the complete path if found
-                if (!recall.isEmpty()) return recall;
+                if (!recall.isEmpty()) {
+                    return recall;
+                }
             }
             // Wrong link, go back
             currentPath.remove(currentPath.size()-1);
@@ -77,11 +85,13 @@ public class DefaultRouting extends Routing {
     @Override
     public List<Link> getPath(Node n1, Node n2) {
 
-        if (net == null) { return Collections.emptyList(); }
+        if (net == null) {
+            return Collections.emptyList();
+        }
 
         // Get the first physical path found between the two nodes
         return getFirstPhysicalPath(
-                new ArrayList<>(Arrays.asList(net.getConnectedLinks(n1).get(0))), // Only one link per node
+                new ArrayList<>(Collections.singletonList(net.getConnectedLinks(n1).get(0))), // Only one link per node
                 net.getConnectedLinks(n1).get(0).getSwitch(), // A node is always connected to a switch
                 n2
         );

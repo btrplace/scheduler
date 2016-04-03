@@ -63,13 +63,10 @@ public class SynchronizedElementBuilderTest {
         final int[] used = new int[nbThreads * nbAllocs];
         Thread[] ths = new Thread[nbThreads];
         for (int i = 0; i < nbThreads; i++) {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (int x = 0; x < nbAllocs; x++) {
-                        VM v = eb.newVM();
-                        used[v.id()]++;
-                    }
+            Thread t = new Thread(() -> {
+                for (int x = 0; x < nbAllocs; x++) {
+                    VM v = eb.newVM();
+                    used[v.id()]++;
                 }
             });
             ths[i] = t;

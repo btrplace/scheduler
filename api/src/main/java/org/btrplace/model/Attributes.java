@@ -18,6 +18,7 @@
 
 package org.btrplace.model;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Attributes extends Cloneable {
+public interface Attributes extends Cloneable, Serializable {
 
     /**
      * Put a boolean value.

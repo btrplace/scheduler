@@ -20,6 +20,7 @@ package org.btrplace.plan.event;
 
 import org.btrplace.model.Model;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -31,12 +32,12 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public abstract class Action implements Event {
+public abstract class Action implements Event, Serializable {
 
     /**
      * Possible moments where an event can be considered.
      */
-    public static enum Hook {
+    public enum Hook {
         /**
          * The event can be considered before executing the action.
          */
@@ -68,7 +69,7 @@ public abstract class Action implements Event {
 
     private int stop;
 
-    private Map<Hook, Set<Event>> events;
+    private EnumMap<Hook, Set<Event>> events;
 
     /**
      * Create an action.
@@ -79,7 +80,7 @@ public abstract class Action implements Event {
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
-        events = new HashMap<>(2);
+        events = new EnumMap<>(Hook.class);
     }
 
     /**

@@ -38,20 +38,6 @@ import java.util.List;
 public class Root extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Root> newRoots(Collection<VM> vms) {
-        List<Root> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Root(v));
-        }
-        return l;
-    }
-
-    /**
      * Make a new constraint.
      *
      * @param vm the VM to disallow to move
@@ -71,8 +57,21 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Root> getChecker() {
+    public RootChecker getChecker() {
         return new RootChecker(this);
     }
 
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Root> newRoots(Collection<VM> vms) {
+        List<Root> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Root(v));
+        }
+        return l;
+    }
 }

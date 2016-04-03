@@ -80,17 +80,14 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
     @Override
     public String toString() {
         final StringBuilder b = new StringBuilder("{");
-        forEachPartition(new IterateProcedure<E>() {
-            @Override
-            public boolean extract(SplittableElementSet<E> idx, int k, int from, int to) {
-                b.append('{');
-                b.append(values[from]);
-                for (int i = from + 1; i < to; i++) {
-                    b.append(", ").append(values[i]);
-                }
-                b.append('}');
-                return true;
+        forEachPartition((idx, k, from, to) -> {
+            b.append('{');
+            b.append(values[from]);
+            for (int i = from + 1; i < to; i++) {
+                b.append(", ").append(values[i]);
             }
+            b.append('}');
+            return true;
         });
         return b.append('}').toString();
     }
@@ -103,7 +100,8 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      */
     public boolean forEachPartition(IterateProcedure<E> p) {
         int curIdx = index.get(values[0].id());
-        int from, to;
+        int from;
+        int to;
         for (from = 0, to = 0; to < values.length; to++) {
             int cIdx = index.get(values[to].id());
             if (curIdx != cIdx) {
@@ -171,12 +169,9 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      */
     public List<ElementSubSet<E>> getPartitions() {
         final List<ElementSubSet<E>> partitions = new ArrayList<>();
-        forEachPartition(new IterateProcedure<E>() {
-            @Override
-            public boolean extract(SplittableElementSet<E> idx, int key, int from, int to) {
-                partitions.add(new ElementSubSet<>(SplittableElementSet.this, key, from, to));
-                return true;
-            }
+        forEachPartition((idx, key, from, to) -> {
+            partitions.add(new ElementSubSet<>(SplittableElementSet.this, key, from, to));
+            return true;
         });
         return partitions;
     }

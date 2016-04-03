@@ -41,7 +41,9 @@ public abstract class Routing implements Cloneable {
      */
     public void setNetwork(Network net) {
         this.net = net;
-        if (net.getRouting() != this) net.setRouting(this);
+        if (net.getRouting() != this) {
+            net.setRouting(this);
+        }
     }
     
     /**
@@ -51,7 +53,7 @@ public abstract class Routing implements Cloneable {
      * @param n2    the destination node
      * @return the path consisting of an ordered list of links
      */
-    abstract public List<Link> getPath(Node n1, Node n2);
+    public abstract List<Link> getPath(Node n1, Node n2);
 
     /**
      * Get the maximal bandwidth available between two nodes.
@@ -60,7 +62,7 @@ public abstract class Routing implements Cloneable {
      * @param n2    the destination node
      * @return  the bandwidth
      */
-    abstract public int getMaxBW(Node n1, Node n2);
+    public abstract int getMaxBW(Node n1, Node n2);
 
     /**
      * Clone the routing.

@@ -21,7 +21,6 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.SatConstraintChecker;
 
 import java.util.*;
 
@@ -31,6 +30,31 @@ import java.util.*;
  * @author Vincent Kherbache
  */
 public class Precedence extends SatConstraint {
+
+    /**
+     * Make a new precedence constraint.
+     *
+     * @param vmBefore  the vm to schedule before the other one
+     * @param vmAfter   the vm to schedule after the other one
+     */
+    public Precedence(VM vmBefore, VM vmAfter) {
+        super(Arrays.asList(vmBefore, vmAfter), Collections.<Node>emptyList(), true);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return b;
+    }
+
+    @Override
+    public PrecedenceChecker getChecker() {
+        return new PrecedenceChecker(this);
+    }
+
+    @Override
+    public String toString() {
+        return "precedence(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
+    }
 
     /**
      * Instantiate discrete constraints to force a set of VMs to migrate after a single one.
@@ -69,30 +93,5 @@ public class Precedence extends SatConstraint {
             }
         }
         return l;
-    }
-
-    /**
-     * Make a new precedence constraint.
-     *
-     * @param vmBefore  the vm to schedule before the other one
-     * @param vmAfter   the vm to schedule after the other one
-     */
-    public Precedence(VM vmBefore, VM vmAfter) {
-        super(Arrays.asList(vmBefore, vmAfter), Collections.<Node>emptyList(), true);
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return b;
-    }
-
-    @Override
-    public SatConstraintChecker getChecker() {
-        return new PrecedenceChecker(this);
-    }
-
-    @Override
-    public String toString() {
-        return "precedence(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
     }
 }

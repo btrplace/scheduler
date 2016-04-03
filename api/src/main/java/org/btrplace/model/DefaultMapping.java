@@ -20,7 +20,6 @@ package org.btrplace.model;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.set.hash.THashSet;
 
 import java.util.*;
@@ -93,6 +92,16 @@ public class DefaultMapping implements Mapping, Cloneable {
         st = new TIntIntHashMap(100, 0.5f, -1, -1);
     }
 
+    /**
+     * Make a new mapping from an existing one.
+     *
+     * @param m the mapping to copy
+     */
+    public DefaultMapping(Mapping m) {
+        this();
+        MappingUtils.fill(m, this);
+    }
+
     @Override
     public boolean isRunning(VM v) {
         return st.get(v.id()) == RUNNING_STATE;
@@ -116,16 +125,6 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public boolean isOffline(Node n) {
         return nodeState[OFFLINE_STATE].contains(n);
-    }
-
-    /**
-     * Make a new mapping from an existing one.
-     *
-     * @param m the mapping to copy
-     */
-    public DefaultMapping(Mapping m) {
-        this();
-        MappingUtils.fill(m, this);
     }
 
     @Override
@@ -352,19 +351,13 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public Set<VM> getAllVMs() {
         final Set<VM> s = new HashSet<>(vmReady);
-        host[RUNNING_STATE].forEachEntry(new TIntObjectProcedure<Set<VM>>() {
-            @Override
-            public boolean execute(int a, Set<VM> b) {
-                s.addAll(b);
-                return true;
-            }
+        host[RUNNING_STATE].forEachEntry((a, b) -> {
+            s.addAll(b);
+            return true;
         });
-        host[SLEEPING_STATE].forEachEntry(new TIntObjectProcedure<Set<VM>>() {
-            @Override
-            public boolean execute(int a, Set<VM> b) {
-                s.addAll(b);
-                return true;
-            }
+        host[SLEEPING_STATE].forEachEntry((a, b) -> {
+            s.addAll(b);
+            return true;
         });
         return s;
     }

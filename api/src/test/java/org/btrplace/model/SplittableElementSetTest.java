@@ -111,15 +111,12 @@ public class SplittableElementSetTest {
             index.put(i, i % 2);
         }
         SplittableElementSet<VM> s = SplittableElementSet.newVMIndex(l, index);
-        s.forEachPartition(new IterateProcedure<VM>() {
-            @Override
-            public boolean extract(SplittableElementSet<VM> index, int key, int from, int to) {
-                Assert.assertEquals(to - from, 5);
-                for (int i = from; i < to; i++) {
-                    Assert.assertEquals(key, index.getValues()[i].id() % 2);
-                }
-                return true;
+        s.forEachPartition((index1, key, from, to) -> {
+            Assert.assertEquals(to - from, 5);
+            for (int i = from; i < to; i++) {
+                Assert.assertEquals(key, index1.getValues()[i].id() % 2);
             }
+            return true;
         });
 
         //We stop after the first partition
