@@ -97,7 +97,7 @@ public class Instance {
 
         Instance instance = (Instance) o;
 
-        return (cstrs.equals(instance.cstrs) && mo.equals(instance.mo) && opt.equals(instance.opt));
+        return cstrs.equals(instance.cstrs) && mo.equals(instance.mo) && opt.equals(instance.opt);
     }
 
     @Override

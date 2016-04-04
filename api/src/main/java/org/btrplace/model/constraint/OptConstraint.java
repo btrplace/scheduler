@@ -41,7 +41,7 @@ public abstract class OptConstraint implements Constraint {
 
     @Override
     public boolean equals(Object obj) {
-        return (obj != null && this.getClass().equals(obj.getClass()));
+        return obj != null && this.getClass().equals(obj.getClass());
     }
 
     @Override

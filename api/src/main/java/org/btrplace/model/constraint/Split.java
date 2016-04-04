@@ -92,7 +92,7 @@ public class Split extends SatConstraint {
      * Get the group of VMs that contains the given VM.
      *
      * @param u the VM identifier
-     * @return the group of VM if exists, {@code null} otherwise
+     * @return the group of VM if exists, an empty collection otherwise
      */
     public Collection<VM> getAssociatedVGroup(VM u) {
         for (Collection<VM> vGrp : sets) {
@@ -100,7 +100,7 @@ public class Split extends SatConstraint {
                 return vGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class Split extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Split> getChecker() {
+    public SplitChecker getChecker() {
         return new SplitChecker(this);
     }
 

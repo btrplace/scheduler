@@ -34,20 +34,6 @@ import java.util.List;
 public class Running extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Running> newRunning(Collection<VM> vms) {
-        List<Running> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Running(v));
-        }
-        return l;
-    }
-
-    /**
      * Make a new constraint.
      *
      * @param vm the VM to make running
@@ -67,7 +53,7 @@ public class Running extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Running> getChecker() {
+    public RunningChecker getChecker() {
         return new RunningChecker(this);
     }
 
@@ -75,4 +61,19 @@ public class Running extends SatConstraint {
     public String toString() {
         return "running(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
     }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Running> newRunning(Collection<VM> vms) {
+        List<Running> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Running(v));
+        }
+        return l;
+    }
+
 }

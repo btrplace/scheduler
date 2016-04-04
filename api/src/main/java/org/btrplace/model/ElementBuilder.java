@@ -18,6 +18,8 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
 /**
  * Interface to specify a builder to create node or VMs.
  * Each created element is guarantee for being unique wrt. all the
@@ -25,7 +27,7 @@ package org.btrplace.model;
  *
  * @author Fabien Hermenier
  */
-public interface ElementBuilder {
+public interface ElementBuilder extends Copyable<ElementBuilder> {
 
     /**
      * Generate a new VM.
@@ -68,34 +70,10 @@ public interface ElementBuilder {
     boolean contains(VM v);
 
     /**
-     * Check if a given VM id has been defined for this model.
-     *
-     * @param id the VM id to check
-     * @return {@code true} iff the VM is already defined
-     */
-    boolean containsVM(int id);
-
-    /**
      * Check if a given node has been defined for this model.
      *
      * @param n the node to check
      * @return {@code true} iff the VM is booked
      */
     boolean contains(Node n);
-
-    /**
-     * Check if a given node id has been defined for this model.
-     *
-     * @param id the node id to check
-     * @return {@code true} iff the VM is booked
-     */
-    boolean containsNode(int id);
-
-    /**
-     * Clone the builder.
-     *
-     * @return a new element builder
-     */
-    ElementBuilder clone();
-
 }

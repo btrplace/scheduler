@@ -78,7 +78,7 @@ public class DefaultReconfigurationProblemTest {
         }
 
         @Override
-        public ModelView clone() {
+        public ModelView copy() {
             throw new UnsupportedOperationException();
         }
 

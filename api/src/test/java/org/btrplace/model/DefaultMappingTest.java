@@ -458,7 +458,7 @@ public class DefaultMappingTest {
         c1.addRunningVM(vms.get(3), ns.get(1));
         c1.addRunningVM(vms.get(4), ns.get(1));
 
-        Mapping c2 = c1.clone();
+        Mapping c2 = c1.copy();
 
         Assert.assertEquals(c1, c2);
 
@@ -484,7 +484,7 @@ public class DefaultMappingTest {
         c1.addRunningVM(vms.get(3), ns.get(1));
         c1.addRunningVM(vms.get(4), ns.get(1));
 
-        Mapping c2 = c1.clone();
+        Mapping c2 = c1.copy();
 
         Assert.assertEquals(c1, c2);
         Assert.assertEquals(c1.hashCode(), c2.hashCode());
@@ -494,17 +494,17 @@ public class DefaultMappingTest {
         Assert.assertNotSame(c1, c2);
 
         //Put the VM elsewhere
-        c1 = c2.clone();
+        c1 = c2.copy();
         c1.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertNotSame(c1, c2);
 
         //Remove a node
-        c1 = c2.clone();
+        c1 = c2.copy();
         c1.remove(ns.get(2));
         Assert.assertNotSame(c1, c2);
 
         //Move a VM
-        c1 = c2.clone();
+        c1 = c2.copy();
         c1.addRunningVM(vms.get(3), ns.get(0));
         Assert.assertNotSame(c1, c2);
 

@@ -40,22 +40,6 @@ public class Preserve extends SatConstraint {
     private String rc;
 
     /**
-     * Make multiple constraints
-     *
-     * @param vms the VMs involved in the constraints
-     * @param r   the resource identifier
-     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
-     * @return a list of constraints
-     */
-    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
-        List<Preserve> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Preserve(v, r, q));
-        }
-        return l;
-    }
-
-    /**
      * Make a new constraint.
      *
      * @param vm the VM
@@ -117,6 +101,21 @@ public class Preserve extends SatConstraint {
         return new PreserveChecker(this);
     }
 
+    /**
+     * Make multiple constraints
+     *
+     * @param vms the VMs involved in the constraints
+     * @param r   the resource identifier
+     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
+     * @return a list of constraints
+     */
+    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
+        List<Preserve> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Preserve(v, r, q));
+        }
+        return l;
+    }
 }
 
 

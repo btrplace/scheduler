@@ -35,20 +35,6 @@ import java.util.List;
 public class NoDelay extends SatConstraint {
 
     /**
-     * Instantiate constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<NoDelay> newNoDelay(Collection<VM> vms) {
-        List<NoDelay> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new NoDelay(v));
-        }
-        return l;
-    }
-
-    /**
      * Make a new constraint.
      *
      * @param vm the vm to restrict
@@ -63,12 +49,26 @@ public class NoDelay extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public NoDelayChecker getChecker() {
         return new NoDelayChecker(this);
     }
 
     @Override
     public String toString() {
         return "noDelay(" + "vm=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
+    }
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<NoDelay> newNoDelay(Collection<VM> vms) {
+        List<NoDelay> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new NoDelay(v));
+        }
+        return l;
     }
 }

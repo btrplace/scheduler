@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * @author Vincent Kherbache
  * @see Routing#getPath(Node, Node)
  */
-public class Network implements ModelView, Cloneable {
+public class Network implements ModelView {
 
     private String viewId;
     private List<Switch> switches;
@@ -472,14 +472,14 @@ public class Network implements ModelView, Cloneable {
     }
 
     @Override
-    public ModelView clone() {
+    public ModelView copy() {
         Network net = new Network();
-        net.routing = routing.clone();
+        net.routing = routing.copy();
         net.routing.setNetwork(net);
         net.switches.addAll(switches);
         net.links.addAll(links);
-        net.lnBuilder = lnBuilder.clone();
-        net.swBuilder = swBuilder.clone();
+        net.lnBuilder = lnBuilder.copy();
+        net.swBuilder = swBuilder.copy();
         return net;
     }
 

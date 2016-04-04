@@ -61,7 +61,7 @@ public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
     public boolean start(BootNode a) {
         if (getConstraint().isContinuous() && getNodes().contains(a.getNode())) {
             currentOnline++;
-            return (currentOnline <= getConstraint().getAmount());
+            return currentOnline <= getConstraint().getAmount();
         }
         return true;
     }

@@ -47,24 +47,6 @@ public final class NamingService<E extends Element> implements ModelView {
     private String elemId;
 
     /**
-     * Make a naming service dedicated to nodes.
-     *
-     * @return a new naming service
-     */
-    public static NamingService<Node> newNodeNS() {
-        return new NamingService<>("node");
-    }
-
-    /**
-     * Make a naming service dedicated to VMs.
-     *
-     * @return a new naming service
-     */
-    public static NamingService<VM> newVMNS() {
-        return new NamingService<>("vm");
-    }
-
-    /**
      * Make a new service.
      *
      * @param eId "vm" or "node"
@@ -145,7 +127,7 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
-        if (elemId.equals("vm")) {
+        if ("vm".equals(elemId)) {
             if (rev.containsKey(nextId)) {
                 //the new id already exists. It is a failure scenario.
                 return false;
@@ -176,7 +158,7 @@ public final class NamingService<E extends Element> implements ModelView {
     }
 
     @Override
-    public NamingService<E> clone() {
+    public NamingService<E> copy() {
         NamingService<E> cpy = new NamingService<>(elemId);
         for (Map.Entry<String, E> e : resolve.entrySet()) {
             cpy.resolve.put(e.getKey(), e.getValue());
@@ -206,4 +188,21 @@ public final class NamingService<E extends Element> implements ModelView {
         return b.toString();
     }
 
+    /**
+     * Make a naming service dedicated to nodes.
+     *
+     * @return a new naming service
+     */
+    public static NamingService<Node> newNodeNS() {
+        return new NamingService<>("node");
+    }
+
+    /**
+     * Make a naming service dedicated to VMs.
+     *
+     * @return a new naming service
+     */
+    public static NamingService<VM> newVMNS() {
+        return new NamingService<>("vm");
+    }
 }

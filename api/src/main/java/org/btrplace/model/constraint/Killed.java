@@ -35,20 +35,6 @@ import java.util.List;
 public class Killed extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Killed> newKilled(Collection<VM> vms) {
-        List<Killed> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Killed(v));
-        }
-        return l;
-    }
-
-    /**
      * Make a new discrete constraint.
      *
      * @param vm the VMs to remove
@@ -69,7 +55,7 @@ public class Killed extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker<Killed> getChecker() {
+    public KilledChecker getChecker() {
         return new KilledChecker(this);
     }
 
@@ -77,4 +63,19 @@ public class Killed extends SatConstraint {
     public String toString() {
         return "killed(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
     }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Killed> newKilled(Collection<VM> vms) {
+        List<Killed> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Killed(v));
+        }
+        return l;
+    }
+
 }

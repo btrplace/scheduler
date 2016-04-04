@@ -30,7 +30,8 @@ import java.util.*;
  */
 public class ElementSubSet<E extends Element> implements Set<E> {
 
-    private int from, to;
+    private int from;
+    private int to;
 
     private int curIdx;
 

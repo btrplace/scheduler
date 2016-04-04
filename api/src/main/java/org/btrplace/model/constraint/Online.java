@@ -34,20 +34,6 @@ import java.util.List;
 public class Online extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of nodes.
-     *
-     * @param nodes the nodes to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Online> newOnline(Collection<Node> nodes) {
-        List<Online> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Online(n));
-        }
-        return l;
-    }
-
-    /**
      * Make a new discrete constraint.
      *
      * @param n the node to set online
@@ -67,7 +53,7 @@ public class Online extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Online> getChecker() {
+    public OnlineChecker getChecker() {
         return new OnlineChecker(this);
     }
 
@@ -75,4 +61,19 @@ public class Online extends SatConstraint {
     public String toString() {
         return "online(nodes=" + getInvolvedNodes().iterator().next() + ", " + restrictionToString() + ")";
     }
+
+    /**
+     * Instantiate discrete constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Online> newOnline(Collection<Node> nodes) {
+        List<Online> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Online(n));
+        }
+        return l;
+    }
+
 }

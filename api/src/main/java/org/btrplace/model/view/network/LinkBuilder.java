@@ -18,6 +18,7 @@
 
 package org.btrplace.model.view.network;
 
+import org.btrplace.Copyable;
 import org.btrplace.model.PhysicalElement;
 
 /**
@@ -26,7 +27,7 @@ import org.btrplace.model.PhysicalElement;
  *
  * @author Vincent Kherbache
  */
-public interface LinkBuilder extends Cloneable {
+public interface LinkBuilder extends Copyable<LinkBuilder> {
 
     /**
      * Generate a new Link with unlimited BW.
@@ -58,11 +59,4 @@ public interface LinkBuilder extends Cloneable {
      * @return  {@code true} if the Link already exists.
      */
     boolean contains(Link l);
-
-    /**
-     * Clone the builder.
-     *
-     * @return a new Link builder.
-     */
-    LinkBuilder clone();
 }

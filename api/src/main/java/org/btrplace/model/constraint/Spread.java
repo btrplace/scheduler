@@ -63,7 +63,7 @@ public class Spread extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Spread> getChecker() {
+    public SpreadChecker getChecker() {
         return new SpreadChecker(this);
     }
 

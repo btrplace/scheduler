@@ -21,7 +21,6 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.SatConstraintChecker;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,21 +36,6 @@ import java.util.List;
 public class Deadline extends SatConstraint {
 
     private String timestamp;
-
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms       the VMs to integrate
-     * @param deadline  the desired deadline
-     * @return  the associated list of constraints
-     */
-    public static List<Deadline> newDeadline(Collection<VM> vms, String deadline) {
-        List<Deadline> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Deadline(v, deadline));
-        }
-        return l;
-    }
 
     /**
      * Make a new constraint.
@@ -88,12 +72,51 @@ public class Deadline extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public DeadlineChecker getChecker() {
         return new DeadlineChecker(this);
     }
 
     @Override
     public String toString() {
         return "deadline(" + "vm=" + getInvolvedVMs() + ", deadline='" + timestamp + "', " + restrictionToString() + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Deadline deadline = (Deadline) o;
+
+        return timestamp.equals(deadline.timestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + timestamp.hashCode();
+        return result;
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms      the VMs to integrate
+     * @param deadline the desired deadline
+     * @return the associated list of constraints
+     */
+    public static List<Deadline> newDeadline(Collection<VM> vms, String deadline) {
+        List<Deadline> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Deadline(v, deadline));
+        }
+        return l;
     }
 }

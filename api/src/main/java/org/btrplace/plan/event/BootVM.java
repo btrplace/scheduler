@@ -70,7 +70,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public boolean applyAction(Model c) {
-        return (c.getMapping().isReady(vm) && c.getMapping().addRunningVM(vm, node));
+        return c.getMapping().isReady(vm) && c.getMapping().addRunningVM(vm, node);
     }
 
     /**

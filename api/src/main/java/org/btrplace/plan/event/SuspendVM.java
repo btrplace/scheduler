@@ -32,7 +32,8 @@ public class SuspendVM extends Action implements VMStateTransition {
 
     private VM vm;
 
-    private Node src, dst;
+    private Node src;
+    private Node dst;
 
     /**
      * Make a new suspend action.
@@ -66,12 +67,11 @@ public class SuspendVM extends Action implements VMStateTransition {
     @Override
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
-        return (map.isOnline(src) &&
+        return map.isOnline(src) &&
                 map.isOnline(dst) &&
                 map.isRunning(vm) &&
                 map.getVMLocation(vm) == src &&
-                map.addSleepingVM(vm, dst)
-        );
+                map.addSleepingVM(vm, dst);
     }
 
     @Override

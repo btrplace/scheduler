@@ -35,20 +35,6 @@ import java.util.List;
 public class Sleeping extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Sleeping> newSleeping(Collection<VM> vms) {
-        List<Sleeping> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Sleeping(v));
-        }
-        return l;
-    }
-
-    /**
      * Make a new discrete constraint.
      *
      * @param vm the VMs to make sleeping
@@ -69,12 +55,26 @@ public class Sleeping extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker<Sleeping> getChecker() {
+    public SleepingChecker getChecker() {
         return new SleepingChecker(this);
     }
 
     @Override
     public String toString() {
         return "sleeping(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Sleeping> newSleeping(Collection<VM> vms) {
+        List<Sleeping> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Sleeping(v));
+        }
+        return l;
     }
 }

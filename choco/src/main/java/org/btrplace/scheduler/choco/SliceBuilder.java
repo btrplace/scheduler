@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
@@ -84,12 +85,12 @@ public class SliceBuilder {
         Solver s = rp.getSolver();
 
         //UB for the time variables
-        ticksSooner(s, start, end);
-        ticksSooner(s, end, end);
-        ticksSooner(s, duration, end);
-
         if (!start.isInstantiatedTo(0)) {
-            VF.task(start, duration, end);
+            //enforces start <= end, duration <= end, start + duration == end
+            new TaskMonitor(start, duration, end);
+        } else {
+            //start == 0 --> start <= end. No need to add ticksSooner
+            ticksSooner(s, duration, end);
         }
         return new Slice(vm, start, end, duration, hoster);
     }

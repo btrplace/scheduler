@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
@@ -127,7 +124,7 @@ public class SplitAmong extends SatConstraint {
      * Get the group of nodes associated to a given node.
      *
      * @param u the node
-     * @return the associated group of nodes if exists, {@code null} otherwise
+     * @return the associated group of nodes if exists. An empty set otherwise
      */
     public Collection<Node> getAssociatedPGroup(Node u) {
         for (Collection<Node> pGrp : pGroups) {
@@ -135,14 +132,14 @@ public class SplitAmong extends SatConstraint {
                 return pGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     /**
      * Get the group of VMs associated to a given VM.
      *
      * @param u the VM
-     * @return the associated group of VMs if exists, {@code null} otherwise
+     * @return the associated group of VMs if exists.  An empty set otherwise
      */
     public Collection<VM> getAssociatedVGroup(VM u) {
         for (Collection<VM> vGrp : vGroups) {
@@ -150,7 +147,7 @@ public class SplitAmong extends SatConstraint {
                 return vGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -179,7 +176,7 @@ public class SplitAmong extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker<SplitAmong> getChecker() {
+    public SplitAmongChecker getChecker() {
         return new SplitAmongChecker(this);
     }
 

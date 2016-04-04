@@ -21,7 +21,6 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.SatConstraintChecker;
 
 import java.util.*;
 
@@ -64,7 +63,9 @@ public class Serialize extends SatConstraint {
         List<VM> vmList = new ArrayList<>();
         vmList.add(vm1);
         vmList.add(vm2);
-        if (vms.length > 0) { vmList.addAll(Arrays.asList(vms)); }
+        if (vms.length > 0) {
+            vmList.addAll(Arrays.asList(vms));
+        }
         return vmList;
     }
     
@@ -74,7 +75,7 @@ public class Serialize extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SerializeChecker getChecker() {
         return new SerializeChecker(this);
     }
 

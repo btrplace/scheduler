@@ -175,7 +175,7 @@ public class ShareableResourceTest {
         rc1.setConsumption(vms.get(1), 5);
         rc1.setCapacity(nodes.get(0), 10);
         rc1.setCapacity(nodes.get(1), 20);
-        ShareableResource rc2 = rc1.clone();
+        ShareableResource rc2 = rc1.copy();
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
 

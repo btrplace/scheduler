@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A constraint to force a set of VMs to be hosted on a single group of nodes
@@ -88,7 +85,7 @@ public class Among extends SatConstraint {
      * Get the group of nodes that contains the given node.
      *
      * @param u the node identifier
-     * @return the group of nodes if exists, {@code null} otherwise
+     * @return the group of nodes if exists. An empty collection otherwise
      */
     public Collection<Node> getAssociatedPGroup(Node u) {
         for (Collection<Node> pGrp : pGroups) {
@@ -96,7 +93,7 @@ public class Among extends SatConstraint {
                 return pGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -144,7 +141,7 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Among> getChecker() {
+    public AmongChecker getChecker() {
         return new AmongChecker(this);
     }
 

@@ -24,6 +24,7 @@ package org.btrplace.model;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface IterateProcedure<E extends Element> {
 
     /**

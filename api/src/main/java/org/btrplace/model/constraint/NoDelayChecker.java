@@ -62,7 +62,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(ShutdownVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }
@@ -81,7 +81,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(SuspendVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }
@@ -89,7 +89,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(KillVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }
@@ -97,7 +97,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(ForgeVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }

@@ -34,20 +34,6 @@ import java.util.List;
 public class Offline extends SatConstraint {
 
     /**
-     * Instantiate discrete constraints for a collection of nodes.
-     *
-     * @param nodes the nodes to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Offline> newOffline(Collection<Node> nodes) {
-        List<Offline> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Offline(n));
-        }
-        return l;
-    }
-
-    /**
      * Make a new discrete constraint.
      *
      * @param n the node to set offline
@@ -68,12 +54,26 @@ public class Offline extends SatConstraint {
 
 
     @Override
-    public SatConstraintChecker<Offline> getChecker() {
+    public OfflineChecker getChecker() {
         return new OfflineChecker(this);
     }
 
     @Override
     public String toString() {
         return "offline(nodes=" + getInvolvedNodes().iterator().next() + ", " + restrictionToString() + ")";
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Offline> newOffline(Collection<Node> nodes) {
+        List<Offline> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Offline(n));
+        }
+        return l;
     }
 }

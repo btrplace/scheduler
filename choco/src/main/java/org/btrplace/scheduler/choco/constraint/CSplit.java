@@ -81,10 +81,7 @@ public class CSplit implements ChocoConstraint {
         }
         s.post(new DisjointMultiple(vars, nbNodes));
 
-        if (cstr.isContinuous() && !injectContinuous(rp, vmGroups, groups)) {
-            return false;
-        }
-        return true;
+        return !(cstr.isContinuous() && !injectContinuous(rp, vmGroups, groups));
     }
 
     private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups, List<List<IntVar>> groups) {
