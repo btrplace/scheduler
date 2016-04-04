@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco.runner.disjoint.splitter;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.btrplace.model.Instance;
-import org.btrplace.model.IterateProcedure;
 import org.btrplace.model.SplittableElementSet;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Split;
@@ -51,27 +50,24 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
 
         final boolean c = cstr.isContinuous();
         return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to - from >= 2) {
-                            //More than 1 VM involved in a split constraint for this partition
-                            //if these VMs belong to at least 2 groups, we must post a split constraints
-                            //for the VMs on these groups
-                            Collection<Collection<VM>> sets = new ArrayList<>();
-                            for (Collection<VM> vms : cstr.getSets()) {
-                                SplittableElementSet<VM> subSplit = SplittableElementSet.newVMIndex(vms, vmsPosition);
-                                Set<VM> s = subSplit.getSubSet(idx);
-                                if (!s.isEmpty()) {
-                                    sets.add(s);
-                                }
-                            }
-                            if (sets.size() > 1) {
-                                partitions.get(idx).getSatConstraints().add(new Split(sets, c));
+                forEachPartition((index, idx, from, to) -> {
+                    if (to - from >= 2) {
+                        //More than 1 VM involved in a split constraint for this partition
+                        //if these VMs belong to at least 2 groups, we must post a split constraints
+                        //for the VMs on these groups
+                        Collection<Collection<VM>> sets = new ArrayList<>();
+                        for (Collection<VM> vms : cstr.getSets()) {
+                            SplittableElementSet<VM> subSplit = SplittableElementSet.newVMIndex(vms, vmsPosition);
+                            Set<VM> s = subSplit.getSubSet(idx);
+                            if (!s.isEmpty()) {
+                                sets.add(s);
                             }
                         }
-                        return true;
+                        if (sets.size() > 1) {
+                            partitions.get(idx).getSatConstraints().add(new Split(sets, c));
+                        }
                     }
+                    return true;
                 });
     }
 }

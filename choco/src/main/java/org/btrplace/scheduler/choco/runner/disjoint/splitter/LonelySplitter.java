@@ -19,7 +19,9 @@
 package org.btrplace.scheduler.choco.runner.disjoint.splitter;
 
 import gnu.trove.map.hash.TIntIntHashMap;
-import org.btrplace.model.*;
+import org.btrplace.model.ElementSubSet;
+import org.btrplace.model.Instance;
+import org.btrplace.model.SplittableElementSet;
 import org.btrplace.model.constraint.Lonely;
 
 import java.util.List;
@@ -51,14 +53,11 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
     public boolean split(Lonely cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final boolean c = cstr.isContinuous();
         return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Lonely(new ElementSubSet<>(index, idx, from, to), c));
-                        }
-                        return true;
+                forEachPartition((index, idx, from, to) -> {
+                    if (to != from) {
+                        partitions.get(idx).getSatConstraints().add(new Lonely(new ElementSubSet<>(index, idx, from, to), c));
                     }
+                    return true;
                 });
     }
 }

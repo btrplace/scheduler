@@ -74,9 +74,9 @@ public class SplittableElementSetTest {
         }
         SplittableElementSet<VM> s = SplittableElementSet.newVMIndex(l, index);
         System.err.println(s);
-        VM[] values = s.getValues();
-        for (int i = 0; i < values.length - 1; i++) {
-            Assert.assertTrue(index.get(values[i].id()) <= index.get(values[i + 1].id()));
+        List<VM> values = s.getValues();
+        for (int i = 0; i < values.size() - 1; i++) {
+            Assert.assertTrue(index.get(values.get(i).id()) <= index.get(values.get(i + 1).id()));
         }
     }
 
@@ -114,7 +114,7 @@ public class SplittableElementSetTest {
         s.forEachPartition((index1, key, from, to) -> {
             Assert.assertEquals(to - from, 5);
             for (int i = from; i < to; i++) {
-                Assert.assertEquals(key, index1.getValues()[i].id() % 2);
+                Assert.assertEquals(key, index1.getValues().get(i).id() % 2);
             }
             return true;
         });
@@ -126,8 +126,7 @@ public class SplittableElementSetTest {
             @Override
             public boolean extract(SplittableElementSet<VM> index, int key, int from, int to) {
                 Assert.assertTrue(first);
-                first = false;
-                return first;
+                return false;
             }
         });
     }

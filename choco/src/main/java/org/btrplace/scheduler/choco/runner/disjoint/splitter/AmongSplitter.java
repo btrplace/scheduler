@@ -50,26 +50,23 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
 
         final boolean c = cstr.isContinuous();
         return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to - from >= 2) {
-                            ElementSubSet<VM> vms = new ElementSubSet<>(index, idx, from, to);
-                            //Get the servers on the partition
+                forEachPartition((index, idx, from, to) -> {
+                    if (to - from >= 2) {
+                        ElementSubSet<VM> vms = new ElementSubSet<>(index, idx, from, to);
+                        //Get the servers on the partition
 
-                            //Filter out the other nodes in the original constraint
-                            final Collection<Collection<Node>> subParams = new ArrayList<>();
-                            for (Collection<Node> ns : cstr.getGroupsOfNodes()) {
-                                SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(ns, nodePosition);
-                                Set<Node> s = nodeIndex.getSubSet(idx);
-                                if (s != null && !s.isEmpty()) {
-                                    subParams.add(s);
-                                }
+                        //Filter out the other nodes in the original constraint
+                        final Collection<Collection<Node>> subParams = new ArrayList<>();
+                        for (Collection<Node> ns : cstr.getGroupsOfNodes()) {
+                            SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(ns, nodePosition);
+                            Set<Node> s = nodeIndex.getSubSet(idx);
+                            if (s != null && !s.isEmpty()) {
+                                subParams.add(s);
                             }
-                            partitions.get(idx).getSatConstraints().add(new Among(vms, subParams, c));
                         }
-                        return true;
+                        partitions.get(idx).getSatConstraints().add(new Among(vms, subParams, c));
                     }
+                    return true;
                 });
     }
 }
