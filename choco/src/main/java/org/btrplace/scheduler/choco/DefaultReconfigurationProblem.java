@@ -180,7 +180,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            SMF.limitTime(solver, timeLimit * 1000);
+            SMF.limitTime(solver, timeLimit * 1000L);
         }
 
         appendNaiveBranchHeuristic();
@@ -226,7 +226,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         Solution s = solver.getSolutionRecorder().getLastSolution();
-        return buildReconfigurationPlan(s, (Model) model.copy());
+        return buildReconfigurationPlan(s, model.copy());
     }
 
     /**
@@ -236,6 +236,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @return the resulting plan
      * @throws SchedulerException if a error occurred
      */
+    @Override
     public ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException {
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
         for (Transition action : nodeActions) {
@@ -245,8 +246,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (Transition action : vmActions) {
             action.insertActions(s, plan);
         }
-
-        //viewsManager.insertActions(s, plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(s, plan);
@@ -371,7 +370,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             revVMs.put(vm, i++);
         }
         vms = Collections.unmodifiableList(vms);
-        //nodes = new Node[model.getMapping().getOnlineNodes().size() + model.getMapping().getOfflineNodes().size()];
         nodes = new ArrayList<>();
         revNodes = new TObjectIntHashMap<>(nodes.size(), 0.5f, -1);
         i = 0;
@@ -469,7 +467,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public final ChocoView getView(String id) {
         return coreViews.get(id);
-        //return viewsManager.get(id);
     }
 
     @Override

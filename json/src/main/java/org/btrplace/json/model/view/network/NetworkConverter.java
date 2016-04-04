@@ -44,16 +44,6 @@ public class NetworkConverter extends ModelViewConverter<Network> {
 
     private List<RoutingConverter<? extends Routing>> routingConverters;
 
-    @Override
-    public Class<Network> getSupportedView() {
-        return Network.class;
-    }
-
-    @Override
-    public String getJSONId() {
-        return "net";
-    }
-
     /**
      * Make a new converter.
      */
@@ -100,7 +90,9 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         String id = requiredString(o, "id");
         // Create, setup, and return the Network
 
-        if (!id.equals(getJSONId())) { return null; }
+        if (!id.equals(getJSONId())) {
+            return null;
+        }
 
         Network net = new Network();
 
@@ -300,4 +292,16 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         }
         throw new JSONConverterException("No converter registered for routing type '" + type + "'");
     }
+
+    @Override
+    public Class<Network> getSupportedView() {
+        return Network.class;
+    }
+
+    @Override
+    public String getJSONId() {
+        return "net";
+    }
+
 }
+

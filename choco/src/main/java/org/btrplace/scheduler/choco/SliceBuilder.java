@@ -41,7 +41,9 @@ public class SliceBuilder {
 
     private ReconfigurationProblem rp;
 
-    private IntVar start = null, end = null, duration = null;
+    private IntVar start = null;
+    private IntVar end = null;
+    private IntVar duration = null;
 
     private IntVar hoster = null;
 

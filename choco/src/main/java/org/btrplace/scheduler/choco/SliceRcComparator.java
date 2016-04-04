@@ -47,9 +47,8 @@ public class SliceRcComparator implements Comparator<Slice>, Serializable {
 
     @Override
     public int compare(Slice s1, Slice s2) {
-        int x, y;
-        x = rc.getConsumption(s1.getSubject());
-        y = rc.getConsumption(s2.getSubject());
+        int x = rc.getConsumption(s1.getSubject());
+        int y = rc.getConsumption(s2.getSubject());
         return ratio * (x - y);
     }
 }

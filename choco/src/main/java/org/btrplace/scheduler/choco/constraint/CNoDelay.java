@@ -57,7 +57,6 @@ public class CNoDelay implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Instance model) {
         return Collections.emptySet();
-        //return new HashSet<VM>(noDelay.getInvolvedVMs());
     }
 
     @Override
@@ -70,23 +69,6 @@ public class CNoDelay implements ChocoConstraint {
         // For each vm involved in the constraint
         VMTransition vt = rp.getVMAction(v);
         // Get the VMTransition start time
-        //IntVar start = vt.getStart();
-
-                /*
-                //TODO: Something wrong with "vt.getDuration().getValue()" (not instanciated)
-                // Special case of a 'possible' migration
-                if (vt instanceof RelocatableVM) {
-
-                    if (vt.getDuration().instantiated()) {
-                        // Check if the Transition duration is > 0 (effective migration) and set a boolean accordingly
-                        BoolVar b = (vt.getDuration().getValue() > 0 ? VariableFactory.one(s) : VariableFactory.zero(s));
-
-                        // Add the constraint "(duration > 0) => start = 0" to the solver
-                        s.post(new FastImpliesEq(b, start, 0));
-                    }
-
-                } else {
-                */
         // Add the constraint "start = 0" to the solver
         Slice d = vt.getDSlice();
         if (d == null) {

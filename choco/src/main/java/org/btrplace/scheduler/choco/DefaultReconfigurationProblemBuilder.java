@@ -44,7 +44,10 @@ public class DefaultReconfigurationProblemBuilder {
 
     private Model model;
 
-    private Set<VM> runs, waits, over, sleep;
+    private Set<VM> runs;
+    private Set<VM> waits;
+    private Set<VM> over;
+    private Set<VM> sleep;
 
     private Set<VM> manageable;
 

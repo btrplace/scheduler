@@ -157,7 +157,9 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                     .collect(Collectors.toList()));
 
                 // Add the new constraints to the list
-                if (!newCstrs.isEmpty()) cstrs.addAll(newCstrs);
+                if (!newCstrs.isEmpty()) {
+                    cstrs.addAll(newCstrs);
+                }
             }
 
             // Re-attach the network view

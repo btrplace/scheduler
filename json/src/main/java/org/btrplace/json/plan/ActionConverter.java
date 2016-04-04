@@ -163,7 +163,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
             case "substitutedVM":
                 return substitutedVMEventFromJSON(o);
             default:
-                throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
+                throw new JSONConverterException("Unsupported type of action '" + id + "'");
         }
     }
 

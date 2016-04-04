@@ -80,7 +80,6 @@ public class COffline implements ChocoConstraint {
                 } catch (ContradictionException e) {
                     rp.getLogger().error("Unable to remove VM '{}' of node {}: {}", am.getVM(), nId, e.getMessage());
                 }
-                //rp.getSolver().post(new solver.constraints.Arithmetic(s.getHoster(), Operator.NQ, id));
             }
         }
         return true;
