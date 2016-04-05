@@ -244,7 +244,7 @@ public class RelocatableVMTest {
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR(null).inject(new DefaultParameters(), rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
 
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
