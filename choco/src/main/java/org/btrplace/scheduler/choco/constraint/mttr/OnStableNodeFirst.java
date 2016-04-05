@@ -60,6 +60,10 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private IntVar last;
 
+    private BitSet stays;
+
+    private BitSet move;
+
     /**
      * Make a new heuristics
      *
@@ -111,8 +115,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         this.hosts = hosts.toArray(new IntVar[hosts.size()]);
         this.starts = starts.toArray(new IntVar[starts.size()]);
     }
-
-    private BitSet stays, move;
 
     /**
      * Invalidate the VM placement.
@@ -183,10 +185,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     private IntVar getMovingVM() {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].isInstantiated()) {
-                if (oldPos[i] != hosts[i].getValue()) {
-                    return starts[i];
-                }
+            if (starts[i] != null && !starts[i].isInstantiated() && oldPos[i] != hosts[i].getValue()) {
+                return starts[i];
             }
         }
         return null;

@@ -121,8 +121,12 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         //Check for the first solution that concatenate all the first solutions.
         List<SolutionStatistics> solutions = new ArrayList<>();
 
-        int firstN = 0, firstB = 0, firstOptValue = 0;
-        int lastN = 0, lastB = 0, lastOptValue = 0;
+        int firstN = 0;
+        int firstB = 0;
+        int firstOptValue = 0;
+        int lastN = 0;
+        int lastB = 0;
+        int lastOptValue = 0;
 
         //firstTime  == end of the last first solution
         //lastTime ==  end of the last computed partition solution
