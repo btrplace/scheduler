@@ -23,7 +23,6 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
@@ -65,9 +64,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
      * Make a new heuristics
      *
      * @param rp the problem to rely on
-     * @param o  the objective to rely on
      */
-    public OnStableNodeFirst(ReconfigurationProblem rp, CObjective o) {
+    public OnStableNodeFirst(ReconfigurationProblem rp) {
 
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         Mapping cfg = rp.getSourceModel().getMapping();

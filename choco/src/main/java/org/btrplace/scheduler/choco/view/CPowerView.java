@@ -50,13 +50,6 @@ public class CPowerView implements ChocoView {
     private Map<Integer, IntVar> powerStarts;
     private Map<Integer, IntVar> powerEnds;
 
-    /**
-     * Make a new view.
-     */
-    public CPowerView() {
-
-    }
-
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         powerStarts = new HashMap<>(rp.getNodes().size());

@@ -33,13 +33,6 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 
-    /**
-     * Make a new applier.
-     */
-    public TimeBasedPlanApplier() {
-        super();
-    }
-
     @Override
     public Model apply(ReconfigurationPlan p) {
         Model res = p.getOrigin().copy();

@@ -47,13 +47,6 @@ public class VectorPacking extends Packing {
 
     private int dim;
 
-    /**
-     * A new packing view.
-     */
-    public VectorPacking() {
-
-    }
-
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         loads = new ArrayList<>();

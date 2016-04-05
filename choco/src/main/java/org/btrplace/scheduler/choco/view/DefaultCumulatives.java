@@ -46,13 +46,6 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
 
     private List<List<IntVar>> capacities;
 
-    /**
-     * Make a new builder.
-     *
-     */
-    public DefaultCumulatives() {
-    }
-
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         super.inject(ps, rp);

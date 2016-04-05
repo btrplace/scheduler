@@ -24,7 +24,6 @@ def nextVersion(v):
 def parseVersion():
 	try:
 		tree = ET.parse('./pom.xml')
-		root = tree.getroot()
 		return tree.find("{http://maven.apache.org/POM/4.0.0}version").text
 	except:
 		print("Unable to parse 'pom.xml'", file=sys.stderr)

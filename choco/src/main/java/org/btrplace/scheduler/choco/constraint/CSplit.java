@@ -81,10 +81,10 @@ public class CSplit implements ChocoConstraint {
         }
         s.post(new DisjointMultiple(vars, nbNodes));
 
-        return !(cstr.isContinuous() && !injectContinuous(rp, vmGroups, groups));
+        return !(cstr.isContinuous() && !injectContinuous(rp, vmGroups));
     }
 
-    private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups, List<List<IntVar>> groups) {
+    private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups) {
         if (!cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;

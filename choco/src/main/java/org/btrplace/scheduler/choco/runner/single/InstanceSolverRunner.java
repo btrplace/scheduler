@@ -23,7 +23,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
@@ -237,9 +236,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private List<ChocoView> makeViews() throws SchedulerException {
         List<ChocoView> l = new ArrayList<>();
         ChocoMapper mapper = params.getMapper();
-        for (ModelView v : origin.getViews()) {
-            ChocoView cv = mapper.get(v);
-        }
         origin.getViews().stream().filter(v -> mapper.viewHasMapping(v.getClass())).forEach(v -> l.add(mapper.get(v)));
         return l;
         //List<String> base = new ArrayList<>();

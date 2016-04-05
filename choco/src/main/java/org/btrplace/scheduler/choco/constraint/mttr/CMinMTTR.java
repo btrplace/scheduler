@@ -18,8 +18,10 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.btrplace.model.*;
-import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -59,12 +61,8 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     /**
      * Make a new objective.
      */
-    public CMinMTTR(MinMTTR m) {
-        costConstraints = new ArrayList<>();
-    }
-
     public CMinMTTR() {
-        this(null);
+        costConstraints = new ArrayList<>();
     }
 
     @Override
@@ -104,7 +102,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
-        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p, this);
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p);
 
         //Get the VMs to place
         Set<VM> onBadNodes = new HashSet<>(p.getManageableVMs());
@@ -208,13 +206,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
             costActivated = true;
             Solver s = rp.getSolver();
             costConstraints.forEach(s::post);
-            /*try {
-                s.propagate();
-            } catch (ContradictionException e) {
-                s.setFeasible(ESat.FALSE);
-                //s.setFeasible(false);
-                s.post(IntConstraintFactory.FALSE(s));
-            } */
         }
     }
 

@@ -37,12 +37,6 @@ import java.util.List;
  */
 public class LonelySplitter implements ConstraintSplitter<Lonely> {
 
-    /**
-     * Make a new splitter.
-     */
-    public LonelySplitter() {
-        super();
-    }
 
     @Override
     public Class<Lonely> getKey() {

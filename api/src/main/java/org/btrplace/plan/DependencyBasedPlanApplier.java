@@ -35,14 +35,6 @@ import java.util.Set;
  */
 public class DependencyBasedPlanApplier extends DefaultPlanApplier {
 
-
-    /**
-     * Make a new applier.
-     */
-    public DependencyBasedPlanApplier() {
-        super();
-    }
-
     @Override
     public Model apply(ReconfigurationPlan p) {
         int nbCommitted = 0;

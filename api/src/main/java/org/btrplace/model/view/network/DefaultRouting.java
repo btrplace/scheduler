@@ -36,11 +36,6 @@ import java.util.List;
  */
 public class DefaultRouting extends Routing {
 
-    /**
-     * Make a new default routing
-     */
-    public DefaultRouting() {}
-
     @Override
     public List<Link> getPath(Node n1, Node n2) {
 
