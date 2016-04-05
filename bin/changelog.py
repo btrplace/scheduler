@@ -17,10 +17,10 @@ def newChangelog(v):
 		elif headerRead:
 			if re.match("^version "+v, line):
 				print("A log entry already exists for version '%s'" % v, file=sys.stderr)
-				return False			
+				return False
 			lines.append(line)
 	f.close()
-	
+
 	f = open("CHANGES.md", "w")
 	f.write("Release notes\n")
 	f.write("======================\n\n")
@@ -32,7 +32,7 @@ def newChangelog(v):
 		f.write(l)
 	f.write("\n\n")
 	f.close()
-	
+
 def timestamp(v):
 	f = open("CHANGES.md")
 	lines = []
@@ -40,11 +40,11 @@ def timestamp(v):
 	now = date.today()
 	for line in f:
 		if re.match("^version "+v, line):
-			found=True			
+			found=True
 			line = re.sub("^.+-.+$", "version " + v + " - " + now.strftime("%d %b %Y"), line)
 		lines.append(line)
 	f.close()
-	
+
 	if not found:
 		print("No log entry for version '%s'" % v, file=sys.stderr)
 		return False
@@ -54,10 +54,10 @@ def timestamp(v):
 		f.write(l)
 	f.close()
 	return True
-	
+
 def usage():
 		print("Usage %s [new|timestamp] version?" % sys.argv[0], file=sys.stderr)
-		exit(1)			
+		exit(1)
 
 ####### ---------- MAIN ------------- ################
 if __name__ == "__main__":

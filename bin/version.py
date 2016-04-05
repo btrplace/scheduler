@@ -3,10 +3,7 @@
 #basically, it is faster and more robust than mvn versions
 from __future__ import print_function
 import xml.etree.ElementTree as ET
-import re
 import sys
-import subprocess 
-
 
 def toRelease(v):
 	if v.endswith("-SNAPSHOT"):
@@ -16,7 +13,7 @@ def toRelease(v):
 
 def nextVersion(v):
 	if v.endswith("-SNAPSHOT"):
-		return v[0:-1*len("-SNAPSHOT")]			
+		return v[0:-1*len("-SNAPSHOT")]
 	else:
 		nbs = v.split('.')
 		last = int(nbs[-1])
@@ -27,8 +24,8 @@ def nextVersion(v):
 def parseVersion():
 	try:
 		tree = ET.parse('./pom.xml')
-		root = tree.getroot()	
-		return tree.find("{http://maven.apache.org/POM/4.0.0}version").text		
+		root = tree.getroot()
+		return tree.find("{http://maven.apache.org/POM/4.0.0}version").text
 	except:
 		print("Unable to parse 'pom.xml'", file=sys.stderr)
 		return None
@@ -39,10 +36,10 @@ if __name__ == "__main__":
 	if len(sys.argv) > 2:
 		version = sys.argv[2]
 	else:
-		version = parseVersion()		
+		version = parseVersion()
 		if not version:
 			exit(1)
-		
+
 	if (len(sys.argv) == 1):
 		print(version)
 		exit(0)
