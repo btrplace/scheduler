@@ -21,6 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -36,7 +37,9 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Spread extends DefaultSatConstraint {
+public class Spread implements SatConstraint {
+
+    private Set<VM> vms;
 
     /**
      * Make a new constraint having a continuous restriction.
@@ -54,12 +57,18 @@ public class Spread extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction.
      */
     public Spread(Set<VM> vms, boolean continuous) {
-        super(vms, Collections.<Node>emptySet(), continuous);
+        this.vms = vms;
+        setContinuous(continuous);
+    }
+
+    @Override
+    public Set<VM> getInvolvedVMs() {
+        return vms;
     }
 
     @Override
     public String toString() {
-        return "spread(vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
+        return "spread(vms=" + getInvolvedVMs() + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override

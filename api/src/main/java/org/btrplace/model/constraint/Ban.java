@@ -21,20 +21,21 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to disallow the given VM, when running,
  * to be hosted on a given set of nodes.
  *
  * @author Fabien Hermenier
- * @see DefaultSatConstraint
  */
-public class Ban extends DefaultSatConstraint {
+public class Ban implements SatConstraint {
 
+    private VM vm;
+
+    private Collection<Node> nodes;
+
+    private boolean continuous;
     /**
      * Make a new discrete constraint.
      *
@@ -53,12 +54,30 @@ public class Ban extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous constraint.
      */
     public Ban(VM vm, Collection<Node> nodes, boolean continuous) {
-        super(Collections.singleton(vm), nodes, continuous);
+        this.vm = vm;
+        this.nodes = nodes;
+        this.continuous = continuous;
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
     }
 
     @Override
     public String toString() {
-        return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", " + restrictionToString() + ")";
+        return "ban(" + "vm=" + vm + ", nodes=" + getInvolvedNodes() + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
@@ -79,5 +98,20 @@ public class Ban extends DefaultSatConstraint {
             l.add(new Ban(v, nodes));
         }
         return l;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ban ban = (Ban) o;
+        return continuous == ban.continuous &&
+                Objects.equals(vm, ban.vm) &&
+                Objects.equals(nodes, ban.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, nodes, continuous);
     }
 }

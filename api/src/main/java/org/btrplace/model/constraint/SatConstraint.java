@@ -90,4 +90,14 @@ public interface SatConstraint extends Constraint {
         return true;
     }
 
+    /**
+     * Indicates if the restriction provided by the constraint is continuous.
+     *
+     * @param b {@code true} to ask for a continuous satisfaction, {@code false} for a discrete satisfaction.
+     * @return {@code true} iff the parameter has been considered
+     */
+    default boolean setContinuous(boolean b) {
+        return false;
+    }
+
 }
