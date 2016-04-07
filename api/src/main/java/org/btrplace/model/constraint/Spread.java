@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Spread extends SatConstraint {
+public class Spread extends DefaultSatConstraint {
 
     /**
      * Make a new constraint having a continuous restriction.

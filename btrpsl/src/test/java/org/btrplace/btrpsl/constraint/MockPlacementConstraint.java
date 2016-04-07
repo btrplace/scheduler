@@ -20,7 +20,7 @@ package org.btrplace.btrpsl.constraint;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 
 import java.util.Collections;
 import java.util.Set;
@@ -30,7 +30,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class MockPlacementConstraint extends SatConstraint {
+public class MockPlacementConstraint extends DefaultSatConstraint {
 
     private Set<Set<VM>> sets;
 

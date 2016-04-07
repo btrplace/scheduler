@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class RunningCapacity extends SatConstraint {
+public class RunningCapacity extends DefaultSatConstraint {
 
     private int qty;
 

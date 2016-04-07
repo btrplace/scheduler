@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Among extends SatConstraint {
+public class Among extends DefaultSatConstraint {
 
     /**
      * Set of set of nodes.

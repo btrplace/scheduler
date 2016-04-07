@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Quarantine extends SatConstraint {
+public class Quarantine extends DefaultSatConstraint {
 
     /**
      * Make a new constraint.

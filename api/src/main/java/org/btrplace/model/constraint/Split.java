@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Split extends SatConstraint {
+public class Split extends DefaultSatConstraint {
 
     private Collection<Collection<VM>> sets;
 

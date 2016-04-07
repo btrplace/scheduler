@@ -22,7 +22,6 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Overbook;
-import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.Collections;
 import java.util.List;

@@ -33,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public abstract class AllowAllConstraintChecker<C extends SatConstraint> implements SatConstraintChecker<C> {
+public class AllowAllConstraintChecker<C extends SatConstraint> implements SatConstraintChecker<C> {
 
     /**
      * VMs involved in the constraint.

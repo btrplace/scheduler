@@ -31,9 +31,9 @@ import java.util.List;
  * to be hosted on a given set of nodes.
  *
  * @author Fabien Hermenier
- * @see SatConstraint
+ * @see DefaultSatConstraint
  */
-public class Ban extends SatConstraint {
+public class Ban extends DefaultSatConstraint {
 
     /**
      * Make a new discrete constraint.

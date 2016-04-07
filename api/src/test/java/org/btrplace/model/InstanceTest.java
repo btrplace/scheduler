@@ -18,10 +18,7 @@
 
 package org.btrplace.model;
 
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,7 +37,7 @@ public class InstanceTest {
     public void testInstantiation() {
         Model mo = Mockito.mock(Model.class);
         List<SatConstraint> l = new ArrayList<>();
-        l.add(Mockito.mock(SatConstraint.class));
+        l.add(Mockito.mock(DefaultSatConstraint.class));
         MinMTTR o = new MinMTTR();
         Instance i = new Instance(mo, l, o);
         Assert.assertEquals(i.getModel(), mo);

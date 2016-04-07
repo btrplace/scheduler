@@ -18,6 +18,7 @@
 
 package org.btrplace.btrpsl.constraint;
 
+import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.reflections.Reflections;
 import org.testng.Assert;
@@ -42,7 +43,7 @@ public class DefaultConstraintsCatalogTest {
         DefaultConstraintsCatalog c = DefaultConstraintsCatalog.newBundle();
         Reflections reflections = new Reflections("org.btrplace.model");
         Set<Class<? extends SatConstraint>> impls = new HashSet<>();
-        for (Class cstr : reflections.getSubTypesOf(SatConstraint.class)) {
+        for (Class cstr : reflections.getSubTypesOf(DefaultSatConstraint.class)) {
             if (!Modifier.isAbstract(cstr.getModifiers())) {
                 impls.add(cstr);
             }

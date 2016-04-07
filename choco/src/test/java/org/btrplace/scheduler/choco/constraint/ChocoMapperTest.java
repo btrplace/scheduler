@@ -23,7 +23,7 @@ import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -83,7 +83,7 @@ public class ChocoMapperTest {
         Assert.assertNull(map.get(b));
     }
 
-    public static class MockSatConstraint extends SatConstraint {
+    public static class MockSatConstraint extends DefaultSatConstraint {
         public MockSatConstraint() {
             super(null, null, false);
         }

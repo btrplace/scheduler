@@ -29,7 +29,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Fence extends SatConstraint {
+public class Fence extends DefaultSatConstraint {
 
     /**
      * Make a new discrete constraint.

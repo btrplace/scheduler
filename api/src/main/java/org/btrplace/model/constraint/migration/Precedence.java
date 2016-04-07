@@ -20,7 +20,7 @@ package org.btrplace.model.constraint.migration;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 
 import java.util.*;
 
@@ -29,7 +29,7 @@ import java.util.*;
  * 
  * @author Vincent Kherbache
  */
-public class Precedence extends SatConstraint {
+public class Precedence extends DefaultSatConstraint {
 
     /**
      * Make a new precedence constraint.

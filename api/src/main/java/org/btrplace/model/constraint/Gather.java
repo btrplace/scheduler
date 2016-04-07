@@ -36,7 +36,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class Gather extends SatConstraint {
+public class Gather extends DefaultSatConstraint {
 
     /**
      * Make a new constraint with a discrete restriction.

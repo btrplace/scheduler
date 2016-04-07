@@ -38,7 +38,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmong extends SatConstraint {
+public class SplitAmong extends DefaultSatConstraint {
 
     /**
      * Set of set of vms.

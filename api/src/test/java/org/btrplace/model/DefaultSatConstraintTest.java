@@ -18,20 +18,20 @@
 
 package org.btrplace.model;
 
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
 
 /**
- * Basic tests for {@link org.btrplace.model.constraint.SatConstraint}.
+ * Basic tests for {@link DefaultSatConstraint}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintTest {
+public class DefaultSatConstraintTest {
 
-    static class MockSatConstraints extends SatConstraint {
+    static class MockSatConstraints extends DefaultSatConstraint {
 
         public MockSatConstraints() {
             super(new HashSet<>(), new HashSet<>(), false);
@@ -46,7 +46,7 @@ public class SatConstraintTest {
 
     @Test
     public void testGetters() {
-        SatConstraint c = new MockSatConstraints();
+        DefaultSatConstraint c = new MockSatConstraints();
         Assert.assertEquals(1, c.getInvolvedVMs().size());
         Assert.assertTrue(c.getInvolvedNodes().isEmpty());
         Assert.assertTrue(c.setContinuous(true));

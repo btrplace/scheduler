@@ -40,7 +40,7 @@ public class AllowAllConstraintCheckerTest {
 
     @Test
     public void testInstantiation() {
-        SatConstraint cstr = mock(SatConstraint.class);
+        SatConstraint cstr = mock(DefaultSatConstraint.class);
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
         List<Node> ns = Util.newNodes(mo, 10);
@@ -57,7 +57,7 @@ public class AllowAllConstraintCheckerTest {
 
     @Test
     public void testAcceptance() {
-        SatConstraint cstr = mock(SatConstraint.class);
+        SatConstraint cstr = mock(DefaultSatConstraint.class);
         AllowAllConstraintChecker c = mock(AllowAllConstraintChecker.class, CALLS_REAL_METHODS);
 
         Model mo = new DefaultModel();
@@ -126,7 +126,7 @@ public class AllowAllConstraintCheckerTest {
 
     @Test(dependsOnMethods = "testInstantiation")
     public void testMyVMsTracking() {
-        SatConstraint cstr = mock(SatConstraint.class);
+        SatConstraint cstr = mock(DefaultSatConstraint.class);
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
         List<Node> ns = Util.newNodes(mo, 10);
@@ -150,7 +150,7 @@ public class AllowAllConstraintCheckerTest {
 
     @Test(dependsOnMethods = "testInstantiation")
     public void testAnyTracking() {
-        SatConstraint cstr = mock(SatConstraint.class);
+        SatConstraint cstr = mock(DefaultSatConstraint.class);
         AllowAllConstraintChecker c = new AllowAllConstraintChecker(cstr) {
         };
 

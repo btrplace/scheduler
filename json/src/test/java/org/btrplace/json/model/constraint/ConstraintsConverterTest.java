@@ -23,6 +23,7 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,7 +41,7 @@ import java.util.List;
  */
 public class ConstraintsConverterTest {
 
-    public static class MockSatConstraint extends SatConstraint {
+    public static class MockSatConstraint extends DefaultSatConstraint {
 
         String str;
 

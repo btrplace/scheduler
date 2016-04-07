@@ -39,7 +39,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Overbook extends SatConstraint {
+public class Overbook extends DefaultSatConstraint {
 
     private String rcId;
 

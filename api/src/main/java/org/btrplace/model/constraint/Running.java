@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Running extends SatConstraint {
+public class Running extends DefaultSatConstraint {
 
     /**
      * Make a new constraint.

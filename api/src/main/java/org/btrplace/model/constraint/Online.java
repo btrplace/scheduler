@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Online extends SatConstraint {
+public class Online extends DefaultSatConstraint {
 
     /**
      * Make a new discrete constraint.

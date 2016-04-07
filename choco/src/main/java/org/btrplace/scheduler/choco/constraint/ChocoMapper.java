@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to map {@link org.btrplace.model.constraint.SatConstraint} and {@link org.btrplace.model.constraint.OptConstraint} to {@link ChocoConstraint}.
+ * Mapper that allow to map {@link DefaultSatConstraint} and {@link org.btrplace.model.constraint.OptConstraint} to {@link ChocoConstraint}.
  *
  * @author Fabien Hermenier
  */

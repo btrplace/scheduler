@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Killed extends SatConstraint {
+public class Killed extends DefaultSatConstraint {
 
     /**
      * Make a new discrete constraint.

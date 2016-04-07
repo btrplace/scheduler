@@ -20,7 +20,7 @@ package org.btrplace.model.constraint.migration;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 
 import java.util.*;
 
@@ -30,7 +30,7 @@ import java.util.*;
  *
  * @author Vincent Kherbache
  */
-public class Sync extends SatConstraint {
+public class Sync extends DefaultSatConstraint {
 
     /**
      * Make a new constraint.

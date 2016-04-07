@@ -32,7 +32,7 @@ import java.util.List;
  * <p>
  * @author Vincent Kherbache
  */
-public class NoDelay extends SatConstraint {
+public class NoDelay extends DefaultSatConstraint {
 
     /**
      * Make a new constraint.

@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Lonely extends SatConstraint {
+public class Lonely extends DefaultSatConstraint {
 
     /**
      * Make a new constraint with a discrete restriction.

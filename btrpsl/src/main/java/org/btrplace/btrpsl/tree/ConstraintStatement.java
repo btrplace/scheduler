@@ -25,7 +25,7 @@ import org.btrplace.btrpsl.constraint.ConstraintsCatalog;
 import org.btrplace.btrpsl.constraint.SatConstraintBuilder;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.element.IgnorableOperand;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +89,7 @@ public class ConstraintStatement extends BtrPlaceTree {
         }
         if (b != null) {
             List<SatConstraint> constraints = b.buildConstraint(this, params);
-            for (SatConstraint c : constraints) {
+            for (DefaultSatConstraint c : constraints) {
                 if (c != null) {
                     if (discrete) {
                         if (!c.setContinuous(false)) {

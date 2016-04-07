@@ -20,7 +20,7 @@ package org.btrplace.model.constraint.migration;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.DefaultSatConstraint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.List;
  * 
  * @author Vincent Kherbache
  */
-public class Deadline extends SatConstraint {
+public class Deadline extends DefaultSatConstraint {
 
     private String timestamp;
 

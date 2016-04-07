@@ -33,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Preserve extends SatConstraint {
+public class Preserve extends DefaultSatConstraint {
 
     private int amount;
 

@@ -20,11 +20,11 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -39,7 +39,7 @@ import java.util.Set;
  *
  * @author Tu Huynh Dang
  */
-public class MaxOnline extends SatConstraint {
+public class MaxOnline extends DefaultSatConstraint {
 
     /**
      * number of reserved nodes

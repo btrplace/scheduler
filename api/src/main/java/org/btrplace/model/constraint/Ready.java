@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Ready extends SatConstraint {
+public class Ready extends DefaultSatConstraint {
 
     /**
      * Make a new constraint.

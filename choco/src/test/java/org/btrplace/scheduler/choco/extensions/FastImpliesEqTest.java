@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.extensions;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /*
  * Created on 18/09/14.

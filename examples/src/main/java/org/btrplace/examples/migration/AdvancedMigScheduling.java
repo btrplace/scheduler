@@ -22,7 +22,6 @@ import org.btrplace.examples.Example;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Deadline;
 import org.btrplace.model.constraint.migration.Precedence;
 import org.btrplace.model.constraint.migration.Serialize;

@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Sleeping extends SatConstraint {
+public class Sleeping extends DefaultSatConstraint {
 
     /**
      * Make a new discrete constraint.

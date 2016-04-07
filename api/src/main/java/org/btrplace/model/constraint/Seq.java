@@ -34,7 +34,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Seq extends SatConstraint {
+public class Seq extends DefaultSatConstraint {
 
     private List<VM> order;
 
