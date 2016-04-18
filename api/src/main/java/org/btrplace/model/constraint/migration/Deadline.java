@@ -21,11 +21,9 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.DefaultSatConstraint;
+import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force the maximum end time of a migration by an absolute
@@ -33,9 +31,11 @@ import java.util.List;
  * 
  * @author Vincent Kherbache
  */
-public class Deadline extends DefaultSatConstraint {
+public class Deadline implements SatConstraint {
 
     private String timestamp;
+
+    private VM vm;
 
     /**
      * Make a new constraint.
@@ -44,7 +44,7 @@ public class Deadline extends DefaultSatConstraint {
      * @param timestamp the desired deadline
      */
     public Deadline(VM vm, String timestamp) {
-        super(Collections.singletonList(vm), Collections.<Node>emptyList(), true);
+        this.vm = vm;
         this.timestamp = timestamp;
     }
 
@@ -72,13 +72,28 @@ public class Deadline extends DefaultSatConstraint {
     }
 
     @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
     public DeadlineChecker getChecker() {
         return new DeadlineChecker(this);
     }
 
     @Override
     public String toString() {
-        return "deadline(" + "vm=" + getInvolvedVMs() + ", deadline='" + timestamp + "', " + restrictionToString() + ")";
+        return "deadline(vm=" + vm + ", deadline='" + timestamp + "', continuous)";
     }
 
     @Override
@@ -89,20 +104,14 @@ public class Deadline extends DefaultSatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
-
         Deadline deadline = (Deadline) o;
-
-        return timestamp.equals(deadline.timestamp);
+        return Objects.equals(timestamp, deadline.timestamp) &&
+                Objects.equals(vm, deadline.vm);
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + timestamp.hashCode();
-        return result;
+        return Objects.hash(timestamp, vm);
     }
 
     /**

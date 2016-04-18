@@ -30,27 +30,29 @@ public interface SatConstraint extends Constraint {
      *
      * @return a set of nodes identifiers that may be empty
      */
-    default Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
-    }
+    Collection<Node> getInvolvedNodes();
 
     /**
      * Get the VMs involved in the constraint.
      *
      * @return a set of VM identifiers that may be empty
      */
-    default Collection<VM> getInvolvedVMs() {
-        return Collections.emptyList();
-    }
+    Collection<VM> getInvolvedVMs();
 
     /**
      * Check if the restriction provided by the constraint is continuous.
      *
      * @return {@code true} for a continuous restriction
      */
-    default boolean isContinuous() {
-        return false;
-    }
+    boolean isContinuous();
+
+    /**
+     * Indicates if the restriction provided by the constraint is continuous.
+     *
+     * @param b {@code true} to ask for a continuous satisfaction, {@code false} for a discrete satisfaction.
+     * @return {@code true} iff the parameter has been considered
+     */
+    boolean setContinuous(boolean b);
 
     /**
      * Get the validator used to check if a plan satisfies the constraint.
@@ -88,16 +90,6 @@ public interface SatConstraint extends Constraint {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Indicates if the restriction provided by the constraint is continuous.
-     *
-     * @param b {@code true} to ask for a continuous satisfaction, {@code false} for a discrete satisfaction.
-     * @return {@code true} iff the parameter has been considered
-     */
-    default boolean setContinuous(boolean b) {
-        return false;
     }
 
 }

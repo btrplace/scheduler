@@ -21,6 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -38,9 +39,13 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class RunningCapacity extends DefaultSatConstraint {
+public class RunningCapacity implements SatConstraint {
 
     private int qty;
+
+    private Set<Node> nodes;
+
+    private boolean continuous;
 
     /**
      * Make a new discrete constraint on a single node
@@ -81,16 +86,12 @@ public class RunningCapacity extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public RunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+        this.nodes = nodes;
+        this.qty = amount;
+        this.continuous = continuous;
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of VMs must be >= 0");
         }
-        this.qty = amount;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && qty == ((RunningCapacity) o).qty;
     }
 
     /**
@@ -103,14 +104,19 @@ public class RunningCapacity extends DefaultSatConstraint {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), qty);
+    public String toString() {
+        return "runningCapacity(" + "nodes=" + nodes
+                + ", amount=" + qty + ", " + (continuous ? "continuous" : "discrete") + ')';
     }
 
     @Override
-    public String toString() {
-        return "runningCapacity(" + "nodes=" + getInvolvedNodes()
-                + ", amount=" + qty + ", " + restrictionToString() + ')';
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -118,4 +124,33 @@ public class RunningCapacity extends DefaultSatConstraint {
         return new RunningCapacityChecker(this);
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RunningCapacity that = (RunningCapacity) o;
+        return qty == that.qty &&
+                continuous == that.continuous &&
+                Objects.equals(nodes, that.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(qty, nodes, continuous);
+    }
 }

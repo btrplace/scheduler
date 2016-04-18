@@ -76,8 +76,13 @@ public class Ban implements SatConstraint {
     }
 
     @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
     public String toString() {
-        return "ban(" + "vm=" + vm + ", nodes=" + getInvolvedNodes() + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "ban(" + "vm=" + vm + ", nodes=" + nodes + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
@@ -102,8 +107,12 @@ public class Ban implements SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Ban ban = (Ban) o;
         return continuous == ban.continuous &&
                 Objects.equals(vm, ban.vm) &&

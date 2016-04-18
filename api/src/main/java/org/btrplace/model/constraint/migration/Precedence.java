@@ -21,6 +21,7 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.DefaultSatConstraint;
+import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.*;
 
@@ -29,8 +30,10 @@ import java.util.*;
  * 
  * @author Vincent Kherbache
  */
-public class Precedence extends DefaultSatConstraint {
+public class Precedence implements SatConstraint {
 
+    private VM before;
+    private VM after;
     /**
      * Make a new precedence constraint.
      *
@@ -38,7 +41,8 @@ public class Precedence extends DefaultSatConstraint {
      * @param vmAfter   the vm to schedule after the other one
      */
     public Precedence(VM vmBefore, VM vmAfter) {
-        super(Arrays.asList(vmBefore, vmAfter), Collections.<Node>emptyList(), true);
+        this.before = vmBefore;
+        this.after = vmAfter;
     }
 
     @Override
@@ -53,7 +57,40 @@ public class Precedence extends DefaultSatConstraint {
 
     @Override
     public String toString() {
-        return "precedence(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
+        return "precedence(" + "vms=" + getInvolvedVMs() + ", continuous)";
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Arrays.asList(before, after);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Precedence that = (Precedence) o;
+        return Objects.equals(before, that.before) &&
+                Objects.equals(after, that.after);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(before, after);
     }
 
     /**

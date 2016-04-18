@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force a VM at being ready for running.
@@ -35,8 +32,11 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Ready extends DefaultSatConstraint {
+public class Ready implements SatConstraint {
 
+    private VM vm;
+
+    private boolean continuous;
     /**
      * Make a new constraint.
      *
@@ -53,7 +53,8 @@ public class Ready extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Ready(VM vm, boolean continuous) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
+        this.vm = vm;
+        this.continuous = continuous;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class Ready extends DefaultSatConstraint {
 
     @Override
     public String toString() {
-        return "ready(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
+        return "ready(vms=" + vm + ", " + (continuous ? "continuous" : "discrete") + ")";
     }
 
     /**
@@ -78,5 +79,44 @@ public class Ready extends DefaultSatConstraint {
             l.add(new Ready(v));
         }
         return l;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Ready ready = (Ready) o;
+        return continuous == ready.continuous &&
+                Objects.equals(vm, ready.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, continuous);
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
     }
 }

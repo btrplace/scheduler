@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to avoid VM relocation to another host.
@@ -35,7 +32,9 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Root extends DefaultSatConstraint {
+public class Root implements SatConstraint {
+
+    private VM vm;
 
     /**
      * Make a new constraint.
@@ -43,12 +42,22 @@ public class Root extends DefaultSatConstraint {
      * @param vm the VM to disallow to move
      */
     public Root(VM vm) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), true);
+        this.vm = vm;
     }
 
     @Override
     public String toString() {
-        return "root(" + "vm=" + getInvolvedVMs().iterator().next() + ", continuous" + ")";
+        return "root(vm=" + vm + ", continuous)";
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
     }
 
     @Override
@@ -59,6 +68,28 @@ public class Root extends DefaultSatConstraint {
     @Override
     public RootChecker getChecker() {
         return new RootChecker(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Root root = (Root) o;
+        return Objects.equals(vm, root.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return true;
     }
 
     /**

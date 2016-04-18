@@ -21,6 +21,7 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.DefaultSatConstraint;
+import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.*;
 
@@ -29,15 +30,17 @@ import java.util.*;
  *
  * @author Vincent Kherbache
  */
-public class Serialize extends DefaultSatConstraint {
+public class Serialize implements SatConstraint {
+
+    private Set<VM> vms;
 
     /**
      * Make a new constraint.
      *
      * @param vms   a list of at least 2 VMs to serialize
      */
-    public Serialize(Collection<VM> vms) {
-        super(vms, Collections.<Node>emptyList(), true);
+    public Serialize(Set<VM> vms) {
+        this.vms = vms;
     }
 
     /**
@@ -45,30 +48,11 @@ public class Serialize extends DefaultSatConstraint {
      *
      * @param vm1   the first VM to serialize
      * @param vm2   the second VM to serialize
-     * @param vms   possible VMs to serialize with the two first AND also together
      */
-    public Serialize(VM vm1, VM vm2, VM... vms) {
-        super(makeSingleList(vm1, vm2, vms), Collections.<Node>emptyList(), true);
+    public Serialize(VM vm1, VM vm2) {
+        this(new HashSet<>(Arrays.asList(vm1, vm2)));
     }
 
-    /**
-     * Create a list of VMs.
-     *
-     * @param vm1   first VM to add on the list
-     * @param vm2   second VM to add on the list
-     * @param vms   a table of VMs to add (can be empty)
-     * @return  the list
-     */
-    private static List<VM> makeSingleList(VM vm1, VM vm2, VM... vms) {
-        List<VM> vmList = new ArrayList<>();
-        vmList.add(vm1);
-        vmList.add(vm2);
-        if (vms.length > 0) {
-            vmList.addAll(Arrays.asList(vms));
-        }
-        return vmList;
-    }
-    
     @Override
     public boolean setContinuous(boolean b) {
         return b;
@@ -80,7 +64,39 @@ public class Serialize extends DefaultSatConstraint {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Serialize serialize = (Serialize) o;
+        return Objects.equals(vms, serialize.vms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vms);
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Set<VM> getInvolvedVMs() {
+        return vms;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "serialize(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
+        return "serialize(vms=" + getInvolvedVMs() + ", continuous)";
     }
 }

@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to put a node into quarantine.
@@ -36,7 +33,9 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Quarantine extends DefaultSatConstraint {
+public class Quarantine implements SatConstraint {
+
+    private Node node;
 
     /**
      * Make a new constraint.
@@ -44,7 +43,7 @@ public class Quarantine extends DefaultSatConstraint {
      * @param n the node to put into quarantine
      */
     public Quarantine(Node n) {
-        super(Collections.<VM>emptySet(), Collections.singleton(n), true);
+        this.node = n;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class Quarantine extends DefaultSatConstraint {
 
     @Override
     public String toString() {
-        return "quarantine(" + "node=" + getInvolvedNodes().iterator().next() + ", continuous" + ")";
+        return "quarantine(" + "node=" + node + ", continuous" + ")";
     }
 
     @Override
@@ -74,5 +73,37 @@ public class Quarantine extends DefaultSatConstraint {
             l.add(new Quarantine(n));
         }
         return l;
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.singleton(node);
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Quarantine that = (Quarantine) o;
+        return Objects.equals(node, that.node);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node);
     }
 }

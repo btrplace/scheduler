@@ -22,17 +22,18 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force a VM to be killed.
  *
  * @author Fabien Hermenier
  */
-public class Killed extends DefaultSatConstraint {
+public class Killed implements SatConstraint {
+
+    private VM vm;
+
+    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -50,7 +51,8 @@ public class Killed extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Killed(VM vm, boolean continuous) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
+        this.vm = vm;
+        this.continuous = continuous;
     }
 
 
@@ -61,7 +63,46 @@ public class Killed extends DefaultSatConstraint {
 
     @Override
     public String toString() {
-        return "killed(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
+        return "killed(vm=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Killed killed = (Killed) o;
+        return continuous == killed.continuous &&
+                Objects.equals(vm, killed.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, continuous);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
     }
 
     /**

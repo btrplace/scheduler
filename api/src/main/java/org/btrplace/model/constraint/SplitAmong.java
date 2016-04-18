@@ -38,7 +38,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmong extends DefaultSatConstraint {
+public class SplitAmong implements SatConstraint {
 
     /**
      * Set of set of vms.
@@ -49,6 +49,8 @@ public class SplitAmong extends DefaultSatConstraint {
      * Set of set of nodes.
      */
     private Collection<Collection<Node>> pGroups;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -69,7 +71,7 @@ public class SplitAmong extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts, boolean continuous) {
-        super(null, null, continuous);
+        this.continuous = continuous;
         int cnt = 0;
         Set<Node> all = new HashSet<>();
         for (Collection<Node> s : pParts) {
@@ -151,6 +153,17 @@ public class SplitAmong extends DefaultSatConstraint {
     }
 
     @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -158,20 +171,20 @@ public class SplitAmong extends DefaultSatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         SplitAmong that = (SplitAmong) o;
-
-        return pGroups.equals(that.pGroups) && vGroups.equals(that.vGroups) && this.isContinuous() == that.isContinuous();
+        return continuous == that.continuous &&
+                Objects.equals(vGroups, that.vGroups) &&
+                Objects.equals(pGroups, that.pGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vGroups, pGroups, isContinuous());
+        return Objects.hash(vGroups, pGroups, continuous);
     }
 
     @Override
     public String toString() {
-        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + restrictionToString() + ')';
+        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + (continuous ? "continuous" : "discrete") + ')';
     }
 
 

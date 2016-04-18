@@ -21,6 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -39,12 +40,16 @@ import java.util.Set;
  *
  * @author Tu Huynh Dang
  */
-public class MaxOnline extends DefaultSatConstraint {
+public class MaxOnline implements SatConstraint {
 
     /**
      * number of reserved nodes
      */
     private final int qty;
+
+    private Set<Node> nodes;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint specifying restriction explicitly.
@@ -54,7 +59,8 @@ public class MaxOnline extends DefaultSatConstraint {
      * @param continuous {@code true} for continuous restriction
      */
     public MaxOnline(Set<Node> nodes, int n, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+        this.nodes = nodes;
+        this.continuous = continuous;
         qty = n;
     }
 
@@ -77,20 +83,11 @@ public class MaxOnline extends DefaultSatConstraint {
         return qty;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && qty == ((MaxOnline) o).qty;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), qty);
-    }
 
     @Override
     public String toString() {
-        return "maxOnline(" + "nodes=" + getInvolvedNodes() +
-                ", amount=" + qty + ", " + restrictionToString() + ')';
+        return "maxOnline(" + "nodes=" + nodes +
+                ", amount=" + qty + ", " + (continuous ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -98,4 +95,44 @@ public class MaxOnline extends DefaultSatConstraint {
         return new MaxOnlineChecker(this);
     }
 
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        this.continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MaxOnline maxOnline = (MaxOnline) o;
+        return qty == maxOnline.qty &&
+                continuous == maxOnline.continuous &&
+                Objects.equals(nodes, maxOnline.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(qty, nodes, continuous);
+    }
 }

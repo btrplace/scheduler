@@ -21,7 +21,9 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -37,7 +39,11 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Lonely extends DefaultSatConstraint {
+public class Lonely implements SatConstraint {
+
+    private boolean continuous;
+
+    private Set<VM> vms;
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -55,12 +61,13 @@ public class Lonely extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Lonely(Set<VM> vms, boolean continuous) {
-        super(vms, Collections.<Node>emptySet(), continuous);
+        this.vms = vms;
+        this.continuous = continuous;
     }
 
     @Override
     public String toString() {
-        return "lonely(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
+        return "lonely(" + "vms=" + vms + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -68,4 +75,42 @@ public class Lonely extends DefaultSatConstraint {
         return new LonelyChecker(this);
     }
 
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return vms;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Lonely lonely = (Lonely) o;
+        return continuous == lonely.continuous &&
+                Objects.equals(vms, lonely.vms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(continuous, vms);
+    }
 }

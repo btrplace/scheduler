@@ -453,8 +453,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(Solution s, ReconfigurationPlan p) {
         if (p.getDuration() != s.getIntVal(end)) {
-            LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getValue());
-            return false;
+            throw new RuntimeException("The plan effective duration (" + p.getDuration() + ") and the computed duration (" + end.getValue() + ") mismatch");
         }
         return true;
     }

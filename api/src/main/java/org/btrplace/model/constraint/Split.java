@@ -35,9 +35,11 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Split extends DefaultSatConstraint {
+public class Split implements SatConstraint {
 
     private Collection<Collection<VM>> sets;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -55,7 +57,7 @@ public class Split extends DefaultSatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Split(Collection<Collection<VM>> parts, boolean continuous) {
-        super(null, Collections.<Node>emptySet(), continuous);
+        this.continuous = continuous;
         Set<VM> all = new HashSet<>();
         int cnt = 0;
         for (Collection<VM> s : parts) {
@@ -104,6 +106,22 @@ public class Split extends DefaultSatConstraint {
     }
 
     @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -111,19 +129,19 @@ public class Split extends DefaultSatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        Split that = (Split) o;
-        return sets.equals(that.sets) && isContinuous() == that.isContinuous();
+        Split split = (Split) o;
+        return continuous == split.continuous &&
+                Objects.equals(sets, split.sets);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sets, isContinuous());
+        return Objects.hash(sets, continuous);
     }
 
     @Override
     public String toString() {
-        return "split(vms=" + sets + ", " + restrictionToString() + ')';
+        return "split(vms=" + sets + ", " + (continuous ? "continuous" : "discrete") + ')';
     }
 
     @Override

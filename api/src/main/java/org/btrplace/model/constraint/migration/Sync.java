@@ -21,6 +21,7 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.DefaultSatConstraint;
+import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.*;
 
@@ -30,15 +31,16 @@ import java.util.*;
  *
  * @author Vincent Kherbache
  */
-public class Sync extends DefaultSatConstraint {
+public class Sync implements SatConstraint {
 
+    private Collection<VM> vms;
     /**
      * Make a new constraint.
      *
      * @param vms   a list of at least 2 VMs to synchronize
      */
     public Sync(Collection<VM> vms) {
-        super(vms, Collections.<Node>emptyList(), true);
+        this.vms = vms;
     }
 
     /**
@@ -46,29 +48,11 @@ public class Sync extends DefaultSatConstraint {
      *
      * @param vm1   the first VM to synchronize
      * @param vm2   the second VM t synchronize
-     * @param vms   possible VMs to synchronize with the two first AND also together
      */
-    public Sync(VM vm1, VM vm2, VM... vms) {
-        super(makeSingleList(vm1, vm2, vms), Collections.<Node>emptyList(), true);
+    public Sync(VM vm1, VM vm2) {
+        this(Arrays.asList(vm1, vm2));
     }
 
-    /**
-     * Create a list of VMs.
-     *
-     * @param vm1   first VM to add on the list
-     * @param vm2   second VM to add on the list
-     * @param vms   a table of VMs to add (can be empty)
-     * @return  the list
-     */
-    private static List<VM> makeSingleList(VM vm1, VM vm2, VM... vms) {
-        List<VM> vmList = new ArrayList<>();
-        vmList.add(vm1);
-        vmList.add(vm2);
-        if (vms.length > 0) {
-            vmList.addAll(Arrays.asList(vms));
-        }
-        return vmList;
-    }
 
     @Override
     public boolean setContinuous(boolean b) {
@@ -81,7 +65,39 @@ public class Sync extends DefaultSatConstraint {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Sync sync = (Sync) o;
+        return Objects.equals(vms, sync.vms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vms);
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return vms;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "sync(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
+        return "sync(vms=" + vms + ", continuous)";
     }
 }

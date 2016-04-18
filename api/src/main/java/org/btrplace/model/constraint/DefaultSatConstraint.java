@@ -123,12 +123,4 @@ public abstract class DefaultSatConstraint implements SatConstraint {
         return continuous;
     }
 
-    /**
-     * Pretty string for a restriction
-     *
-     * @return {@code "continuous"} or {@code "discrete"} depending on the restriction
-     */
-    public String restrictionToString() {
-        return isContinuous() ? "continuous" : "discrete";
-    }
 }
