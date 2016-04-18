@@ -22,6 +22,7 @@ import org.btrplace.examples.Example;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Online;
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Deadline;
 import org.btrplace.model.constraint.migration.Precedence;
 import org.btrplace.model.constraint.migration.Serialize;
@@ -34,6 +35,8 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -147,7 +150,7 @@ public class AdvancedMigScheduling implements Example {
         cstrs.add(new Sync(vm0, vm1));
 
         // We want to serialize the migrations of vm1, vm2, and vm3
-        cstrs.add(new Serialize(vm1, vm2, vm3));
+        cstrs.add(new Serialize(new HashSet<>(Arrays.asList(vm1, vm2, vm3))));
         
         // We want vm0 migration terminate before vm2 start to migrate
         cstrs.add(new Precedence(vm1, vm2));
