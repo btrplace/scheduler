@@ -21,6 +21,7 @@ package org.btrplace.examples.migration;
 import org.btrplace.examples.Example;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
