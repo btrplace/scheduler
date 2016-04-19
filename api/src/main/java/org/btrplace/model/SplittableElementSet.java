@@ -20,7 +20,6 @@ package org.btrplace.model;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -35,7 +34,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplittableElementSet<E extends Element> implements Comparator<E>, Serializable {
+public class SplittableElementSet<E extends Element> implements Comparator<E> {
 
     private TIntIntHashMap index;
 

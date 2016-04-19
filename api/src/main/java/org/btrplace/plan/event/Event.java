@@ -20,8 +20,6 @@ package org.btrplace.plan.event;
 
 import org.btrplace.model.Model;
 
-import java.io.Serializable;
-
 /**
  * A event to apply on a model to modify it.
  * See the {@link Action} class for a time-bounded event.
@@ -29,7 +27,7 @@ import java.io.Serializable;
  * @author Fabien Hermenier
  * @see Action
  */
-public interface Event extends Serializable {
+public interface Event {
 
     /**
      * Apply the event on a given model.

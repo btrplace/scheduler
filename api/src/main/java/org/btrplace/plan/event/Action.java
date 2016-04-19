@@ -20,7 +20,6 @@ package org.btrplace.plan.event;
 
 import org.btrplace.model.Model;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -32,7 +31,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public abstract class Action implements Event, Serializable {
+public abstract class Action implements Event {
 
     /**
      * Possible moments where an event can be considered.

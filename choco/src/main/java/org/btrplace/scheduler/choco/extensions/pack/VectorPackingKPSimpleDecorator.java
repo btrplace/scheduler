@@ -23,7 +23,6 @@ import org.chocosolver.memory.structure.S64BitSet;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.util.iterators.DisposableValueIterator;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +33,7 @@ import java.util.ArrayList;
  *
  * @author Sophie Demassey
  */
-public class VectorPackingKPSimpleDecorator implements Serializable {
+public class VectorPackingKPSimpleDecorator {
 
     /**
      * the core BinPacking propagator

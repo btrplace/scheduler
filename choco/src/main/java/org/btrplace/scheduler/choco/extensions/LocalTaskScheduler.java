@@ -27,14 +27,13 @@ import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.BitSet;
 
 /**
  * @author Fabien Hermenier
  */
-public class LocalTaskScheduler implements Serializable {
+public class LocalTaskScheduler {
 
     public static final int DEBUG = -3;
     public static final int DEBUG_ALL = -2;

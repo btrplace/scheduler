@@ -23,7 +23,6 @@ import org.btrplace.model.Model;
 import org.btrplace.plan.event.*;
 import org.btrplace.scheduler.SchedulerException;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class DurationEvaluators implements Serializable {
+public class DurationEvaluators {
 
     private Map<Class<? extends Action>, ActionDurationEvaluator<Element>> durations;
 

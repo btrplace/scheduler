@@ -23,7 +23,6 @@ import org.btrplace.model.VMState;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public abstract class VMTransitionBuilder implements Serializable {
+public abstract class VMTransitionBuilder {
 
     /**
      * The possible initial states of the VM.

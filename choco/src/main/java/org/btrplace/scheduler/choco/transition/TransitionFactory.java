@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.transition;
 import org.btrplace.model.NodeState;
 import org.btrplace.model.VMState;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -30,7 +29,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class TransitionFactory implements Serializable {
+public class TransitionFactory {
 
     private Map<VMState, List<VMTransitionBuilder>> vmAMB2;
 

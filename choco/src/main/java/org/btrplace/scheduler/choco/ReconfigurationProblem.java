@@ -31,7 +31,6 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +43,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationProblem extends Serializable {
+public interface ReconfigurationProblem {
 
     /**
      * Get the current location of a running or a sleeping VM.

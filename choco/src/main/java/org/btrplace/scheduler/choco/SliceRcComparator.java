@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.view.ShareableResource;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -28,7 +27,7 @@ import java.util.Comparator;
  *
  * @author Fabien Hermenier
  */
-public class SliceRcComparator implements Comparator<Slice>, Serializable {
+public class SliceRcComparator implements Comparator<Slice> {
 
     private ShareableResource rc;
 

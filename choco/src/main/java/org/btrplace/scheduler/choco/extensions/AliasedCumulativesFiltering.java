@@ -28,14 +28,13 @@ import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.BitSet;
 
 /**
  * @author Fabien Hermenier
  */
-public class AliasedCumulativesFiltering implements Serializable {
+public class AliasedCumulativesFiltering {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("solver");
 

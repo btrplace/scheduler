@@ -21,7 +21,6 @@ package org.btrplace.model;
 import org.btrplace.Copyable;
 import org.btrplace.model.view.ModelView;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface Model extends ElementBuilder, Copyable<ElementBuilder>, Serializable {
+public interface Model extends ElementBuilder, Copyable<ElementBuilder> {
 
     /**
      * Get a view already attached to the model

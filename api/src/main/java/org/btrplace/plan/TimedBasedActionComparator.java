@@ -20,7 +20,6 @@ package org.btrplace.plan;
 
 import org.btrplace.plan.event.Action;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -33,7 +32,7 @@ import java.util.Comparator;
  *
  * @author Fabien Hermenier
  */
-public class TimedBasedActionComparator implements Comparator<Action>, Serializable {
+public class TimedBasedActionComparator implements Comparator<Action> {
 
     private boolean diffSimultaneous = false;
 

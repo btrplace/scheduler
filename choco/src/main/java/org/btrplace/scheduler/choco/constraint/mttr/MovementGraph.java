@@ -24,7 +24,6 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -32,7 +31,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class MovementGraph implements Serializable {
+public class MovementGraph {
 
     private ReconfigurationProblem rp;
 

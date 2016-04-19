@@ -20,7 +20,6 @@ package org.btrplace.model;
 
 import org.btrplace.Copyable;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -29,7 +28,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Attributes extends Copyable<Attributes>, Serializable {
+public interface Attributes extends Copyable<Attributes> {
 
     /**
      * Put a boolean value.
