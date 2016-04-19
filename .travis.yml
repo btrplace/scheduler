@@ -48,7 +48,7 @@ notifications:
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
-script: ./bin/build.sh
+script: if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then ./bin/build.sh; fi
 addons:
   coverity_scan:
     project:
@@ -56,7 +56,7 @@ addons:
       description: "Build submitted via Travis CI"
     build_command_prepend: "mvn clean"
     build_command:   "mvn -DskipTests=true compile"
-    branch_pattern: master
+    branch_pattern: coverity
     notification_email: fabien.hermenier@unice.fr
 after_success:
 - codecov
