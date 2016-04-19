@@ -22,7 +22,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
@@ -38,7 +37,7 @@ import java.util.Set;
 
 
 /**
- * Choco implementation of {@link DefaultSatConstraint}.
+ * Choco implementation of {@link Overbook}.
  *
  * @author Fabien Hermenier
  */

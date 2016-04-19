@@ -20,10 +20,12 @@ package org.btrplace.model.constraint.migration;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * A constraint to force some vms migration to terminate or begin (depending of the migration algorithm)

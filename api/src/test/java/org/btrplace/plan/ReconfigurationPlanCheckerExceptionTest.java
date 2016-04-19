@@ -20,7 +20,6 @@ package org.btrplace.plan;
 
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
-import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.event.Action;
 import org.mockito.Mockito;
@@ -36,7 +35,7 @@ public class ReconfigurationPlanCheckerExceptionTest {
 
     @Test
     public void testInstantiationWithModel() {
-        SatConstraint c = Mockito.mock(DefaultSatConstraint.class);
+        SatConstraint c = Mockito.mock(SatConstraint.class);
         Model m = new DefaultModel();
         ReconfigurationPlanCheckerException ex = new ReconfigurationPlanCheckerException(c, m, true);
         Assert.assertEquals(ex.getModel(), m);
@@ -51,7 +50,7 @@ public class ReconfigurationPlanCheckerExceptionTest {
 
     @Test
     public void testInstantiationWithAction() {
-        SatConstraint c = Mockito.mock(DefaultSatConstraint.class);
+        SatConstraint c = Mockito.mock(SatConstraint.class);
         Action a = Mockito.mock(Action.class);
         ReconfigurationPlanCheckerException ex = new ReconfigurationPlanCheckerException(c, a);
         Assert.assertEquals(ex.getAction(), a);

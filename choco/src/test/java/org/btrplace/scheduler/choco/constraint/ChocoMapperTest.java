@@ -19,20 +19,13 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
-import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.Spread;
-import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.Set;
 
 
 /**
@@ -52,21 +45,6 @@ public class ChocoMapperTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
-    public void testRegister() {
-        ChocoMapper map = new ChocoMapper();
-        map.mapConstraint(MockSatConstraint.class, MockCConstraint.class);
-        Assert.assertTrue(map.constraintHasMapping(MockSatConstraint.class));
-    }
-
-
-    @Test(dependsOnMethods = {"testInstantiate", "testRegister"})
-    public void testUnregister() {
-        ChocoMapper map = new ChocoMapper();
-        Assert.assertFalse(map.constraintHasMapping(MockSatConstraint.class));
-        Assert.assertFalse(map.unMapConstraint(MockSatConstraint.class));
-    }
-
-    @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
         Model mo = new DefaultModel();
         ChocoMapper map = ChocoMapper.newBundle();
@@ -78,35 +56,5 @@ public class ChocoMapperTest {
         map.mapConstraint(Spread.class, CSpread.class);
         c = map.get(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
-
-        MockSatConstraint b = new MockSatConstraint();
-        Assert.assertNull(map.get(b));
-    }
-
-    public static class MockSatConstraint extends DefaultSatConstraint {
-        public MockSatConstraint() {
-            super(null, null, false);
-        }
-
-        @Override
-        public boolean isSatisfied(Model i) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public static class MockCConstraint implements ChocoConstraint {
-
-        public MockCConstraint(MockSatConstraint m) {
-        }
-
-        @Override
-        public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Set<VM> getMisPlacedVMs(Instance i) {
-            throw new UnsupportedOperationException();
-        }
     }
 }

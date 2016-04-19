@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
  */
 public class DenyMyVMsActionsTest {
 
-    static SatConstraint cstr = mock(DefaultSatConstraint.class);
+    static SatConstraint cstr = mock(SatConstraint.class);
 
     @Test
     public void testInstantiation() {

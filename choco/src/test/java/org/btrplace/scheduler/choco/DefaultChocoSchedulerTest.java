@@ -224,7 +224,7 @@ public class DefaultChocoSchedulerTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5);
-        SatConstraint cstr = mock(DefaultSatConstraint.class);
+        SatConstraint cstr = mock(SatConstraint.class);
         when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
         when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, n4));
         ChocoScheduler cra = new DefaultChocoScheduler();

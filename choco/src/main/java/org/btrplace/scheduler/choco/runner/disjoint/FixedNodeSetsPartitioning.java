@@ -22,7 +22,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.DefaultSatConstraint;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
@@ -39,7 +38,7 @@ import java.util.*;
  * depending on their current location while ready VMs are spread
  * evenly.
  * <p>
- * The {@link DefaultSatConstraint}s are split when necessary using
+ * The {@link SatConstraint}s are split when necessary using
  * splitters available through the {@link ConstraintSplitterMapper}.
  * The {@link org.btrplace.model.constraint.OptConstraint} is re-used
  * for each sub-instance.
