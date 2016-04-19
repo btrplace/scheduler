@@ -107,7 +107,7 @@ public class BootableNode implements NodeTransition {
         */
         isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, nId, ").online"), s);
         BoolVar isOffline = VariableFactory.not(isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(nId)), 0));
 
 
         /*

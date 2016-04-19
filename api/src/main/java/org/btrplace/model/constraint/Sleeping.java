@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force a VM at being sleeping.
@@ -32,21 +29,11 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Sleeping extends SatConstraint {
+public class Sleeping implements SatConstraint {
 
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Sleeping> newSleeping(Collection<VM> vms) {
-        List<Sleeping> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Sleeping(v));
-        }
-        return l;
-    }
+    private VM vm;
+
+    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -64,17 +51,71 @@ public class Sleeping extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Sleeping(VM vm, boolean continuous) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
+        this.vm = vm;
+        this.continuous = continuous;
     }
 
 
     @Override
-    public SatConstraintChecker<Sleeping> getChecker() {
+    public SleepingChecker getChecker() {
         return new SleepingChecker(this);
     }
 
     @Override
     public String toString() {
-        return "sleeping(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
+        return "sleeping(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Sleeping sleeping = (Sleeping) o;
+        return continuous == sleeping.continuous &&
+                Objects.equals(vm, sleeping.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, continuous);
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Sleeping> newSleeping(Collection<VM> vms) {
+        List<Sleeping> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Sleeping(v));
+        }
+        return l;
     }
 }

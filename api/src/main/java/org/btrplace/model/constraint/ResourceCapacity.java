@@ -21,6 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -38,11 +39,15 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class ResourceCapacity extends SatConstraint {
+public class ResourceCapacity implements SatConstraint {
+
+    private Set<Node> nodes;
 
     private int qty;
 
     private String rcId;
+
+    private boolean continuous;
 
     /**
      * Make a new discrete constraint on a single node.
@@ -87,7 +92,11 @@ public class ResourceCapacity extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction.
      */
     public ResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+        this.nodes = nodes;
+        this.qty = amount;
+        this.rcId = rc;
+        this.continuous = continuous;
+
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
         }
@@ -115,18 +124,49 @@ public class ResourceCapacity extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o) && rcId.equals(((ResourceCapacity) o).rcId) && qty == ((ResourceCapacity) o).qty;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ResourceCapacity that = (ResourceCapacity) o;
+        return qty == that.qty &&
+                continuous == that.continuous &&
+                Objects.equals(nodes, that.nodes) &&
+                Objects.equals(rcId, that.rcId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), qty, rcId);
+        return Objects.hash(nodes, qty, rcId, continuous);
+    }
+
+    @Override
+    public Set<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
     }
 
     @Override
     public String toString() {
-        return "resourceCapacity(" + "nodes=" + getInvolvedNodes()
-                + ", rc=" + rcId + ", amount=" + qty + ", " + restrictionToString() + ')';
+        return "resourceCapacity(" + "nodes=" + nodes
+                + ", rc=" + rcId + ", amount=" + qty + ", " + (continuous ? "continuous" : "discrete") + ')';
     }
 
     @Override

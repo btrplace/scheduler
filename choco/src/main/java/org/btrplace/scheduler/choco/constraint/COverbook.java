@@ -37,7 +37,7 @@ import java.util.Set;
 
 
 /**
- * Choco implementation of {@link org.btrplace.model.constraint.SatConstraint}.
+ * Choco implementation of {@link Overbook}.
  *
  * @author Fabien Hermenier
  */

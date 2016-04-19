@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force VMs' actions to be executed
@@ -32,7 +29,65 @@ import java.util.List;
  * <p>
  * @author Vincent Kherbache
  */
-public class NoDelay extends SatConstraint {
+public class NoDelay implements SatConstraint {
+
+    private VM vm;
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vm the vm to restrict
+     */
+    public NoDelay(VM vm) {
+        this.vm = vm;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return b;
+    }
+
+    @Override
+    public NoDelayChecker getChecker() {
+        return new NoDelayChecker(this);
+    }
+
+    @Override
+    public String toString() {
+        return "noDelay(" + "vm=" + vm + ", true)";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NoDelay noDelay = (NoDelay) o;
+        return Objects.equals(vm, noDelay.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm);
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
 
     /**
      * Instantiate constraints for a collection of VMs.
@@ -46,29 +101,5 @@ public class NoDelay extends SatConstraint {
             l.add(new NoDelay(v));
         }
         return l;
-    }
-
-    /**
-     * Make a new constraint.
-     *
-     * @param vm the vm to restrict
-     */
-    public NoDelay(VM vm) {
-        super(Collections.singleton(vm), Collections.<Node>emptyList(), true);
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return b;
-    }
-
-    @Override
-    public SatConstraintChecker getChecker() {
-        return new NoDelayChecker(this);
-    }
-
-    @Override
-    public String toString() {
-        return "noDelay(" + "vm=" + getInvolvedVMs() + ", " + restrictionToString() + ")";
     }
 }

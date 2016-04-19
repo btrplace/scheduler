@@ -78,7 +78,7 @@ public class DefaultReconfigurationProblemTest {
         }
 
         @Override
-        public ModelView clone() {
+        public ModelView copy() {
             throw new UnsupportedOperationException();
         }
 
@@ -166,19 +166,19 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
-        Assert.assertEquals(rp.getVMs().length, 7);
-        Assert.assertEquals(rp.getNodes().length, 3);
-        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length, rp.getManageableVMs().toString());
+        Assert.assertEquals(rp.getVMs().size(), 7);
+        Assert.assertEquals(rp.getNodes().size(), 3);
+        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().size(), rp.getManageableVMs().toString());
         Assert.assertTrue(rp.getStart().isInstantiated() && rp.getStart().getValue() == 0);
 
         //Test the index values of the nodes and the VMs.
-        for (int i = 0; i < rp.getVMs().length; i++) {
+        for (int i = 0; i < rp.getVMs().size(); i++) {
             VM vm = rp.getVM(i);
             Assert.assertEquals(i, rp.getVM(vm));
         }
         Assert.assertEquals(rp.getVM(mo.newVM()), -1);
 
-        for (int i = 0; i < rp.getNodes().length; i++) {
+        for (int i = 0; i < rp.getNodes().size(); i++) {
             Node n = rp.getNode(i);
             Assert.assertEquals(i, rp.getNode(n));
         }
@@ -270,13 +270,13 @@ public class DefaultReconfigurationProblemTest {
                                 new HashSet<>(),
                                 new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[rp.getVM(vm1)];
+        Transition a = rp.getVMActions().get(rp.getVM(vm1));
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ForgeVM.class, a.getClass());
     }
 
     @Test
-    public void testWaitinVMToRun() throws SchedulerException {
+    public void testWaitingVMToRun() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -307,7 +307,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(BootVM.class, a.getClass());
     }
@@ -345,7 +345,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(RelocatableVM.class, a.getClass());
     }
@@ -383,7 +383,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(SuspendVM.class, a.getClass());
     }
@@ -460,7 +460,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ShutdownVM.class, a.getClass());
 
@@ -481,7 +481,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(StayAwayVM.class, a.getClass());
     }
@@ -518,7 +518,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ResumeVM.class, a.getClass());
     }
@@ -535,7 +535,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getNodeActions()[0];
+        Transition a = rp.getNodeActions().get(0);
         Assert.assertEquals(a, rp.getNodeAction(n1));
         Assert.assertEquals(ShutdownableNode.class, a.getClass());
     }
@@ -574,7 +574,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getNodeActions()[rp.getNode(n3)];
+        Transition a = rp.getNodeActions().get(rp.getNode(n3));
         Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNode.class, a.getClass());
     }
@@ -616,10 +616,10 @@ public class DefaultReconfigurationProblemTest {
         int[] counts = new int[map.getAllNodes().size()];
         for (Node n : map.getOnlineNodes()) {
             int nIdx = rp.getNode(n);
-            counts[nIdx] = rp.getNbRunningVMs()[nIdx].getValue();
+            counts[nIdx] = rp.getNbRunningVMs().get(nIdx).getValue();
         }
         for (VM vm : rp.getFutureRunningVMs()) {
-            VMTransition vmo = rp.getVMActions()[rp.getVM(vm)];
+            VMTransition vmo = rp.getVMActions().get(rp.getVM(vm));
             int on = vmo.getDSlice().getHoster().getValue();
             counts[on]--;
         }

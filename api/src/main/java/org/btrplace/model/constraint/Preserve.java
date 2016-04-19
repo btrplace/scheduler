@@ -33,27 +33,13 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Preserve extends SatConstraint {
+public class Preserve implements SatConstraint {
+
+    private VM vm;
 
     private int amount;
 
     private String rc;
-
-    /**
-     * Make multiple constraints
-     *
-     * @param vms the VMs involved in the constraints
-     * @param r   the resource identifier
-     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
-     * @return a list of constraints
-     */
-    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
-        List<Preserve> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Preserve(v, r, q));
-        }
-        return l;
-    }
 
     /**
      * Make a new constraint.
@@ -63,7 +49,7 @@ public class Preserve extends SatConstraint {
      * @param q  the minimum amount of resources to allocate to each VM. >= 0
      */
     public Preserve(VM vm, String r, int q) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
+        this.vm = vm;
         if (q < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
         }
@@ -90,18 +76,8 @@ public class Preserve extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && rc.equals(((Preserve) o).rc) && amount == ((Preserve) o).amount;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), rc, amount);
-    }
-
-    @Override
     public String toString() {
-        return "preserve(vm=" + getInvolvedVMs().iterator().next() +
+        return "preserve(vm=" + vm +
                 ", rc=" + rc +
                 ", amount=" + amount +
                 ", discrete" + ')';
@@ -117,6 +93,55 @@ public class Preserve extends SatConstraint {
         return new PreserveChecker(this);
     }
 
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Preserve preserve = (Preserve) o;
+        return amount == preserve.amount &&
+                Objects.equals(vm, preserve.vm) &&
+                Objects.equals(rc, preserve.rc);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, amount, rc);
+    }
+
+    /**
+     * Make multiple constraints
+     *
+     * @param vms the VMs involved in the constraints
+     * @param r   the resource identifier
+     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
+     * @return a list of constraints
+     */
+    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
+        List<Preserve> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Preserve(v, r, q));
+        }
+        return l;
+    }
 }
 
 

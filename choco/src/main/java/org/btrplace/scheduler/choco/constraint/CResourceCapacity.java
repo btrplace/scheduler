@@ -65,7 +65,7 @@ public class CResourceCapacity implements ChocoConstraint {
         Solver s = rp.getSolver();
         Node n = cstr.getInvolvedNodes().iterator().next();
         int nIdx = rp.getNode(n);
-        IntVar v = rcm.getVirtualUsage()[nIdx];
+        IntVar v = rcm.getVirtualUsage().get(nIdx);
         s.post(IntConstraintFactory.arithm(v, "<=", amount));
 
         //Continuous in practice ?
@@ -103,7 +103,7 @@ public class CResourceCapacity implements ChocoConstraint {
 
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
-            vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
+            vs.add(rcm.getVirtualUsage().get(rp.getNode(u)));
         }
         Solver s = rp.getSolver();
         IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, s);
@@ -135,7 +135,7 @@ public class CResourceCapacity implements ChocoConstraint {
                     cUse.add(rcm.getSourceResource().getConsumption(vmId));
                 }
                 if (d != null) {
-                    dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
+                    dUse.add(rcm.getVMsAllocation().get(rp.getVM(vmId)));
                 }
             }
             ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);

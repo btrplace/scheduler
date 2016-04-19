@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to put a node into quarantine.
@@ -36,7 +33,33 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Quarantine extends SatConstraint {
+public class Quarantine implements SatConstraint {
+
+    private Node node;
+
+    /**
+     * Make a new constraint.
+     *
+     * @param n the node to put into quarantine
+     */
+    public Quarantine(Node n) {
+        this.node = n;
+    }
+
+    @Override
+    public SatConstraintChecker<Quarantine> getChecker() {
+        return new QuarantineChecker(this);
+    }
+
+    @Override
+    public String toString() {
+        return "quarantine(" + "node=" + node + ", continuous" + ")";
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return b;
+    }
 
     /**
      * Instantiate constraints for a collection of nodes.
@@ -52,28 +75,35 @@ public class Quarantine extends SatConstraint {
         return l;
     }
 
-    /**
-     * Make a new constraint.
-     *
-     * @param n the node to put into quarantine
-     */
-    public Quarantine(Node n) {
-        super(Collections.<VM>emptySet(), Collections.singleton(n), true);
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.singleton(node);
     }
 
     @Override
-    public SatConstraintChecker<Quarantine> getChecker() {
-        return new QuarantineChecker(this);
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
     }
 
     @Override
-    public String toString() {
-        return "quarantine(" + "node=" + getInvolvedNodes().iterator().next() + ", continuous" + ")";
+    public boolean isContinuous() {
+        return true;
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        return b;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Quarantine that = (Quarantine) o;
+        return Objects.equals(node, that.node);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(node);
+    }
 }

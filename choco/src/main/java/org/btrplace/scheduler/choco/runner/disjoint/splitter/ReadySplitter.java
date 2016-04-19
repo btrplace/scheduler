@@ -36,12 +36,6 @@ import java.util.List;
  */
 public class ReadySplitter implements ConstraintSplitter<Ready> {
 
-    /**
-     * Make a new splitter.
-     */
-    public ReadySplitter() {
-        super();
-    }
 
     @Override
     public Class<Ready> getKey() {

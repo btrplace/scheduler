@@ -67,7 +67,7 @@ public class CRunningCapacity implements ChocoConstraint {
         }
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
-            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
+            vs.add(rp.getNbRunningVMs().get(rp.getNode(u)));
         }
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
@@ -112,7 +112,7 @@ public class CRunningCapacity implements ChocoConstraint {
 
     private boolean filterWithSingleNode(ReconfigurationProblem rp) {
         Node n = cstr.getInvolvedNodes().iterator().next();
-        IntVar v = rp.getNbRunningVMs()[rp.getNode(n)];
+        IntVar v = rp.getNbRunningVMs().get(rp.getNode(n));
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(v, "<=", cstr.getAmount()));
 

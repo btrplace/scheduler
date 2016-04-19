@@ -18,9 +18,11 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.btrplace.model.*;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -29,7 +31,6 @@ import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -106,7 +107,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
-        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p, this);
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p);
 
         //Get the VMs to place
         Set<VM> onBadNodes = new HashSet<>(p.getManageableVMs());
@@ -115,8 +116,8 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         Set<VM> onGoodNodes = map.getRunningVMs(map.getOnlineNodes());
         onGoodNodes.removeAll(onBadNodes);
 
-        VMTransition[] goodActions = p.getVMActions(onGoodNodes);
-        VMTransition[] badActions = p.getVMActions(onBadNodes);
+        List<VMTransition> goodActions = p.getVMActions(onGoodNodes);
+        List<VMTransition> badActions = p.getVMActions(onBadNodes);
 
         Solver s = p.getSolver();
 
@@ -164,7 +165,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         }
         strategies.add(ISF.lexico_UB(migs.toArray(new IntVar[migs.size()])));
 
-        if (p.getNodeActions().length > 0) {
+        if (p.getNodeActions().size() > 0) {
             //Boot some nodes if needed
             strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new InputOrder<>(), new IntDomainMin()));
         }
@@ -183,62 +184,15 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     /*
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
-    private void placeVMs(Parameters ps, List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
+    private void placeVMs(Parameters ps, List<AbstractStrategy> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         //IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
         IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
-        if (actions.length > 0) {
+        if (actions.size() > 0) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {
                 strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
             }
         }
-    }
-
-    private Comparator<Node> getComparator() {
-
-        List<CShareableResource> rcs = new ArrayList<>();
-        for (String v : rp.getViews()) {
-            if (v.startsWith(ShareableResource.VIEW_ID_BASE)) {
-                rcs.add((CShareableResource) rp.getView(v));
-            }
-        }
-        if (rcs.isEmpty()) {
-            //No shareableresource view, load balance over cardinality
-            return new CapacityComparator(rp, false);
-        } else {
-            /*CShareableResource worst = null;
-            double u = 0.0;
-            for (CShareableResource rc : rcs) {
-                System.out.println(rc.getIdentifier() + " "  + usage(rc));
-                if (worst == null) {
-                    worst = rc;
-                    u = usage(worst);
-                } else {
-                    if (usage(rc) > u) {
-                        worst = rc;
-                        u = usage(rc);
-                    }
-                }
-            }
-            return new CShareableResourceComparator(rp, worst, false);*/
-            System.err.println(rcs.get(1));
-            return new CShareableResourceComparator(rp, rcs.get(1), false);
-        }
-    }
-
-    private double usage(CShareableResource rc) {
-        double usage = 0;
-        for (IntVar v : rc.getVMsAllocation()) {
-            usage += v.getLB();
-            System.out.println(v);
-        }
-        double capa = 0;
-        for (Node n : rp.getNodes()) {
-            int idx = rp.getNode(n);
-            capa += (rc.getPhysicalUsage(idx).getUB() * rc.getOverbookRatio(idx).getLB());
-        }
-        System.out.println(usage + " " + capa);
-        return usage/capa;
     }
 
     @Override
@@ -257,13 +211,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
             costActivated = true;
             Solver s = rp.getSolver();
             costConstraints.forEach(s::post);
-            /*try {
-                s.propagate();
-            } catch (ContradictionException e) {
-                s.setFeasible(ESat.FALSE);
-                //s.setFeasible(false);
-                s.post(IntConstraintFactory.FALSE(s));
-            } */
         }
     }
 

@@ -21,31 +21,18 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force a node at being online.
  *
  * @author Fabien Hermenier
  */
-public class Online extends SatConstraint {
+public class Online implements SatConstraint {
 
-    /**
-     * Instantiate discrete constraints for a collection of nodes.
-     *
-     * @param nodes the nodes to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Online> newOnline(Collection<Node> nodes) {
-        List<Online> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Online(n));
-        }
-        return l;
-    }
+    private Node node;
+
+    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -63,16 +50,71 @@ public class Online extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Online(Node n, boolean continuous) {
-        super(Collections.<VM>emptyList(), Collections.singleton(n), continuous);
+        node = n;
+        this.continuous = continuous;
     }
 
     @Override
-    public SatConstraintChecker<Online> getChecker() {
+    public OnlineChecker getChecker() {
         return new OnlineChecker(this);
     }
 
     @Override
     public String toString() {
-        return "online(nodes=" + getInvolvedNodes().iterator().next() + ", " + restrictionToString() + ")";
+        return "online(node=" + node + ", " + (continuous ? "continuous" : "discrete") + ")";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Online online = (Online) o;
+        return continuous == online.continuous &&
+                Objects.equals(node, online.node);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node, continuous);
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.singleton(node);
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Online> newOnline(Collection<Node> nodes) {
+        List<Online> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Online(n));
+        }
+        return l;
+    }
+
 }

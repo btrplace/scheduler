@@ -39,7 +39,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
 
     private TIntIntHashMap index;
 
-    private E[] values;
+    private List<E> values;
 
     /**
      * Make a new splittable set.
@@ -47,10 +47,10 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      * @param c   the elements, no duplicates are supposed
      * @param idx the partition associated to each element. Format {@link org.btrplace.model.Element#id()} -> key
      */
-    public SplittableElementSet(E[] c, TIntIntHashMap idx) {
-        values = c;
+    public SplittableElementSet(Collection<E> c, TIntIntHashMap idx) {
+        values = new ArrayList<>(c);
         this.index = idx;
-        Arrays.sort(values, this);
+        Collections.sort(values, this);
     }
 
     /**
@@ -62,7 +62,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      * @return the resulting set
      */
     public static SplittableElementSet<VM> newVMIndex(Collection<VM> c, TIntIntHashMap idx) {
-        return new SplittableElementSet<>(c.toArray(new VM[c.size()]), idx);
+        return new SplittableElementSet<>(c, idx);
     }
 
     /**
@@ -74,23 +74,20 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      * @return the resulting set
      */
     public static SplittableElementSet<Node> newNodeIndex(Collection<Node> c, TIntIntHashMap idx) {
-        return new SplittableElementSet<>(c.toArray(new Node[c.size()]), idx);
+        return new SplittableElementSet<>(c, idx);
     }
 
     @Override
     public String toString() {
         final StringBuilder b = new StringBuilder("{");
-        forEachPartition(new IterateProcedure<E>() {
-            @Override
-            public boolean extract(SplittableElementSet<E> idx, int k, int from, int to) {
-                b.append('{');
-                b.append(values[from]);
-                for (int i = from + 1; i < to; i++) {
-                    b.append(", ").append(values[i]);
-                }
-                b.append('}');
-                return true;
+        forEachPartition((idx, k, from, to) -> {
+            b.append('{');
+            b.append(values.get(from));
+            for (int i = from + 1; i < to; i++) {
+                b.append(", ").append(values.get(i));
             }
+            b.append('}');
+            return true;
         });
         return b.append('}').toString();
     }
@@ -102,10 +99,11 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      * @param p the procedure to execute
      */
     public boolean forEachPartition(IterateProcedure<E> p) {
-        int curIdx = index.get(values[0].id());
-        int from, to;
-        for (from = 0, to = 0; to < values.length; to++) {
-            int cIdx = index.get(values[to].id());
+        int curIdx = index.get(values.get(0).id());
+        int from;
+        int to;
+        for (from = 0, to = 0; to < values.size(); to++) {
+            int cIdx = index.get(values.get(to).id());
             if (curIdx != cIdx) {
                 if (!p.extract(this, curIdx, from, to)) {
                     return false;
@@ -126,8 +124,8 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
     public Set<E> getSubSet(int k) {
         int from = -1;
         //TODO: very bad. Bounds should be memorized
-        for (int x = 0; x < values.length; x++) {
-            int cIdx = index.get(values[x].id());
+        for (int x = 0; x < values.size(); x++) {
+            int cIdx = index.get(values.get(x).id());
             if (cIdx == k && from == -1) {
                 from = x;
             }
@@ -136,7 +134,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
             }
         }
         if (from >= 0) {
-            return new ElementSubSet<>(this, k, from, values.length);
+            return new ElementSubSet<>(this, k, from, values.size());
         }
         return Collections.emptySet();
     }
@@ -160,7 +158,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      *
      * @return a non-empty array
      */
-    public E[] getValues() {
+    public List<E> getValues() {
         return values;
     }
 
@@ -171,12 +169,9 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      */
     public List<ElementSubSet<E>> getPartitions() {
         final List<ElementSubSet<E>> partitions = new ArrayList<>();
-        forEachPartition(new IterateProcedure<E>() {
-            @Override
-            public boolean extract(SplittableElementSet<E> idx, int key, int from, int to) {
-                partitions.add(new ElementSubSet<>(SplittableElementSet.this, key, from, to));
-                return true;
-            }
+        forEachPartition((idx, key, from, to) -> {
+            partitions.add(new ElementSubSet<>(SplittableElementSet.this, key, from, to));
+            return true;
         });
         return partitions;
     }
@@ -187,7 +182,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E>, S
      * @return a positive integer
      */
     public int size() {
-        return values.length;
+        return values.size();
     }
 }
 

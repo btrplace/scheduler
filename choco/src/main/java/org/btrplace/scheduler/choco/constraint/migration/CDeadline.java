@@ -75,7 +75,7 @@ public class CDeadline implements ChocoConstraint {
             parsedDate = dateFormat.parse(timestamp.replace("+", ""));
             Calendar c = Calendar.getInstance();
             c.setTime(parsedDate);
-            deadline = (c.get(Calendar.SECOND) + c.get(Calendar.MINUTE) * 60 + c.get(Calendar.HOUR_OF_DAY) * 3600);
+            deadline = c.get(Calendar.SECOND) + c.get(Calendar.MINUTE) * 60 + c.get(Calendar.HOUR_OF_DAY) * 3600;
         }
         // Absolute timestamp
         else {
@@ -86,7 +86,7 @@ public class CDeadline implements ChocoConstraint {
             deadline = (int) ((parsedDate.getTime() - now.getTime()) / 1000);
             if (deadline < 0) {
                 // Timestamp is for tomorrow
-                deadline = (int) (long) ((parsedDate.getTime() + (24 * 3600 * 1000) - now.getTime()) / 1000);
+                deadline = (int) ((parsedDate.getTime() + (24 * 3600 * 1000) - now.getTime()) / 1000);
             }
         }
 
@@ -108,7 +108,6 @@ public class CDeadline implements ChocoConstraint {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
                 rp.getSolver().post(new Arithmetic(vt.getEnd(), Operator.LE, deadline));
-                //LCF.ifThen(VF.not(((RelocatableVM)vt).isStaying()), ICF.arithm(vt.getEnd(), "<=", deadline));
             }
         }
 

@@ -51,7 +51,7 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public ModelView clone() {
+        public ModelView copy() {
             throw new UnsupportedOperationException();
         }
 

@@ -97,7 +97,6 @@
         <developerConnection>scm:git:git@github.com:btrplace/scheduler.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <build>
         <plugins>
             <plugin>

@@ -28,6 +28,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Serialize;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -65,6 +66,6 @@ public class SerializeBuilder extends DefaultSatConstraintBuilder {
             t.ignoreError("Parameter '" + params[0].getName() + "' expects a list of at least 2 VMs");
             return Collections.emptyList();
         }
-        return (List) Collections.singletonList(new Serialize(s));
+        return (List) Collections.singletonList(new Serialize(new HashSet<>(s)));
     }
 }

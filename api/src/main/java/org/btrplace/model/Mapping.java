@@ -18,6 +18,9 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
@@ -28,7 +31,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Mapping extends Cloneable {
+public interface Mapping extends Copyable<Mapping>, Serializable {
 
     /**
      * Set a VM running on a node. The node must already be online.
@@ -223,13 +226,6 @@ public interface Mapping extends Cloneable {
     Set<VM> getSleepingVMs(Collection<Node> ns);
 
     /**
-     * Copy a mapping.
-     *
-     * @return the resulting copy
-     */
-    Mapping clone();
-
-    /**
      * Check if a VM is in the mapping.
      *
      * @param vm the VM.
@@ -238,28 +234,12 @@ public interface Mapping extends Cloneable {
     boolean contains(VM vm);
 
     /**
-     * Get a VM by its identifier.
-     *
-     * @param id the vm identifier.
-     * @return the VM if in, {@code null} otherwise
-     */
-    VM getVMById(int id);
-
-    /**
      * Check if a node is in the mapping.
      *
      * @param node the node.
      * @return {@code true} if the node is in.
      */
     boolean contains(Node node);
-
-    /**
-     * Get a Node by its identifier.
-     *
-     * @param id the node identifier.
-     * @return the Node if in, {@code null} otherwise
-     */
-    Node getNodeById(int id);
 
     /**
      * Remove all the nodes and the VMs in the mapping.
@@ -292,13 +272,23 @@ public interface Mapping extends Cloneable {
      */
     int getNbVMs();
 
+
     /**
      * Get the state of a VM
      *
      * @param v the VM
      * @return a state if the VM is known. {@code null} otherwise
      */
-    VMState getState(VM v);
+    default VMState getState(VM v) {
+        if (isRunning(v)) {
+            return VMState.RUNNING;
+        } else if (isSleeping(v)) {
+            return VMState.SLEEPING;
+        } else if (isReady(v)) {
+            return VMState.READY;
+        }
+        return null;
+    }
 
     /**
      * Get the state of a node
@@ -306,5 +296,12 @@ public interface Mapping extends Cloneable {
      * @param n the node
      * @return a state if the node is known. {@code null} otherwise
      */
-    NodeState getState(Node n);
+    default NodeState getState(Node n) {
+        if (isOnline(n)) {
+            return NodeState.ONLINE;
+        } else if (isOffline(n)) {
+            return NodeState.OFFLINE;
+        }
+        return null;
+    }
 }

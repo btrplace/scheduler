@@ -21,35 +21,21 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to disallow the given VM, when running,
  * to be hosted on a given set of nodes.
  *
  * @author Fabien Hermenier
- * @see SatConstraint
  */
-public class Ban extends SatConstraint {
+public class Ban implements SatConstraint {
 
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms   the VMs to integrate
-     * @param nodes the hosts to disallow
-     * @return the associated list of constraints
-     */
-    public static List<Ban> newBan(Collection<VM> vms, Collection<Node> nodes) {
-        List<Ban> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Ban(v, nodes));
-        }
-        return l;
-    }
+    private VM vm;
 
+    private Collection<Node> nodes;
+
+    private boolean continuous;
     /**
      * Make a new discrete constraint.
      *
@@ -68,18 +54,73 @@ public class Ban extends SatConstraint {
      * @param continuous {@code true} for a continuous constraint.
      */
     public Ban(VM vm, Collection<Node> nodes, boolean continuous) {
-        super(Collections.singleton(vm), nodes, continuous);
+        this.vm = vm;
+        this.nodes = nodes;
+        this.continuous = continuous;
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
     }
 
     @Override
     public String toString() {
-        return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", " + restrictionToString() + ")";
+        return "ban(" + "vm=" + vm + ", nodes=" + nodes + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
-    public SatConstraintChecker<Ban> getChecker() {
+    public BanChecker getChecker() {
         return new BanChecker(this);
     }
 
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Ban> newBan(Collection<VM> vms, Collection<Node> nodes) {
+        List<Ban> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Ban(v, nodes));
+        }
+        return l;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Ban ban = (Ban) o;
+        return continuous == ban.continuous &&
+                Objects.equals(vm, ban.vm) &&
+                Objects.equals(nodes, ban.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, nodes, continuous);
+    }
 }

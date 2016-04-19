@@ -26,7 +26,7 @@ import java.util.BitSet;
  *
  * @author Fabien Hermenier
  */
-public class DefaultElementBuilder implements ElementBuilder, Cloneable {
+public class DefaultElementBuilder implements ElementBuilder {
 
     private BitSet usedVMIds;
 
@@ -87,7 +87,7 @@ public class DefaultElementBuilder implements ElementBuilder, Cloneable {
     }
 
     @Override
-    public ElementBuilder clone() {
+    public ElementBuilder copy() {
         DefaultElementBuilder c = new DefaultElementBuilder();
         c.nextVMId = nextVMId;
         c.nextNodeId = nextNodeId;
@@ -104,15 +104,5 @@ public class DefaultElementBuilder implements ElementBuilder, Cloneable {
     @Override
     public boolean contains(Node n) {
         return usedNodeIds.get(n.id());
-    }
-
-    @Override
-    public boolean containsVM(int id) {
-        return usedVMIds.get(id);
-    }
-
-    @Override
-    public boolean containsNode(int id) {
-        return usedNodeIds.get(id);
     }
 }

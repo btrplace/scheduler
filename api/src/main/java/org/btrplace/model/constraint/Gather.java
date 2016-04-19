@@ -23,6 +23,8 @@ import org.btrplace.model.VM;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A constraint to force a set of VMs, if running, to be
@@ -36,7 +38,11 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class Gather extends SatConstraint {
+public class Gather implements SatConstraint {
+
+    private Collection<VM> vms;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -54,12 +60,13 @@ public class Gather extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Gather(Collection<VM> vms, boolean continuous) {
-        super(vms, Collections.<Node>emptySet(), continuous);
+        this.vms = vms;
+        this.continuous = continuous;
     }
 
     @Override
     public String toString() {
-        return "gather(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
+        return "gather(" + "vms=" + vms + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -67,4 +74,42 @@ public class Gather extends SatConstraint {
         return new GatherChecker(this);
     }
 
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return vms;
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Gather gather = (Gather) o;
+        return continuous == gather.continuous &&
+                Objects.equals(vms, gather.vms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vms, continuous);
+    }
 }

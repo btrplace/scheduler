@@ -74,7 +74,7 @@ public class IssuesTest {
                 .build();
 
         Solver solver = rp.getSolver();
-        IntVar[] VMsOnAllNodes = rp.getNbRunningVMs();
+        List<IntVar> VMsOnAllNodes = rp.getNbRunningVMs();
 
         int NUMBER_OF_NODE = map.getAllNodes().size();
 
@@ -90,9 +90,9 @@ public class IssuesTest {
             vmsOnInvolvedNodes[i] = VF.bounded("nVMs", -1, maxVMs, rp.getSolver());
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
-            IntVar[] c = new IntVar[]{VF.fixed(-1, rp.getSolver()), VMsOnAllNodes[rp.getNode(n)],
+            IntVar[] c = new IntVar[]{VF.fixed(-1, rp.getSolver()), VMsOnAllNodes.get(rp.getNode(n)),
                     state, vmsOnInvolvedNodes[i]};
-            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes[rp.getNode(n)]}, state, 0);
+            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
             //solver.post(new ElementV(c, 0, solver.getEnvironment()));
             solver.post(elem);
 
@@ -152,13 +152,13 @@ public class IssuesTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .build();
 
-        IntVar[] nodes_state = rp.getNbRunningVMs();
+        List<IntVar> nodes_state = rp.getNbRunningVMs();
         IntVar[] nodeVM = new IntVar[map.getAllNodes().size()];
 
         int i = 0;
 
         for (Node n : map.getAllNodes()) {
-            nodeVM[i++] = nodes_state[rp.getNode(n)];
+            nodeVM[i++] = nodes_state.get(rp.getNode(n));
         }
         Solver solver = rp.getSolver();
         IntVar idle = VF.bounded("Nidles", 0, map.getAllNodes().size(), solver);
@@ -193,13 +193,13 @@ public class IssuesTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .build();
 
-        IntVar[] nodes_state = rp.getNbRunningVMs();
+        List<IntVar> nodes_state = rp.getNbRunningVMs();
         IntVar[] nodeVM = new IntVar[map.getAllNodes().size()];
 
         int i = 0;
 
         for (Node n : map.getAllNodes()) {
-            nodeVM[i++] = nodes_state[rp.getNode(n)];
+            nodeVM[i++] = nodes_state.get(rp.getNode(n));
             //rp.getNodeAction(n).getState().setVal(1);
         }
         Solver solver = rp.getSolver();
@@ -228,7 +228,7 @@ public class IssuesTest {
         solver.post(IntConstraintFactory.arithm(rp.getEnd(), "<=", 10));
         int NUMBER_OF_NODE = map.getAllNodes().size();
         // Extract all the state of the involved nodes (all nodes in this case)
-        IntVar[] VMsOnAllNodes = rp.getNbRunningVMs();
+        List<IntVar> VMsOnAllNodes = rp.getNbRunningVMs();
         // Each element is the number of VMs on each node
         IntVar[] vmsOnInvolvedNodes = new IntVar[NUMBER_OF_NODE];
         BoolVar[] idles = new BoolVar[NUMBER_OF_NODE];
@@ -239,10 +239,10 @@ public class IssuesTest {
             vmsOnInvolvedNodes[i] = VF.bounded("nVMs" + n, -1, maxVMs, solver);
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
-            IntVar[] c = new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes[rp.getNode(n)],
+            IntVar[] c = new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n)),
                     state, vmsOnInvolvedNodes[i]};
             //new ElementV(c, 0, solver.getEnvironment());
-            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes[rp.getNode(n)]}, state, 0);
+            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
             elms.add(elem);
             solver.post(elem);
             // IF number of VMs on a node is 0 -> Idle
@@ -255,7 +255,7 @@ public class IssuesTest {
         // idle should be less than Amount for MaxSN (0, in this case)
         solver.post(IntConstraintFactory.arithm(sum, "=", 0));
         System.err.flush();
-        CMinMTTR obj = new CMinMTTR(null);
+        CMinMTTR obj = new CMinMTTR();
         obj.inject(new DefaultParameters(), rp);
         //System.err.println(solver.toString());
         //ChocoLogging.setLoggingMaxDepth(100);

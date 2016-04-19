@@ -22,11 +22,11 @@ package org.btrplace.scheduler.choco.extensions;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.memory.IStateIntVector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.ICause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Arrays;

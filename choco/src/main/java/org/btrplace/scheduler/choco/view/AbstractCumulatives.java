@@ -58,14 +58,6 @@ public abstract class AbstractCumulatives implements ChocoView {
      */
     protected Map<VM, int[]> non;
 
-    /**
-     * Make a new builder.
-     **
-     */
-    public AbstractCumulatives() {
-
-    }
-
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         cUsages = new ArrayList<>();

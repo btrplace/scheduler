@@ -18,10 +18,12 @@
 
 package org.btrplace.model.constraint;
 
+import java.io.Serializable;
+
 /**
  * Specify a constraint.
  *
  * @author Fabien Hermenier
  */
-public interface Constraint {
+public interface Constraint extends Serializable {
 }

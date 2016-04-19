@@ -72,7 +72,7 @@ public class DefaultLinkBuilder implements LinkBuilder {
     }
 
     @Override
-    public LinkBuilder clone() {
+    public LinkBuilder copy() {
         DefaultLinkBuilder sb = new DefaultLinkBuilder();
         sb.nextId = nextId;
         sb.usedIds = (BitSet) usedIds.clone();

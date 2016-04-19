@@ -134,7 +134,7 @@ public class CAmong implements ChocoConstraint {
             //Now, we create a variable to indicate on which group of nodes the VMs will be
             vmGrpId = VariableFactory.enumerated(rp.makeVarLabel(GROUP_LABEL), 0, groups.size() - 1, rp.getSolver());
             //grp: A table to indicate the group each node belong to, -1 for no group
-            int[] grp = new int[rp.getNodes().length];
+            int[] grp = new int[rp.getNodes().size()];
             for (int i = 0; i < grp.length; i++) {
                 Node n = rp.getNode(i);
                 int idx = getGroup(n, groups);

@@ -23,13 +23,11 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -58,35 +56,35 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private BitSet[] ins;
 
-    private CObjective obj;
-
     private IStateInt firstFree;
 
     private IntVar last;
+
+    private BitSet stays;
+
+    private BitSet move;
 
     /**
      * Make a new heuristics
      *
      * @param rp the problem to rely on
-     * @param o  the objective to rely on
      */
-    public OnStableNodeFirst(ReconfigurationProblem rp, CObjective o) {
+    public OnStableNodeFirst(ReconfigurationProblem rp) {
 
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
-        this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
-        VMTransition[] vmActions = rp.getVMActions();
+        List<VMTransition> vmActions = rp.getVMActions();
 
         List<IntVar> hosts = new ArrayList<>();
         List<IntVar> starts = new ArrayList<>();
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
-        oldPos = new int[vmActions.length];
-        outs = new BitSet[rp.getNodes().length];
-        ins = new BitSet[rp.getNodes().length];
-        for (int i = 0; i < rp.getNodes().length; i++) {
+        oldPos = new int[vmActions.size()];
+        outs = new BitSet[rp.getNodes().size()];
+        ins = new BitSet[rp.getNodes().size()];
+        for (int i = 0; i < rp.getNodes().size(); i++) {
             outs[i] = new BitSet();
             ins[i] = new BitSet();
         }
@@ -117,8 +115,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         this.hosts = hosts.toArray(new IntVar[hosts.size()]);
         this.starts = starts.toArray(new IntVar[starts.size()]);
     }
-
-    private BitSet stays, move;
 
     /**
      * Invalidate the VM placement.
@@ -189,10 +185,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     private IntVar getMovingVM() {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].isInstantiated()) {
-                if (oldPos[i] != hosts[i].getValue()) {
-                    return starts[i];
-                }
+            if (starts[i] != null && !starts[i].isInstantiated() && oldPos[i] != hosts[i].getValue()) {
+                return starts[i];
             }
         }
         return null;

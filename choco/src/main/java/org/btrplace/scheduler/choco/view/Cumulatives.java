@@ -20,6 +20,8 @@ package org.btrplace.scheduler.choco.view;
 
 import org.chocosolver.solver.variables.IntVar;
 
+import java.util.List;
+
 /**
  * Interface to specify a multi-dimension cumulatives constraints.
  * Dimensions can be added on the fly.
@@ -35,10 +37,9 @@ public interface Cumulatives extends ChocoView {
 
     /**
      * Add a new dimension.
-     *
-     * @param c    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
+     *  @param c    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
-    void addDim(IntVar[] c, int[] cUse, IntVar[] dUse);
+    void addDim(List<IntVar> c, int[] cUse, IntVar[] dUse);
 }

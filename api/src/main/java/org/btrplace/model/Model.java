@@ -18,8 +18,10 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
 import org.btrplace.model.view.ModelView;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -32,7 +34,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface Model extends Cloneable, ElementBuilder {
+public interface Model extends ElementBuilder, Copyable<ElementBuilder>, Serializable {
 
     /**
      * Get a view already attached to the model
@@ -93,41 +95,9 @@ public interface Model extends Cloneable, ElementBuilder {
     void setAttributes(Attributes attrs);
 
     /**
-     * Check if a VM is in the model.
+     * {@inheritDoc}
      *
-     * @param vm the VM.
-     * @return {@code true} if the VM is in.
+     * @return a model copy
      */
-    boolean contains(VM vm);
-
-    /**
-     * Check if a VM with the given identifier is in the model.
-     *
-     * @param id the VM identifier.
-     * @return {@code true} if the VM is in.
-     */
-    boolean containsVM(int id);
-
-    /**
-     * Check if a node is in the model.
-     *
-     * @param node the node.
-     * @return {@code true} if the node is in.
-     */
-    boolean contains(Node node);
-
-    /**
-     * Check if a node with the given identifier is in the model.
-     *
-     * @param id the node identifier.
-     * @return {@code true} if the node is in.
-     */
-    boolean containsNode(int id);
-
-    /**
-     * Clone a model.
-     *
-     * @return a new model
-     */
-    Model clone();
+    Model copy();
 }

@@ -62,7 +62,7 @@ public class CPreserve implements ChocoConstraint {
         VM vm = cstr.getInvolvedVMs().iterator().next();
         if (rp.getFutureRunningVMs().contains(vm)) {
             int idx = rp.getVM(vm);
-            IntVar v = map.getVMsAllocation()[idx];
+            IntVar v = map.getVMsAllocation().get(idx);
             try {
                 v.updateLowerBound(cstr.getAmount(), Cause.Null);
             } catch (ContradictionException ex) {

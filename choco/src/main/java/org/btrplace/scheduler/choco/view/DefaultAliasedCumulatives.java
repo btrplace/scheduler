@@ -48,13 +48,6 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
 
     private List<int[]> aliases;
 
-    /**
-     * Make a new builder.
-     *
-     */
-    public DefaultAliasedCumulatives() {
-    }
-
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         super.inject(ps, rp);

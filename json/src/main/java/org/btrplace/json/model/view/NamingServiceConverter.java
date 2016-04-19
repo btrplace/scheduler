@@ -82,7 +82,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String n = e.getKey();
             int v = Integer.parseInt(e.getValue().toString());
-            Element el = type.equals("vm") ? getVM(v) : getNode(v);
+            Element el = "vm".equals(type) ? getVM(v) : getNode(v);
             if (!ns.register(el, n)) {
                 throw new JSONConverterException("Duplicated name '" + n + "'");
             }

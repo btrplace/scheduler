@@ -30,7 +30,8 @@ import java.util.*;
  */
 public class ElementSubSet<E extends Element> implements Set<E> {
 
-    private int from, to;
+    private int from;
+    private int to;
 
     private int curIdx;
 
@@ -78,24 +79,12 @@ public class ElementSubSet<E extends Element> implements Set<E> {
 
     @Override
     public Object[] toArray() {
-        return Arrays.copyOfRange(index.getValues(), from, to);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Object[] toArray(Object[] a) {
-
-        Object[] r = a.length >= to - from ? a : (E[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), to - from);
-        Iterator<E> it = iterator();
-
-        for (int i = 0; i < r.length; i++) {
-            if (!it.hasNext()) {
-                // fewer elements than expected, null-terminate
-                r[i] = null;
-                return r;
-            }
-            r[i] = it.next();
-        }
-        return r;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -140,9 +129,9 @@ public class ElementSubSet<E extends Element> implements Set<E> {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("{").append(index.getValues()[from]);
+        StringBuilder b = new StringBuilder("{").append(index.getValues().get(from));
         for (int i = from + 1; i < to; i++) {
-            b.append(", ").append(index.getValues()[i]);
+            b.append(", ").append(index.getValues().get(i));
         }
         return b.append('}').toString();
     }
@@ -154,7 +143,7 @@ public class ElementSubSet<E extends Element> implements Set<E> {
      */
     public static class IndexEntryIterator<E> implements Iterator<E> {
 
-        private E[] values;
+        private List<E> values;
 
         private int to;
 
@@ -167,7 +156,7 @@ public class ElementSubSet<E extends Element> implements Set<E> {
          * @param lb the initial index.
          * @param ub the last index (exclusive)
          */
-        public IndexEntryIterator(E[] v, int lb, int ub) {
+        public IndexEntryIterator(List<E> v, int lb, int ub) {
             this.values = v;
             this.to = ub;
             this.cursor = lb;
@@ -184,7 +173,7 @@ public class ElementSubSet<E extends Element> implements Set<E> {
             if (cursor == to) {
                 throw new NoSuchElementException();
             }
-            return values[cursor++];
+            return values.get(cursor++);
         }
 
         @Override

@@ -105,7 +105,7 @@ public class ShutdownableNode implements NodeTransition {
         */
         isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, e, ").online"), rp.getSolver());
         isOffline = VariableFactory.not(isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(e)), 0));
 
         /*
         * D = {0, d}

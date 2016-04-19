@@ -23,7 +23,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
@@ -138,7 +137,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //statistics
         rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speRPDuration);
-        rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
+        rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().size(), rp.getVMs().size(), cstrs.size());
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
 
         //The solution monitor to store the measures at each solution
@@ -237,9 +236,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private List<ChocoView> makeViews() throws SchedulerException {
         List<ChocoView> l = new ArrayList<>();
         ChocoMapper mapper = params.getMapper();
-        for (ModelView v : origin.getViews()) {
-            ChocoView cv = mapper.get(v);
-        }
         origin.getViews().stream().filter(v -> mapper.viewHasMapping(v.getClass())).forEach(v -> l.add(mapper.get(v)));
         return l;
         //List<String> base = new ArrayList<>();
@@ -299,8 +295,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         IMeasures m2 = rp.getSolver().getMeasures();
         SingleRunnerStatistics st = new SingleRunnerStatistics(
                 params,
-                rp.getNodes().length,
-                rp.getVMs().length,
+                rp.getNodes().size(),
+                rp.getVMs().size(),
                 cstrs.size(),
                 rp.getManageableVMs().size(),
                 start,

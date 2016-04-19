@@ -74,7 +74,7 @@ public class CFence implements ChocoConstraint {
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
-                List<Node> otherNodes = new ArrayList<>(rp.getNodes().length - nodes.size());
+                List<Node> otherNodes = new ArrayList<>(rp.getNodes().size() - nodes.size());
                 for (Node n : rp.getNodes()) {
                     if (!nodes.contains(n)) {
                         otherNodes.add(n);

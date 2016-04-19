@@ -20,7 +20,7 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.extensions.MyTask;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
@@ -41,7 +41,9 @@ public class SliceBuilder {
 
     private ReconfigurationProblem rp;
 
-    private IntVar start = null, end = null, duration = null;
+    private IntVar start = null;
+    private IntVar end = null;
+    private IntVar duration = null;
 
     private IntVar hoster = null;
 
@@ -87,7 +89,7 @@ public class SliceBuilder {
         //UB for the time variables
         if (!start.isInstantiatedTo(0)) {
             //enforces start <= end, duration <= end, start + duration == end
-            new MyTask(start, duration, end);
+            new TaskMonitor(start, duration, end);
         } else {
             //start == 0 --> start <= end. No need to add ticksSooner
             ticksSooner(s, duration, end);

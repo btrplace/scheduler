@@ -41,15 +41,12 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
-    private Comparator<Action> sorter = new Comparator<Action>() {
-
-        public int compare(Action o1, Action o2) {
-            int diffStart = o1.getStart() - o2.getStart();
-            if (diffStart == 0) {
-                return o1.getEnd() - o2.getEnd();
-            }
-            return diffStart;
+    private static Comparator<Action> sorter = (o1, o2) -> {
+        int diffStart = o1.getStart() - o2.getStart();
+        if (diffStart == 0) {
+            return o1.getEnd() - o2.getEnd();
         }
+        return diffStart;
     };
 
     /**
@@ -144,7 +141,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         }
 
         ReconfigurationPlan op = (ReconfigurationPlan) o;
-        return (actions.equals(op.getActions()) && src.equals(op.getOrigin()));
+        return actions.equals(op.getActions()) && src.equals(op.getOrigin());
     }
 
     @Override

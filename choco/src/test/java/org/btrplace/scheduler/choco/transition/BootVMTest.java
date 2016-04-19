@@ -68,12 +68,12 @@ public class BootVMTest {
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
         for (Node n : rp.getNodes()) {
             System.out.println(n + " " + rp.getNode(n));
         }
-        BootVM m = (BootVM) rp.getVMActions()[0];
+        BootVM m = (BootVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
@@ -117,10 +117,10 @@ public class BootVMTest {
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
                 .build();
-        BootVM m1 = (BootVM) rp.getVMActions()[rp.getVM(vm1)];
-        BootVM m2 = (BootVM) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        BootVM m1 = (BootVM) rp.getVMActions().get(rp.getVM(vm1));
+        BootVM m2 = (BootVM) rp.getVMActions().get(rp.getVM(vm2));
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 

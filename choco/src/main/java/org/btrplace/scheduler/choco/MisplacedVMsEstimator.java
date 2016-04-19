@@ -38,6 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface MisplacedVMsEstimator {
 
 

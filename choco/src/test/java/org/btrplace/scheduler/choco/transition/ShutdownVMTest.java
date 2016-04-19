@@ -63,8 +63,8 @@ public class ShutdownVMTest {
                 .setParams(ps)
                 .setNextVMsStates(map.getAllVMs(), new HashSet<>(), new HashSet<>(), new HashSet<>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        ShutdownVM m = (ShutdownVM) rp.getVMActions()[0];
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        ShutdownVM m = (ShutdownVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
@@ -102,9 +102,9 @@ public class ShutdownVMTest {
                 .setParams(ps)
                 .setNextVMsStates(map.getAllVMs(), new HashSet<>(), new HashSet<>(), new HashSet<>())
                 .build();
-        ShutdownVM m1 = (ShutdownVM) rp.getVMActions()[rp.getVM(vm1)];
-        ShutdownVM m2 = (ShutdownVM) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        ShutdownVM m1 = (ShutdownVM) rp.getVMActions().get(rp.getVM(vm1));
+        ShutdownVM m2 = (ShutdownVM) rp.getVMActions().get(rp.getVM(vm2));
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
         //System.out.println(s);

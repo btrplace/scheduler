@@ -21,12 +21,8 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.SatConstraintChecker;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A constraint to force the maximum end time of a migration by an absolute
@@ -34,24 +30,11 @@ import java.util.List;
  * 
  * @author Vincent Kherbache
  */
-public class Deadline extends SatConstraint {
+public class Deadline implements SatConstraint {
 
     private String timestamp;
 
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms       the VMs to integrate
-     * @param deadline  the desired deadline
-     * @return  the associated list of constraints
-     */
-    public static List<Deadline> newDeadline(Collection<VM> vms, String deadline) {
-        List<Deadline> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Deadline(v, deadline));
-        }
-        return l;
-    }
+    private VM vm;
 
     /**
      * Make a new constraint.
@@ -60,7 +43,7 @@ public class Deadline extends SatConstraint {
      * @param timestamp the desired deadline
      */
     public Deadline(VM vm, String timestamp) {
-        super(Collections.singletonList(vm), Collections.<Node>emptyList(), true);
+        this.vm = vm;
         this.timestamp = timestamp;
     }
 
@@ -88,12 +71,60 @@ public class Deadline extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
+    public DeadlineChecker getChecker() {
         return new DeadlineChecker(this);
     }
 
     @Override
     public String toString() {
-        return "deadline(" + "vm=" + getInvolvedVMs() + ", deadline='" + timestamp + "', " + restrictionToString() + ")";
+        return "deadline(vm=" + vm + ", deadline='" + timestamp + "', continuous)";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Deadline deadline = (Deadline) o;
+        return Objects.equals(timestamp, deadline.timestamp) &&
+                Objects.equals(vm, deadline.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timestamp, vm);
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms      the VMs to integrate
+     * @param deadline the desired deadline
+     * @return the associated list of constraints
+     */
+    public static List<Deadline> newDeadline(Collection<VM> vms, String deadline) {
+        List<Deadline> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Deadline(v, deadline));
+        }
+        return l;
     }
 }

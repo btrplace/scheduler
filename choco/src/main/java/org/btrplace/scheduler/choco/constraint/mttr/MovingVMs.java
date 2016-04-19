@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.chocosolver.memory.IStateInt;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 

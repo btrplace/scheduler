@@ -23,7 +23,6 @@ import gnu.trove.set.hash.THashSet;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SubMapping implements Mapping {
+public class SubMapping extends AbstractMapping {
 
     private Mapping parent;
 
@@ -203,13 +202,8 @@ public class SubMapping implements Mapping {
         return res;
     }
 
-    /**
-     * Clone this mapping using a {@link DefaultMapping}.
-     *
-     * @return a mutable clone
-     */
     @Override
-    public DefaultMapping clone() {
+    public DefaultMapping copy() {
         DefaultMapping c = new DefaultMapping();
         //Keep only the nodes inside the scope
         for (Node n : scope) {
@@ -369,79 +363,5 @@ public class SubMapping implements Mapping {
     @Override
     public int getNbVMs() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        //TODO: not very efficient
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Mapping)) {
-            return false;
-        }
-
-        Mapping that = (Mapping) o;
-
-        if (!getOnlineNodes().equals(that.getOnlineNodes())
-                || !getOfflineNodes().equals(that.getOfflineNodes())
-                || !getReadyVMs().equals(that.getReadyVMs())) {
-            return false;
-        }
-
-        for (Node n : getOnlineNodes()) {
-            if (!getRunningVMs(n).equals(that.getRunningVMs(n))
-                    || !getSleepingVMs(n).equals(that.getSleepingVMs(n))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(getOfflineNodes(), getReadyVMs(), getOnlineNodes());
-        for (Node n : getOnlineNodes()) {
-            result += Objects.hash(n, getRunningVMs(n), getSleepingVMs(n));
-        }
-        return result;
-    }
-
-    @Override
-    public VMState getState(VM v) {
-        if (isRunning(v)) {
-            return VMState.RUNNING;
-        } else if (isSleeping(v)) {
-            return VMState.SLEEPING;
-        } else if (isReady(v)) {
-            return VMState.READY;
-        }
-        return null;
-    }
-
-    @Override
-    public NodeState getState(Node n) {
-        if (isOnline(n)) {
-            return NodeState.ONLINE;
-        } else if (isOffline(n)) {
-            return NodeState.OFFLINE;
-        }
-        return null;
-    }
-
-    @Override
-    public Node getNodeById(int id) {
-        for (Node n : getAllNodes()) {
-            if (n.id() == id) return n;
-        }
-        return null;
-    }
-
-    @Override
-    public VM getVMById(int id) {
-        for (VM v : getAllVMs()) {
-            if (v.id() == id) return v;
-        }
-        return null;
     }
 }

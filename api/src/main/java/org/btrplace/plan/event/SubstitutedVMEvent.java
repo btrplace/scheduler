@@ -32,7 +32,8 @@ import java.util.Objects;
  */
 public class SubstitutedVMEvent implements VMEvent {
 
-    private VM oldVm, newVm;
+    private VM oldVm;
+    private VM newVm;
 
     /**
      * Instantiate a new event.

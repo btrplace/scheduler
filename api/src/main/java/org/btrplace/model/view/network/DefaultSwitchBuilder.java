@@ -70,7 +70,7 @@ public class DefaultSwitchBuilder implements SwitchBuilder {
     }
 
     @Override
-    public SwitchBuilder clone() {
+    public SwitchBuilder copy() {
         DefaultSwitchBuilder sb = new DefaultSwitchBuilder();
         sb.nextId = nextId;
         sb.usedIds = (BitSet) usedIds.clone();

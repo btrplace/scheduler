@@ -38,38 +38,30 @@ public final class TransitionUtils {
     /**
      * Extract all the d-slices of a list of {@link Transition}.
      *
-     * @param models the models to browse
+     * @param l the transitions to browse
      * @return a list of d-slices that may be empty
      */
-    public static List<Slice> getDSlices(VMTransition[] models) {
+    public static List<Slice> getDSlices(Collection<VMTransition> l) {
         List<Slice> slices = new ArrayList<>();
-        for (VMTransition m : models) {
+        for (VMTransition m : l) {
             if (m.getDSlice() != null) {
                 slices.add(m.getDSlice());
             }
         }
         return slices;
+
     }
 
-    /**
-     * Extract all the d-slices of a list of {@link Transition}.
-     *
-     * @param l the models to browse
-     * @return a list of d-slices that may be empty
-     */
-    public static List<Slice> getDSlices(Collection<VMTransition> l) {
-        return getDSlices(l.toArray(new VMTransition[l.size()]));
-    }
 
     /**
      * Extract all the c-slices of a list of {@link Transition}.
      *
-     * @param models the models to browse
+     * @param l the transitions to browse
      * @return a list of c-slices that may be empty
      */
-    public static List<Slice> getCSlices(VMTransition[] models) {
+    public static List<Slice> getCSlices(Collection<VMTransition> l) {
         List<Slice> slices = new ArrayList<>();
-        for (VMTransition m : models) {
+        for (VMTransition m : l) {
             if (m.getCSlice() != null) {
                 slices.add(m.getCSlice());
             }
@@ -78,25 +70,15 @@ public final class TransitionUtils {
     }
 
     /**
-     * Extract all the c-slices of a list of {@link Transition}.
-     *
-     * @param l the models to browse
-     * @return a list of c-slices that may be empty
-     */
-    public static List<Slice> getCSlices(Collection<VMTransition> l) {
-        return getCSlices(l.toArray(new VMTransition[l.size()]));
-    }
-
-    /**
      * Extract the consume moments of an array of actions.
      * The ordering is maintained
      *
      * @return an array of variable
      */
-    public static IntVar[] getStarts(Transition[] actions) {
-        IntVar[] starts = new IntVar[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            starts[i] = actions[i].getStart();
+    public static IntVar[] getStarts(List<? extends Transition> actions) {
+        IntVar[] starts = new IntVar[actions.size()];
+        for (int i = 0; i < actions.size(); i++) {
+            starts[i] = actions.get(i).getStart();
         }
         return starts;
     }
@@ -107,10 +89,10 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getHostingEnds(NodeTransition[] actions) {
-        IntVar[] starts = new IntVar[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            starts[i] = actions[i].getHostingEnd();
+    public static IntVar[] getHostingEnds(List<NodeTransition> actions) {
+        IntVar[] starts = new IntVar[actions.size()];
+        for (int i = 0; i < actions.size(); i++) {
+            starts[i] = actions.get(i).getHostingEnd();
         }
         return starts;
     }
@@ -121,10 +103,10 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getHostingStarts(NodeTransition[] actions) {
-        IntVar[] starts = new IntVar[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            starts[i] = actions[i].getHostingStart();
+    public static IntVar[] getHostingStarts(List<NodeTransition> actions) {
+        IntVar[] starts = new IntVar[actions.size()];
+        for (int i = 0; i < actions.size(); i++) {
+            starts[i] = actions.get(i).getHostingStart();
         }
         return starts;
     }
@@ -135,10 +117,10 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getEnds(Transition[] actions) {
-        IntVar[] starts = new IntVar[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            starts[i] = actions[i].getEnd();
+    public static IntVar[] getEnds(List<? extends Transition> actions) {
+        IntVar[] starts = new IntVar[actions.size()];
+        for (int i = 0; i < actions.size(); i++) {
+            starts[i] = actions.get(i).getEnd();
         }
         return starts;
     }
@@ -149,10 +131,10 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getDurations(Transition[] actions) {
-        IntVar[] starts = new IntVar[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            starts[i] = actions[i].getDuration();
+    public static IntVar[] getDurations(List<? extends Transition> actions) {
+        IntVar[] starts = new IntVar[actions.size()];
+        for (int i = 0; i < actions.size(); i++) {
+            starts[i] = actions.get(i).getDuration();
         }
         return starts;
     }

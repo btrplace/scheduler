@@ -35,9 +35,11 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Split extends SatConstraint {
+public class Split implements SatConstraint {
 
     private Collection<Collection<VM>> sets;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -55,7 +57,7 @@ public class Split extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Split(Collection<Collection<VM>> parts, boolean continuous) {
-        super(null, Collections.<Node>emptySet(), continuous);
+        this.continuous = continuous;
         Set<VM> all = new HashSet<>();
         int cnt = 0;
         for (Collection<VM> s : parts) {
@@ -92,7 +94,7 @@ public class Split extends SatConstraint {
      * Get the group of VMs that contains the given VM.
      *
      * @param u the VM identifier
-     * @return the group of VM if exists, {@code null} otherwise
+     * @return the group of VM if exists, an empty collection otherwise
      */
     public Collection<VM> getAssociatedVGroup(VM u) {
         for (Collection<VM> vGrp : sets) {
@@ -100,7 +102,23 @@ public class Split extends SatConstraint {
                 return vGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
     }
 
     @Override
@@ -111,23 +129,23 @@ public class Split extends SatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        Split that = (Split) o;
-        return sets.equals(that.sets) && isContinuous() == that.isContinuous();
+        Split split = (Split) o;
+        return continuous == split.continuous &&
+                Objects.equals(sets, split.sets);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sets, isContinuous());
+        return Objects.hash(sets, continuous);
     }
 
     @Override
     public String toString() {
-        return "split(vms=" + sets + ", " + restrictionToString() + ')';
+        return "split(vms=" + sets + ", " + (continuous ? "continuous" : "discrete") + ')';
     }
 
     @Override
-    public SatConstraintChecker<Split> getChecker() {
+    public SplitChecker getChecker() {
         return new SplitChecker(this);
     }
 

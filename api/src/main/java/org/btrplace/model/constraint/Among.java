@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A constraint to force a set of VMs to be hosted on a single group of nodes
@@ -39,13 +36,17 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Among extends SatConstraint {
+public class Among implements SatConstraint {
 
     /**
      * Set of set of nodes.
      */
     private Collection<Collection<Node>> pGroups;
 
+
+    private Collection<VM> vms;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -66,8 +67,9 @@ public class Among extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Among(Collection<VM> vms, Collection<Collection<Node>> parts, boolean continuous) {
-        super(vms, null, continuous);
         assert checkDisjoint(parts) : "The constraint expects disjoint sets of nodes";
+        this.vms = vms;
+        this.continuous = continuous;
         this.pGroups = parts;
     }
 
@@ -88,7 +90,7 @@ public class Among extends SatConstraint {
      * Get the group of nodes that contains the given node.
      *
      * @param u the node identifier
-     * @return the group of nodes if exists, {@code null} otherwise
+     * @return the group of nodes if exists. An empty collection otherwise
      */
     public Collection<Node> getAssociatedPGroup(Node u) {
         for (Collection<Node> pGrp : pGroups) {
@@ -96,7 +98,7 @@ public class Among extends SatConstraint {
                 return pGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -106,6 +108,11 @@ public class Among extends SatConstraint {
             s.addAll(x);
         }
         return s;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return vms;
     }
 
     /**
@@ -125,27 +132,36 @@ public class Among extends SatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        Among that = (Among) o;
-
-        return pGroups.equals(that.pGroups) &&
-                getInvolvedVMs().equals(that.getInvolvedVMs()) &&
-                isContinuous() == that.isContinuous();
+        Among among = (Among) o;
+        return continuous == among.continuous &&
+                Objects.equals(pGroups, among.pGroups) &&
+                Objects.equals(vms, among.vms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedVMs(), getInvolvedNodes(), pGroups, isContinuous(), getInvolvedVMs());
+        return Objects.hash(pGroups, vms, continuous);
     }
 
     @Override
     public String toString() {
-        return "among(" + "vms=" + getInvolvedVMs() + ", nodes=" + pGroups + ", " + restrictionToString() + ")";
+        return "among(" + "vms=" + vms + ", nodes=" + pGroups + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
-    public SatConstraintChecker<Among> getChecker() {
+    public AmongChecker getChecker() {
         return new AmongChecker(this);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
     }
 
 }

@@ -23,11 +23,12 @@ package org.btrplace.model;
  *
  * @author Fabien Hermenier
  */
-public class SynchronizedElementBuilder implements ElementBuilder,Cloneable {
+public class SynchronizedElementBuilder implements ElementBuilder {
 
     private ElementBuilder base;
 
-    private final Object vmLock, nodeLock;
+    private final Object vmLock;
+    private final Object nodeLock;
 
     /**
      * Make a new builder.
@@ -77,13 +78,6 @@ public class SynchronizedElementBuilder implements ElementBuilder,Cloneable {
     }
 
     @Override
-    public boolean containsVM(int id) {
-        synchronized (vmLock) {
-            return base.containsVM(id);
-        }
-    }
-
-    @Override
     public boolean contains(Node n) {
         synchronized (nodeLock) {
             return base.contains(n);
@@ -91,14 +85,7 @@ public class SynchronizedElementBuilder implements ElementBuilder,Cloneable {
     }
 
     @Override
-    public boolean containsNode(int id) {
-        synchronized (nodeLock) {
-            return base.containsNode(id);
-        }
-    }
-
-    @Override
-    public ElementBuilder clone() {
+    public ElementBuilder copy() {
         return new SynchronizedElementBuilder(base);
     }
 }

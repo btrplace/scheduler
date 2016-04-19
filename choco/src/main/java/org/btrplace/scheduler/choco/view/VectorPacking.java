@@ -27,7 +27,6 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -38,7 +37,7 @@ import java.util.List;
  */
 public class VectorPacking extends Packing {
 
-    private List<IntVar[]> loads;
+    private List<List<IntVar>> loads;
 
     private List<IntVar[]> bins;
 
@@ -47,13 +46,6 @@ public class VectorPacking extends Packing {
     private List<String> names;
 
     private int dim;
-
-    /**
-     * A new packing view.
-     */
-    public VectorPacking() {
-
-    }
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
@@ -66,7 +58,7 @@ public class VectorPacking extends Packing {
     }
 
     @Override
-    public void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b) {
+    public void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b) {
         this.loads.add(l);
         this.sizes.add(s);
         this.bins.add(b);
@@ -82,7 +74,7 @@ public class VectorPacking extends Packing {
         IntVar[][] aLoads = new IntVar[dim][];
         String[] aNames = new String[dim];
         for (int d = 0; d < dim; d++) {
-            aLoads[d] = Arrays.copyOf(loads.get(d), loads.get(d).length);
+            aLoads[d] = loads.get(d).toArray(new IntVar[loads.get(d).size()]);
             assert bins.get(d).length == 0 || bins.get(d)[0].equals(bins.get(0)[0]);
             aNames[d] = names.get(d);
             IntVar[] s = sizes.get(d);

@@ -39,11 +39,15 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Overbook extends SatConstraint {
+public class Overbook implements SatConstraint {
 
     private String rcId;
 
     private double ratio;
+
+    private Node node;
+
+    private boolean continuous;
 
     /**
      * Make a new constraint with a continuous restriction.
@@ -65,7 +69,8 @@ public class Overbook extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Overbook(Node n, String rc, double r, boolean continuous) {
-        super(Collections.<VM>emptySet(), Collections.singleton(n), continuous);
+        this.node = n;
+        this.continuous = continuous;
         if (r < 1.0d) {
             throw new IllegalArgumentException("The overbooking ratio must be >= 1.0");
         }
@@ -109,18 +114,49 @@ public class Overbook extends SatConstraint {
 
     @Override
     public String toString() {
-        return "overbook(node=" + this.getInvolvedNodes().iterator().next()
-                + ", rc=" + rcId + ", ratio=" + ratio + ", " + restrictionToString() + ')';
+        return "overbook(node=" + node
+                + ", rc=" + rcId + ", ratio=" + ratio + ", " + (continuous ? "continuous" : "discrete") + ')';
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.singleton(node);
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return continuous;
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        continuous = b;
+        return true;
     }
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o) && ratio == ((Overbook) o).ratio && rcId.equals(((Overbook) o).rcId);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Overbook overbook = (Overbook) o;
+        return Double.compare(overbook.ratio, ratio) == 0 &&
+                continuous == overbook.continuous &&
+                Objects.equals(rcId, overbook.rcId) &&
+                Objects.equals(node, overbook.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rcId, ratio);
+        return Objects.hash(rcId, ratio, node, continuous);
     }
 
     @Override

@@ -18,13 +18,15 @@
 
 package org.btrplace.model.view.network;
 
+import org.btrplace.Copyable;
+
 /**
  * Interface to specify a builder to create switches.
  * Each created switch is guarantee for being unique.
  *
  * @author Vincent Kherbache
  */
-public interface SwitchBuilder extends Cloneable {
+public interface SwitchBuilder extends Copyable<SwitchBuilder> {
 
     /**
      * Generate a new non-blocking Switch.
@@ -56,11 +58,4 @@ public interface SwitchBuilder extends Cloneable {
      * @return  {@code true} if the Switch already exists.
      */
     boolean contains(Switch sw);
-
-    /**
-     * Clone the builder.
-     *
-     * @return a new switch builder.
-     */
-    SwitchBuilder clone();
 }

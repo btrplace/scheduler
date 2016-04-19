@@ -158,7 +158,7 @@ public class DefaultReconfigurationPlanTest {
         p1.add(new ShutdownNode(n1, 1, 2));
         p1.add(new ShutdownNode(n2, 1, 2));
 
-        ReconfigurationPlan p2 = new DefaultReconfigurationPlan(mo.clone());
+        ReconfigurationPlan p2 = new DefaultReconfigurationPlan(mo.copy());
         p2.add(new ShutdownNode(n1, 1, 2));
         p2.add(new ShutdownNode(n2, 1, 2));
 

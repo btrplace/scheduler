@@ -86,7 +86,7 @@ public class ShutdownNode extends Action implements NodeEvent {
     @Override
     public boolean applyAction(Model c) {
         Mapping map = c.getMapping();
-        return (!map.isOffline(node) && map.addOfflineNode(node));
+        return !map.isOffline(node) && map.addOfflineNode(node);
     }
 
     @Override

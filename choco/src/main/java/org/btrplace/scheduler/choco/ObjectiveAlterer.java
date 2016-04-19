@@ -31,6 +31,7 @@ import java.io.Serializable;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface ObjectiveAlterer extends Serializable {
 
     /**

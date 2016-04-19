@@ -18,6 +18,9 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -26,7 +29,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Attributes extends Cloneable {
+public interface Attributes extends Copyable<Attributes>, Serializable {
 
     /**
      * Put a boolean value.
@@ -130,13 +133,6 @@ public interface Attributes extends Cloneable {
      * @return {@code true} iff a value was removed
      */
     boolean unset(Element e, String k);
-
-    /**
-     * Clone the attributes.
-     *
-     * @return a new set of attributes
-     */
-    Attributes clone();
 
     /**
      * Get the elements having attributes defined.

@@ -54,8 +54,8 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
             Mapping map = mo.getMapping();
             for (VM vm : getVMs()) {
                 if (map.isRunning(vm)) {
-                    Collection<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
-                    if (nodes == null) {
+                    Collection<Node> nodes = getConstraint().getAssociatedPGroup(map.getVMLocation(vm));
+                    if (nodes.isEmpty()) {
                         return false;
                     } else if (selectedGroup == null) {
                         selectedGroup = nodes;
@@ -73,7 +73,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
             if (selectedGroup == null) {
                 selectedGroup = getConstraint().getAssociatedPGroup(a.getDestinationNode());
-                if (selectedGroup == null) {
+                if (selectedGroup.isEmpty()) {
                     //disallowed group
                     return false;
                 }
@@ -93,8 +93,8 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         Collection<Node> grp = null;
         for (VM vm : getVMs()) {
             if (map.isRunning(vm)) {
-                Collection<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
-                if (nodes == null) {
+                Collection<Node> nodes = getConstraint().getAssociatedPGroup(map.getVMLocation(vm));
+                if (nodes.isEmpty()) {
                     return false;
                 } else if (grp == null) {
                     grp = nodes;
