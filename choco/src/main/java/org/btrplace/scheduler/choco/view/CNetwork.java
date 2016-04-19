@@ -106,7 +106,17 @@ public class CNetwork implements ChocoView {
                 Node dst;
                 if (migration.getDSlice().getHoster().isInstantiated()) {
                     dst = rp.getNode(migration.getDSlice().getHoster().getValue());
-                    if (src.equals(dst)) continue;
+                    if (src.equals(dst)) {
+                        try {
+                            ((RelocatableVM) migration).getBandwidth().instantiateTo(0, Cause.Null);
+                            continue;
+                        } catch (ContradictionException e) {
+                            rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
+                                    " duration variables for " + vm + " migration: " + e.getMessage());
+                            return false;
+                        }
+
+                    }
                 }
                 else {
                     // Show a warning and throw an exception

@@ -280,7 +280,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
 
 
         // Set the strategies in the correct order (as added before)
-        strategies.add(new IntStrategy(new IntVar[]{rp.getEnd(), cost}, new MyInputOrder<>(this), new IntDomainMin()));
+        strategies.add(new IntStrategy(new IntVar[]{rp.getEnd(), cost}, new MyInputOrder<>(rp.getSolver(), this), new IntDomainMin()));
 
         // Add all defined strategies
         rp.getSolver().getSearchLoop().set(

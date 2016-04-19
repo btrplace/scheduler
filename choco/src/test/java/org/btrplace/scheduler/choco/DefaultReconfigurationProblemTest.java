@@ -698,7 +698,7 @@ public class DefaultReconfigurationProblemTest {
      * Test a maximization problem: use the maximum number of nodes to host VMs
      *
      * @throws org.btrplace.scheduler.SchedulerException
-     * TODO: re-actiate some day
+     * TODO: re-activate some day
      */
     /*@Test
     public void testMaximization() throws SchedulerException {

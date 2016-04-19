@@ -41,8 +41,10 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
+import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
 import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
@@ -258,12 +260,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void appendNaiveBranchHeuristic() {
         StrategiesSequencer seq;
 
+        IntStrategy strat = ISF.custom(new FirstFail(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
         if (solver.getSearchLoop().getStrategy() == null) {
-            seq = new StrategiesSequencer(ISF.lexico_LB(ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
+            seq = new StrategiesSequencer(strat);
         } else {
             seq = new StrategiesSequencer(
                     solver.getSearchLoop().getStrategy(),
-                    ISF.lexico_LB(ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
+                    strat);
         }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {

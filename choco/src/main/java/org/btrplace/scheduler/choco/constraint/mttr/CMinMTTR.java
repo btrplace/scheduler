@@ -37,7 +37,6 @@ import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
@@ -163,11 +162,12 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
                 migs.add(((RelocatableVM) t).getRelocationMethod());
             }
         }
-        strategies.add(ISF.lexico_UB(migs.toArray(new IntVar[migs.size()])));
+        //strategies.add(ISF.lexico_UB(migs.toArray(new IntVar[migs.size()])));
+        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.max_value_selector(), migs.toArray(new IntVar[migs.size()])));
 
         if (p.getNodeActions().size() > 0) {
             //Boot some nodes if needed
-            strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new InputOrder<>(), new IntDomainMin()));
+            strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new MyInputOrder<>(s), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
@@ -175,9 +175,10 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
-        strategies.add(ISF.lexico_LB(TransitionUtils.getEnds(rp.getVMActions())));//new IntStrategy(SliceUtils.extractEnds(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
+        //strategies.add(ISF.lexico_LB(TransitionUtils.getEnds(rp.getVMActions())));
+        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), TransitionUtils.getEnds(rp.getVMActions())));
         //At this stage only it matters to plug the cost constraints
-        strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(this), new IntDomainMin()));
+        strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
 
         s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
     }
