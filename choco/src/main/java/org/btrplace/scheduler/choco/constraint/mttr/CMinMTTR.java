@@ -175,6 +175,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
+        strategies.add(ISF.lexico_LB(TransitionUtils.getEnds(rp.getVMActions())));//new IntStrategy(SliceUtils.extractEnds(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(this), new IntDomainMin()));
 

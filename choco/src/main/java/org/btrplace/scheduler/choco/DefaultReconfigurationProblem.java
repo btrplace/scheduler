@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2014 University Nice Sophia Antipolis
  *
@@ -260,18 +259,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         StrategiesSequencer seq;
 
         if (solver.getSearchLoop().getStrategy() == null) {
-            seq = new StrategiesSequencer(
-                    ISF.custom(ISF.minDomainSize_var_selector(),
-                            ISF.min_value_selector(),
-                            ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
-
+            seq = new StrategiesSequencer(ISF.lexico_LB(ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
         } else {
             seq = new StrategiesSequencer(
                     solver.getSearchLoop().getStrategy(),
-                    ISF.custom(ISF.minDomainSize_var_selector(),
-                            ISF.min_value_selector(),
-                            ArrayUtils.append(solver.retrieveBoolVars(),
-                                    solver.retrieveIntVars())));
+                    ISF.lexico_LB(ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
         }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {
