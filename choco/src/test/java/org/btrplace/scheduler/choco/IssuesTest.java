@@ -542,12 +542,9 @@ public class IssuesTest {
     }
 
     @Test
-    public void testAditya() {
-        Instance i = InstanceConverter.quickFromJSON(new File("choco/src/test/resources/net.json"));
+    public void testIssue100() {
+        Instance i = InstanceConverter.quickFromJSON(new File("choco/src/test/resources/issue-100.json"));
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(2);
-        s.doRepair(true);
-        s.doOptimize(false);
         ReconfigurationPlan p = s.solve(i);
         System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
