@@ -5,12 +5,13 @@ version 0.45 - soon come
 ----------------------
 See milestone [0.45](https://github.com/btrplace/scheduler/milestones/0.45)
 
-A released focused on code quality improvement using Coverity, Findbugs, Sonar & co.
+A released focused on performance and code quality improvement using
+Coverity, Findbugs, Sonar & co.
 
 - the serialisation format forces UTF-8 encoding
 - less arrays, more immutable lists in the ReconfigurationProblem
 - no more Cloneable. Moved to an ad-hoc Copyable interface
-- bug fixes: #92, #93, #94
+- the migration scheduler is faster and more robust
 
 version 0.44 - 17 Jan 2016
 ----------------------
