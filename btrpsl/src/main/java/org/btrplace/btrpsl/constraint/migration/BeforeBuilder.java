@@ -54,6 +54,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
      *              a timestamp string ({@see Deadline} constraint)
      * @return  a constraint
      */
+    @Override
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
 
         if (!checkConformance(t, args)) {
@@ -81,7 +82,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
         }
         else if (obj instanceof String) {
             String timestamp = (String) obj;
-            if (timestamp.equals("")) {
+            if ("".equals(timestamp)) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a non-empty string");
                 return Collections.emptyList();
             }

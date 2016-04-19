@@ -338,9 +338,11 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public E fromJSON(File path) throws IOException, JSONConverterException {
+    public E fromJSON(File path) throws JSONConverterException {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), charset))) {
             return fromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 
@@ -411,14 +413,20 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public void toJSON(E e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(E e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(E e, File path) throws JSONConverterException, IOException {
+    public void toJSON(E e, File path) throws JSONConverterException {
         try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), charset))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 

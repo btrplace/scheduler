@@ -132,7 +132,7 @@ public class PathBasedIncludes implements Includes {
      * @return {@code true} if the path was added
      */
     public boolean addPath(File path) {
-        return (path.isDirectory() && this.paths.add(path));
+        return path.isDirectory() && this.paths.add(path);
     }
 
     /**

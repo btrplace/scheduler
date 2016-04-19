@@ -38,7 +38,7 @@ public class BtrpString extends DefaultBtrpOperand {
     }
 
     @Override
-    public BtrpString clone() {
+    public BtrpString copy() {
         return new BtrpString(this.value);
     }
 

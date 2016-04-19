@@ -35,7 +35,7 @@ public class SelfAssignmentStatement extends BtrPlaceTree {
     /**
      * The operation.
      */
-    public static enum Type {
+    public enum Type {
         /**
          * +=
          */plus_equals,

@@ -28,6 +28,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Includes {
 
     /**

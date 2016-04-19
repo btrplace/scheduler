@@ -21,11 +21,13 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.scheduler.choco.Injectable;
 import org.btrplace.scheduler.choco.MisplacedVMsEstimator;
 
+import java.io.Serializable;
+
 /**
  * An interface to describe a constraint implementation for the solver.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraint extends MisplacedVMsEstimator, Injectable {
+public interface ChocoConstraint extends MisplacedVMsEstimator, Injectable, Serializable {
 
 }

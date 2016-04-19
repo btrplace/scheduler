@@ -325,12 +325,12 @@ public class BtrpSetTest {
 
     }
 
-    public void testClone() {
+    public void testcopy() {
         BtrpSet s = new BtrpSet(1, BtrpOperand.Type.number);
         for (int i = 0; i < 6; i++) {
             s.getValues().add(new BtrpNumber(i, BtrpNumber.Base.base10));
         }
-        BtrpSet s2 = s.clone();
+        BtrpSet s2 = s.copy();
         Assert.assertEquals(s, s2);
         s.getValues().add(new BtrpNumber(12, BtrpNumber.Base.base10));
         Assert.assertNotEquals(s, s2);

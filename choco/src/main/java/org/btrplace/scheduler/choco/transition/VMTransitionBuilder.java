@@ -25,6 +25,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * A builder to instantiate a {@link VMTransitionBuilder}
@@ -36,7 +37,7 @@ public abstract class VMTransitionBuilder implements Serializable {
     /**
      * The possible initial states of the VM.
      */
-    private EnumSet<VMState> s;
+    private Set<VMState> s;
 
     /**
      * The next state of the VM.
@@ -52,7 +53,7 @@ public abstract class VMTransitionBuilder implements Serializable {
      * @param src the possible initial states of the VM.
      * @param dst the destination state of the VM
      */
-    public VMTransitionBuilder(String lbl, EnumSet<VMState> src, VMState dst) {
+    public VMTransitionBuilder(String lbl, Set<VMState> src, VMState dst) {
         this.s = src;
         this.d = dst;
         this.id = lbl;
@@ -84,7 +85,7 @@ public abstract class VMTransitionBuilder implements Serializable {
      *
      * @return a state
      */
-    public EnumSet<VMState> getSourceStates() {
+    public Set<VMState> getSourceStates() {
         return s;
     }
 

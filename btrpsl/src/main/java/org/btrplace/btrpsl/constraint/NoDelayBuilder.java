@@ -47,10 +47,11 @@ public class NoDelayBuilder extends DefaultSatConstraintBuilder {
      * @param args must be 1 set of vms. The set must not be empty
      * @return a constraint
      */
+    @Override
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<VM> s = (List<VM>) params[0].transform(this, t, args.get(0));
-            return (s != null ? (List) NoDelay.newNoDelay(s) : Collections.emptyList());
+            return s != null ? (List) NoDelay.newNoDelay(s) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

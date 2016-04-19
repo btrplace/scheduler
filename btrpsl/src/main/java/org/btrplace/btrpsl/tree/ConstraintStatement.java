@@ -79,7 +79,7 @@ public class ConstraintStatement extends BtrPlaceTree {
         //Get the params
         int i = 0;
         boolean discrete = false;
-        if (getChild(0).getText().equals(">>")) {
+        if (">>".equals(getChild(0).getText())) {
             i = 1;
             discrete = true;
         }

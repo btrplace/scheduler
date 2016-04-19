@@ -50,13 +50,13 @@ public class LocalTaskScheduler implements Serializable {
      */
     private IntVar[] cEnds;
     private IStateIntVector vIn;
-    final private IntVar[] cHosters;
+    private final IntVar[] cHosters;
 
     /*
      * The moment the demanding slices ends. Same order as the hosting variables.
      */
     private IntVar[] dStarts;
-    final private IntVar[] dHosters;
+    private final IntVar[] dHosters;
 
     private int[] startupFree;
     private int[] associateCTask;

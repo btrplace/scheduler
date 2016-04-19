@@ -23,6 +23,7 @@ package org.btrplace.examples;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Example {
 
     /**

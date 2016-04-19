@@ -18,15 +18,11 @@
 
 package org.btrplace.btrpsl.template;
 
-import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
-import org.btrplace.model.Element;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
-
-import java.util.Map;
 
 /**
  * A Template is a skeleton for a node or a virtual machine.
@@ -40,11 +36,9 @@ public interface Template {
     /**
      * Build a new element that inherit from a template.
      *
-     * @param e       the name of the element
-     * @param options the options
      * @return a new element
      */
-    BtrpElement check(Script scr, Element e, Map<String, String> options) throws ElementBuilderException;
+    BtrpElement check() throws ElementBuilderException;
 
     /**
      * Get the identifier associated to the template.

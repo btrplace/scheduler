@@ -116,7 +116,7 @@ public class FastImpliesEq extends Constraint {
                 if (vars[0].contains(0)) {
                     return ESat.TRUE;
                 }
-                return (!vars[1].contains(constant)) ? ESat.FALSE : (vars[1].isInstantiated()) ? ESat.TRUE : ESat.UNDEFINED;
+                return !vars[1].contains(constant) ? ESat.FALSE : (vars[1].isInstantiated()) ? ESat.TRUE : ESat.UNDEFINED;
             }
             return ESat.UNDEFINED;
         }

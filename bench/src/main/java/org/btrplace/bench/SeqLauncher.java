@@ -71,7 +71,6 @@ public class SeqLauncher {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println(e);
         }
     }

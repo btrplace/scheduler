@@ -143,9 +143,11 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     @Override
-    public List<ModelView> listFromJSON(File path) throws IOException, JSONConverterException {
+    public List<ModelView> listFromJSON(File path) throws JSONConverterException {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
 
     }
@@ -177,14 +179,20 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     @Override
-    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException, IOException {
+    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException {
         try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 

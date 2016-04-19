@@ -59,7 +59,7 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
 
-        return (ns != null) ?
+        return ns != null ?
                 (List) Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
                 Collections.emptyList();
     }

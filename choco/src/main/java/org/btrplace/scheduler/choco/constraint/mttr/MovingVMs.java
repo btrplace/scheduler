@@ -86,6 +86,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     @Override
     public IntVar getVariable(IntVar[] scopes) {
-        return (setToNextMovingVM(scopes)) ? scopes[idx.get()] : null;
+        return setToNextMovingVM(scopes) ? scopes[idx.get()] : null;
     }
 }

@@ -101,7 +101,7 @@ public class SymbolsTable {
      * @return {@code true} if the variable is immutable
      */
     public boolean isImmutable(String label) {
-        return (isDeclared(label) && level.get(label) < 0);
+        return isDeclared(label) && level.get(label) < 0;
     }
 
     /**
@@ -180,7 +180,7 @@ public class SymbolsTable {
      */
     public boolean popTable() {
         if (currentLevel > 0) {
-            //Remove all the variable having a level equals to currentLevel;
+            //Remove all the variable having a level equals to currentLevel
             for (Iterator<Map.Entry<String, Integer>> ite = level.entrySet().iterator(); ite.hasNext(); ) {
                 Map.Entry<String, Integer> e = ite.next();
                 if (e.getValue() == currentLevel) {

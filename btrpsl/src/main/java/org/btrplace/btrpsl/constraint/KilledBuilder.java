@@ -51,7 +51,7 @@ public class KilledBuilder extends DefaultSatConstraintBuilder {
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<VM> s = (List<VM>) params[0].transform(this, t, args.get(0));
-            return (s != null ? (List) Killed.newKilled(s) : Collections.emptyList());
+            return s != null ? (List) Killed.newKilled(s) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

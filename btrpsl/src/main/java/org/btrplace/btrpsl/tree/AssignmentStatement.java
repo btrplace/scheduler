@@ -56,7 +56,7 @@ public class AssignmentStatement extends BtrPlaceTree {
         if (symbols.isImmutable(lbl)) {
             return ignoreError(lbl + " is an immutable variable. Assignment not permitted");
         }
-        BtrpOperand cpy = res.clone();
+        BtrpOperand cpy = res.copy();
         cpy.setLabel(lbl);
         symbols.declare(lbl, cpy);
         return IgnorableOperand.getInstance();

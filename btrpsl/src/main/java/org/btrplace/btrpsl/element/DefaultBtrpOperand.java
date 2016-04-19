@@ -23,7 +23,7 @@ package org.btrplace.btrpsl.element;
  *
  * @author Fabien Hermenier
  */
-public abstract class DefaultBtrpOperand implements BtrpOperand, Cloneable {
+public abstract class DefaultBtrpOperand implements BtrpOperand {
 
     private String label = null;
 
@@ -93,9 +93,6 @@ public abstract class DefaultBtrpOperand implements BtrpOperand, Cloneable {
     public BtrpNumber gt(BtrpOperand other) {
         throw new UnsupportedOperationException("operator '>' unsupported");
     }
-
-    @Override
-    public abstract BtrpOperand clone();
 
     /**
      * Pretty textual representation of the element type.

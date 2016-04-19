@@ -21,6 +21,8 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.VM;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.io.Serializable;
+
 
 /**
  * Model a period where an element is hosted on a node.
@@ -31,7 +33,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  * @see SliceUtils
  */
-public class Slice {
+public class Slice implements Serializable {
 
     private IntVar hoster;
 

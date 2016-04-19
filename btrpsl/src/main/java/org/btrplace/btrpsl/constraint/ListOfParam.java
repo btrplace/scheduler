@@ -130,6 +130,6 @@ public class ListOfParam extends DefaultConstraintParam<List> {
 
     @Override
     public boolean isCompatibleWith(BtrPlaceTree t, BtrpOperand o) {
-        return (o == IgnorableOperand.getInstance() || (o.type() == type && (o.degree() == depth || (depth == 1 && o.degree() == 0))));
+        return o == IgnorableOperand.getInstance() || (o.type() == type && (o.degree() == depth || (depth == 1 && o.degree() == 0)));
     }
 }

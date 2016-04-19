@@ -21,7 +21,6 @@ package org.btrplace.json;
 import net.minidev.json.JSONArray;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
@@ -56,10 +55,9 @@ public interface JSONArrayConverter<E> {
      *
      * @param path the file path
      * @return the resulting collection
-     * @throws IOException            if an error occurred while reading the stream
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    List<E> listFromJSON(File path) throws IOException, JSONConverterException;
+    List<E> listFromJSON(File path) throws JSONConverterException;
 
     /**
      * Un-serialize a collection from a string.
@@ -95,9 +93,8 @@ public interface JSONArrayConverter<E> {
      * @param e the collection to serialize
      * @param w the stream to append to
      * @throws JSONConverterException if an error occurred while converting the collection
-     * @throws IOException            if an error occurred while writing the collection
      */
-    void toJSON(Collection<E> e, Appendable w) throws JSONConverterException, IOException;
+    void toJSON(Collection<E> e, Appendable w) throws JSONConverterException;
 
     /**
      * Serialize a collection to a file.
@@ -105,7 +102,6 @@ public interface JSONArrayConverter<E> {
      * @param e    the collection
      * @param path the path name
      * @throws JSONConverterException if an error occurred while converting the collection
-     * @throws IOException            if an error occurred while writing the collection
      */
-    void toJSON(Collection<E> e, File path) throws JSONConverterException, IOException;
+    void toJSON(Collection<E> e, File path) throws JSONConverterException;
 }

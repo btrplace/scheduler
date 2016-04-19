@@ -60,6 +60,6 @@ public class PreserveBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
 
-        return (s != null && rcId != null ? (List) Preserve.newPreserve(s, rcId, v.intValue()) : Collections.emptyList());
+        return s != null && rcId != null ? (List) Preserve.newPreserve(s, rcId, v.intValue()) : Collections.emptyList();
     }
 }

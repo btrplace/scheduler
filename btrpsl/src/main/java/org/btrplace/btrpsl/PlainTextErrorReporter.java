@@ -28,12 +28,7 @@ import java.util.*;
  */
 public class PlainTextErrorReporter implements ErrorReporter {
 
-    private static Comparator<ErrorMessage> cmp = new Comparator<ErrorMessage>() {
-        @Override
-        public int compare(ErrorMessage e1, ErrorMessage e2) {
-            return e1.lineNo() - e2.lineNo();
-        }
-    };
+    private static Comparator<ErrorMessage> cmp = (e1, e2) -> e1.lineNo() - e2.lineNo();
     /**
      * The error messages.
      */
@@ -65,6 +60,7 @@ public class PlainTextErrorReporter implements ErrorReporter {
      *
      * @return all the reported errors
      */
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
         Collections.sort(errors, cmp);
@@ -90,10 +86,6 @@ public class PlainTextErrorReporter implements ErrorReporter {
     @Override
     public void updateNamespace() {
 
-        for (ErrorMessage msg : errors) {
-            if (msg.getNamespace() == null) {
-                msg.setNamespace(script.id());
-            }
-        }
+        errors.stream().filter(msg -> msg.getNamespace() == null).forEach(msg -> msg.setNamespace(script.id()));
     }
 }

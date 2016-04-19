@@ -27,7 +27,7 @@ import org.btrplace.model.Model;
  */
 public class SchedulerException extends RuntimeException {
 
-    private Model model;
+    private final Model model;
 
     /**
      * Make a new exception.

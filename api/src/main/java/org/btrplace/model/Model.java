@@ -99,5 +99,6 @@ public interface Model extends ElementBuilder, Copyable<ElementBuilder>, Seriali
      *
      * @return a model copy
      */
+    @Override
     Model copy();
 }

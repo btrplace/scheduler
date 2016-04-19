@@ -39,9 +39,9 @@ public class BtrpStringTest {
         Assert.assertEquals(s1.prettyType(), "string");
     }
 
-    public void testClone() {
+    public void testcopy() {
         BtrpString s1 = new BtrpString("foo");
-        BtrpString s2 = s1.clone();
+        BtrpString s2 = s1.copy();
         Assert.assertEquals(s1, s2);
     }
 

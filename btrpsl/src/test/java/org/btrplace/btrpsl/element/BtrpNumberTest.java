@@ -292,13 +292,13 @@ public class BtrpNumberTest {
         Assert.assertEquals(i.not(), BtrpNumber.FALSE);
     }
 
-    public void testClone() {
+    public void testcopy() {
         BtrpNumber i = new BtrpNumber(0, BtrpNumber.Base.base16);
-        BtrpNumber j = i.clone();
+        BtrpNumber j = i.copy();
         Assert.assertEquals(i, j);
 
         i = new BtrpNumber(0.5);
-        j = i.clone();
+        j = i.copy();
         Assert.assertEquals(i, j);
 
     }

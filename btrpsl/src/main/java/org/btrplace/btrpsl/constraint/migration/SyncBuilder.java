@@ -51,6 +51,7 @@ public class SyncBuilder extends DefaultSatConstraintBuilder {
      * @param args must be 1 set of vms. The set must not be empty
      * @return  a constraint
      */
+    @Override
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();

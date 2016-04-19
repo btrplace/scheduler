@@ -60,7 +60,7 @@ public class ResourceCapacityBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
 
-        return (ns != null ?
-                (List) Collections.singletonList(new ResourceCapacity(new HashSet<>(ns), rcId, v.intValue())) : Collections.emptyList());
+        return ns != null ?
+                (List) Collections.singletonList(new ResourceCapacity(new HashSet<>(ns), rcId, v.intValue())) : Collections.emptyList();
     }
 }

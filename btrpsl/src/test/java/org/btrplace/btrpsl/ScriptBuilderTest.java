@@ -24,7 +24,6 @@ import org.btrplace.btrpsl.element.BtrpString;
 import org.btrplace.btrpsl.includes.PathBasedIncludes;
 import org.btrplace.btrpsl.template.DefaultTemplateFactory;
 import org.btrplace.btrpsl.template.DefaultTemplateFactoryTest;
-import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
@@ -197,7 +196,6 @@ public class ScriptBuilderTest {
         ScriptBuilder b = new ScriptBuilder(mo);
         Script v = b.build("namespace test.template;\nVM[1..5] : tinyVMs;\nfrontend : mediumVMs; @N[1..12] : defaultNodes;\n");
         Assert.assertEquals(v.getVMs().size(), 6);
-        NamingService<Node> srvNodes = (NamingService<Node>) mo.getView(NamingService.ID + "node");
         NamingService<VM> srvVMs = (NamingService<VM>) mo.getView(NamingService.ID + "vm");
         for (VM el : v.getVMs()) {
             String name = srvVMs.resolve(el);
@@ -530,7 +528,6 @@ public class ScriptBuilderTest {
         Assert.assertEquals(mo.getMapping().getNbVMs(), 10);
         ChocoScheduler ra = new DefaultChocoScheduler();
         ReconfigurationPlan p = ra.solve(mo, scr.getConstraints());
-        ReconfigurationPlanConverter rpc = new ReconfigurationPlanConverter();
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 10);
     }

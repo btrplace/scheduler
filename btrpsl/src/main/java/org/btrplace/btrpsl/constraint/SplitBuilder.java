@@ -52,7 +52,7 @@ public class SplitBuilder extends DefaultSatConstraintBuilder {
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             @SuppressWarnings("unchecked") Collection<Collection<VM>> s = (Collection<Collection<VM>>) params[0].transform(this, t, args.get(0));
-            return (s != null ? (List) Collections.singletonList(new Split(s, false)) : Collections.emptyList());
+            return s != null ? (List) Collections.singletonList(new Split(s, false)) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

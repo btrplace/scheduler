@@ -194,7 +194,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     @Override
     public int getPropagationConditions(int idx) {
-        return (idx < bins.length ? IntEventType.all() : IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask());
+        return idx < bins.length ? IntEventType.all() : IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask();
     }
 
     @Override
@@ -209,7 +209,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     @Override
     public ESat isEntailed() {
-        return (isCompletelyInstantiated()) ? isConsistent() : ESat.UNDEFINED;
+        return isCompletelyInstantiated() ? isConsistent() : ESat.UNDEFINED;
     }
 
     /**

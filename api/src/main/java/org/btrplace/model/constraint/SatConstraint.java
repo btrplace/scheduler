@@ -8,7 +8,6 @@ import org.btrplace.plan.ReconfigurationPlanChecker;
 import org.btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Abstract class to characterize a satisfaction-oriented constraint

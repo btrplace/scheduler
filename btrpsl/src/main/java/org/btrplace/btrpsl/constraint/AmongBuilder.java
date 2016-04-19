@@ -56,7 +56,7 @@ public class AmongBuilder extends DefaultSatConstraintBuilder {
         if (checkConformance(t, args)) {
             List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
             Collection<Collection<Node>> nss = (Collection<Collection<Node>>) params[1].transform(this, t, args.get(1));
-            return (vms != null && nss != null) ? (List) Collections.singletonList(new Among(vms, nss)) : Collections.emptyList();
+            return vms != null && nss != null ? (List) Collections.singletonList(new Among(vms, nss)) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

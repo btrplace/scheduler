@@ -18,6 +18,7 @@
 
 package org.btrplace.btrpsl;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public interface ErrorReporter {
+public interface ErrorReporter extends Serializable {
 
     /**
      * Report an error.

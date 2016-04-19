@@ -421,9 +421,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public List<Action> listFromJSON(File path) throws IOException, JSONConverterException {
+    public List<Action> listFromJSON(File path) throws JSONConverterException {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
 
     }
@@ -455,14 +457,20 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public void toJSON(Collection<Action> e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(Collection<Action> e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(Collection<Action> e, File path) throws JSONConverterException, IOException {
+    public void toJSON(Collection<Action> e, File path) throws JSONConverterException {
         try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 }

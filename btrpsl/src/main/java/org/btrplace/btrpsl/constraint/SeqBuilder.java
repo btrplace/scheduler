@@ -45,7 +45,7 @@ public class SeqBuilder extends DefaultSatConstraintBuilder {
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
-            return (vms != null ? (List) Collections.singletonList(new Seq(vms)) : Collections.emptyList());
+            return vms != null ? (List) Collections.singletonList(new Seq(vms)) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

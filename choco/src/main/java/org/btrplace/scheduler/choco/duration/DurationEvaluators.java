@@ -43,29 +43,6 @@ public class DurationEvaluators implements Serializable {
 
 
     /**
-     * Make a new {@code DurationEvaluators} and fulfill it
-     * using default a default evaluator for each action.
-     *
-     * @return a fulfilled evaluators.
-     */
-    public static DurationEvaluators newBundle() {
-        DurationEvaluators dev = new DurationEvaluators();
-
-        //Default constructors
-        dev.register(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
-        dev.register(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
-        dev.register(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
-        dev.register(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
-        dev.register(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
-        dev.register(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
-        dev.register(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
-        dev.register(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
-        dev.register(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
-        dev.register(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
-        return dev;
-    }
-
-    /**
      * Make a new mapper.
      */
     public DurationEvaluators() {
@@ -132,5 +109,28 @@ public class DurationEvaluators implements Serializable {
             throw new SchedulerException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         return d;
+    }
+
+    /**
+     * Make a new {@code DurationEvaluators} and fulfill it
+     * using default a default evaluator for each action.
+     *
+     * @return a fulfilled evaluators.
+     */
+    public static DurationEvaluators newBundle() {
+        DurationEvaluators dev = new DurationEvaluators();
+
+        //Default constructors
+        dev.register(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
+        dev.register(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        dev.register(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        dev.register(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
+        dev.register(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
+        dev.register(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
+        dev.register(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        dev.register(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        dev.register(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
+        dev.register(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
+        return dev;
     }
 }

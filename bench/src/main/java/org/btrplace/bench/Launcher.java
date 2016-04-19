@@ -161,7 +161,7 @@ public class Launcher {
             }
             if (stats != null) {
                 writer.append("craStart;craNbSolutions;");
-                if (stats.getSolutions().size() > 0) {
+                if (!stats.getSolutions().isEmpty()) {
                     writer.append("craSolutionTime;");
                 }
                 writer.append("craCoreRPBuildDuration;")
@@ -189,7 +189,7 @@ public class Launcher {
                 writer.append(String.valueOf(stats.getStart()))
                         .append(';')
                         .append(String.valueOf(stats.getSolutions().size()));
-                if (stats.getSolutions().size() > 0) {
+                if (!stats.getSolutions().isEmpty()) {
                     writer.append(String.valueOf(stats.getSolutions().get(0).getTime()))
                             .append(';');
                 }

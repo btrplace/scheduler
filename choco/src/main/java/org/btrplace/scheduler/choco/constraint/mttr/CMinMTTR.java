@@ -90,13 +90,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
 
         p.setObjective(true, cost);
 
-        //We set a restart limit by default, this may be useful especially with very small infrastructure
-        //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
-        //in the scheduling part
-        //Restart limit = 2 * number of VMs in the DC.
-        /*if (p.getVMs().length > 0) {
-            SMF.geometrical(s, p.getVMs().length * 2, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
-        }*/
         injectPlacementHeuristic(p, ps, cost);
         return true;
     }
@@ -147,14 +140,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         placeVMs(ps, strategies, badActions, schedHeuristic, pla);
         placeVMs(ps, strategies, goodActions, schedHeuristic, pla);
 
-        //VMs to run
-/*        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
-        vmsToRun.removeAll(p.getFutureReadyVMs());
-
-        VMTransition[] runActions = p.getVMActions(vmsToRun);
-
-        placeVMs(strategies, runActions, schedHeuristic, pla);
-  */
         //Reinstantations. Try to reinstantiate first
         List<IntVar> migs = new ArrayList<>();
         for (VMTransition t : rp.getVMActions()) {
@@ -162,10 +147,9 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
                 migs.add(((RelocatableVM) t).getRelocationMethod());
             }
         }
-        //strategies.add(ISF.lexico_UB(migs.toArray(new IntVar[migs.size()])));
         strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.max_value_selector(), migs.toArray(new IntVar[migs.size()])));
 
-        if (p.getNodeActions().size() > 0) {
+        if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
             strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new MyInputOrder<>(s), new IntDomainMin()));
         }
@@ -175,7 +159,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
-        //strategies.add(ISF.lexico_LB(TransitionUtils.getEnds(rp.getVMActions())));
         strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), TransitionUtils.getEnds(rp.getVMActions())));
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
@@ -187,9 +170,8 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(Parameters ps, List<AbstractStrategy> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
-        //IntValueSelector quart = new RandOverQuartilePlacement(rp, map, getComparator(), 1, true);
         IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
-        if (actions.size() > 0) {
+        if (!actions.isEmpty()) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
             if (hosts.length > 0) {
                 strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
@@ -219,6 +201,6 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     
     @Override
     public String toString() {
-        return ("minimizeMTTR()");
+        return "minimizeMTTR()";
     }
 }

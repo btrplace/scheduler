@@ -19,18 +19,20 @@
 package org.btrplace.btrpsl.element;
 
 
+import org.btrplace.Copyable;
+
 /**
  * Interface specifying an operand with its types and the available operation it may
  * be involved into.
  *
  * @author Fabien Hermenier
  */
-public interface BtrpOperand extends Cloneable {
+public interface BtrpOperand extends Copyable<BtrpOperand> {
 
     /**
      * The possible operand type.
      */
-    public static enum Type {
+    enum Type {
         /**
          * Denotes a virtual machine
          */VM,
@@ -164,12 +166,6 @@ public interface BtrpOperand extends Cloneable {
      */
     BtrpNumber gt(BtrpOperand other);
 
-    /**
-     * Deep copy of the operand.
-     *
-     * @return a copy of this operand
-     */
-    BtrpOperand clone();
 
     /**
      * Pretty textual representation of the element type.

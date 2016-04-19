@@ -23,6 +23,7 @@ package org.btrplace.btrpsl;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface ErrorReporterBuilder {
 
     /**

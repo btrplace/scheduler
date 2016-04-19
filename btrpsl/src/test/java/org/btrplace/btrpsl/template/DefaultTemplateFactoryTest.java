@@ -21,13 +21,15 @@ package org.btrplace.btrpsl.template;
 import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Unit tests for {@link DefaultTemplateFactory}.
@@ -52,7 +54,7 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public BtrpElement check(Script scr, Element e, Map<String, String> options) throws ElementBuilderException {
+        public BtrpElement check() throws ElementBuilderException {
             return null;
         }
 
@@ -91,7 +93,7 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public BtrpElement check(Script scr, Element e, Map<String, String> options) throws ElementBuilderException {
+        public BtrpElement check() throws ElementBuilderException {
             BtrpElement el = new BtrpElement(getElementType(), "foo", mo.newVM());
             mo.getAttributes().put(el.getElement(), "template", getIdentifier());
             return el;
@@ -189,7 +191,7 @@ public class DefaultTemplateFactoryTest {
         DefaultTemplateFactory tplf = new DefaultTemplateFactory(NamingService.newNodeNS(), NamingService.newVMNS(), mo);
         tplf.register(new MockVMTemplate("mock1"));
         Script scr = new Script();
-        tplf.check(scr, "mock1", mo.newNode(), new HashMap<String, String>());
+        tplf.check(scr, "mock1", mo.newNode(), new HashMap<>());
     }
 
 }

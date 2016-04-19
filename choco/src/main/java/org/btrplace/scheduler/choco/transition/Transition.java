@@ -23,6 +23,8 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.io.Serializable;
+
 /**
  * A model skeleton for a transition.
  * See {@link TransitionUtils} to extract components of Transitions.
@@ -30,7 +32,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  * @see TransitionUtils
  */
-public interface Transition<E extends Enum<?>> {
+public interface Transition<E extends Enum<?>> extends Serializable {
 
     /**
      * Get the moment the action starts.

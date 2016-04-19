@@ -88,7 +88,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
         if (tpl == null) {
             throw new ElementBuilderException("Unknown template '" + tplName + "'");
         }
-        tpl.check(scr, e, attrs);
+        tpl.check();
     }
 
     @Override

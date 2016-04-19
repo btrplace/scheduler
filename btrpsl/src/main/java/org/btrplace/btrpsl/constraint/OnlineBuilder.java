@@ -51,7 +51,7 @@ public class OnlineBuilder extends DefaultSatConstraintBuilder {
     public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
-            return (ns != null ? (List) Online.newOnline(ns) : Collections.emptyList());
+            return ns != null ? (List) Online.newOnline(ns) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

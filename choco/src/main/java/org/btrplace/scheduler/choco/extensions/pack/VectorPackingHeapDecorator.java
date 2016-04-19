@@ -102,6 +102,7 @@ public class VectorPackingHeapDecorator implements Serializable {
             this.hp = hp;
         }
 
+        @Override
         public int compare(Integer a, Integer b) {
             return hp.loadSlack(dimension, b) - hp.loadSlack(dimension, a);
         }

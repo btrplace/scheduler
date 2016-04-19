@@ -53,7 +53,7 @@ public class FenceBuilder extends DefaultSatConstraintBuilder {
         if (checkConformance(t, args)) {
             List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
             List<Node> ns = (List<Node>) params[1].transform(this, t, args.get(1));
-            return (vms != null && ns != null) ? (List) Fence.newFence(vms, ns) : Collections.emptyList();
+            return vms != null && ns != null ? (List) Fence.newFence(vms, ns) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

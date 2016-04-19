@@ -27,7 +27,7 @@ import org.btrplace.model.Element;
  *
  * @author Fabien Hermenier
  */
-public class BtrpElement extends DefaultBtrpOperand implements Cloneable {
+public class BtrpElement extends DefaultBtrpOperand {
 
     private String name;
 
@@ -111,7 +111,7 @@ public class BtrpElement extends DefaultBtrpOperand implements Cloneable {
     }
 
     @Override
-    public BtrpElement clone() {
+    public BtrpElement copy() {
         return new BtrpElement(t, name, e);
     }
 

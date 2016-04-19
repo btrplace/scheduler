@@ -18,12 +18,14 @@
 
 package org.btrplace.btrpsl;
 
+import java.io.Serializable;
+
 /**
  * An error message
  *
  * @author Fabien Hermenier
  */
-public class ErrorMessage {
+public class ErrorMessage implements Serializable {
 
     /**
      * The line number.

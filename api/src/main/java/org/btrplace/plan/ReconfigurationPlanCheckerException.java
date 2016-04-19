@@ -29,7 +29,7 @@ import org.btrplace.plan.event.Action;
  */
 public class ReconfigurationPlanCheckerException extends Exception {
 
-    private SatConstraint cstr;
+    private final SatConstraint cstr;
 
     private Action action;
 

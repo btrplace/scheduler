@@ -5,6 +5,7 @@ package org.btrplace;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Copyable<T> {
 
     /**

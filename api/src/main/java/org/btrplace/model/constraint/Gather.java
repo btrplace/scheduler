@@ -24,7 +24,6 @@ import org.btrplace.model.VM;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * A constraint to force a set of VMs, if running, to be

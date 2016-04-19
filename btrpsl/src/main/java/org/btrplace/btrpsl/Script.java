@@ -24,6 +24,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -31,7 +32,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Script {
+public class Script implements Serializable {
 
     private Set<VM> vms;
 

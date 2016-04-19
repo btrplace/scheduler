@@ -26,7 +26,7 @@ package org.btrplace.btrpsl.element;
  *
  * @author Fabien Hermenier
  */
-public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
+public class BtrpNumber extends DefaultBtrpOperand {
 
     /**
      * The current real value.
@@ -196,7 +196,7 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
         }
 
         BtrpNumber x = (BtrpNumber) o;
-        return (dVal == x.dVal);
+        return dVal == x.dVal;
     }
 
     @Override
@@ -278,7 +278,7 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     }
 
     @Override
-    public BtrpNumber clone() {
+    public BtrpNumber copy() {
         if (isInteger) {
             return new BtrpNumber((int) dVal, base);
         }
@@ -297,7 +297,7 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     /**
      * The number base.
      */
-    public static enum Base {
+    public enum Base {
         /**
          * Octal value.
          */base8,
