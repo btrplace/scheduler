@@ -59,12 +59,6 @@ public final class Launcher {
                 System.err.println("The example '" + ex.getClass().getSimpleName() + "' failed");
                 System.exit(1);
             }
-        } catch (ClassNotFoundException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        } catch (InstantiationException e) {
-            System.err.println("Unable to instantiate " + e.getMessage());
-            System.exit(1);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.exit(1);

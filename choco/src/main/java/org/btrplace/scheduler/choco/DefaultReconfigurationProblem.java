@@ -448,7 +448,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(Solution s, ReconfigurationPlan p) {
         if (p.getDuration() != s.getIntVal(end)) {
-            throw new RuntimeException("The plan effective duration (" + p.getDuration() + ") and the computed duration (" + end.getValue() + ") mismatch");
+            throw new SchedulerException(p.getOrigin(), "The plan effective duration (" + p.getDuration() + ") and the computed duration (" + end.getValue() + ") mismatch");
         }
         return true;
     }

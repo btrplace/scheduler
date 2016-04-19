@@ -44,13 +44,18 @@ public class NetworkAndMigrations implements Example {
         Mapping ma = mo.getMapping();
 
         // Create and boot 2 source nodes and 1 destination node
-        Node srcNode1 = mo.newNode(), srcNode2 = mo.newNode(), dstNode = mo.newNode();
+        Node srcNode1 = mo.newNode();
+        Node srcNode2 = mo.newNode();
+        Node dstNode = mo.newNode();
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
         ma.addOnlineNode(dstNode);
         
         // Create 4 VMs and host 2 VMs on each source node
-        VM vm0 = mo.newVM(), vm1 = mo.newVM(), vm2 = mo.newVM(), vm3 = mo.newVM();
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
         ma.addRunningVM(vm0, srcNode1);
         ma.addRunningVM(vm1, srcNode1);
         ma.addRunningVM(vm2, srcNode2);

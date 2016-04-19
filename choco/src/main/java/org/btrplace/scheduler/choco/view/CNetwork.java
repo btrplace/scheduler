@@ -61,8 +61,8 @@ public class CNetwork implements ChocoView {
 
     private Solver solver;
     private Model source;
-    List<Task> tasksList;
-    List<IntVar> heightsList;
+    private List<Task> tasksList;
+    private List<IntVar> heightsList;
 
     /**
      * Make a new network view.
@@ -160,7 +160,10 @@ public class CNetwork implements ChocoView {
                     }*/
 
                     // Compute the duration related to each enumerated bandwidth
-                    double durationMin, durationColdPages, durationHotPages, durationTotal;
+                    double durationMin;
+                    double durationColdPages;
+                    double durationHotPages;
+                    double durationTotal;
                     /*List<Integer> durEnum = new ArrayList<>();
                     for (Integer bw : bwEnum) {*/
 
@@ -251,12 +254,6 @@ public class CNetwork implements ChocoView {
                         heightsList.toArray(new IntVar[heightsList.size()]),
                         VF.fixed(l.getCapacity(), solver),
                         true
-                        /* Try to tune the filters to improve the constraint efficiency
-                        Cumulative.Filter.TIME,
-                        //Cumulative.Filter.SWEEP,
-                        //Cumulative.Filter.SWEEP_HEI_SORT,
-                        Cumulative.Filter.NRJ,
-                        Cumulative.Filter.HEIGHTS*/
                 ));
             }
             tasksList.clear();

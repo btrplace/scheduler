@@ -13,7 +13,9 @@ import org.chocosolver.solver.variables.events.IntEventType;
  */
 public class TaskMonitor implements IVariableMonitor<IntVar> {
 
-    private IntVar S, D, E;
+    private IntVar S;
+    private IntVar D;
+    private IntVar E;
 
     public TaskMonitor(IntVar S, IntVar D, IntVar E) {
         this.S = S;

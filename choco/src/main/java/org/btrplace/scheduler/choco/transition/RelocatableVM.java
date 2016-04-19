@@ -168,7 +168,9 @@ public class RelocatableVM implements KeepRunningVM {
 
             // Set the migration algorithm
             if (mo.getAttributes().isSet(vm, "postCopy")) {
-                if (mo.getAttributes().getBoolean(vm, "postCopy")) postCopy = true;
+                if (mo.getAttributes().getBoolean(vm, "postCopy")) {
+                    postCopy = true;
+                }
             }
 
             // Create unbounded/large domain vars for migration duration and bandwidth

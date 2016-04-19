@@ -69,7 +69,8 @@ public abstract class AbstractCumulatives implements ChocoView {
 
         non = new HashMap<>();
 
-        int dIdx = 0, cIdx = 0;
+        int dIdx = 0;
+        int cIdx = 0;
 
         for (VMTransition a : rp.getVMActions()) {
             Slice c = a.getCSlice();

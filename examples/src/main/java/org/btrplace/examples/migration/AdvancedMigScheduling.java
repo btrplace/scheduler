@@ -52,8 +52,12 @@ public class AdvancedMigScheduling implements Example {
         Mapping ma = mo.getMapping();
 
         // Create and boot 4 source nodes and 2 destination nodes
-        Node srcNode1 = mo.newNode(), srcNode2 = mo.newNode(), srcNode3 = mo.newNode(), srcNode4 = mo.newNode();
-        Node dstNode1 = mo.newNode(), dstNode2 = mo.newNode();
+        Node srcNode1 = mo.newNode();
+        Node srcNode2 = mo.newNode();
+        Node srcNode3 = mo.newNode();
+        Node srcNode4 = mo.newNode();
+        Node dstNode1 = mo.newNode();
+        Node dstNode2 = mo.newNode();
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
         ma.addOnlineNode(srcNode3);
@@ -62,15 +66,24 @@ public class AdvancedMigScheduling implements Example {
         ma.addOfflineNode(dstNode2);
 
         // Create and host 1 VM per source node
-        VM vm0 = mo.newVM(), vm1 = mo.newVM(), vm2 = mo.newVM(), vm3 = mo.newVM();
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
         ma.addRunningVM(vm0, srcNode1);
         ma.addRunningVM(vm1, srcNode2);
         ma.addRunningVM(vm2, srcNode3);
         ma.addRunningVM(vm3, srcNode4);
 
         // Create, define, and attach CPU and Mem resource views for nodes and VMs
-        int mem_vm = 8, cpu_vm = 4, mem_src = 8, cpu_src = 4, mem_dst = 16, cpu_dst = 8;
-        ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
+        int mem_vm = 8;
+        int cpu_vm = 4;
+        int mem_src = 8;
+        int cpu_src = 4;
+        int mem_dst = 16;
+        int cpu_dst = 8;
+        ShareableResource rcMem = new ShareableResource("mem", 0, 0);
+        ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         // VMs resources consumption
         rcMem.setConsumption(vm0, mem_vm)
              .setConsumption(vm1, mem_vm)
@@ -98,7 +111,9 @@ public class AdvancedMigScheduling implements Example {
 
         // Set VM attributes 'hot dirty page size', 'hot dirty page duration', and 'cold dirty pages rate'
         // to simulate a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"
-        int vm_hds = 56, vm_hdd = 2; double vm_cdr = 22.6;
+        int vm_hds = 56;
+        int vm_hdd = 2;
+        double vm_cdr = 22.6;
         // vm0 is an 'idle' VM (with no special memory activity) but still consumes 2 GiB of memory
         mo.getAttributes().put(vm0, "memUsed", 2000);
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 4 GiB of memory
@@ -136,7 +151,9 @@ public class AdvancedMigScheduling implements Example {
         // Try to solve as is, and show the computed plan
         try {
             ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) return false;
+            if (p == null) {
+                return false;
+            }
             System.out.println(p);
             System.out.flush();
         } catch (SchedulerException e) {
