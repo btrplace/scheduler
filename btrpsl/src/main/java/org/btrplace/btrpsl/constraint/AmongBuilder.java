@@ -40,7 +40,7 @@ public class AmongBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public AmongBuilder() {
-        super("among", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.node, false)});
+        super("among", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.NODE, false)});
     }
 
     /**

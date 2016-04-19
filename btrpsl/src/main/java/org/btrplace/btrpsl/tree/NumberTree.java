@@ -47,11 +47,11 @@ public class NumberTree extends BtrPlaceTree {
         try {
             switch (token.getType()) {
                 case ANTLRBtrplaceSL2Lexer.OCTAL:
-                    return new BtrpNumber(Integer.parseInt(getText().substring(1), 8), BtrpNumber.Base.base8);
+                    return new BtrpNumber(Integer.parseInt(getText().substring(1), 8), BtrpNumber.Base.BASE_8);
                 case ANTLRBtrplaceSL2Lexer.HEXA:
-                    return new BtrpNumber(Integer.parseInt(getText().substring(2), 16), BtrpNumber.Base.base16);
+                    return new BtrpNumber(Integer.parseInt(getText().substring(2), 16), BtrpNumber.Base.BASE_16);
                 case ANTLRBtrplaceSL2Lexer.DECIMAL:
-                    return new BtrpNumber(Integer.parseInt(getText()), BtrpNumber.Base.base10);
+                    return new BtrpNumber(Integer.parseInt(getText()), BtrpNumber.Base.BASE_10);
                 case ANTLRBtrplaceSL2Lexer.FLOAT:
                     return new BtrpNumber(Double.parseDouble(getText()));
             }

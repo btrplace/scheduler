@@ -33,11 +33,11 @@ public class SymbolsTableTest {
     public void testDeclare() {
         SymbolsTable t = new SymbolsTable();
 
-        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.base10);
+        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.BASE_10);
         t.declareImmutable("$v3", i);
 
 
-        BtrpNumber i3 = new BtrpNumber(5, BtrpNumber.Base.base10);
+        BtrpNumber i3 = new BtrpNumber(5, BtrpNumber.Base.BASE_10);
         Assert.assertTrue(t.declare("$v1", i3));
         Assert.assertEquals(t.getSymbol("$v1"), i3);
         Assert.assertTrue(t.isDeclared("$v1"));
@@ -45,7 +45,7 @@ public class SymbolsTableTest {
         //Declared as immutable, no way
         Assert.assertFalse(t.declare("$v3", i));
 
-        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.base10);
+        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.BASE_10);
         Assert.assertTrue(t.declare("$v1", i2));
         Assert.assertEquals(t.getSymbol("$v1"), i2);
 
@@ -55,14 +55,14 @@ public class SymbolsTableTest {
     public void testDeclareImmutable() {
         SymbolsTable t = new SymbolsTable();
 
-        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.base10);
+        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.BASE_10);
         Assert.assertTrue(t.declareImmutable("$v1", i));
         Assert.assertEquals(t.getSymbol("$v1"), i);
         Assert.assertTrue(t.isDeclared("$v1"));
         Assert.assertTrue(t.isImmutable("$v1"));
 
         //No way to override an immutable value
-        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.base10);
+        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.BASE_10);
         Assert.assertFalse(t.declare("$v1", i2));
         Assert.assertFalse(t.declareImmutable("$v1", i2));
 
@@ -72,10 +72,10 @@ public class SymbolsTableTest {
     public void testRemove() {
         SymbolsTable t = new SymbolsTable();
 
-        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.base10);
+        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.BASE_10);
         t.declareImmutable("$v1", i);
 
-        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.base10);
+        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.BASE_10);
         t.declare("$v2", i2);
 
         Assert.assertNotNull(t.toString());
@@ -88,29 +88,29 @@ public class SymbolsTableTest {
     public void testPushAndPop() {
         SymbolsTable t = new SymbolsTable();
 
-        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.base10);
+        BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.BASE_10);
         t.declareImmutable("$v1", i);
 
-        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.base10);
+        BtrpNumber i2 = new BtrpNumber(7, BtrpNumber.Base.BASE_10);
         t.declare("$v2", i2);
 
         t.pushTable();
         Assert.assertTrue(t.isDeclared("$v1"));
         Assert.assertTrue(t.isDeclared("$v2"));
 
-        BtrpNumber i3 = new BtrpNumber(7, BtrpNumber.Base.base10);
+        BtrpNumber i3 = new BtrpNumber(7, BtrpNumber.Base.BASE_10);
         t.declare("$v3", i3);
 
         //New variable
         Assert.assertTrue(t.isDeclared("$v3"));
 
         //Redefinition
-        BtrpNumber i4 = new BtrpNumber(-7, BtrpNumber.Base.base10);
+        BtrpNumber i4 = new BtrpNumber(-7, BtrpNumber.Base.BASE_10);
         t.declare("$v2", i4);
         Assert.assertEquals(t.getSymbol("$v2"), i4);
 
         //Immutable variable that will stay
-        BtrpNumber i10 = new BtrpNumber(10, BtrpNumber.Base.base10);
+        BtrpNumber i10 = new BtrpNumber(10, BtrpNumber.Base.BASE_10);
         t.declareImmutable("$v10", i10);
 
 

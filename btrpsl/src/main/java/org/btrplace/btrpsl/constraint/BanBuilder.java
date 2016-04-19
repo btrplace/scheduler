@@ -40,7 +40,7 @@ public class BanBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public BanBuilder() {
-        super("ban", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpElement.Type.VM, false), new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("ban", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpElement.Type.VM, false), new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     /**

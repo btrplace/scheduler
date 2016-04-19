@@ -38,7 +38,7 @@ public class OverbookBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public OverbookBuilder() {
-        super("overbook", new ConstraintParam[]{new ListOfParam("$ns", 1, BtrpOperand.Type.node, false), new StringParam("$rcId"), new NumberParam("$r")});
+        super("overbook", new ConstraintParam[]{new ListOfParam("$ns", 1, BtrpOperand.Type.NODE, false), new StringParam("$rcId"), new NumberParam("$r")});
     }
 
     @Override

@@ -103,7 +103,7 @@ public class ListOfParam extends DefaultConstraintParam<List> {
     private List makeList(int d, BtrpOperand o) {
         List<Object> h = new ArrayList<>();
         if (d == 0) {
-            if (o.type() == BtrpOperand.Type.VM || o.type() == BtrpOperand.Type.node) {
+            if (o.type() == BtrpOperand.Type.VM || o.type() == BtrpOperand.Type.NODE) {
                 h.add(((BtrpElement) o).getElement());
             }
         } else {
@@ -114,7 +114,7 @@ public class ListOfParam extends DefaultConstraintParam<List> {
                 if (d == 1) {
 
                     for (BtrpOperand op : x.getValues()) {
-                        if (op.type() == BtrpOperand.Type.VM || op.type() == BtrpOperand.Type.node) {
+                        if (op.type() == BtrpOperand.Type.VM || op.type() == BtrpOperand.Type.NODE) {
                             h.add(((BtrpElement) op).getElement());
                         }
                     }

@@ -85,7 +85,7 @@ public class DefaultTemplateFactoryTest {
 
         @Override
         public BtrpOperand.Type getElementType() {
-            return BtrpOperand.Type.node;
+            return BtrpOperand.Type.NODE;
         }
 
         public MockNodeTemplate(String n) {

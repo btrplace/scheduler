@@ -186,7 +186,7 @@ public class Script {
                     return false;
                 }
                 break;
-            case node:
+            case NODE:
                 if (!this.nodes.add((Node) el.getElement())) {
                     return false;
                 }

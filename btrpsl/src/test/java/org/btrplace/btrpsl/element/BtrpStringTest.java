@@ -34,7 +34,7 @@ public class BtrpStringTest {
     public void testBasic() {
         BtrpString s1 = new BtrpString("foo");
         Assert.assertEquals(s1.degree(), 0);
-        Assert.assertEquals(s1.type(), BtrpOperand.Type.string);
+        Assert.assertEquals(s1.type(), BtrpOperand.Type.STRING);
         Assert.assertEquals(s1.toString(), "foo");
         Assert.assertEquals(s1.prettyType(), "string");
     }
@@ -49,7 +49,7 @@ public class BtrpStringTest {
         BtrpString s1 = new BtrpString("this");
         BtrpString res = s1.plus(new BtrpString(" is"))
                 .plus(new BtrpString(" a "))
-                .plus(new BtrpNumber(16, BtrpNumber.Base.base16));
+                .plus(new BtrpNumber(16, BtrpNumber.Base.BASE_16));
         Assert.assertEquals(res.toString(), "this is a 10");
     }
 

@@ -65,7 +65,7 @@ public class EnumElement extends BtrPlaceTree {
     public BtrpOperand expand() {
         String head = getChild(0).getText().substring(0, getChild(0).getText().length() - 1);
         String tail = getChild(getChildCount() - 1).getText().substring(1);
-        BtrpSet res = new BtrpSet(1, BtrpOperand.Type.string);
+        BtrpSet res = new BtrpSet(1, BtrpOperand.Type.STRING);
 
         for (int i = 1; i < getChildCount() - 1; i++) {
             BtrpOperand op = getChild(i).go(this);
@@ -78,7 +78,7 @@ public class EnumElement extends BtrPlaceTree {
 
                 String id = head + o.toString() + tail;
                 //Remove heading '@' for the nodes
-                if (type == BtrpOperand.Type.node) {
+                if (type == BtrpOperand.Type.NODE) {
                     res.getValues().add(new BtrpString(id));
                 } else {
                     res.getValues().add(new BtrpString(script.id() + '.' + id));
@@ -96,8 +96,8 @@ public class EnumElement extends BtrPlaceTree {
         BtrpSet res;
 
         switch (type) {
-            case node:
-                res = new BtrpSet(1, BtrpOperand.Type.node);
+            case NODE:
+                res = new BtrpSet(1, BtrpOperand.Type.NODE);
                 break;
             case VM:
                 res = new BtrpSet(1, BtrpOperand.Type.VM);
@@ -121,7 +121,7 @@ public class EnumElement extends BtrPlaceTree {
                 //Compose
                 String id = head + o.toString() + tail;
 
-                if (type == BtrpOperand.Type.node) {
+                if (type == BtrpOperand.Type.NODE) {
                     //TODO: 'id' does not contains "@" in the scheduler NamingService
                     Element el = namingServiceNodes.resolve(id);
                     //Element el = namingServiceNodes.resolve(id.substring(1));
@@ -134,7 +134,7 @@ public class EnumElement extends BtrPlaceTree {
                         }
                         return ignoreError(t, "Unknown node '" + id.substring(1) + "'");
                     }
-                    res.getValues().add(new BtrpElement(BtrpOperand.Type.node, id, namingServiceNodes.resolve(id)));
+                    res.getValues().add(new BtrpElement(BtrpOperand.Type.NODE, id, namingServiceNodes.resolve(id)));
                 } else if (type == BtrpOperand.Type.VM) {
                     String fqn = script.id() + '.' + id;
                     Element el = namingServiceVMs.resolve(fqn);

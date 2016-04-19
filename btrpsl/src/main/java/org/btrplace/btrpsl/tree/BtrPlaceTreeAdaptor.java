@@ -88,7 +88,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.ENUM_VAR:
                 return new EnumVar(payload, symbols, errors);
             case ANTLRBtrplaceSL2Lexer.ENUM_FQDN:
-                return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.node, errors);
+                return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.NODE, errors);
             case ANTLRBtrplaceSL2Lexer.ENUM_ID:
                 return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.VM, errors);
             case ANTLRBtrplaceSL2Lexer.AND:
@@ -115,15 +115,15 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.EQUALS:
                 return new AssignmentStatement(payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.PLUS_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.plus_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.PLUS_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.MINUS_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.minus_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.MINUS_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.DIV_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.div_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.DIV_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.TIMES_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.times_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.TIMES_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.REMAINDER_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.remainder_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.REMAINDER_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.VARIABLE:
                 return new VariableTree(payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.DIV:

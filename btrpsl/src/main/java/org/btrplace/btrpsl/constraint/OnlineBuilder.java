@@ -38,7 +38,7 @@ public class OnlineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public OnlineBuilder() {
-        super("online", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("online", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     /**

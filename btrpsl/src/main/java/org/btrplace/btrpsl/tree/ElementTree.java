@@ -64,7 +64,7 @@ public class ElementTree extends BtrPlaceTree {
                 if (el == null) {
                     return ignoreError("Unknown node '" + ref + "'");
                 }
-                btrpEl = new BtrpElement(BtrpOperand.Type.node, lbl, el);
+                btrpEl = new BtrpElement(BtrpOperand.Type.NODE, lbl, el);
                 break;
             case ANTLRBtrplaceSL2Parser.IDENTIFIER:
                 /**

@@ -129,7 +129,7 @@ public abstract class DefaultBtrpOperand implements BtrpOperand {
         for (int i = degree; i > 0; i--) {
             b.append("set<");
         }
-        b.append(t);
+        b.append(t.toString().toLowerCase());
         for (int i = 0; i < degree; i++) {
             b.append(">");
         }

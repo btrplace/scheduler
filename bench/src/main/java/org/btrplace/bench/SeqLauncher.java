@@ -50,7 +50,7 @@ public class SeqLauncher {
 
         // Parse the cmdline arguments
         CmdLineParser cmdParser = new CmdLineParser(this);
-        cmdParser.setUsageWidth(80);
+        cmdParser.getProperties().withUsageWidth(80);
         try {
             cmdParser.parseArgument(args);
             if (timeout <= 0)

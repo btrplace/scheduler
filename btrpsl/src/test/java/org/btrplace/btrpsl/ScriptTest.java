@@ -71,8 +71,8 @@ public class ScriptTest {
     public void testNodeAddition() {
         Script v = new Script();
         Model mo = new DefaultModel();
-        BtrpElement n1 = new BtrpElement(BtrpOperand.Type.node, "@N1", mo.newNode());
-        BtrpElement n2 = new BtrpElement(BtrpOperand.Type.node, "@N2", mo.newNode());
+        BtrpElement n1 = new BtrpElement(BtrpOperand.Type.NODE, "@N1", mo.newNode());
+        BtrpElement n2 = new BtrpElement(BtrpOperand.Type.NODE, "@N2", mo.newNode());
 
         v.add(n1);
         v.add(n2);

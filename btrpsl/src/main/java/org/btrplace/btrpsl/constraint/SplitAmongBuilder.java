@@ -40,7 +40,7 @@ public class SplitAmongBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public SplitAmongBuilder() {
-        super("splitAmong", new ConstraintParam[]{new ListOfParam("$vms", 2, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.node, false)});
+        super("splitAmong", new ConstraintParam[]{new ListOfParam("$vms", 2, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.NODE, false)});
     }
 
     /**

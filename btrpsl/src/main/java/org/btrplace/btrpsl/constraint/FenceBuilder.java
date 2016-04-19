@@ -39,7 +39,7 @@ public class FenceBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public FenceBuilder() {
-        super("fence", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("fence", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     /**

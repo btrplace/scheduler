@@ -97,7 +97,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
         tpl.setNamingServiceVMs(namingServerVMs);
         if (tpl.getElementType() == BtrpOperand.Type.VM) {
             return vmTpls.put(tpl.getIdentifier(), tpl);
-        } else if (tpl.getElementType() == BtrpOperand.Type.node) {
+        } else if (tpl.getElementType() == BtrpOperand.Type.NODE) {
             return nodeTpls.put(tpl.getIdentifier(), tpl);
         }
         return null;

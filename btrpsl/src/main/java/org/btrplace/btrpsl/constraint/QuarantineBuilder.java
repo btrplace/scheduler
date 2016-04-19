@@ -38,7 +38,7 @@ public class QuarantineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public QuarantineBuilder() {
-        super("quarantine", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("quarantine", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     @Override

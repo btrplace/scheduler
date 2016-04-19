@@ -39,7 +39,7 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public RunningCapacityBuilder() {
-        super("runningCapacity", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false), new NumberParam("$nb")});
+        super("runningCapacity", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false), new NumberParam("$nb")});
     }
 
     @Override

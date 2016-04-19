@@ -40,7 +40,7 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public MaxOnlineBuilder() {
-        super("maxOnline", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false), new NumberParam("$nb")});
+        super("maxOnline", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false), new NumberParam("$nb")});
     }
 
     /**

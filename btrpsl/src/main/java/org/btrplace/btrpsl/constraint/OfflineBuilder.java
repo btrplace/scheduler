@@ -38,7 +38,7 @@ public class OfflineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public OfflineBuilder() {
-        super("offline", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("offline", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     /**

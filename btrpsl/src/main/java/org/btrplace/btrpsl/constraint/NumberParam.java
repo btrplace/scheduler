@@ -54,6 +54,6 @@ public class NumberParam extends DefaultConstraintParam<Number> {
 
     @Override
     public boolean isCompatibleWith(BtrPlaceTree t, BtrpOperand o) {
-        return o == IgnorableOperand.getInstance() || (o.type() == BtrpOperand.Type.number && o.degree() == 0);
+        return o == IgnorableOperand.getInstance() || (o.type() == BtrpOperand.Type.NUMBER && o.degree() == 0);
     }
 }

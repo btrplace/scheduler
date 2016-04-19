@@ -39,7 +39,7 @@ public class ResourceCapacityBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public ResourceCapacityBuilder() {
-        super("resourceCapacity", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false), new StringParam("$rcId"), new NumberParam("$nb")});
+        super("resourceCapacity", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false), new StringParam("$rcId"), new NumberParam("$nb")});
     }
 
     @Override

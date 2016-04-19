@@ -185,7 +185,7 @@ public class TemplateAssignment extends BtrPlaceTree {
                 }
             }
             tpls.check(script, tplName, el, opts);
-            if (!script.add(new BtrpElement(BtrpOperand.Type.node, id, el))) {
+            if (!script.add(new BtrpElement(BtrpOperand.Type.NODE, id, el))) {
                 ignoreError("Node '" + id + "' already created");
             }
         } catch (ElementBuilderException ex) {

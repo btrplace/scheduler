@@ -45,7 +45,7 @@ public class Range extends BtrPlaceTree {
     @Override
     public BtrpOperand go(BtrPlaceTree parent) {
 
-        BtrpSet s = new BtrpSet(1, BtrpOperand.Type.string);
+        BtrpSet s = new BtrpSet(1, BtrpOperand.Type.STRING);
         if (getChildCount() == 1) {
             if (getChild(0).getType() != ANTLRBtrplaceSL2Lexer.IDENTIFIER) {
                 BtrpOperand o = getChild(0).go(this);
@@ -62,8 +62,8 @@ public class Range extends BtrPlaceTree {
             if (first == IgnorableOperand.getInstance() || last == IgnorableOperand.getInstance()) {
                 return IgnorableOperand.getInstance();
             }
-            if (first.type() != BtrpOperand.Type.number || last.type() != BtrpOperand.Type.number) {
-                return ignoreError(getChild(first.type() == BtrpOperand.Type.number ? 1 : 0).getToken(), "Bounds must be numbers");
+            if (first.type() != BtrpOperand.Type.NUMBER || last.type() != BtrpOperand.Type.NUMBER) {
+                return ignoreError(getChild(first.type() == BtrpOperand.Type.NUMBER ? 1 : 0).getToken(), "Bounds must be numbers");
             }
             BtrpNumber begin = (BtrpNumber) first;
             BtrpNumber end = (BtrpNumber) last;

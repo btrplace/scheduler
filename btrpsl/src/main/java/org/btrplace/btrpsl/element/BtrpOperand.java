@@ -38,13 +38,13 @@ public interface BtrpOperand extends Copyable<BtrpOperand> {
          */VM,
         /**
          * Denotes a hosting node
-         */node,
+         */NODE,
         /**
          * Denotes a constant integer
-         */number,
+         */NUMBER,
         /**
          * Denotes a constant string
-         */string,
+         */STRING,
     }
 
     /**

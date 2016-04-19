@@ -44,7 +44,7 @@ public class BtrpString extends DefaultBtrpOperand {
 
     @Override
     public Type type() {
-        return Type.string;
+        return Type.STRING;
     }
 
     @Override
