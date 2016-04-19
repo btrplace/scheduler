@@ -22,6 +22,7 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ready;
+import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.ArrayList;
 import java.util.Collections;

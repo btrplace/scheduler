@@ -22,6 +22,7 @@ import org.btrplace.btrpsl.constraint.*;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.VM;
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Deadline;
 import org.btrplace.model.constraint.migration.Precedence;
 
