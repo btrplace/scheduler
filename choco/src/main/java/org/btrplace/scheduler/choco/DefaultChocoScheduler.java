@@ -29,10 +29,12 @@ import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
+import org.btrplace.scheduler.choco.runner.StagedSolvingStatistics;
 import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +54,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     private InstanceSolver runner;
 
+    private List<SolvingStatistics> solvingPhases;
     /**
      * Make a new algorithm.
      *
@@ -60,6 +63,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     public DefaultChocoScheduler(DefaultParameters ps) {
         params = ps;
         runner = new SingleRunner();
+        solvingPhases = new ArrayList<>();
     }
 
     /**
@@ -122,9 +126,10 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
-        
+        solvingPhases.clear();
         // If a network view is attached, ensure that all the migrations' destination node are defined
         Network net = (Network) i.getView(Network.VIEW_ID);
+
         if  (net != null) {
             
             // The network view is useless to take placement decisions
@@ -132,6 +137,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
             // Solve a first time using placement oriented MinMTTR optimisation constraint
             ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
+            solvingPhases.add(runner.getStatistics());
             if (p == null) {
                 return null;
             }
@@ -161,9 +167,17 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                     cstrs.addAll(newCstrs);
                 }
             }
-
             // Re-attach the network view
             i.attach(net);
+
+            //New timeout value = elapsed time - initial timeout value
+            Parameters ps = new DefaultParameters(params);
+            if (ps.getTimeLimit() > 0) {
+                long timeout = params.getTimeLimit() * 1000 - runner.getStatistics().getSolvingDuration();
+                ps.setTimeLimit((int) (timeout / 1000));
+            }
+
+            return runner.solve(ps, new Instance(i, cstrs, opt));
         }
         // Solve and return the computed plan
         return runner.solve(params, new Instance(i, cstrs, opt));
@@ -181,7 +195,12 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public SolvingStatistics getStatistics() throws SchedulerException {
-        return runner.getStatistics();
+        if (solvingPhases.isEmpty()) {
+            return runner.getStatistics();
+        } else {
+            solvingPhases.add(runner.getStatistics());
+            return new StagedSolvingStatistics(solvingPhases);
+        }
     }
 
     @Override
@@ -225,15 +244,15 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public void setTransitionFactory(TransitionFactory amf) {
+    public Parameters setTransitionFactory(TransitionFactory amf) {
         params.setTransitionFactory(amf);
+        return this;
     }
 
     @Override
     public TransitionFactory getTransitionFactory() {
         return params.getTransitionFactory();
     }
-
 
     @Override
     public Parameters setRandomSeed(long s) {

@@ -176,7 +176,7 @@ public interface Parameters {
      *
      * @param amf the factory to rely on
      */
-    void setTransitionFactory(TransitionFactory amf);
+    Parameters setTransitionFactory(TransitionFactory amf);
 
     /**
      * Get the current factory that is used to model the transitions.

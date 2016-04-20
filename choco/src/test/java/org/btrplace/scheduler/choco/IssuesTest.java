@@ -26,6 +26,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
@@ -545,10 +546,9 @@ public class IssuesTest {
     public void testIssue100() {
         Instance i = InstanceConverter.quickFromJSON(new File("src/test/resources/issue-100.json"));
         ChocoScheduler s = new DefaultChocoScheduler();
-        //s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
+        SolvingStatistics stats = s.getStatistics();
         Assert.assertNotNull(p);
-        System.out.println(p);
+        System.out.println(stats);
     }
 }

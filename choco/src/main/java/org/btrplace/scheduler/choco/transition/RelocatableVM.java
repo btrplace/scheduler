@@ -122,10 +122,6 @@ public class RelocatableVM implements KeepRunningVM {
 
             // The action always terminate before the end of the reconfiguration plan
             s.post(new Arithmetic(cSlice.getEnd(), Operator.LE, rp.getEnd()));
-            
-            // Make sure the VM stay on its current host
-            s.post(new Arithmetic(dSlice.getHoster(), Operator.EQ, cSlice.getHoster().getValue()));
-
             return;
         }
 
@@ -142,7 +138,6 @@ public class RelocatableVM implements KeepRunningVM {
                 .build();
 
         // The action always terminate before the end of the reconfiguration plan
-        s.post(new Arithmetic(dSlice.getEnd(), Operator.LE, rp.getEnd()));
         s.post(new Arithmetic(cSlice.getEnd(), Operator.LE, rp.getEnd()));
 
         // Update start and end vars of the action

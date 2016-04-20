@@ -82,8 +82,22 @@ public class DefaultParameters implements Parameters {
         views.add(DefaultAliasedCumulatives.class);
     }
 
+    public DefaultParameters(Parameters ps) {
+        seed = ps.getRandomSeed();
+        amf = ps.getTransitionFactory();
+        optimize = ps.doOptimize();
+        seed = ps.getRandomSeed();
+        timeLimit = ps.getTimeLimit();
+        repair = ps.doRepair();
+        durationEvaluators = ps.getDurationEvaluators();
+        maxEnd = ps.getMaxEnd();
+        verbosityLevel = ps.getVerbosity();
+        views = ps.getChocoViews();
+        mapper = ps.getMapper();
+    }
+
     @Override
-    public Parameters doRepair(boolean b) {
+    public DefaultParameters doRepair(boolean b) {
         repair = b;
         return this;
     }
@@ -94,7 +108,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters doOptimize(boolean b) {
+    public DefaultParameters doOptimize(boolean b) {
         optimize = b;
         return this;
     }
@@ -105,7 +119,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setRandomSeed(long s) {
+    public DefaultParameters setRandomSeed(long s) {
         seed = s;
         return this;
     }
@@ -116,7 +130,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setTimeLimit(int t) {
+    public DefaultParameters setTimeLimit(int t) {
         timeLimit = t;
         return this;
     }
@@ -132,7 +146,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setMapper(ChocoMapper map) {
+    public DefaultParameters setMapper(ChocoMapper map) {
         mapper = map;
         return this;
     }
@@ -143,13 +157,13 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setDurationEvaluators(DurationEvaluators dev) {
+    public DefaultParameters setDurationEvaluators(DurationEvaluators dev) {
         durationEvaluators = dev;
         return this;
     }
 
     @Override
-    public Parameters setMaxEnd(int end) {
+    public DefaultParameters setMaxEnd(int end) {
         maxEnd = end;
         return this;
     }
@@ -160,7 +174,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setVerbosity(int lvl) {
+    public DefaultParameters setVerbosity(int lvl) {
         verbosityLevel = lvl;
         return this;
     }
@@ -171,8 +185,9 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public void setTransitionFactory(TransitionFactory f) {
+    public DefaultParameters setTransitionFactory(TransitionFactory f) {
         this.amf = f;
+        return this;
     }
 
     @Override
