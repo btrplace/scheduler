@@ -326,7 +326,9 @@ public class Network implements ModelView {
 
         try (BufferedWriter dot = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out), StandardCharsets.UTF_8))) {
             dot.append("digraph G {\n");
-            if (fromLeftToRight) { dot.append("rankdir=LR;\n"); }
+            if (fromLeftToRight) {
+                dot.append("rankdir=LR;\n");
+            }
             // Draw nodes
             for (Node n : nodes) {
                 dot.append("node").
@@ -410,7 +412,9 @@ public class Network implements ModelView {
      */
     private String bitsToString(long megabits) {
         int unit = 1000;
-        if (megabits < unit) return megabits + " mb";
+        if (megabits < unit) {
+            return megabits + " mb";
+        }
         int exp = (int) (Math.log(megabits) / Math.log(unit));
         return new DecimalFormat("#.##").format(megabits / Math.pow(unit, exp)) + "GTPE".charAt(exp-1) + "b";
     }

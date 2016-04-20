@@ -97,7 +97,9 @@ public class TaskScheduler extends Constraint {
 
         private IStateIntVector[] vIns;
 
-        private IntVar[] earlyStarts, lastEnds;
+        private IntVar[] earlyStarts;
+
+        private IntVar[] lastEnds;
 
         private IStateInt watchDTask;
 

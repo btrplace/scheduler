@@ -404,9 +404,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             } else {
                 nextState = curState; //by default, maintain state
                 switch(nextState) {
-                    case READY: ready.add(vmId);break;
-                    case RUNNING: running.add(vmId); break;
-                    case SLEEPING: sleeping.add(vmId); break;
+                    case READY:
+                        ready.add(vmId);
+                        break;
+                    case RUNNING:
+                        running.add(vmId);
+                        break;
+                    case SLEEPING:
+                        sleeping.add(vmId);
+                        break;
                 }
             }
 

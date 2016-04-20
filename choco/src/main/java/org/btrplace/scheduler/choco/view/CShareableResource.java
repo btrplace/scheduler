@@ -406,8 +406,6 @@ public class CShareableResource implements ChocoView {
             }
         }
 
-        //List<IntVar> capacities = new IntVar[rp.getNodes().size()];
-        //System.arraycopy(virtRcUsage, 0, capacities, 0, rp.getNodes().size());
         ChocoView v = rp.getView(Cumulatives.VIEW_ID);
         if (v == null) {
             throw new SchedulerException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");

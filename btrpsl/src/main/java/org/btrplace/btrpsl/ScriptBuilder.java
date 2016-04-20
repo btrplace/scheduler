@@ -208,18 +208,20 @@ public class ScriptBuilder {
         try {
             BtrPlaceTree tree = (BtrPlaceTree) parser.script_decl().getTree();
             //First pass, expand range
-            if (tree != null && tree.token != null) {
-                try {
-                    tree.go(tree); //Single instruction
-                } catch (UnsupportedOperationException e) {
-                    errorReporter.append(0, 0, e.getMessage());
-                }
-            } else {
-                for (int i = 0; i < tree.getChildCount(); i++) {
+            if (tree != null) {
+                if (tree.token != null) {
                     try {
-                        tree.getChild(i).go(tree);
+                        tree.go(tree); //Single instruction
                     } catch (UnsupportedOperationException e) {
                         errorReporter.append(0, 0, e.getMessage());
+                    }
+                } else {
+                    for (int i = 0; i < tree.getChildCount(); i++) {
+                        try {
+                            tree.getChild(i).go(tree);
+                        } catch (UnsupportedOperationException e) {
+                            errorReporter.append(0, 0, e.getMessage());
+                        }
                     }
                 }
             }

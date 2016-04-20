@@ -83,7 +83,9 @@ public class NetworkAndMigrations implements Example {
         // Try to solve as is and show the computed plan
         try {
             ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) return false;
+            if (p == null) {
+                return false;
+            }
             System.out.println(p);
             System.out.flush();
         } catch (SchedulerException e) {
@@ -96,7 +98,9 @@ public class NetworkAndMigrations implements Example {
         Network net = Network.createDefaultNetwork(mo);
         try {
             ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) return false;
+            if (p == null) {
+                return false;
+            }
             System.out.println(p);
             System.out.flush();
         } catch (SchedulerException e) {
@@ -115,7 +119,9 @@ public class NetworkAndMigrations implements Example {
         mo.attach(net);
         try {
             ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) return false;
+            if (p == null) {
+                return false;
+            }
             System.out.println(p);
             System.out.flush();
         } catch (SchedulerException e) {

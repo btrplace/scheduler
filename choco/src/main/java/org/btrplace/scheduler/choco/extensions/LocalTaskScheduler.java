@@ -70,11 +70,15 @@ public class LocalTaskScheduler {
 
     private int[][] capacities;
 
-    private int[][] cUsages, dUsages;
+    private int[][] cUsages;
+
+    private int[][] dUsages;
 
     private int nbDims;
 
-    private IntVar early, last;
+    private IntVar early;
+
+    private IntVar last;
 
     private Propagator aCause;
 
@@ -163,7 +167,9 @@ public class LocalTaskScheduler {
     }
 
     public void propagate(BitSet watchHosts) throws ContradictionException {
-        if (vIn.size() == 0 && out.length() == 0) return;
+        if (vIn.size() == 0 && out.length() == 0) {
+            return;
+        }
         boolean allInstantiated = computeProfiles();
 
         checkInvariant();

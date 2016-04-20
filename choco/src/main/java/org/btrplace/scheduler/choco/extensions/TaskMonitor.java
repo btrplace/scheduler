@@ -27,64 +27,72 @@ import org.chocosolver.solver.variables.events.IEventType;
 import org.chocosolver.solver.variables.events.IntEventType;
 
 /**
- * Created by fhermeni on 01/04/2016.
+ * Monitor to maintain start + duration = end
+ * @author Fabien Hermenier
  */
 public class TaskMonitor implements IVariableMonitor<IntVar> {
 
-    private IntVar S;
-    private IntVar D;
-    private IntVar E;
+    private IntVar start;
+    private IntVar duration;
+    private IntVar end;
 
-    public TaskMonitor(IntVar S, IntVar D, IntVar E) {
-        this.S = S;
-        this.D = D;
-        this.E = E;
+    /**
+     * Make a new monitor.
+     *
+     * @param start    the task start moment
+     * @param duration the task duration
+     * @param end      the task end
+     */
+    public TaskMonitor(IntVar start, IntVar duration, IntVar end) {
+        this.start = start;
+        this.duration = duration;
+        this.end = end;
 
-        S.addMonitor(this);
-        D.addMonitor(this);
-        E.addMonitor(this);
+        this.start.addMonitor(this);
+        this.duration.addMonitor(this);
+        this.end.addMonitor(this);
     }
 
     @Override
     public void onUpdate(IntVar var, IEventType evt) throws ContradictionException {
         // start
-        S.updateBounds(E.getLB() - D.getUB(), E.getUB() - D.getLB(), this);
+        start.updateBounds(end.getLB() - duration.getUB(), end.getUB() - duration.getLB(), this);
         // end
-        E.updateBounds(S.getLB() + D.getLB(), S.getUB() + D.getUB(), this);
+        end.updateBounds(start.getLB() + duration.getLB(), start.getUB() + duration.getUB(), this);
         // duration
-        D.updateBounds(E.getLB() - S.getUB(), E.getUB() - S.getLB(), this);
+        duration.updateBounds(end.getLB() - start.getUB(), end.getUB() - start.getLB(), this);
     }
 
     @Override
     public boolean why(RuleStore ruleStore, IntVar var, IEventType evt, int value) {
         boolean nrules = false;
-        if (var == S) {
+        if (var == start) {
             if (evt == IntEventType.INCLOW) {
-                nrules = ruleStore.addLowerBoundRule(E);
-                nrules |= ruleStore.addUpperBoundRule(D);
+                nrules = ruleStore.addLowerBoundRule(end);
+                nrules |= ruleStore.addUpperBoundRule(duration);
             } else if (evt == IntEventType.DECUPP) {
-                nrules = ruleStore.addUpperBoundRule(E);
-                nrules |= ruleStore.addLowerBoundRule(D);
+                nrules = ruleStore.addUpperBoundRule(end);
+                nrules |= ruleStore.addLowerBoundRule(duration);
             } else {
                 throw new SolverException("TaskMonitor exception");
             }
-        } else if (var == E) {
+        } else if (var == end) {
             if (evt == IntEventType.INCLOW) {
-                nrules = ruleStore.addLowerBoundRule(S);
-                nrules |= ruleStore.addLowerBoundRule(D);
+                nrules = ruleStore.addLowerBoundRule(start);
+                nrules |= ruleStore.addLowerBoundRule(duration);
             } else if (evt == IntEventType.DECUPP) {
-                nrules = ruleStore.addUpperBoundRule(S);
-                nrules |= ruleStore.addUpperBoundRule(D);
+                nrules = ruleStore.addUpperBoundRule(start);
+                nrules |= ruleStore.addUpperBoundRule(duration);
             } else {
                 throw new SolverException("TaskMonitor exception");
             }
-        } else if (var == D) {
+        } else if (var == duration) {
             if (evt == IntEventType.INCLOW) {
-                nrules = ruleStore.addLowerBoundRule(E);
-                nrules |= ruleStore.addUpperBoundRule(S);
+                nrules = ruleStore.addLowerBoundRule(end);
+                nrules |= ruleStore.addUpperBoundRule(start);
             } else if (evt == IntEventType.DECUPP) {
-                nrules = ruleStore.addLowerBoundRule(S);
-                nrules |= ruleStore.addUpperBoundRule(E);
+                nrules = ruleStore.addLowerBoundRule(start);
+                nrules |= ruleStore.addUpperBoundRule(end);
             } else {
                 throw new SolverException("TaskMonitor exception");
             }

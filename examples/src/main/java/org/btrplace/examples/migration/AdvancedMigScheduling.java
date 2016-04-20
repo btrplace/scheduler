@@ -178,7 +178,9 @@ public class AdvancedMigScheduling implements Example {
         // Try to solve, and show the computed plan
         try {
             ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) return false;
+            if (p == null) {
+                return false;
+            }
             System.out.println(p);
             System.out.flush();
         } catch (SchedulerException e) {

@@ -91,7 +91,6 @@ public class VectorPacking extends Packing {
         }
         if (!p.getFutureRunningVMs().isEmpty()) {
             solver.post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
-            //IntConstraintFactory.bin_packing(bins.get(0), iSizes[i], loads.get(i), 0));
         }
         return true;
     }

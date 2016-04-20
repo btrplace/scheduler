@@ -238,11 +238,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         ChocoMapper mapper = params.getMapper();
         origin.getViews().stream().filter(v -> mapper.viewHasMapping(v.getClass())).forEach(v -> l.add(mapper.get(v)));
         return l;
-        //List<String> base = new ArrayList<>();
-        /*for (SolverViewBuilder vb : params.getSolverViews()) {
-            base.add(vb.getKey());
-        }*/
-        //return ChocoViews.resolveDependencies(origin, l, base);
     }
 
     /**

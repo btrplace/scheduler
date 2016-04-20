@@ -108,9 +108,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     private VectorPackingHeapDecorator decoHeap;
     private VectorPackingKPSimpleDecorator decoKPSimple;
 
-//    private IStateBitSet notEntailedDims;
-
-
     /**
      * constructor of the VectorPacking global constraint
      *
@@ -318,7 +315,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int d = 0; d < nbDims; d++) {
             filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
         }
-        if (decoKPSimple != null) decoKPSimple.postRemoveItem(item, bin);
+        if (decoKPSimple != null) {
+            decoKPSimple.postRemoveItem(item, bin);
+        }
     }
 
     /**
@@ -330,7 +329,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int d = 0; d < nbDims; d++) {
             filterLoadInf(d, bin, assignedLoad[d][bin].add(iSizes[d][item]));
         }
-        if (decoKPSimple != null) decoKPSimple.postAssignItem(item, bin);
+        if (decoKPSimple != null) {
+            decoKPSimple.postAssignItem(item, bin);
+        }
     }
 
     /**
@@ -397,7 +398,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * shrink the bin load variables: assignedLoad <= binLoad <= potentialLoad
      */
     protected void initialize() throws ContradictionException {
-//        notEntailedDims = environment.makeBitSet(nbDims);
 
         sumISizes = new long[nbDims];
         computeSumItemSizes();
@@ -431,8 +431,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
-//                assignedLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b]);
-//                potentialLoad[d][b] = getSolver().getEnvironment().makeInt(rLoads[d][b] + cLoads[d][b]);
                 assignedLoad[d][b].set(rLoads[d][b]);
                 potentialLoad[d][b].set(rLoads[d][b] + cLoads[d][b]);
 
@@ -443,11 +441,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             }
         }
 
-//        sumLoadInf = new IStateInt[nbDims];
-//        sumLoadSup = new IStateInt[nbDims];
         for (int d = 0; d < nbDims; d++) {
-            //sumLoadInf[d] = getSolver().getEnvironment().makeInt(slb[d]);
-            //sumLoadSup[d] = getSolver().getEnvironment().makeInt(slu[d]);
             sumLoadInf[d].set(slb[d]);
             sumLoadSup[d].set(slu[d]);
 
@@ -459,34 +453,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             decoKPSimple.postInitialize();
         }
 
-//        detectEntailedDimensions(sumFreeSize);
-
         assert checkLoadConsistency();
-        //LOGGER.trace("BinPacking: " + Arrays.toString(name));
 
         for (IIntDeltaMonitor delta : deltaMonitor) {
             delta.unfreeze();
         }
     }
-
-    /**
-     * Detect entailed dimensions
-     * A dimension is entailed if for every bin, the free load (diff between the UB and the LB) is
-     * >= the un-assigned height for that dimension
-     *
-     * @param sumFreeSize the un-assigned height for each dimension.
-     *
-    private void detectEntailedDimensions(int[] sumFreeSize) {
-    for (int d = 0; d < nbDims; d++) {
-    for (int b = 0; b < nbBins; b++) {
-    if (!loads[d][b].isInstantiated() && loads[d][b].getUB() - loads[d][b].getLB() < sumFreeSize[d]) {
-    notEntailedDims.set(d);
-    break;
-    }
-    }
-    }
-    }
-     */
 
     /**
      * Compute the sum of the item sizes for each dimension.

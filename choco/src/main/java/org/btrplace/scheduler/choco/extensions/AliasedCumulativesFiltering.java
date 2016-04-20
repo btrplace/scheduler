@@ -36,7 +36,7 @@ import java.util.BitSet;
  */
 public class AliasedCumulativesFiltering {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -85,7 +85,9 @@ public class AliasedCumulativesFiltering {
 
     private int[] capacities;
 
-    private int[][] cUsages, dUsages;
+    private int[][] cUsages;
+
+    private int[][] dUsages;
 
     private int nbDims = 0;
 
@@ -174,7 +176,7 @@ public class AliasedCumulativesFiltering {
         }
     }
 
-    public void computeProfiles() {
+    private void computeProfiles() {
 
         for (int i = 0; i < nbDims; i++) {
             //sure about what is used on the resource
@@ -328,7 +330,7 @@ public class AliasedCumulativesFiltering {
         return b.toString();
     }
 
-    public boolean checkInvariant() {
+    private boolean checkInvariant() {
         for (int x = 0; x < sortedMinProfile.length; x++) {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {
