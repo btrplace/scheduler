@@ -37,11 +37,9 @@ import java.util.Objects;
  *
  * @author Fabien Hermenier
  */
-public class Gather implements SatConstraint {
+public class Gather extends SimpleConstraint {
 
     private Collection<VM> vms;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -59,8 +57,8 @@ public class Gather implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Gather(Collection<VM> vms, boolean continuous) {
+        super(continuous);
         this.vms = vms;
-        this.continuous = continuous;
     }
 
     @Override
@@ -84,17 +82,6 @@ public class Gather implements SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -103,12 +90,12 @@ public class Gather implements SatConstraint {
             return false;
         }
         Gather gather = (Gather) o;
-        return continuous == gather.continuous &&
+        return isContinuous() == gather.isContinuous() &&
                 Objects.equals(vms, gather.vms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vms, continuous);
+        return Objects.hash(vms, isContinuous());
     }
 }

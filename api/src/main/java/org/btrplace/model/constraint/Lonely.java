@@ -39,9 +39,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Lonely implements SatConstraint {
-
-    private boolean continuous;
+public class Lonely extends SimpleConstraint {
 
     private Set<VM> vms;
 
@@ -61,8 +59,8 @@ public class Lonely implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Lonely(Set<VM> vms, boolean continuous) {
+        super(continuous);
         this.vms = vms;
-        this.continuous = continuous;
     }
 
     @Override
@@ -86,17 +84,6 @@ public class Lonely implements SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -105,12 +92,12 @@ public class Lonely implements SatConstraint {
             return false;
         }
         Lonely lonely = (Lonely) o;
-        return continuous == lonely.continuous &&
+        return isContinuous() == lonely.isContinuous() &&
                 Objects.equals(vms, lonely.vms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(continuous, vms);
+        return Objects.hash(isContinuous(), vms);
     }
 }

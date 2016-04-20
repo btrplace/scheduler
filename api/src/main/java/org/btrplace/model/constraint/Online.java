@@ -21,18 +21,20 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a node at being online.
  *
  * @author Fabien Hermenier
  */
-public class Online implements SatConstraint {
+public class Online extends SimpleConstraint {
 
     private Node node;
-
-    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -50,8 +52,8 @@ public class Online implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Online(Node n, boolean continuous) {
+        super(continuous);
         node = n;
-        this.continuous = continuous;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class Online implements SatConstraint {
 
     @Override
     public String toString() {
-        return "online(node=" + node + ", " + (continuous ? "continuous" : "discrete") + ")";
+        return "online(node=" + node + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
@@ -73,13 +75,13 @@ public class Online implements SatConstraint {
             return false;
         }
         Online online = (Online) o;
-        return continuous == online.continuous &&
+        return isContinuous() == online.isContinuous() &&
                 Objects.equals(node, online.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(node, continuous);
+        return Objects.hash(node, isContinuous());
     }
 
     @Override
@@ -92,17 +94,6 @@ public class Online implements SatConstraint {
         return Collections.emptyList();
     }
 
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
     /**
      * Instantiate discrete constraints for a collection of nodes.
      *
@@ -110,11 +101,7 @@ public class Online implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Online> newOnline(Collection<Node> nodes) {
-        List<Online> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Online(n));
-        }
-        return l;
+        return nodes.stream().map(Online::new).collect(Collectors.toList());
     }
 
 }

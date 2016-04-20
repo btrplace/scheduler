@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to avoid VM relocation to another host.
@@ -99,10 +103,6 @@ public class Root implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Root> newRoots(Collection<VM> vms) {
-        List<Root> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Root(v));
-        }
-        return l;
+        return vms.stream().map(Root::new).collect(Collectors.toList());
     }
 }

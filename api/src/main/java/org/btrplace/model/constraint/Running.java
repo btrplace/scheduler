@@ -21,18 +21,20 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM at being running.
  *
  * @author Fabien Hermenier
  */
-public class Running implements SatConstraint {
+public class Running extends SimpleConstraint {
 
     private VM vm;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint.
@@ -50,8 +52,8 @@ public class Running implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Running(VM vm, boolean continuous) {
+        super(continuous);
         this.vm = vm;
-        this.continuous = continuous;
     }
 
     @Override
@@ -65,17 +67,6 @@ public class Running implements SatConstraint {
     }
 
     @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -84,13 +75,13 @@ public class Running implements SatConstraint {
             return false;
         }
         Running running = (Running) o;
-        return continuous == running.continuous &&
+        return isContinuous() == running.isContinuous() &&
                 Objects.equals(vm, running.vm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, continuous);
+        return Objects.hash(vm, isContinuous());
     }
 
     @Override
@@ -100,7 +91,7 @@ public class Running implements SatConstraint {
 
     @Override
     public String toString() {
-        return "running(vms=" + vm + ", " + (continuous ? "continuous" : "discrete") + ")";
+        return "running(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     /**
@@ -110,11 +101,7 @@ public class Running implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Running> newRunning(Collection<VM> vms) {
-        List<Running> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Running(v));
-        }
-        return l;
+        return vms.stream().map(Running::new).collect(Collectors.toList());
     }
 
 }

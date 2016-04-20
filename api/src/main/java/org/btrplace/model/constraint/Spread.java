@@ -38,11 +38,9 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Spread implements SatConstraint {
+public class Spread extends SimpleConstraint {
 
     private Set<VM> vms;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint having a continuous restriction.
@@ -60,8 +58,8 @@ public class Spread implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction.
      */
     public Spread(Set<VM> vms, boolean continuous) {
+        super(continuous);
         this.vms = vms;
-        setContinuous(continuous);
     }
 
     @Override
@@ -85,17 +83,6 @@ public class Spread implements SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -104,12 +91,12 @@ public class Spread implements SatConstraint {
             return false;
         }
         Spread spread = (Spread) o;
-        return continuous == spread.continuous &&
+        return isContinuous() == spread.isContinuous() &&
                 Objects.equals(vms, spread.vms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vms, continuous);
+        return Objects.hash(vms, isContinuous());
     }
 }

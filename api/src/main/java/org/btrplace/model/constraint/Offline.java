@@ -21,18 +21,20 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a node at being offline.
  *
  * @author Fabien Hermenier
  */
-public class Offline implements SatConstraint {
+public class Offline extends SimpleConstraint {
 
     private Node node;
-
-    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -50,8 +52,8 @@ public class Offline implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Offline(Node n, boolean continuous) {
+        super(continuous);
         node = n;
-        this.continuous = continuous;
     }
 
 
@@ -62,7 +64,7 @@ public class Offline implements SatConstraint {
 
     @Override
     public String toString() {
-        return "offline(node=" + node + ", " + (continuous ? "continuous" : "discrete") + ")";
+        return "offline(node=" + node + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
@@ -74,13 +76,13 @@ public class Offline implements SatConstraint {
             return false;
         }
         Offline offline = (Offline) o;
-        return continuous == offline.continuous &&
+        return isContinuous() == offline.isContinuous() &&
                 Objects.equals(node, offline.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(node, continuous);
+        return Objects.hash(node, isContinuous());
     }
 
     @Override
@@ -93,17 +95,6 @@ public class Offline implements SatConstraint {
         return Collections.emptyList();
     }
 
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
     /**
      * Instantiate discrete constraints for a collection of nodes.
      *
@@ -111,10 +102,6 @@ public class Offline implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Offline> newOffline(Collection<Node> nodes) {
-        List<Offline> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Offline(n));
-        }
-        return l;
+        return nodes.stream().map(Offline::new).collect(Collectors.toList());
     }
 }

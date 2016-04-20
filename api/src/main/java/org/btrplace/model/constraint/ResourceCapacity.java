@@ -39,15 +39,13 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class ResourceCapacity implements SatConstraint {
+public class ResourceCapacity extends SimpleConstraint {
 
     private Set<Node> nodes;
 
     private int qty;
 
     private String rcId;
-
-    private boolean continuous;
 
     /**
      * Make a new discrete constraint on a single node.
@@ -92,10 +90,10 @@ public class ResourceCapacity implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction.
      */
     public ResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
+        super(continuous);
         this.nodes = nodes;
         this.qty = amount;
         this.rcId = rc;
-        this.continuous = continuous;
 
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
@@ -132,14 +130,14 @@ public class ResourceCapacity implements SatConstraint {
         }
         ResourceCapacity that = (ResourceCapacity) o;
         return qty == that.qty &&
-                continuous == that.continuous &&
+                isContinuous() == that.isContinuous() &&
                 Objects.equals(nodes, that.nodes) &&
                 Objects.equals(rcId, that.rcId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nodes, qty, rcId, continuous);
+        return Objects.hash(nodes, qty, rcId, isContinuous());
     }
 
     @Override
@@ -153,20 +151,9 @@ public class ResourceCapacity implements SatConstraint {
     }
 
     @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "resourceCapacity(" + "nodes=" + nodes
-                + ", rc=" + rcId + ", amount=" + qty + ", " + (continuous ? "continuous" : "discrete") + ')';
+                + ", rc=" + rcId + ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override

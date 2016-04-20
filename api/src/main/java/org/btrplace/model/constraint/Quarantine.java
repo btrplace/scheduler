@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to put a node into quarantine.
@@ -68,11 +72,7 @@ public class Quarantine implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Quarantine> newQuarantine(Collection<Node> nodes) {
-        List<Quarantine> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Quarantine(n));
-        }
-        return l;
+        return nodes.stream().map(Quarantine::new).collect(Collectors.toList());
     }
 
     @Override

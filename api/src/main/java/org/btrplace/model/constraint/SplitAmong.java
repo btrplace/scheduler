@@ -38,7 +38,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmong implements SatConstraint {
+public class SplitAmong extends SimpleConstraint {
 
     /**
      * Set of set of vms.
@@ -49,8 +49,6 @@ public class SplitAmong implements SatConstraint {
      * Set of set of nodes.
      */
     private Collection<Collection<Node>> pGroups;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -71,7 +69,7 @@ public class SplitAmong implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts, boolean continuous) {
-        this.continuous = continuous;
+        super(continuous);
         int cnt = 0;
         Set<Node> all = new HashSet<>();
         for (Collection<Node> s : pParts) {
@@ -153,17 +151,6 @@ public class SplitAmong implements SatConstraint {
     }
 
     @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -172,19 +159,19 @@ public class SplitAmong implements SatConstraint {
             return false;
         }
         SplitAmong that = (SplitAmong) o;
-        return continuous == that.continuous &&
+        return isContinuous() == that.isContinuous() &&
                 Objects.equals(vGroups, that.vGroups) &&
                 Objects.equals(pGroups, that.pGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vGroups, pGroups, continuous);
+        return Objects.hash(vGroups, pGroups, isContinuous());
     }
 
     @Override
     public String toString() {
-        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + (continuous ? "continuous" : "discrete") + ')';
+        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
 

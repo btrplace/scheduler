@@ -56,7 +56,7 @@ public class Seq implements SatConstraint {
 
     @Override
     public String toString() {
-        return "sequentialVMTransitions(vms=" + order + ", continuous" + ')';
+        return "seq(vms=" + order + ", continuous" + ')';
     }
 
     @Override

@@ -29,13 +29,12 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Ban implements SatConstraint {
+public class Ban extends SimpleConstraint {
 
     private VM vm;
 
     private Collection<Node> nodes;
 
-    private boolean continuous;
     /**
      * Make a new discrete constraint.
      *
@@ -54,9 +53,9 @@ public class Ban implements SatConstraint {
      * @param continuous {@code true} for a continuous constraint.
      */
     public Ban(VM vm, Collection<Node> nodes, boolean continuous) {
+        super(continuous);
         this.vm = vm;
         this.nodes = nodes;
-        this.continuous = continuous;
     }
 
     @Override
@@ -67,17 +66,6 @@ public class Ban implements SatConstraint {
     @Override
     public Collection<VM> getInvolvedVMs() {
         return Collections.singleton(vm);
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
     }
 
     @Override
@@ -114,13 +102,13 @@ public class Ban implements SatConstraint {
             return false;
         }
         Ban ban = (Ban) o;
-        return continuous == ban.continuous &&
+        return isContinuous() == ban.isContinuous() &&
                 Objects.equals(vm, ban.vm) &&
                 Objects.equals(nodes, ban.nodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, nodes, continuous);
+        return Objects.hash(vm, nodes, isContinuous());
     }
 }

@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
@@ -136,11 +140,7 @@ public class Preserve implements SatConstraint {
      * @return a list of constraints
      */
     public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
-        List<Preserve> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Preserve(v, r, q));
-        }
-        return l;
+        return vms.stream().map(v -> new Preserve(v, r, q)).collect(Collectors.toList());
     }
 }
 

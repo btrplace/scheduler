@@ -22,18 +22,20 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM to be killed.
  *
  * @author Fabien Hermenier
  */
-public class Killed implements SatConstraint {
+public class Killed extends SimpleConstraint {
 
     private VM vm;
-
-    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -51,8 +53,8 @@ public class Killed implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Killed(VM vm, boolean continuous) {
+        super(continuous);
         this.vm = vm;
-        this.continuous = continuous;
     }
 
 
@@ -77,12 +79,6 @@ public class Killed implements SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -91,18 +87,13 @@ public class Killed implements SatConstraint {
             return false;
         }
         Killed killed = (Killed) o;
-        return continuous == killed.continuous &&
+        return isContinuous() == killed.isContinuous() &&
                 Objects.equals(vm, killed.vm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, continuous);
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
+        return Objects.hash(vm, isContinuous());
     }
 
     /**
@@ -112,11 +103,7 @@ public class Killed implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Killed> newKilled(Collection<VM> vms) {
-        List<Killed> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Killed(v));
-        }
-        return l;
+        return vms.stream().map(Killed::new).collect(Collectors.toList());
     }
 
 }

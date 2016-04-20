@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force VMs' actions to be executed
@@ -96,10 +100,6 @@ public class NoDelay implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<NoDelay> newNoDelay(Collection<VM> vms) {
-        List<NoDelay> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new NoDelay(v));
-        }
-        return l;
+        return vms.stream().map(NoDelay::new).collect(Collectors.toList());
     }
 }

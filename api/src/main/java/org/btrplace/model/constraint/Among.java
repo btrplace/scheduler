@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Among implements SatConstraint {
+public class Among extends SimpleConstraint {
 
     /**
      * Set of set of nodes.
@@ -45,8 +45,6 @@ public class Among implements SatConstraint {
 
 
     private Collection<VM> vms;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -67,9 +65,9 @@ public class Among implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Among(Collection<VM> vms, Collection<Collection<Node>> parts, boolean continuous) {
+        super(continuous);
         assert checkDisjoint(parts) : "The constraint expects disjoint sets of nodes";
         this.vms = vms;
-        this.continuous = continuous;
         this.pGroups = parts;
     }
 
@@ -133,14 +131,14 @@ public class Among implements SatConstraint {
             return false;
         }
         Among among = (Among) o;
-        return continuous == among.continuous &&
+        return isContinuous() == among.isContinuous() &&
                 Objects.equals(pGroups, among.pGroups) &&
                 Objects.equals(vms, among.vms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pGroups, vms, continuous);
+        return Objects.hash(pGroups, vms, isContinuous());
     }
 
     @Override
@@ -152,16 +150,4 @@ public class Among implements SatConstraint {
     public AmongChecker getChecker() {
         return new AmongChecker(this);
     }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
 }

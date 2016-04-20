@@ -39,13 +39,11 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class RunningCapacity implements SatConstraint {
+public class RunningCapacity extends SimpleConstraint {
 
     private int qty;
 
     private Set<Node> nodes;
-
-    private boolean continuous;
 
     /**
      * Make a new discrete constraint on a single node
@@ -86,9 +84,9 @@ public class RunningCapacity implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public RunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
+        super(continuous);
         this.nodes = nodes;
         this.qty = amount;
-        this.continuous = continuous;
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of VMs must be >= 0");
         }
@@ -106,7 +104,7 @@ public class RunningCapacity implements SatConstraint {
     @Override
     public String toString() {
         return "runningCapacity(" + "nodes=" + nodes
-                + ", amount=" + qty + ", " + (continuous ? "continuous" : "discrete") + ')';
+                + ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -125,17 +123,6 @@ public class RunningCapacity implements SatConstraint {
     }
 
     @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -145,12 +132,12 @@ public class RunningCapacity implements SatConstraint {
         }
         RunningCapacity that = (RunningCapacity) o;
         return qty == that.qty &&
-                continuous == that.continuous &&
+                isContinuous() == that.isContinuous() &&
                 Objects.equals(nodes, that.nodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(qty, nodes, continuous);
+        return Objects.hash(qty, nodes, isContinuous());
     }
 }

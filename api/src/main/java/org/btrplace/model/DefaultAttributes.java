@@ -243,11 +243,13 @@ public class DefaultAttributes implements Attributes {
         try {
             return put(e, k, Integer.parseInt(x));
         } catch (NumberFormatException ignored) {
+            //Not an int
         }
 
         try {
             return put(e, k, Double.parseDouble(x));
         } catch (NumberFormatException ignored) {
+            //not a double either
         }
 
         return put(e, k, v);

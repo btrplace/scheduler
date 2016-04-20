@@ -23,6 +23,7 @@ package org.btrplace.model;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Element {
 
     /**

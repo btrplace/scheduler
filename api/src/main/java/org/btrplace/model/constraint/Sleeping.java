@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM at being sleeping.
@@ -29,11 +33,9 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Sleeping implements SatConstraint {
+public class Sleeping extends SimpleConstraint {
 
     private VM vm;
-
-    private boolean continuous;
 
     /**
      * Make a new discrete constraint.
@@ -51,8 +53,8 @@ public class Sleeping implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Sleeping(VM vm, boolean continuous) {
+        super(continuous);
         this.vm = vm;
-        this.continuous = continuous;
     }
 
 
@@ -64,17 +66,6 @@ public class Sleeping implements SatConstraint {
     @Override
     public String toString() {
         return "sleeping(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
     }
 
     @Override
@@ -96,13 +87,13 @@ public class Sleeping implements SatConstraint {
             return false;
         }
         Sleeping sleeping = (Sleeping) o;
-        return continuous == sleeping.continuous &&
+        return isContinuous() == sleeping.isContinuous() &&
                 Objects.equals(vm, sleeping.vm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, continuous);
+        return Objects.hash(vm, isContinuous());
     }
 
     /**
@@ -112,10 +103,6 @@ public class Sleeping implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Sleeping> newSleeping(Collection<VM> vms) {
-        List<Sleeping> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Sleeping(v));
-        }
-        return l;
+        return vms.stream().map(Sleeping::new).collect(Collectors.toList());
     }
 }

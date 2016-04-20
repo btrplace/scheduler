@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM at being ready for running.
@@ -32,11 +36,9 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Ready implements SatConstraint {
+public class Ready extends SimpleConstraint {
 
     private VM vm;
-
-    private boolean continuous;
     /**
      * Make a new constraint.
      *
@@ -53,8 +55,8 @@ public class Ready implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Ready(VM vm, boolean continuous) {
+        super(continuous);
         this.vm = vm;
-        this.continuous = continuous;
     }
 
     @Override
@@ -64,7 +66,7 @@ public class Ready implements SatConstraint {
 
     @Override
     public String toString() {
-        return "ready(vms=" + vm + ", " + (continuous ? "continuous" : "discrete") + ")";
+        return "ready(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     /**
@@ -74,11 +76,7 @@ public class Ready implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Ready> newReady(Collection<VM> vms) {
-        List<Ready> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Ready(v));
-        }
-        return l;
+        return vms.stream().map(Ready::new).collect(Collectors.toList());
     }
 
     @Override
@@ -90,13 +88,13 @@ public class Ready implements SatConstraint {
             return false;
         }
         Ready ready = (Ready) o;
-        return continuous == ready.continuous &&
+        return isContinuous() == ready.isContinuous() &&
                 Objects.equals(vm, ready.vm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, continuous);
+        return Objects.hash(vm, isContinuous());
     }
 
     @Override
@@ -107,16 +105,5 @@ public class Ready implements SatConstraint {
     @Override
     public Collection<VM> getInvolvedVMs() {
         return Collections.singleton(vm);
-    }
-
-    @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
     }
 }

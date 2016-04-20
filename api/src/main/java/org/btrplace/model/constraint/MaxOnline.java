@@ -40,7 +40,7 @@ import java.util.Set;
  *
  * @author Tu Huynh Dang
  */
-public class MaxOnline implements SatConstraint {
+public class MaxOnline extends SimpleConstraint {
 
     /**
      * number of reserved nodes
@@ -48,8 +48,6 @@ public class MaxOnline implements SatConstraint {
     private final int qty;
 
     private Set<Node> nodes;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint specifying restriction explicitly.
@@ -59,8 +57,8 @@ public class MaxOnline implements SatConstraint {
      * @param continuous {@code true} for continuous restriction
      */
     public MaxOnline(Set<Node> nodes, int n, boolean continuous) {
+        super(continuous);
         this.nodes = nodes;
-        this.continuous = continuous;
         qty = n;
     }
 
@@ -87,7 +85,7 @@ public class MaxOnline implements SatConstraint {
     @Override
     public String toString() {
         return "maxOnline(" + "nodes=" + nodes +
-                ", amount=" + qty + ", " + (continuous ? "continuous" : "discrete") + ')';
+                ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -107,17 +105,6 @@ public class MaxOnline implements SatConstraint {
     }
 
     @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        this.continuous = b;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -127,12 +114,12 @@ public class MaxOnline implements SatConstraint {
         }
         MaxOnline maxOnline = (MaxOnline) o;
         return qty == maxOnline.qty &&
-                continuous == maxOnline.continuous &&
+                isContinuous() == maxOnline.isContinuous() &&
                 Objects.equals(nodes, maxOnline.nodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(qty, nodes, continuous);
+        return Objects.hash(qty, nodes, isContinuous());
     }
 }

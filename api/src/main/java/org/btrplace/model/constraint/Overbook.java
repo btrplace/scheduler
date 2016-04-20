@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to specify and overbooking factor between
@@ -39,15 +43,13 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Overbook implements SatConstraint {
+public class Overbook extends SimpleConstraint {
 
     private String rcId;
 
     private double ratio;
 
     private Node node;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint with a continuous restriction.
@@ -69,8 +71,8 @@ public class Overbook implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Overbook(Node n, String rc, double r, boolean continuous) {
+        super(continuous);
         this.node = n;
-        this.continuous = continuous;
         if (r < 1.0d) {
             throw new IllegalArgumentException("The overbooking ratio must be >= 1.0");
         }
@@ -87,11 +89,7 @@ public class Overbook implements SatConstraint {
      * @return the associated list of continuous constraints
      */
     public static List<Overbook> newOverbooks(Collection<Node> nodes, String rc, double r) {
-        List<Overbook> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Overbook(n, rc, r));
-        }
-        return l;
+        return nodes.stream().map(n -> new Overbook(n, rc, r)).collect(Collectors.toList());
     }
 
     /**
@@ -115,7 +113,7 @@ public class Overbook implements SatConstraint {
     @Override
     public String toString() {
         return "overbook(node=" + node
-                + ", rc=" + rcId + ", ratio=" + ratio + ", " + (continuous ? "continuous" : "discrete") + ')';
+                + ", rc=" + rcId + ", ratio=" + ratio + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -129,17 +127,6 @@ public class Overbook implements SatConstraint {
     }
 
     @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -149,14 +136,14 @@ public class Overbook implements SatConstraint {
         }
         Overbook overbook = (Overbook) o;
         return Double.compare(overbook.ratio, ratio) == 0 &&
-                continuous == overbook.continuous &&
+                isContinuous() == overbook.isContinuous() &&
                 Objects.equals(rcId, overbook.rcId) &&
                 Objects.equals(node, overbook.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rcId, ratio, node, continuous);
+        return Objects.hash(rcId, ratio, node, isContinuous());
     }
 
     @Override

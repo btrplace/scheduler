@@ -35,11 +35,9 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Split implements SatConstraint {
+public class Split extends SimpleConstraint {
 
     private Collection<Collection<VM>> sets;
-
-    private boolean continuous;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -57,7 +55,7 @@ public class Split implements SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Split(Collection<Collection<VM>> parts, boolean continuous) {
-        this.continuous = continuous;
+        super(continuous);
         Set<VM> all = new HashSet<>();
         int cnt = 0;
         for (Collection<VM> s : parts) {
@@ -111,17 +109,6 @@ public class Split implements SatConstraint {
     }
 
     @Override
-    public boolean isContinuous() {
-        return continuous;
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        continuous = b;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -130,18 +117,18 @@ public class Split implements SatConstraint {
             return false;
         }
         Split split = (Split) o;
-        return continuous == split.continuous &&
+        return isContinuous() == split.isContinuous() &&
                 Objects.equals(sets, split.sets);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sets, continuous);
+        return Objects.hash(sets, isContinuous());
     }
 
     @Override
     public String toString() {
-        return "split(vms=" + sets + ", " + (continuous ? "continuous" : "discrete") + ')';
+        return "split(vms=" + sets + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
