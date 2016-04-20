@@ -34,11 +34,21 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
     private List<SolvingStatistics> partResults;
 
-    private int nbNodes, nbVMs, nbConstraints, nbManaged, coreRPDuration, speRPDuration;
+    private int nbNodes;
+    private int nbVMs;
+    private int nbConstraints;
+    private int nbManaged;
+    private int coreRPDuration;
+    private int speRPDuration;
 
-    private int nbWorkers, nbSearchNodes, nbBacktracks, nbPartitions;
+    private int nbWorkers;
+    private int nbSearchNodes;
+    private int nbBacktracks;
+    private int nbPartitions;
 
-    private long splitDuration, duration, start;
+    private long splitDuration;
+    private long duration;
+    private long start;
 
     private boolean hitTimeout;
 
@@ -140,25 +150,25 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
             if (st.getSolutions().isEmpty()) {
                 //At least 1 partition does not have a result, so the problem is not totally solved
                 return solutions;
+            }
+
+            SolutionStatistics first = st.getSolutions().get(0);
+            firstN += first.getNbNodes();
+            firstB += first.getNbBacktracks();
+            firstOptValue += first.getOptValue();
+            endFirst = Math.max(endFirst, st.getStart() + first.getTime());
+            if (st.getSolutions().size() > 1) {
+                multipleSolution = true;
+                SolutionStatistics last = st.getSolutions().get(st.getSolutions().size() - 1);
+                lastN += last.getNbNodes();
+                lastB += last.getNbBacktracks();
+                lastOptValue += last.getOptValue();
+                endLast = Math.max(endLast, st.getStart() + last.getTime());
             } else {
-                SolutionStatistics first = st.getSolutions().get(0);
-                firstN += first.getNbNodes();
-                firstB += first.getNbBacktracks();
-                firstOptValue += first.getOptValue();
-                endFirst = Math.max(endFirst, st.getStart() + first.getTime());
-                if (st.getSolutions().size() > 1) {
-                    multipleSolution = true;
-                    SolutionStatistics last = st.getSolutions().get(st.getSolutions().size() - 1);
-                    lastN += last.getNbNodes();
-                    lastB += last.getNbBacktracks();
-                    lastOptValue += last.getOptValue();
-                    endLast = Math.max(endLast, st.getStart() + last.getTime());
-                } else {
-                    lastN += first.getNbNodes();
-                    lastB += first.getNbBacktracks();
-                    lastOptValue += first.getOptValue();
-                    endLast = Math.max(endLast, st.getStart() + first.getTime());
-                }
+                lastN += first.getNbNodes();
+                lastB += first.getNbBacktracks();
+                lastOptValue += first.getOptValue();
+                endLast = Math.max(endLast, st.getStart() + first.getTime());
             }
         }
 

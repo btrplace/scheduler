@@ -49,9 +49,8 @@ public class NonStrictComparisonOperator extends BtrPlaceTree {
         BtrpOperand r = getChild(1).go(this);
         if (!reverse) {
             return l.geq(r);
-        } else {
-            return r.geq(l);
         }
+        return r.geq(l);
     }
 
 }

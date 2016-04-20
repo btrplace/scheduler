@@ -34,7 +34,6 @@ import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +53,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     private InstanceSolver runner;
 
-    private List<SolvingStatistics> solvingPhases;
+    private StagedSolvingStatistics stages;
     /**
      * Make a new algorithm.
      *
@@ -63,7 +62,6 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     public DefaultChocoScheduler(DefaultParameters ps) {
         params = ps;
         runner = new SingleRunner();
-        solvingPhases = new ArrayList<>();
     }
 
     /**
@@ -126,18 +124,17 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
-        solvingPhases.clear();
         // If a network view is attached, ensure that all the migrations' destination node are defined
         Network net = (Network) i.getView(Network.VIEW_ID);
-
+        stages = null;
         if  (net != null) {
-            
+            stages = new StagedSolvingStatistics();
             // The network view is useless to take placement decisions
             i.detach(net);
 
             // Solve a first time using placement oriented MinMTTR optimisation constraint
             ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
-            solvingPhases.add(runner.getStatistics());
+            stages.append(runner.getStatistics());
             if (p == null) {
                 return null;
             }
@@ -195,12 +192,11 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public SolvingStatistics getStatistics() throws SchedulerException {
-        if (solvingPhases.isEmpty()) {
+        if (stages == null) {
             return runner.getStatistics();
-        } else {
-            solvingPhases.add(runner.getStatistics());
-            return new StagedSolvingStatistics(solvingPhases);
         }
+        stages.append(runner.getStatistics());
+        return stages;
     }
 
     @Override

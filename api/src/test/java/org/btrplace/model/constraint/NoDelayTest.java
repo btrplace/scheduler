@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 /**
- * Created by vkherbac on 02/09/14.
+ * @author Vincent Kherbache
  */
 public class NoDelayTest {
 

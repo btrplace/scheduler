@@ -47,11 +47,9 @@ public class AddOperator extends BtrPlaceTree {
             BtrpOperand r = getChild(1).go(this);
             if (l != IgnorableOperand.getInstance() && r != IgnorableOperand.getInstance()) {
                 return l.plus(r);
-            } else {
-                return IgnorableOperand.getInstance();
             }
-        } else {
-            return l;
+            return IgnorableOperand.getInstance();
         }
+        return l;
     }
 }

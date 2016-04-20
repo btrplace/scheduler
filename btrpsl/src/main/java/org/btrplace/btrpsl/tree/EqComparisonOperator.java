@@ -49,9 +49,8 @@ public class EqComparisonOperator extends BtrPlaceTree {
         BtrpOperand r = getChild(1).go(this);
         if (!opposite) {
             return l.eq(r);
-        } else {
-            return l.eq(r).not();
         }
+        return l.eq(r).not();
     }
 
 }

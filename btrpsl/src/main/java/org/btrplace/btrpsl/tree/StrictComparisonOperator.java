@@ -50,9 +50,8 @@ public class StrictComparisonOperator extends BtrPlaceTree {
 
         if (!reverse) {
             return l.gt(r);
-        } else {
-            return r.gt(l);
         }
+        return r.gt(l);
 
     }
 

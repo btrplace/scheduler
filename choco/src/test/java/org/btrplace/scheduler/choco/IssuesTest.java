@@ -42,6 +42,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Unit tests related to the opened issues
@@ -91,10 +92,7 @@ public class IssuesTest {
             vmsOnInvolvedNodes[i] = VF.bounded("nVMs", -1, maxVMs, rp.getSolver());
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
-            IntVar[] c = new IntVar[]{VF.fixed(-1, rp.getSolver()), VMsOnAllNodes.get(rp.getNode(n)),
-                    state, vmsOnInvolvedNodes[i]};
             Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
-            //solver.post(new ElementV(c, 0, solver.getEnvironment()));
             solver.post(elem);
 
             // IF the node is online and hosting VMs -> busy = 1.
@@ -235,16 +233,11 @@ public class IssuesTest {
         BoolVar[] idles = new BoolVar[NUMBER_OF_NODE];
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
-        List<Constraint> elms = new ArrayList<>();
         for (Node n : map.getAllNodes()) {
             vmsOnInvolvedNodes[i] = VF.bounded("nVMs" + n, -1, maxVMs, solver);
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
-            IntVar[] c = new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n)),
-                    state, vmsOnInvolvedNodes[i]};
-            //new ElementV(c, 0, solver.getEnvironment());
             Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
-            elms.add(elem);
             solver.post(elem);
             // IF number of VMs on a node is 0 -> Idle
             idles[i] = VF.bool("idle" + n, solver);
@@ -286,7 +279,7 @@ public class IssuesTest {
         VM vm6 = model.newVM();
 
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3, n4)
+        new MappingFiller(model.getMapping()).on(n1, n2, n3, n4)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
                 .run(n3, vm5, vm6)
@@ -304,6 +297,7 @@ public class IssuesTest {
         ctrsC.add(off);
         ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan dp = cra.solve(model, ctrsC);
+        Assert.assertNotNull(dp);
     }
 
     @Test
@@ -325,10 +319,10 @@ public class IssuesTest {
         mo.getMapping().addRunningVM(v, n);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(),
-                        Collections.<VM>emptySet(),
+                .setNextVMsStates(Collections.emptySet(),
+                        Collections.emptySet(),
                         Collections.singleton(v),
-                        Collections.<VM>emptySet())
+                        Collections.emptySet())
                 .build();
 
         NodeTransition na = rp.getNodeAction(n);
@@ -369,15 +363,12 @@ public class IssuesTest {
             nodes.add(mo.newNode());
             ma.addOnlineNode(nodes.get(i));
         }
-        List<VM> vms = new ArrayList<>();
         for (int i = 0; i < 1; i++) {
             VM v = mo.newVM();
-            vms.add(v);
             ma.addRunningVM(v, nodes.get(0));
         }
         for (int i = 0; i < 2; i++) {
             VM v = mo.newVM();
-            vms.add(v);
             ma.addRunningVM(v, nodes.get(1));
         }
         DefaultParameters ps = new DefaultParameters();
@@ -427,14 +418,9 @@ public class IssuesTest {
         mo.getMapping().addOnlineNode(mo.newNode());
         mo.getMapping().addOnlineNode(mo.newNode());
 
-        List<SatConstraint> cstrs = new ArrayList<>();
-        for (VM v : mo.getMapping().getAllVMs()) {
-            cstrs.add(new Running(v));
-        }
+        List<SatConstraint> cstrs = mo.getMapping().getAllVMs().stream().map(Running::new).collect(Collectors.toList());
         cstrs.add(new Spread(mo.getMapping().getAllVMs(), false));
-        for (Node n : mo.getMapping().getOnlineNodes()) {
-            cstrs.add(new RunningCapacity(n, 1));
-        }
+        cstrs.addAll(mo.getMapping().getOnlineNodes().stream().map(n -> new RunningCapacity(n, 1)).collect(Collectors.toList()));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
         ChocoScheduler s = new DefaultChocoScheduler();
         System.out.println(i.getModel());
@@ -483,15 +469,15 @@ public class IssuesTest {
         final ShareableResource cpu = new ShareableResource("cpu", 45, 1);
         final ShareableResource mem = new ShareableResource("mem", 90, 2);
 
-        populateNodeVm(model, mapping, node0, ids0, cpu, mem);
-        populateNodeVm(model, mapping, node1, ids1, cpu, mem);
-        populateNodeVm(model, mapping, node2, ids2, cpu, mem);
-        populateNodeVm(model, mapping, node3, ids3, cpu, mem);
+        populateNodeVm(model, mapping, node0, ids0);
+        populateNodeVm(model, mapping, node1, ids1);
+        populateNodeVm(model, mapping, node2, ids2);
+        populateNodeVm(model, mapping, node3, ids3);
         model.attach(cpu);
         model.attach(mem);
 
         final Collection<SatConstraint> satConstraints =
-                new ArrayList<SatConstraint>();
+                new ArrayList<>();
         // We want to cause Node 3 to go offline to see how the VMs hosted on that
         // node will get rebalanced.
         satConstraints.add(new Offline(node3));
@@ -508,9 +494,7 @@ public class IssuesTest {
         satConstraints.clear();
         // This is somewhat similar to making Node 3 going offline by ensuring that
         // all VMs can no longer get hosted on that node.
-        for (final VM vm : mapping.getAllVMs()) {
-            satConstraints.add(new Ban(vm, Arrays.asList(node3)));
-        }
+        satConstraints.addAll(mapping.getAllVMs().stream().map(vm -> new Ban(vm, Collections.singletonList(node3))).collect(Collectors.toList()));
 
         scheduler = new DefaultChocoScheduler();
         scheduler.doOptimize(false);
@@ -520,8 +504,7 @@ public class IssuesTest {
     }
 
     private static void populateNodeVm(final Model model,
-                                       final Mapping mapping, final Node node, final int[] ids,
-                                       final ShareableResource cpu, final ShareableResource mem) {
+                                       final Mapping mapping, final Node node, final int[] ids) {
 
         mapping.addOnlineNode(node);
         for (final int id : ids) {

@@ -120,9 +120,8 @@ public class SliceBuilder {
         } else if (start.isInstantiated()) {
             if (start.isInstantiatedTo(0)) {
                 return end;
-            } else {
-                return VF.offset(end, -start.getValue());
             }
+            return VF.offset(end, -start.getValue());
         }
         int inf = end.getLB() - start.getUB();
         if (inf < 0) {

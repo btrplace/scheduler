@@ -85,8 +85,6 @@ public class CGather implements ChocoConstraint {
             }
             if (loc != null) {
                 return placeDSlices(rp, dSlices, rp.getNode(loc));
-            } else {
-                return forceDiscreteCollocation(rp, dSlices);
             }
         }
         return forceDiscreteCollocation(rp, dSlices);

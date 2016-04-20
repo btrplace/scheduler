@@ -54,7 +54,7 @@ public class SeqLauncher {
         try {
             cmdParser.parseArgument(args);
             if (timeout <= 0)
-                throw new CmdLineException("Timeout need to be > 0 !");
+                throw new IllegalArgumentException("Timeout need to be > 0 !");
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println("seqBenchLauncher [-r] [-m] [-t n_sec] -i file_name");

@@ -105,7 +105,7 @@ public class DefaultModelTest {
         i.getAttributes().put(u, "foo", false);
         i.attach(v1);
         i.attach(v2);
-        Model c = (Model) i.copy();
+        Model c = i.copy();
         Assert.assertEquals(c.hashCode(), i.hashCode());
         Assert.assertTrue(c.equals(i));
         i.detach(v1);

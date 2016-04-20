@@ -85,9 +85,8 @@ public class DependenciesExtractor implements ActionVisitor {
         if (newAmount > oldAmount) {
             demandingNodes.put(a, a.getHost());
             return getDemandings(a.getHost()).add(a);
-        } else {
-            return getFreeings(a.getHost()).add(a);
         }
+        return getFreeings(a.getHost()).add(a);
     }
 
     @Override
@@ -165,16 +164,15 @@ public class DependenciesExtractor implements ActionVisitor {
     public Set<Action> getDependencies(Action a) {
         if (!demandingNodes.containsKey(a)) {
             return Collections.emptySet();
-        } else {
-            Node n = demandingNodes.get(a);
-            Set<Action> allActions = getFreeings(n);
-            Set<Action> pre = new HashSet<>();
-            for (Action action : allActions) {
-                if (!action.equals(a) && a.getStart() >= action.getEnd()) {
-                    pre.add(action);
-                }
-            }
-            return pre;
         }
+        Node n = demandingNodes.get(a);
+        Set<Action> allActions = getFreeings(n);
+        Set<Action> pre = new HashSet<>();
+        for (Action action : allActions) {
+            if (!action.equals(a) && a.getStart() >= action.getEnd()) {
+                pre.add(action);
+            }
+        }
+        return pre;
     }
 }

@@ -150,22 +150,23 @@ public class ScriptBuilder {
         if (dates.containsKey(k) && dates.get(k) == f.lastModified() && cache.containsKey(f.getPath())) {
             LOGGER.debug("get '" + f.getName() + "' from the cache");
             return cache.get(f.getPath());
-        } else {
-            LOGGER.debug(f.getName() + " is built from the file");
-            dates.put(k, f.lastModified());
-            String name = f.getName();
-            try {
-                Script v = build(new ANTLRFileStream(f.getAbsolutePath()));
-                if (!name.equals(v.getlocalName() + Script.EXTENSION)) {
-                    throw new ScriptBuilderException("Script '" + v.getlocalName()
-                            + "' must be declared in a file named '" + v.getlocalName() + Script.EXTENSION);
-                }
-                cache.put(f.getPath(), v);
-                return v;
-            } catch (IOException e) {
-                throw new ScriptBuilderException(e.getMessage(), e);
-            }
         }
+
+        LOGGER.debug(f.getName() + " is built from the file");
+        dates.put(k, f.lastModified());
+        String name = f.getName();
+        try {
+            Script v = build(new ANTLRFileStream(f.getAbsolutePath()));
+            if (!name.equals(v.getlocalName() + Script.EXTENSION)) {
+                throw new ScriptBuilderException("Script '" + v.getlocalName()
+                        + "' must be declared in a file named '" + v.getlocalName() + Script.EXTENSION);
+            }
+            cache.put(f.getPath(), v);
+            return v;
+        } catch (IOException e) {
+            throw new ScriptBuilderException(e.getMessage(), e);
+        }
+
     }
 
     /**

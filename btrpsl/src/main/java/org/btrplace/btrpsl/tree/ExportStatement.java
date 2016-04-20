@@ -103,11 +103,10 @@ public class ExportStatement extends BtrPlaceTree {
         } else {
             if (o.degree() == 0) {
                 throw new UnsupportedOperationException(o + ": Variable expected");
-            } else {
-                BtrpSet s = (BtrpSet) o;
-                for (BtrpOperand so : s.getValues()) {
-                    ret.addAll(flatten(so));
-                }
+            }
+            BtrpSet s = (BtrpSet) o;
+            for (BtrpOperand so : s.getValues()) {
+                ret.addAll(flatten(so));
             }
         }
         return ret;

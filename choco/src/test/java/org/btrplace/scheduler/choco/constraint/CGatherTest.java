@@ -56,8 +56,6 @@ public class CGatherTest {
         Assert.assertEquals(plan.getSize(), 0);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().isReady(vm1));
-        //Assert.assertEquals(g.isSatisfied(res), SatConstraint.Sat.SATISFIED);
-        //Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
     }
 
     @Test

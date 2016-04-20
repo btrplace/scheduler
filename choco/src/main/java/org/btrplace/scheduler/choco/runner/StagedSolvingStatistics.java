@@ -20,7 +20,7 @@ package org.btrplace.scheduler.choco.runner;
 
 import org.btrplace.scheduler.choco.Parameters;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,28 +35,15 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     /**
      * Make a new statistic.
      *
-     * @param stages the results of each phase. Ordered chronologically
      */
-    public StagedSolvingStatistics(SolvingStatistics... stages) {
-        this(Arrays.asList(stages));
+    public StagedSolvingStatistics() {
+        stages = new ArrayList<>();
     }
 
-    /**
-     * Make a new statistic.
-     *
-     * @param stages the results of each phase. Ordered chronologically
-     */
-    public StagedSolvingStatistics(List<SolvingStatistics> stages) {
-        this.stages = stages;
-    }
 
-    /**
-     * Returns the statistics for all the solving phases.
-     *
-     * @return a list of statistics
-     */
-    public List<SolvingStatistics> getStages() {
-        return stages;
+    public StagedSolvingStatistics append(SolvingStatistics stats) {
+        stages.add(stats);
+        return this;
     }
 
     private SolvingStatistics last() {
@@ -65,6 +52,14 @@ public class StagedSolvingStatistics implements SolvingStatistics {
 
     private SolvingStatistics first() {
         return stages.get(0);
+    }
+
+    public int getNbStages() {
+        return stages.size();
+    }
+
+    public SolvingStatistics getAtState(int st) {
+        return stages.get(st);
     }
 
     @Override
@@ -180,7 +175,7 @@ public class StagedSolvingStatistics implements SolvingStatistics {
         StringBuilder b = new StringBuilder();
         int i = 1;
         for (SolvingStatistics st : stages) {
-            b.append("---- Stage ").append(i).append(" ----\n");
+            b.append("---- Stage ").append(i).append("/").append(stages.size()).append(" ----\n");
             b.append(st.toString()).append("\n");
             i++;
         }

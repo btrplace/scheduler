@@ -24,7 +24,6 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -33,8 +32,6 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 public class ShareableResourceTest {
-
-    private static Random rnd = new Random();
 
     private static Model mo = new DefaultModel();
     private static List<VM> vms = Util.newVMs(mo, 10);

@@ -70,12 +70,11 @@ public class FastIFFEq extends Constraint {
         public int getPropagationConditions(int idx) {
             if (idx == 0) {
                 return IntEventType.INSTANTIATE.getMask();
-            } else {
-                if (vars[1].hasEnumeratedDomain()) {
-                    return IntEventType.INSTANTIATE.getMask() + IntEventType.BOUND.getMask() + IntEventType.REMOVE.getMask();
-                }
-                return IntEventType.INSTANTIATE.getMask() + IntEventType.BOUND.getMask();
             }
+            if (vars[1].hasEnumeratedDomain()) {
+                return IntEventType.INSTANTIATE.getMask() + IntEventType.BOUND.getMask() + IntEventType.REMOVE.getMask();
+            }
+            return IntEventType.INSTANTIATE.getMask() + IntEventType.BOUND.getMask();
         }
 
         @Override

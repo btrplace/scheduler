@@ -33,7 +33,7 @@ import java.util.Objects;
  *
  * @author Fabien Hermenier
  */
-public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
+public class MigrateVM extends Action implements RunningVMPlacement {
 
     private VM vm;
 

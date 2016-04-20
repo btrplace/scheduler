@@ -47,11 +47,9 @@ public class MinusOperator extends BtrPlaceTree {
             BtrpOperand r = getChild(1).go(this);
             if (l != IgnorableOperand.getInstance() && r != IgnorableOperand.getInstance()) {
                 return l.minus(r);
-            } else {
-                return IgnorableOperand.getInstance();
             }
-        } else {
-            return l.negate();
+            return IgnorableOperand.getInstance();
         }
+        return l.negate();
     }
 }
