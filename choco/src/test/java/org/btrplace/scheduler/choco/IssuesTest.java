@@ -534,4 +534,14 @@ public class IssuesTest {
         Assert.assertNotNull(p);
         System.out.println(stats);
     }
+
+    @Test
+    public void testIssue101() {
+        Instance i = InstanceConverter.quickFromJSON(new File("src/test/resources/issue-101.json"));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(i);
+        SolvingStatistics stats = s.getStatistics();
+        System.out.println(stats);
+        Assert.assertNotNull(p);
+    }
 }

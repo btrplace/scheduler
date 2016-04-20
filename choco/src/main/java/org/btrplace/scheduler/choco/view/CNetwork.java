@@ -202,7 +202,9 @@ public class CNetwork implements ChocoView {
 
                     // USING A SINGLE BW PER MIGRATION
                     try {
-                        duration.instantiateTo((int) Math.round(durationTotal), Cause.Null);
+                        //prevent from a 0 duration when the memory usage is very low
+                        int dd = (int) Math.max(1, Math.round(durationTotal));
+                        duration.instantiateTo(dd, Cause.Null);
                         bandwidth.instantiateTo(maxBW, Cause.Null);
                     } catch (ContradictionException e) {
                         rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
