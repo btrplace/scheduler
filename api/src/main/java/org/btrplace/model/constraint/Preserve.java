@@ -18,7 +18,6 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
@@ -95,11 +94,6 @@ public class Preserve implements SatConstraint {
     @Override
     public SatConstraintChecker<Preserve> getChecker() {
         return new PreserveChecker(this);
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

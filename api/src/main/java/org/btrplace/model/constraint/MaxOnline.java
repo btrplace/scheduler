@@ -19,10 +19,8 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -97,11 +95,6 @@ public class MaxOnline extends SimpleConstraint {
     @Override
     public Collection<Node> getInvolvedNodes() {
         return nodes;
-    }
-
-    @Override
-    public Collection<VM> getInvolvedVMs() {
-        return Collections.emptyList();
     }
 
     @Override

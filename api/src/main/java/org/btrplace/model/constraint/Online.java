@@ -19,7 +19,6 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -87,11 +86,6 @@ public class Online extends SimpleConstraint {
     @Override
     public Collection<Node> getInvolvedNodes() {
         return Collections.singleton(node);
-    }
-
-    @Override
-    public Collection<VM> getInvolvedVMs() {
-        return Collections.emptyList();
     }
 
     /**

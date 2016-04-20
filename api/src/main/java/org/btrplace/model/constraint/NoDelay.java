@@ -18,7 +18,6 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
@@ -76,11 +75,6 @@ public class NoDelay implements SatConstraint {
     @Override
     public int hashCode() {
         return Objects.hash(vm);
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

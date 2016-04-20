@@ -8,6 +8,7 @@ import org.btrplace.plan.ReconfigurationPlanChecker;
 import org.btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Abstract class to characterize a satisfaction-oriented constraint
@@ -29,14 +30,18 @@ public interface SatConstraint extends Constraint {
      *
      * @return a set of nodes identifiers that may be empty
      */
-    Collection<Node> getInvolvedNodes();
+    default Collection<Node> getInvolvedNodes() {
+        return Collections.emptyList();
+    }
 
     /**
      * Get the VMs involved in the constraint.
      *
      * @return a set of VM identifiers that may be empty
      */
-    Collection<VM> getInvolvedVMs();
+    default Collection<VM> getInvolvedVMs() {
+        return Collections.emptyList();
+    }
 
     /**
      * Check if the restriction provided by the constraint is continuous.

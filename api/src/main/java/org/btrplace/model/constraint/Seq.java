@@ -18,10 +18,12 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A constraint to force the actions that change the given VMs state
@@ -67,11 +69,6 @@ public class Seq implements SatConstraint {
     @Override
     public SatConstraintChecker<Seq> getChecker() {
         return new SeqChecker(this);
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

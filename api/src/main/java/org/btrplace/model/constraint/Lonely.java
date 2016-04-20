@@ -18,11 +18,9 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -71,11 +69,6 @@ public class Lonely extends SimpleConstraint {
     @Override
     public SatConstraintChecker<Lonely> getChecker() {
         return new LonelyChecker(this);
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

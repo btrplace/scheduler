@@ -18,11 +18,8 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -75,11 +72,6 @@ public class Spread extends SimpleConstraint {
     @Override
     public Set<VM> getInvolvedVMs() {
         return vms;
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

@@ -18,7 +18,6 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.*;
@@ -101,11 +100,6 @@ public class Split extends SimpleConstraint {
             }
         }
         return Collections.emptySet();
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

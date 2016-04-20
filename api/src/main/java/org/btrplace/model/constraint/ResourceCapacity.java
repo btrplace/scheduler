@@ -19,9 +19,7 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -143,11 +141,6 @@ public class ResourceCapacity extends SimpleConstraint {
     @Override
     public Set<Node> getInvolvedNodes() {
         return nodes;
-    }
-
-    @Override
-    public Collection<VM> getInvolvedVMs() {
-        return Collections.emptyList();
     }
 
     @Override

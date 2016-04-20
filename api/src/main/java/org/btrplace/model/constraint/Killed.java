@@ -19,7 +19,6 @@
 package org.btrplace.model.constraint;
 
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
@@ -66,11 +65,6 @@ public class Killed extends SimpleConstraint {
     @Override
     public String toString() {
         return "killed(vm=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

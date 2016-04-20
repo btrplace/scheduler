@@ -18,7 +18,6 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
@@ -52,11 +51,6 @@ public class Root implements SatConstraint {
     @Override
     public String toString() {
         return "root(vm=" + vm + ", continuous)";
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override

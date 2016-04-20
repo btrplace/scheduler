@@ -18,7 +18,6 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
@@ -54,11 +53,6 @@ public class Running extends SimpleConstraint {
     public Running(VM vm, boolean continuous) {
         super(continuous);
         this.vm = vm;
-    }
-
-    @Override
-    public Collection<Node> getInvolvedNodes() {
-        return Collections.emptyList();
     }
 
     @Override
