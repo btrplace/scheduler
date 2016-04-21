@@ -34,6 +34,7 @@ import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -161,6 +162,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
                 // Add the new constraints to the list
                 if (!newCstrs.isEmpty()) {
+                    cstrs = new ArrayList<>(cstrs);
                     cstrs.addAll(newCstrs);
                 }
             }
