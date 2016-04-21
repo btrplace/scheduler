@@ -211,9 +211,6 @@ public class CNetwork implements ChocoView {
                                 " duration variables for " + vm + " migration: " + e.getMessage());
                         return false;
                     }
-                    //s.post(new Arithmetic(duration, Operator.EQ, durEnum.get(0)));
-                    //s.post(new Arithmetic(bandwidth, Operator.EQ, bwEnum.get(0)));
-                    
                 } else {
                     // Show a warning and throw an exception
                     rp.getLogger().warn("The 'memUsed' attribute for " + vm + " is missing, migration discarded " +

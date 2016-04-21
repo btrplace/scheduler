@@ -543,5 +543,6 @@ public class IssuesTest {
         SolvingStatistics stats = s.getStatistics();
         System.out.println(stats);
         Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }

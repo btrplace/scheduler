@@ -22,17 +22,21 @@ import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.MinMTTRMig;
+import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -91,7 +95,7 @@ public class CNetworkTest {
         Assert.assertNotNull(p);
         
         // The switch is non-blocking
-        Assert.assertEquals(swMain.getCapacity(), -1);
+        Assert.assertEquals(swMain.getCapacity(), Integer.MAX_VALUE);
         
         // Check the migration path and bandwidth
         MigrateVM mig = null;
@@ -114,5 +118,27 @@ public class CNetworkTest {
                 (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
         durationTotal = durationMin + durationColdPages + durationHotPages;
         Assert.assertEquals((mig.getEnd() - mig.getStart()), (int) Math.round(durationTotal));
+    }
+
+    @Test
+    public void testWithSwitchCapacity() {
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        VM v = mo.newVM();
+
+        new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, v).get();
+        ShareableResource mem = new ShareableResource("mem", 10000, 5000);
+        Network net = new Network();
+        mo.attach(net);
+        mo.attach(mem);
+        mo.getAttributes().put(v, "memUsed", 10000);
+
+        Switch sw = net.newSwitch(1000);
+        net.connect(2000, sw, n1, n2);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(mo, Arrays.asList(new Fence(v, n2)));
+        Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }

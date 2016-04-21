@@ -37,7 +37,7 @@ public class Switch implements Element,PhysicalElement,NetworkElement {
      * Make a new Switch.
      *
      * @param id    the switch identifier.
-     * @param c     the maximal capacity of the Switch (c<=0 for a non-blocking switch).
+     * @param c     the maximal capacity of the switch.
      */
     public Switch(int id, int c) {
         this.id = id;

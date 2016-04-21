@@ -11825,7 +11825,7 @@
         "switches": [
           {
             "id": 0,
-            "capacity": -1
+            "capacity": 1000
           }
         ],
         "links": [

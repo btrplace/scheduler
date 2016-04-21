@@ -167,7 +167,7 @@ public class Network implements ModelView {
      * @return the switch
      */
     public Switch newSwitch() {
-        return newSwitch(-1);
+        return newSwitch(Integer.MAX_VALUE);
     }
 
     /**

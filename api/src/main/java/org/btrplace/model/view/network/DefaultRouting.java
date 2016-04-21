@@ -58,6 +58,12 @@ public class DefaultRouting extends Routing {
             if (inf.getCapacity() < max) {
                 max = inf.getCapacity();
             }
+            Switch sw = inf.getSwitch();
+            if (sw.getCapacity() >= 0 && sw.getCapacity() < max) {
+                //The >= 0 stays for historical reasons
+                max = sw.getCapacity();
+            }
+
         }
         return max;
     }
