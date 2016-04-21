@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.view;
 
+import org.btrplace.model.Attributes;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
@@ -88,69 +89,61 @@ public class CNetwork implements ChocoView {
 
     @Override
     public boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
-        
+
         Model mo = rp.getSourceModel();
-        
+
+        Attributes attrs = mo.getAttributes();
+
         // Pre-compute duration and bandwidth for each VM migration
         for (VMTransition migration : rp.getVMActions()) {
 
-            if (migration instanceof RelocatableVM) {
-                
-                // Get vars from migration
-                VM vm = migration.getVM();
-                IntVar bandwidth = ((RelocatableVM) migration).getBandwidth();
-                IntVar duration = migration.getDuration();
-                Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
-                
-                // Try to get the destination node
-                Node dst;
-                if (migration.getDSlice().getHoster().isInstantiated()) {
-                    dst = rp.getNode(migration.getDSlice().getHoster().getValue());
-                    if (src.equals(dst)) {
-                        try {
-                            ((RelocatableVM) migration).getBandwidth().instantiateTo(0, Cause.Null);
-                            continue;
-                        } catch (ContradictionException e) {
-                            rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
-                                    " duration variables for " + vm + " migration: " + e.getMessage());
-                            return false;
-                        }
+            if (!(migration instanceof RelocatableVM)) {
+                continue;
+            }
 
-                    }
+            // Get vars from migration
+            VM vm = migration.getVM();
+            IntVar bandwidth = ((RelocatableVM) migration).getBandwidth();
+            IntVar duration = migration.getDuration();
+            Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
+
+            // Try to get the destination node
+            Node dst;
+
+            if (!migration.getDSlice().getHoster().isInstantiated()) {
+                throw new SchedulerException(null, "Destination node for VM '" + vm + "' should be known !");
+            }
+
+            if (!mo.getAttributes().isSet(vm, "memUsed")) {
+                throw new SchedulerException(null, "Unable to retrieve 'memUsed' attribute for the vm '" + vm + "'");
+            }
+
+            dst = rp.getNode(migration.getDSlice().getHoster().getValue());
+            if (src.equals(dst)) {
+                try {
+                    ((RelocatableVM) migration).getBandwidth().instantiateTo(0, Cause.Null);
+                    continue;
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
+                            " duration variables for " + vm + " migration: " + e.getMessage());
+                    return false;
                 }
-                else {
-                    // Show a warning and throw an exception
-                    rp.getLogger().warn("The destination node for " + vm + " is not known, migration discarded " +
-                            "from network view.");
-                    throw new SchedulerException(null, "Destination node for VM '" + vm + "' should be known !");
-                }
+            }
 
-                // Check if all attributes are defined
-                if (mo.getAttributes().isSet(vm, "memUsed")) {
 
-                    // Get attribute vars
-                    int memUsed = mo.getAttributes().getInteger(vm, "memUsed");
-                    
-                    // Get VM memory activity attributes if defined, otherwise set an idle workload on the VM
-                    double hotDirtySize = 5.0;// Minimal observed value on idle VM
-                    if (mo.getAttributes().isSet(vm, "hotDirtySize")) {
-                        hotDirtySize = mo.getAttributes().getInteger(vm, "hotDirtySize");
-                    }
-                    double hotDirtyDuration = 2.0; // Minimal observed value on idle VM
-                    if (mo.getAttributes().isSet(vm, "hotDirtyDuration")) {
-                        hotDirtyDuration = mo.getAttributes().getInteger(vm, "hotDirtyDuration");
-                    }
+            // Get attribute vars
+            int memUsed = attrs.get(vm, "memUsed", -1);
 
-                    double coldDirtyRate = 0;
-                    if (mo.getAttributes().isSet(vm, "coldDirtyRate")) {
-                        coldDirtyRate = mo.getAttributes().getDouble(vm, "coldDirtyRate");
-                    }
+            // Get VM memory activity attributes if defined, otherwise set an idle workload on the VM
+            double hotDirtySize = attrs.get(vm, "hotDirtySize", 5.0);// Minimal observed value on idle VM
+            double hotDirtyDuration = attrs.get(vm, "hotDirtyDuration", 2.0); // Minimal observed value on idle VM
+            double coldDirtyRate = attrs.get(vm, "coldDirtyRate", 0.0);
 
-                    // Get the maximal bandwidth available on the migration path
-                    int maxBW = net.getRouting().getMaxBW(src, dst);
-                    // Enumerate different possible values for the bandwidth to allocate (< maxBW)
-                    // MULTIPLE BW; eg.(step=maxBW/2) split the max BW in 2 and allow to migrate 2 migrations per link
-                    // SINGLE BW: (step=maxBW) the bandwidth can not be reduced below maxBW (always migrate at max BW)
+            // Get the maximal bandwidth available on the migration path
+            int maxBW = net.getRouting().getMaxBW(src, dst);
+            // Enumerate different possible values for the bandwidth to allocate (< maxBW)
+            // MULTIPLE BW; eg.(step=maxBW/2) split the max BW in 2 and allow to migrate 2 migrations per link
+            // SINGLE BW: (step=maxBW) the bandwidth can not be reduced below maxBW (always migrate at max BW)
                     /*int step = maxBW;
                     List<Integer> bwEnum = new ArrayList<>();
                     for (int i = step; i <= maxBW; i += step) {
@@ -159,30 +152,30 @@ public class CNetwork implements ChocoView {
                         }
                     }*/
 
-                    // Compute the duration related to each enumerated bandwidth
-                    double durationMin;
-                    double durationColdPages;
-                    double durationHotPages;
-                    double durationTotal;
+            // Compute the duration related to each enumerated bandwidth
+            double durationMin;
+            double durationColdPages;
+            double durationHotPages;
+            double durationTotal;
                     /*List<Integer> durEnum = new ArrayList<>();
                     for (Integer bw : bwEnum) {*/
 
-                        // Cheat a bit, real is less than theoretical (8->9)
-                        double bandwidth_octet = maxBW / 9.0;
+            // Cheat a bit, real is less than theoretical (8->9)
+            double bandwidth_octet = maxBW / 9.0;
 
-                        // Estimate the duration for the current bandwidth
-                        durationMin = memUsed / bandwidth_octet;
-                        if (durationMin > hotDirtyDuration) {
+            // Estimate the duration for the current bandwidth
+            durationMin = memUsed / bandwidth_octet;
+            if (durationMin > hotDirtyDuration) {
 
-                            durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
-                                    (bandwidth_octet - coldDirtyRate));
-                            durationHotPages = ((hotDirtySize / bandwidth_octet) * ((hotDirtySize / hotDirtyDuration) /
-                                    (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
-                            durationTotal = durationMin + durationColdPages + durationHotPages;
-                        } else {
-                            durationTotal = durationMin + (((hotDirtySize / hotDirtyDuration) * durationMin) /
-                                    (bandwidth_octet - (hotDirtySize / hotDirtyDuration)));
-                        }
+                durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
+                        (bandwidth_octet - coldDirtyRate));
+                durationHotPages = ((hotDirtySize / bandwidth_octet) * ((hotDirtySize / hotDirtyDuration) /
+                        (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
+                durationTotal = durationMin + durationColdPages + durationHotPages;
+            } else {
+                durationTotal = durationMin + (((hotDirtySize / hotDirtyDuration) * durationMin) /
+                        (bandwidth_octet - (hotDirtySize / hotDirtyDuration)));
+            }
                         /*durEnum.add((int) Math.round(durationTotal));
                     }*/
 
@@ -200,26 +193,19 @@ public class CNetwork implements ChocoView {
                     // Post the table constraint
                     s.post(ICF.table(bandwidth, duration, tpl, ""));*/
 
-                    // USING A SINGLE BW PER MIGRATION
-                    try {
-                        //prevent from a 0 duration when the memory usage is very low
-                        int dd = (int) Math.max(1, Math.round(durationTotal));
-                        duration.instantiateTo(dd, Cause.Null);
-                        bandwidth.instantiateTo(maxBW, Cause.Null);
-                    } catch (ContradictionException e) {
-                        rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
-                                " duration variables for " + vm + " migration: " + e.getMessage());
-                        return false;
-                    }
-                } else {
-                    // Show a warning and throw an exception
-                    rp.getLogger().warn("The 'memUsed' attribute for " + vm + " is missing, migration discarded " +
-                            "from network view.");
-                    throw new SchedulerException(null, "Unable to retrieve 'memUsed' attribute for the vm '" +vm+ "'");
-                }
+            // USING A SINGLE BW PER MIGRATION
+            try {
+                //prevent from a 0 duration when the memory usage is very low
+                int dd = (int) Math.max(1, Math.round(durationTotal));
+                duration.instantiateTo(dd, Cause.Null);
+                bandwidth.instantiateTo(maxBW, Cause.Null);
+            } catch (ContradictionException e) {
+                rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
+                        " duration variables for " + vm + " migration: " + e.getMessage());
+                return false;
             }
         }
-        
+
         // Links limitation
         for (Link l : net.getLinks()) {
 
@@ -227,7 +213,7 @@ public class CNetwork implements ChocoView {
                 VMTransition a = rp.getVMAction(vm);
 
                 if (a != null && a instanceof RelocatableVM) {
-                    
+
                     if (a.getDSlice().getHoster().isInstantiated()) {
 
                         if (a.getCSlice().getHoster().getValue() != a.getDSlice().getHoster().getValue()) {
@@ -246,7 +232,7 @@ public class CNetwork implements ChocoView {
                 }
             }
             if (!tasksList.isEmpty()) {
-                
+
                 // Post the cumulative constraint for the current link
                 solver.post(ICF.cumulative(
                         tasksList.toArray(new Task[tasksList.size()]),

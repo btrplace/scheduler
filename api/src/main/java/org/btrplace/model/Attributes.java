@@ -84,9 +84,10 @@ public interface Attributes extends Copyable<Attributes> {
      *
      * @param e the element
      * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
+     * @param def the value to return if the attribute does not exists
+     * @return the value if it has been stated or {@code def}
      */
-    Boolean getBoolean(Element e, String k);
+    boolean get(Element e, String k, boolean def);
 
     /**
      * Get an attribute value as a string.
@@ -95,25 +96,27 @@ public interface Attributes extends Copyable<Attributes> {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    String getString(Element e, String k);
+    String get(Element e, String k, String def);
 
     /**
      * Get an attribute value as a double.
      *
      * @param e the element
      * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
+     * @param def the value to return if the attribute does not exists
+     * @return the value if it has been stated or {@code def}
      */
-    Double getDouble(Element e, String k);
+    double get(Element e, String k, double def);
 
     /**
      * Get an attribute value as an integer.
      *
      * @param e the element
      * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
+     * @param def the value to return if the attribute does not exists
+     * @return the value if it has been stated or {@code def}
      */
-    Integer getInteger(Element e, String k);
+    int get(Element e, String k, int def);
 
     /**
      * Check if an attribute is set for a given element.

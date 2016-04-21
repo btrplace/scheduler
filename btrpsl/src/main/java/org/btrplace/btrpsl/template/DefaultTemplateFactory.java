@@ -76,7 +76,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
     @Override
     public void check(Script scr, String tplName, Element e, Map<String, String> attrs) throws ElementBuilderException {
         //Check if the current element already has a template, report an error if they differ
-        String currentTpl = mo.getAttributes().getString(e, "template");
+        String currentTpl = mo.getAttributes().get(e, "template", "");
         if (!tplName.equals(currentTpl)) {
             throw new ElementBuilderException(e.id() + " already implements '" + currentTpl + "'. Redefinition is not allowed");
         }

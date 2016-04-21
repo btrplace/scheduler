@@ -220,9 +220,9 @@ public class ScriptBuilderTest {
         Assert.assertEquals(v.getVMs().size(), 3);
         for (VM el : v.getVMs()) {
             Assert.assertEquals(mo.getAttributes().getKeys(el).size(), 4); //3 + 1 (the template)
-            Assert.assertEquals(mo.getAttributes().getBoolean(el, "migratable").booleanValue(), true);
-            Assert.assertEquals(mo.getAttributes().getDouble(el, "start"), 7.5);
-            Assert.assertEquals(mo.getAttributes().getInteger(el, "stop").longValue(), 12);
+            Assert.assertEquals(mo.getAttributes().get(el, "migratable", false), true);
+            Assert.assertEquals(mo.getAttributes().get(el, "start", -1.5), 7.5);
+            Assert.assertEquals(mo.getAttributes().get(el, "stop", -1), 12);
         }
     }
 

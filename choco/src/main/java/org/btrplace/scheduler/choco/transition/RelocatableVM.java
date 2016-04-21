@@ -161,11 +161,7 @@ public class RelocatableVM implements KeepRunningVM {
         if (network != null) {
 
             // Set the migration algorithm
-            if (mo.getAttributes().isSet(vm, "postCopy")) {
-                if (mo.getAttributes().getBoolean(vm, "postCopy")) {
-                    postCopy = true;
-                }
-            }
+            postCopy = mo.getAttributes().get(vm, "postCopy", false);
 
             // Create unbounded/large domain vars for migration duration and bandwidth
             migrationDuration = p.makeUnboundedDuration(PREFIX, vm, ").duration");
@@ -181,7 +177,7 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // Possibly re-instantiate (if some attributes are defined)
-        if (Boolean.TRUE.equals(mo.getAttributes().getBoolean(vm,"clone")) && mo.getAttributes().isSet(vm,"template")) {
+        if (mo.getAttributes().get(vm, "clone", false) && mo.getAttributes().isSet(vm, "template")) {
 
             doReinstantiation = VariableFactory.bool(rp.makeVarLabel("relocation_method(", vm, ")"), s);
 

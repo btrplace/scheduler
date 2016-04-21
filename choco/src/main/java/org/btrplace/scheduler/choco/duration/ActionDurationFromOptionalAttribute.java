@@ -51,7 +51,7 @@ public class ActionDurationFromOptionalAttribute<E extends Element> implements A
         Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
             try {
-                return attrs.getInteger(e, key);
+                return attrs.get(e, key, -1);
             } catch (Exception ex) {
                 return parent.evaluate(mo, e);
             }

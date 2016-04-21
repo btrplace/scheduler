@@ -69,8 +69,8 @@ public class ForgeVM implements VMTransition {
      */
     public ForgeVM(ReconfigurationProblem rp, VM e) throws SchedulerException {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, e);
-        template = rp.getSourceModel().getAttributes().getString(e, "template");
-        if (template == null) {
+        template = rp.getSourceModel().getAttributes().get(e, "template", "");
+        if ("".equals(template)) {
             throw new SchedulerException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
         }
         Solver s = rp.getSolver();

@@ -112,7 +112,7 @@ public class DefaultModelTest {
         Assert.assertEquals(c.getView("foo"), v1);
         c.detach(v1);
         Assert.assertEquals(i.getView("bar"), v2);
-        Assert.assertEquals(c.getAttributes().getBoolean(u, "foo"), Boolean.FALSE);
+        Assert.assertEquals(c.getAttributes().get(u, "foo"), Boolean.FALSE);
 
     }
 

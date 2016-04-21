@@ -72,6 +72,47 @@ public class DefaultAttributes implements Attributes {
     }
 
     @Override
+    public int get(Element e, String k, int def) {
+        if (isSet(e, k)) {
+            return (int) get(e, k);
+        }
+        return def;
+    }
+
+    @Override
+    public double get(Element e, String k, double def) {
+        if (isSet(e, k)) {
+            try {
+                return (int) get(e, k);
+            } catch (ClassCastException ex) {
+                //Not an integer
+            }
+            //Try the double
+            return (double) get(e, k);
+        }
+        return def;
+
+    }
+
+    @Override
+    public String get(Element e, String k, String def) {
+        if (isSet(e, k)) {
+            return (String) get(e, k);
+        }
+        return def;
+
+    }
+
+    @Override
+    public boolean get(Element e, String k, boolean def) {
+        if (isSet(e, k)) {
+            return (Boolean) get(e, k);
+        }
+        return def;
+
+    }
+
+    @Override
     public boolean isSet(Element e, String k) {
         Map<String, Object> m;
         if (e instanceof Node) {
@@ -196,27 +237,6 @@ public class DefaultAttributes implements Attributes {
     @Override
     public boolean put(Element e, String k, double d) {
         return putObject(e, k, d);
-    }
-
-    @Override
-    public Boolean getBoolean(Element e, String k) {
-        return (Boolean) get(e, k);
-    }
-
-    @Override
-    public String getString(Element e, String k) {
-        Object o = get(e, k);
-        return o == null ? null : o.toString();
-    }
-
-    @Override
-    public Double getDouble(Element e, String k) {
-        return (Double) get(e, k);
-    }
-
-    @Override
-    public Integer getInteger(Element e, String k) {
-        return (Integer) get(e, k);
     }
 
     @Override

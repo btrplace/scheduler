@@ -110,7 +110,7 @@ public class ConstraintSplitterMapper {
      * @param c the constraint
      * @return the associated builder if exists. {@code null} otherwise
      */
-    public ConstraintSplitter<?> getSplitter(Class<? extends Constraint> c) {
+    public ConstraintSplitter<? extends Constraint> getSplitter(Class<? extends Constraint> c) {
         return builders.get(c);
     }
 

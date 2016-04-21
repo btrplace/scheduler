@@ -50,11 +50,11 @@ public class DefaultAttributesTest {
         Attributes attrs = new DefaultAttributes();
 
         Assert.assertFalse(attrs.put(vms.get(0), "foo", "bar"));
-        Assert.assertEquals(attrs.getString(vms.get(0), "foo"), "bar");
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", ""), "bar");
         Assert.assertTrue(attrs.put(vms.get(0), "foo", "baz"));
-        Assert.assertEquals(attrs.getString(vms.get(0), "foo"), "baz");
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", ""), "baz");
 
-        Assert.assertNull(attrs.getString(vms.get(0), "__"));
+        Assert.assertEquals(attrs.get(vms.get(0), "__", "++"), "++");
     }
 
 
@@ -63,7 +63,8 @@ public class DefaultAttributesTest {
         Attributes attrs = new DefaultAttributes();
 
         Assert.assertFalse(attrs.put(vms.get(0), "foo", 17.3));
-        Assert.assertEquals(attrs.getDouble(vms.get(0), "foo"), 17.3);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", 8.5), 17.3);
+        Assert.assertEquals(attrs.get(vms.get(0), "fiz", 8.5), 8.5);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -71,9 +72,10 @@ public class DefaultAttributesTest {
         Attributes attrs = new DefaultAttributes();
 
         Assert.assertFalse(attrs.put(vms.get(0), "foo", true));
-        Assert.assertEquals(attrs.getBoolean(vms.get(0), "foo"), Boolean.TRUE);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", false), true);
         Assert.assertTrue(attrs.put(vms.get(0), "foo", false));
-        Assert.assertEquals(attrs.getBoolean(vms.get(0), "foo"), Boolean.FALSE);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", true), false);
+        Assert.assertEquals(attrs.get(vms.get(0), "__", true), true);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -130,10 +132,10 @@ public class DefaultAttributesTest {
         Attributes attrs2 = attrs.copy();
 
         attrs.unset(l.get(0), "0");
-        Assert.assertEquals((int) attrs2.getInteger(l.get(0), "0"), 0);
+        Assert.assertEquals(attrs2.get(l.get(0), "0", -1), 0);
 
         attrs2.unset(l.get(1), "1");
-        Assert.assertEquals((int) attrs.getInteger(l.get(1), "1"), 1);
+        Assert.assertEquals(attrs.get(l.get(1), "1", -2), 1);
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testUnset", "testClone"})
