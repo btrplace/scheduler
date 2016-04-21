@@ -23,6 +23,8 @@ import org.btrplace.btrpsl.ErrorReporter;
 import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.element.*;
 import org.btrplace.model.Element;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 /**
@@ -36,9 +38,9 @@ public class EnumElement extends BtrPlaceTree {
 
     private Script script;
 
-    private NamingService namingServiceNodes;
+    private NamingService<Node> namingServiceNodes;
 
-    private NamingService namingServiceVMs;
+    private NamingService<VM> namingServiceVMs;
 
     /**
      * Make a new tree.
@@ -48,7 +50,7 @@ public class EnumElement extends BtrPlaceTree {
      * @param ty      the type of the elements in the enumeration
      * @param errors  the errors to report
      */
-    public EnumElement(Token payload, NamingService srvNodes, NamingService srvVMs, Script v, BtrpOperand.Type ty, ErrorReporter errors) {
+    public EnumElement(Token payload, NamingService<Node> srvNodes, NamingService<VM> srvVMs, Script v, BtrpOperand.Type ty, ErrorReporter errors) {
         super(payload, errors);
         this.type = ty;
         this.script = v;

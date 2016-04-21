@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Created by vkherbac on 01/09/14.
+ * @author Vincent Kherbache
  */
 public class CNoDelay implements ChocoConstraint {
 

@@ -25,7 +25,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.runner.disjoint.FixedNodeSetsPartitioning;
@@ -58,7 +57,7 @@ public class MaxOnlineSplitterTest {
         }
 
         FixedNodeSetsPartitioning cut = new FixedSizePartitioning(5);
-        Instance origin = new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR());
+        Instance origin = new Instance(mo, Collections.emptyList(), new MinMTTR());
         List<Instance> instances = cut.split(new DefaultParameters(), origin);
         TIntIntHashMap vmIndex = Instances.makeVMIndex(instances);
         TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);

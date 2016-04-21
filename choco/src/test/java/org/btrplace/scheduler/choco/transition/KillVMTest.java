@@ -66,7 +66,7 @@ public class KillVMTest {
 
         Set<VM> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(org.btrplace.plan.event.KillVM.class, new ConstantActionDuration(1));
+        dev.register(org.btrplace.plan.event.KillVM.class, new ConstantActionDuration<>(1));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
                 .build();

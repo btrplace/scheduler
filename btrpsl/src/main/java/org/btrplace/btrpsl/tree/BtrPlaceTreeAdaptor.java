@@ -31,6 +31,8 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.includes.Includes;
 import org.btrplace.btrpsl.template.TemplateFactory;
 import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 /**
@@ -52,9 +54,9 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
 
     private TemplateFactory tpls;
 
-    private NamingService srvNodes;
+    private NamingService<Node> srvNodes;
 
-    private NamingService srvVMs;
+    private NamingService<VM> srvVMs;
 
     private Model model;
 
@@ -64,7 +66,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
      * @param errs the errors to report
      * @param s    the symbol table to use
      */
-    public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService nsNodes, NamingService nsVMs, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
+    public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService<Node> nsNodes, NamingService<VM> nsVMs, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
         this.errors = errs;
         this.srvNodes = nsNodes;
         this.srvVMs = nsVMs;

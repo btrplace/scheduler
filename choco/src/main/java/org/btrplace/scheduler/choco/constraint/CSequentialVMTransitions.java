@@ -26,7 +26,7 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.StayAwayVM;
-import org.btrplace.scheduler.choco.transition.Transition;
+import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 
@@ -59,9 +59,9 @@ public class CSequentialVMTransitions implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         List<VM> seq = cstr.getInvolvedVMs();
 
-        List<Transition> ams = new ArrayList<>();
+        List<VMTransition> ams = new ArrayList<>();
         for (VM vmId : seq) {
-            Transition am = rp.getVMAction(vmId);
+            VMTransition am = rp.getVMAction(vmId);
 
             //Avoid VMs with no action model or Transition that do not denotes a state transition
             if (am == null || am instanceof StayAwayVM || am instanceof RelocatableVM) {
@@ -70,11 +70,11 @@ public class CSequentialVMTransitions implements ChocoConstraint {
             ams.add(am);
         }
         if (ams.size() > 1) {
-            Iterator<Transition> ite = ams.iterator();
-            Transition prev = ite.next();
+            Iterator<VMTransition> ite = ams.iterator();
+            VMTransition prev = ite.next();
             Solver s = rp.getSolver();
             while (ite.hasNext()) {
-                Transition cur = ite.next();
+                VMTransition cur = ite.next();
                 s.post(IntConstraintFactory.arithm(prev.getEnd(), "<=", cur.getStart()));
                 prev = cur;
             }

@@ -50,7 +50,7 @@ public interface Template {
     /**
      * Get the type of built elements.
      *
-     * @return {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#node}
+     * @return {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#NODE}
      */
     BtrpOperand.Type getElementType();
 

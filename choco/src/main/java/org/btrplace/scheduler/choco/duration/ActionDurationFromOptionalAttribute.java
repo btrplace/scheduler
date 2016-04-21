@@ -65,7 +65,7 @@ public class ActionDurationFromOptionalAttribute<E extends Element> implements A
      *
      * @return an evaluator.
      */
-    public ActionDurationEvaluator getParent() {
+    public ActionDurationEvaluator<E> getParent() {
         return parent;
     }
 

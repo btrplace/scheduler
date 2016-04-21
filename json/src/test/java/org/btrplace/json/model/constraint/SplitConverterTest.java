@@ -27,10 +27,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -46,7 +43,7 @@ public class SplitConverterTest {
 
         Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Collection<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM()));
+        Collection<VM> s3 = new HashSet<>(Collections.singletonList(mo.newVM()));
         Set<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);

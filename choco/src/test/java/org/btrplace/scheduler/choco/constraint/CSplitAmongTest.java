@@ -69,11 +69,11 @@ public class CSplitAmongTest {
 
         Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg3 = new HashSet<>(Collections.singletonList(vm7));
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -128,11 +128,11 @@ public class CSplitAmongTest {
 
         Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg3 = new HashSet<>(Collections.singletonList(vm7));
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -143,7 +143,7 @@ public class CSplitAmongTest {
         map.addRunningVM(vm6, n2);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        ReconfigurationPlan p = cra.solve(mo, Collections.singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
     }
@@ -177,11 +177,11 @@ public class CSplitAmongTest {
 
         Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg3 = new HashSet<>(Collections.singletonList(vm7));
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -192,7 +192,7 @@ public class CSplitAmongTest {
         map.addRunningVM(vm6, n2);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        Assert.assertNull(cra.solve(mo, Collections.<SatConstraint>singleton(s)));
+        Assert.assertNull(cra.solve(mo, Collections.singleton(s)));
     }
 
     @Test
@@ -227,7 +227,7 @@ public class CSplitAmongTest {
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -280,7 +280,7 @@ public class CSplitAmongTest {
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 

@@ -242,7 +242,7 @@ public class CResourceCapacityTest {
         ResourceCapacity s = new ResourceCapacity(n1, "cpu", 3);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        ReconfigurationPlan p = cra.solve(mo, Collections.singleton(s));
         Assert.assertNull(p);
     }
 

@@ -40,8 +40,8 @@ public class DefaultTemplateFactoryTest {
 
     public static class MockVMTemplate implements Template {
 
-        NamingService srvNodes;
-        NamingService srvVMs;
+        NamingService<Node> srvNodes;
+        NamingService<VM> srvVMs;
         String tplName;
 
         @Override
@@ -123,8 +123,8 @@ public class DefaultTemplateFactoryTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testRegister() {
-        NamingService srvNodes = NamingService.newNodeNS();
-        NamingService srvVMs = NamingService.newVMNS();
+        NamingService<Node> srvNodes = NamingService.newNodeNS();
+        NamingService<VM> srvVMs = NamingService.newVMNS();
         DefaultTemplateFactory tplf = new DefaultTemplateFactory(srvNodes, srvVMs, new DefaultModel());
         MockVMTemplate t1 = new MockVMTemplate("mock1");
         Assert.assertNull(tplf.register(t1));

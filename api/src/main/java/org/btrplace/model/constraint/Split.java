@@ -72,9 +72,7 @@ public class Split extends SimpleConstraint {
     @Override
     public Set<VM> getInvolvedVMs() {
         Set<VM> s = new HashSet<>();
-        for (Collection<VM> set : sets) {
-            s.addAll(set);
-        }
+        sets.forEach(s::addAll);
         return s;
     }
 

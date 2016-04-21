@@ -164,7 +164,7 @@ public abstract class Action implements Event {
      */
     public Set<Event> getEvents(Hook k) {
         Set<Event> l = events.get(k);
-        return l == null ? Collections.<Event>emptySet() : l;
+        return l == null ? Collections.emptySet() : l;
     }
 
     /**

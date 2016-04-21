@@ -75,7 +75,7 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getStarts(List<? extends Transition> actions) {
+    public static IntVar[] getStarts(List<? extends Transition<?>> actions) {
         IntVar[] starts = new IntVar[actions.size()];
         for (int i = 0; i < actions.size(); i++) {
             starts[i] = actions.get(i).getStart();
@@ -117,7 +117,7 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getEnds(List<? extends Transition> actions) {
+    public static IntVar[] getEnds(List<? extends Transition<?>> actions) {
         IntVar[] starts = new IntVar[actions.size()];
         for (int i = 0; i < actions.size(); i++) {
             starts[i] = actions.get(i).getEnd();
@@ -131,7 +131,7 @@ public final class TransitionUtils {
      *
      * @return an array of variable
      */
-    public static IntVar[] getDurations(List<? extends Transition> actions) {
+    public static IntVar[] getDurations(List<? extends Transition<?>> actions) {
         IntVar[] starts = new IntVar[actions.size()];
         for (int i = 0; i < actions.size(); i++) {
             starts[i] = actions.get(i).getDuration();

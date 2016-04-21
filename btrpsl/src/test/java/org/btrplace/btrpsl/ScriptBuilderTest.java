@@ -419,7 +419,7 @@ public class ScriptBuilderTest {
         b.build("namespace foo; VM[1..10] : tiny;\nroot(VM10;");
     }
 
-    public void testMissingEndl() throws ScriptBuilderException {
+    public void testMissingEndl() {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
         ErrorReporter r = null;
         try {

@@ -21,7 +21,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to disallow the given VM, when running,
@@ -86,11 +90,7 @@ public class Ban extends SimpleConstraint {
      * @return the associated list of constraints
      */
     public static List<Ban> newBan(Collection<VM> vms, Collection<Node> nodes) {
-        List<Ban> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Ban(v, nodes));
-        }
-        return l;
+        return vms.stream().map(v -> new Ban(v, nodes)).collect(Collectors.toList());
     }
 
     @Override

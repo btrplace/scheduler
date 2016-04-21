@@ -51,7 +51,7 @@ public class CGatherTest {
         g.setContinuous(false);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(g));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(g));
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 0);
         Model res = plan.getResult();

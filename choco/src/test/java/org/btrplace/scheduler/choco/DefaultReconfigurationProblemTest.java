@@ -214,7 +214,7 @@ public class DefaultReconfigurationProblemTest {
         runnings.add(vm6);
         runnings.add(vm5);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), runnings, map.getSleepingVMs(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), runnings, map.getSleepingVMs(), Collections.emptySet())
                 .setManageableVMs(map.getRunningVMs(n1)).build();
         /*
           vm1: running -> running
@@ -270,7 +270,7 @@ public class DefaultReconfigurationProblemTest {
                                 new HashSet<>(),
                                 new HashSet<>()).build();
 
-        Transition a = rp.getVMActions().get(rp.getVM(vm1));
+        VMTransition a = rp.getVMActions().get(rp.getVM(vm1));
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ForgeVM.class, a.getClass());
     }
@@ -307,7 +307,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions().get(0);
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(BootVM.class, a.getClass());
     }
@@ -345,7 +345,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions().get(0);
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(RelocatableVM.class, a.getClass());
     }
@@ -383,7 +383,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions().get(0);
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(SuspendVM.class, a.getClass());
     }
@@ -423,7 +423,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         m.getAllVMs()).build();
 
-        for (Transition a : rp.getVMActions()) {
+        for (VMTransition a : rp.getVMActions()) {
             Assert.assertEquals(a.getClass(), KillVM.class);
         }
     }
@@ -460,7 +460,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions().get(0);
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ShutdownVM.class, a.getClass());
 
@@ -481,7 +481,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions().get(0);
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(StayAwayVM.class, a.getClass());
     }
@@ -518,7 +518,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions().get(0);
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ResumeVM.class, a.getClass());
     }
@@ -535,7 +535,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getNodeActions().get(0);
+        NodeTransition a = rp.getNodeActions().get(0);
         Assert.assertEquals(a, rp.getNodeAction(n1));
         Assert.assertEquals(ShutdownableNode.class, a.getClass());
     }
@@ -574,7 +574,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getNodeActions().get(rp.getNode(n3));
+        NodeTransition a = rp.getNodeActions().get(rp.getNode(n3));
         Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNode.class, a.getClass());
     }
@@ -656,7 +656,7 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
-                Collections.<VM>emptySet(),
+                Collections.emptySet(),
                 map.getAllVMs());
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(vm2));
@@ -792,12 +792,7 @@ public class DefaultReconfigurationProblemTest {
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
         rp.setObjective(true, nbNodes);
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
-            @Override
-            public int newBound(ReconfigurationProblem rp, int currentValue) {
-                return currentValue / 2;
-            }
-        };
+        ObjectiveAlterer alt = (rp1, currentValue) -> currentValue / 2;
 
         rp.setObjectiveAlterer(alt);
         ReconfigurationPlan plan = rp.solve(0, true);

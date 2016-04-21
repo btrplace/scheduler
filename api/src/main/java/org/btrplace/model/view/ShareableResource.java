@@ -22,6 +22,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A view to denote a resource that nodes share among the VMs they host
@@ -124,11 +125,7 @@ public class ShareableResource implements ModelView {
      * @return the capacity of each node. The order is maintained
      */
     public List<Integer> getCapacities(List<Node> ids) {
-        List<Integer> res = new ArrayList<>(ids.size());
-        for (Node n : ids) {
-            res.add(getCapacity(n));
-        }
-        return res;
+        return ids.stream().map(this::getCapacity).collect(Collectors.toList());
     }
 
     /**
@@ -138,11 +135,7 @@ public class ShareableResource implements ModelView {
      * @return the consumption of each VM. The order is maintained
      */
     public List<Integer> getConsumptions(List<VM> ids) {
-        List<Integer> res = new ArrayList<>(ids.size());
-        for (VM vm : ids) {
-            res.add(getConsumption(vm));
-        }
-        return res;
+        return ids.stream().map(this::getConsumption).collect(Collectors.toList());
     }
 
     /**

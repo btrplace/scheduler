@@ -22,6 +22,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force the given VM, when running,
@@ -115,10 +116,6 @@ public class Fence extends SimpleConstraint {
      * @return the associated list of constraints
      */
     public static List<Fence> newFence(Collection<VM> vms, Collection<Node> nodes) {
-        List<Fence> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Fence(v, nodes));
-        }
-        return l;
+        return vms.stream().map(v -> new Fence(v, nodes)).collect(Collectors.toList());
     }
 }

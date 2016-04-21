@@ -16,17 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.bench;
-
-import java.io.IOException;
-
 /**
- * Created by vkherbac on 16/09/14.
+ *  Constraints related to migration control.
  */
-public class SeqLauncherTest {
-
-    public void test() throws IOException {
-
-        //SeqLauncher.main(new String[]{"--repair", "src/test/resources/benchList.txt"});
-    }
-}
+package org.btrplace.btrpsl.constraint.migration;

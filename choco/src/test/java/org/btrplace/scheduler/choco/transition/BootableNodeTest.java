@@ -69,7 +69,7 @@ public class BootableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
@@ -99,7 +99,7 @@ public class BootableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -132,8 +132,8 @@ public class BootableNodeTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         Parameters ps = s.getParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
-        dev.register(BootVM.class, new ConstantActionDuration(2));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootVM.class, new ConstantActionDuration<>(2));
 
         ReconfigurationPlan plan = s.solve(mo, Collections.singleton(new Running(vm1)));
         Assert.assertNotNull(plan);
@@ -161,7 +161,7 @@ public class BootableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -183,7 +183,7 @@ public class BootableNodeTest {
         map.addOfflineNode(n2);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(2));
+        dev.register(BootNode.class, new ConstantActionDuration<>(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -211,8 +211,8 @@ public class BootableNodeTest {
         map.addOfflineNode(n4);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
-        dev.register(BootNode.class, new ConstantActionDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
                 .build();

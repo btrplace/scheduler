@@ -32,7 +32,6 @@ import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,6 +39,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Vincent Kherbache
@@ -50,22 +50,22 @@ public class UCC15 {
             "/bench/src/test/java/org/btrplace/scalability/";
 
     @Test
-    public void decommissioning10Gb() throws ContradictionException {
+    public void decommissioning10Gb() {
         System.out.println(decommissioning_10gb());
     }
 
     @Test
-    public void decommissioning20Gb() throws ContradictionException {
+    public void decommissioning20Gb() {
         System.out.println(decommissioning_20gb());
     }
 
     @Test
-    public void decommissioning40Gb() throws ContradictionException {
+    public void decommissioning40Gb() {
         System.out.println(decommissioning_40gb());
     }
 
     @Test
-    public void decommissioning100Gb() throws ContradictionException {
+    public void decommissioning100Gb() {
         System.out.println(decommissioning_100gb());
     }
 
@@ -95,7 +95,7 @@ public class UCC15 {
         return x.getTime() + s.getCoreRPBuildDuration() + s.getSpeRPDuration();
     }
 
-    public SolvingStatistics decommissioning_10gb() throws SchedulerException,ContradictionException {
+    public SolvingStatistics decommissioning_10gb() throws SchedulerException {
 
         // Set nb of nodes and vms
         int nbNodesRack = 24;
@@ -201,7 +201,7 @@ public class UCC15 {
         }
 
         // Shutdown source nodes
-        for (Node n : srcNodes) { cstrs.add(new Offline(n)); }
+        cstrs.addAll(srcNodes.stream().map(Offline::new).collect(Collectors.toList()));
 
         // Set a custom objective
         DefaultChocoScheduler sc = new DefaultChocoScheduler(ps);
@@ -219,7 +219,7 @@ public class UCC15 {
         //}
     }
 
-    public SolvingStatistics decommissioning_20gb() throws SchedulerException,ContradictionException {
+    public SolvingStatistics decommissioning_20gb() throws SchedulerException {
 
         // Set nb of nodes and vms
         int nbNodesRack = 24;
@@ -332,7 +332,7 @@ public class UCC15 {
         }
 
         // Shutdown source nodes
-        for (Node n : srcNodes) { cstrs.add(new Offline(n)); }
+        cstrs.addAll(srcNodes.stream().map(Offline::new).collect(Collectors.toList()));
 
         // Set a custom objective
         DefaultChocoScheduler sc = new DefaultChocoScheduler(ps);
@@ -350,7 +350,7 @@ public class UCC15 {
         //}
     }
 
-    public SolvingStatistics decommissioning_40gb() throws SchedulerException,ContradictionException {
+    public SolvingStatistics decommissioning_40gb() throws SchedulerException {
 
         // Set nb of nodes and vms
         int nbNodesRack = 24;
@@ -476,7 +476,7 @@ public class UCC15 {
         }
 
         // Shutdown source nodes
-        for (Node n : srcNodes) { cstrs.add(new Offline(n)); }
+        cstrs.addAll(srcNodes.stream().map(Offline::new).collect(Collectors.toList()));
 
         // Set a custom objective
         DefaultChocoScheduler sc = new DefaultChocoScheduler(ps);
@@ -494,7 +494,7 @@ public class UCC15 {
         //}
     }
 
-    public SolvingStatistics decommissioning_100gb() throws SchedulerException,ContradictionException {
+    public SolvingStatistics decommissioning_100gb() throws SchedulerException {
 
         // Set nb of nodes and vms
         int nbNodesRack = 24;
@@ -661,7 +661,7 @@ public class UCC15 {
         }
 
         // Shutdown source nodes
-        for (Node n : srcNodes) { cstrs.add(new Offline(n)); }
+        cstrs.addAll(srcNodes.stream().map(Offline::new).collect(Collectors.toList()));
 
         // Set a custom objective
         DefaultChocoScheduler sc = new DefaultChocoScheduler(ps);

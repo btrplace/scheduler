@@ -119,7 +119,7 @@ public class CSplitTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.labelVariables(true);
         //cra.setVerbosity(3);
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        ReconfigurationPlan p = cra.solve(mo, Collections.singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
         //System.out.println(p);

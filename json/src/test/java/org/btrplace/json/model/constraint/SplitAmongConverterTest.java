@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 
@@ -50,7 +51,7 @@ public class SplitAmongConverterTest {
 
         Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Collection<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Collection<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
+        Collection<Node> p3 = new HashSet<>(Collections.singletonList(mo.newNode()));
         Collection<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         SplitAmong d = new SplitAmong(vgrps, pgrps, false);

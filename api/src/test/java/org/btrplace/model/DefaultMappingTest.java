@@ -259,7 +259,7 @@ public class DefaultMappingTest {
         Assert.assertEquals(c.getNbVMs(), 0);
     }
 
-    @Test(dependsOnMethods = {"testInstantiation", "testOfflineNode", "testOnlineNode", "testInstantiation"})
+    @Test(dependsOnMethods = {"testInstantiation", "testOfflineNode", "testOnlineNode"})
     public void testSwitchNodeState() {
         Mapping c = new DefaultMapping();
 

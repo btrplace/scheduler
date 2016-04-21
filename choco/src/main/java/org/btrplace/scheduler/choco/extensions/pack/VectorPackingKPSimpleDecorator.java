@@ -60,9 +60,8 @@ public class VectorPackingKPSimpleDecorator {
     /**
      * initialize the lists of candidates
      *
-     * @throws ContradictionException
      */
-    protected void postInitialize() throws ContradictionException {
+    protected void postInitialize() {
         for (int i = 0; i < p.bins.length; i++) {
             if (!p.bins[i].isInstantiated()) {
                 DisposableValueIterator it = p.bins[i].getValueIterator(true);
@@ -109,9 +108,8 @@ public class VectorPackingKPSimpleDecorator {
      *
      * @param item the removed item
      * @param bin  the bin
-     * @throws ContradictionException
      */
-    protected void postRemoveItem(int item, int bin) throws ContradictionException {
+    protected void postRemoveItem(int item, int bin) {
         assert candidate.get(bin).get(item);
         candidate.get(bin).clear(item);
     }

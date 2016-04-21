@@ -22,7 +22,6 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Offline;
-import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,10 +47,10 @@ public class OfflineBuilder extends DefaultSatConstraintBuilder {
      * @return a constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<Offline> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
-            return ns != null ? (List) Offline.newOffline(ns) : Collections.emptyList();
+            return ns != null ? Offline.newOffline(ns) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

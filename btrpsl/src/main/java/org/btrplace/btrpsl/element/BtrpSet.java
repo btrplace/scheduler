@@ -230,7 +230,7 @@ public class BtrpSet extends DefaultBtrpOperand {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("{");
-        for (Iterator ite = values.iterator(); ite.hasNext(); ) {
+        for (Iterator<BtrpOperand> ite = values.iterator(); ite.hasNext(); ) {
             buf.append(ite.next());
             if (ite.hasNext()) {
                 buf.append(", ");

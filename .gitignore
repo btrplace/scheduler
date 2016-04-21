@@ -6,3 +6,7 @@ target
 .private
 *.pyc
 *.log
+.classpath
+.project
+.settings
+test-output

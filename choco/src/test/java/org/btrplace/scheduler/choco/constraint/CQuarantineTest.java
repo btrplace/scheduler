@@ -54,7 +54,7 @@ public class CQuarantineTest {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
         Quarantine q = new Quarantine(n2);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(q));
+        ReconfigurationPlan p = cra.solve(mo, Collections.singleton(q));
         Assert.assertNotNull(p);
     }
 

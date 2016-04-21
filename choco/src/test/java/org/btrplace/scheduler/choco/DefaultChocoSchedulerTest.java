@@ -281,7 +281,7 @@ public class DefaultChocoSchedulerTest {
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(5);
-        ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem,
+        ReconfigurationPlan p = cra.solve(mo, Arrays.asList(pCPU, pMem,
                 new Online(n1),
                 new Running(vm2),
                 new Ready(vm3)));
@@ -302,6 +302,6 @@ public class DefaultChocoSchedulerTest {
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         mo.getMapping().addReadyVM(v);
-        cra.solve(mo, Collections.<SatConstraint>singletonList(new Running(v)));
+        cra.solve(mo, Collections.singletonList(new Running(v)));
     }
 }

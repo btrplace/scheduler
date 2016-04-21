@@ -229,7 +229,7 @@ public class DefaultAttributes implements Attributes {
         } else {
             return Collections.emptySet();
         }
-        return m == null ? Collections.<String>emptySet() : m.keySet();
+        return m == null ? Collections.emptySet() : m.keySet();
     }
 
     @Override

@@ -72,11 +72,11 @@ public class StaticPartitioningTest {
         origin.getMapping().addReadyVM(vm1);
         origin.getMapping().addReadyVM(vm2);
 
-        Model s1 = new SubModel(origin, eb, Arrays.asList(n1), Collections.singleton(vm1));
-        Model s2 = new SubModel(origin, eb, Arrays.asList(n2), Collections.singleton(vm2));
+        Model s1 = new SubModel(origin, eb, Collections.singletonList(n1), Collections.singleton(vm1));
+        Model s2 = new SubModel(origin, eb, Collections.singletonList(n2), Collections.singleton(vm2));
 
         Instance i0 = new Instance(origin, new MinMTTR());
-        final Instance i1 = new Instance(s1, (List) Running.newRunning(Arrays.asList(vm1)), new MinMTTR());
+        final Instance i1 = new Instance(s1, (List) Running.newRunning(Collections.singletonList(vm1)), new MinMTTR());
         final Instance i2 = new Instance(s2, new MinMTTR());
         i2.getSatConstraints().add(new Running(vm2));
 
@@ -96,7 +96,7 @@ public class StaticPartitioningTest {
         Assert.assertEquals(dst.getMapping().getRunningVMs().size(), 2);
 
         //Now, there is no solution for i2. the resulting plan should be null
-        i2.getSatConstraints().addAll(Offline.newOffline(Arrays.asList(n2)));
+        i2.getSatConstraints().addAll(Offline.newOffline(Collections.singletonList(n2)));
         plan = st.solve(p, i0);
         Assert.assertNull(plan);
         Assert.assertEquals(st.getStatistics().getSolutions().size(), 0);
@@ -121,11 +121,11 @@ public class StaticPartitioningTest {
         origin.getMapping().addReadyVM(vm1);
         origin.getMapping().addReadyVM(vm2);
 
-        Model s1 = new SubModel(origin, eb, Arrays.asList(n1), Collections.singleton(vm1));
-        Model s2 = new SubModel(origin, eb, Arrays.asList(n2), Collections.singleton(vm2));
+        Model s1 = new SubModel(origin, eb, Collections.singletonList(n1), Collections.singleton(vm1));
+        Model s2 = new SubModel(origin, eb, Collections.singletonList(n2), Collections.singleton(vm2));
 
         Instance i0 = new Instance(origin, new MinMTTR());
-        final Instance i1 = new Instance(s1, (List) Running.newRunning(Arrays.asList(vm1)), new MinMTTR());
+        final Instance i1 = new Instance(s1, (List) Running.newRunning(Collections.singletonList(vm1)), new MinMTTR());
         final Instance i2 = new Instance(s2, new MinMTTR());
         i2.getSatConstraints().add(new Running(vm1)); //Error, vm1 is in s1, not s2
 

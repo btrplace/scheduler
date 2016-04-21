@@ -58,7 +58,7 @@ public class ShutdownVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
+        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .setNextVMsStates(map.getAllVMs(), new HashSet<>(), new HashSet<>(), new HashSet<>())
@@ -97,7 +97,7 @@ public class ShutdownVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
+        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .setNextVMsStates(map.getAllVMs(), new HashSet<>(), new HashSet<>(), new HashSet<>())

@@ -127,8 +127,8 @@ public class ModelCustomization implements Example {
         ChocoScheduler cra = new DefaultChocoScheduler();
         DurationEvaluators dev = cra.getDurationEvaluators();
         dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
-        dev.register(BootVM.class, new ConstantActionDuration(1));
-        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
+        dev.register(BootVM.class, new ConstantActionDuration<>(1));
+        dev.register(ShutdownVM.class, new ConstantActionDuration<>(1));
 
         //Relocate VM4:
         //  using a migration: (2 * mem + 3) = (2 * 2 + 3) = 7 sec.

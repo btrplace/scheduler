@@ -56,7 +56,7 @@ public class Instance {
      * @param o the optimization constraint
      */
     public Instance(Model m, OptConstraint o) {
-        this(m, Collections.<SatConstraint>emptyList(), o);
+        this(m, Collections.emptyList(), o);
     }
 
     /**

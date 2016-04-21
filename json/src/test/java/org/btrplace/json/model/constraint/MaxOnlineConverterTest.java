@@ -41,7 +41,7 @@ public class MaxOnlineConverterTest {
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model model = new DefaultModel();
-        Set<Node> s = new HashSet<Node>(Arrays.asList(model.newNode(), model.newNode(), model.newNode()));
+        Set<Node> s = new HashSet<>(Arrays.asList(model.newNode(), model.newNode(), model.newNode()));
         MaxOnline mo = new MaxOnline(s, 2);
         MaxOnlineConverter moc = new MaxOnlineConverter();
         moc.setModel(model);

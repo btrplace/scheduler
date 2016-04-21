@@ -87,18 +87,14 @@ public class SplitAmong extends SimpleConstraint {
     @Override
     public Set<VM> getInvolvedVMs() {
         Set<VM> s = new HashSet<>();
-        for (Collection<VM> x : vGroups) {
-            s.addAll(x);
-        }
+        vGroups.forEach(s::addAll);
         return s;
     }
 
     @Override
     public Set<Node> getInvolvedNodes() {
         Set<Node> s = new HashSet<>();
-        for (Collection<Node> x : pGroups) {
-            s.addAll(x);
-        }
+        pGroups.forEach(s::addAll);
         return s;
     }
 

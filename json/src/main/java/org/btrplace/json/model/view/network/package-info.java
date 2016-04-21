@@ -16,28 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.bench;
-
-import java.io.File;
-import java.io.IOException;
-
 /**
- * @author Vincent Kherbache
+ * Conversion material for the network view.
  */
-public class LauncherTest {
-
-
-    public void test() throws IOException {
-
-        String path = new File("").getAbsolutePath() + "/bench/src/test/resources/";
-
-        Launcher.main(new String[]{
-                "--repair",
-                "--timeout", "300",
-                "-i", path + "wkld-tdsc/li/r6/p5000/c0/1.gz",
-                "-o", path + "nr-r6-p5000-c66-1.csv"
-        });
-        System.err.flush();
-        System.out.flush();
-    }
-}
+package org.btrplace.json.model.view.network;

@@ -76,7 +76,7 @@ public class VectorPackingHeapDecorator {
         }
     }
 
-    private void checkReHeap(boolean forceReHeap) throws ContradictionException {
+    private void checkReHeap(boolean forceReHeap) {
         int currentWorld = p.getSolver().getEnvironment().getWorldIndex();
         long currentBt = p.getSolver().getMeasures().getBackTrackCount();
         long currentRestart = p.getSolver().getMeasures().getRestartCount();

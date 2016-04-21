@@ -70,7 +70,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
             for (Action a : plan) {
                 Set<Action> deps = plan.getDirectDependencies(a);
                 if (deps.isEmpty()) {
-                    this.dependencies.put(a, new Dependency(a, Collections.<Action>emptySet()));
+                    this.dependencies.put(a, new Dependency(a, Collections.emptySet()));
                 } else {
                     Dependency dep = new Dependency(a, deps);
                     this.dependencies.put(a, dep);

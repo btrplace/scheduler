@@ -24,7 +24,6 @@ import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,14 +50,14 @@ public class BanBuilder extends DefaultSatConstraintBuilder {
      * @return a constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<Ban> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
         List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
         List<Node> ns = (List<Node>) params[1].transform(this, t, args.get(1));
         if (vms != null && ns != null) {
-            return (List) Ban.newBan(vms, ns);
+            return Ban.newBan(vms, ns);
         }
         return Collections.emptyList();
     }

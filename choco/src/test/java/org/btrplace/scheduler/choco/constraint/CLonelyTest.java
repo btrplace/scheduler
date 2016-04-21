@@ -62,7 +62,7 @@ public class CLonelyTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(l));
         Assert.assertNotNull(plan);
         //System.out.println(plan);
         //Assert.assertEquals(l.isSatisfied(plan.getResult()), SatConstraint.Sat.SATISFIED);

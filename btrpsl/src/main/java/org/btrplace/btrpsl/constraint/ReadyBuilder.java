@@ -24,9 +24,9 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ready;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A builder for {@link Ready} constraints.
@@ -55,11 +55,7 @@ public class ReadyBuilder extends DefaultSatConstraintBuilder {
             if (s == null) {
                 return Collections.emptyList();
             }
-            List<SatConstraint> l = new ArrayList<>(s.size());
-            for (VM v : s) {
-                l.add(new Ready(v));
-            }
-            return l;
+            return s.stream().map(Ready::new).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }

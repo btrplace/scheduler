@@ -88,7 +88,7 @@ public class ConstraintStatement extends BtrPlaceTree {
             params.add(getChild(i).go(this));
         }
         if (b != null) {
-            List<SatConstraint> constraints = b.buildConstraint(this, params);
+            List<? extends SatConstraint> constraints = b.buildConstraint(this, params);
             for (SatConstraint c : constraints) {
                 if (c != null) {
                     if (discrete) {

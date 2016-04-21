@@ -27,8 +27,8 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.SliceUtils;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
-import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
@@ -44,6 +44,7 @@ import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * An objective that minimizes the time to repair a non-viable model.
@@ -73,13 +74,8 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         costActivated = false;
-        List<IntVar> mttrs = new ArrayList<>();
-        for (Transition m : p.getVMActions()) {
-            mttrs.add(m.getEnd());
-        }
-        for (Transition m : p.getNodeActions()) {
-            mttrs.add(m.getEnd());
-        }
+        List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
+        mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
         IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
         Solver s = p.getSolver();
         IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);

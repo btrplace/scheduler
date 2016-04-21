@@ -28,7 +28,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by vkherbac on 18/09/14.
+ * @author Vincent Kherbache
  */
 public class SeqLauncher {
 

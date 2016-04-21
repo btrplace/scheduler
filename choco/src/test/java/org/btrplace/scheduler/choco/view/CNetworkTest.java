@@ -36,7 +36,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -137,7 +136,7 @@ public class CNetworkTest {
         Switch sw = net.newSwitch(1000);
         net.connect(2000, sw, n1, n2);
         ChocoScheduler s = new DefaultChocoScheduler();
-        ReconfigurationPlan p = s.solve(mo, Arrays.asList(new Fence(v, n2)));
+        ReconfigurationPlan p = s.solve(mo, Collections.singletonList(new Fence(v, n2)));
         Assert.assertNotNull(p);
         System.out.println(p);
     }

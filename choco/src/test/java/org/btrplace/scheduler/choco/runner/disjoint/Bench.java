@@ -116,12 +116,7 @@ public class Bench {
         }
         SplittableElementSet<Node> sp = SplittableElementSet.newNodeIndex(l, parts);
         final List<Collection<Node>> splits = new ArrayList<>();
-        sp.forEachPartition(new IterateProcedure<Node>() {
-            @Override
-            public boolean extract(SplittableElementSet<Node> index, int key, int from, int to) {
-                return splits.add(new ElementSubSet<>(index, key, from, to));
-            }
-        });
+        sp.forEachPartition((index, key, from, to) -> splits.add(new ElementSubSet<>(index, key, from, to)));
         return splits;
     }
 

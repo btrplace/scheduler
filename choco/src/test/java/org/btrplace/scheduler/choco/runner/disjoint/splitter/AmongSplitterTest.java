@@ -22,7 +22,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.MappingFiller;
@@ -68,8 +67,8 @@ public class AmongSplitterTest {
         List<VM> vms = Arrays.asList(vm1, vm2, vm3);
         Collection<Collection<Node>> parts = new ArrayList<>();
         parts.add(Arrays.asList(n1, n2));
-        parts.add(Arrays.asList(n3));
-        parts.add(Arrays.asList(n4));
+        parts.add(Collections.singletonList(n3));
+        parts.add(Collections.singletonList(n4));
 
         Among single = new Among(vms, parts);
 
@@ -84,7 +83,7 @@ public class AmongSplitterTest {
         FixedNodeSetsPartitioning partitionner = new FixedNodeSetsPartitioning(parts);
         partitionner.setPartitions(parts);
         List<Instance> instances = partitionner.split(new DefaultParameters(),
-                new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR()));
+                new Instance(mo, Collections.emptyList(), new MinMTTR()));
 
         TIntIntHashMap vmIndex = Instances.makeVMIndex(instances);
         TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);

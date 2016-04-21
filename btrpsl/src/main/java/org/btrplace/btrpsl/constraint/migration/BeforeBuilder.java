@@ -55,7 +55,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
      * @return  a constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
 
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
@@ -78,7 +78,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a non-empty list of VMs");
                 return Collections.emptyList();
             }
-            return (List) Precedence.newPrecedence(s, s2);
+            return Precedence.newPrecedence(s, s2);
         }
         else if (obj instanceof String) {
             String timestamp = (String) obj;
@@ -86,7 +86,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a non-empty string");
                 return Collections.emptyList();
             }
-            return (List) Deadline.newDeadline(s, timestamp);
+            return Deadline.newDeadline(s, timestamp);
         }
         else {
             return Collections.emptyList();

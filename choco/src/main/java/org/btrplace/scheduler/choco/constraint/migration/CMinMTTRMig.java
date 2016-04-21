@@ -26,8 +26,8 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.mttr.MyInputOrder;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
-import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
@@ -74,8 +74,12 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
         List<IntVar> endVars = new ArrayList<>();
 
         // Define the cost constraint: sum of all actions' end time
-        for (Transition m : rp.getVMActions()) { endVars.add(m.getEnd()); }
-        for (Transition m : rp.getNodeActions()) { endVars.add(m.getEnd()); }
+        for (VMTransition m : rp.getVMActions()) {
+            endVars.add(m.getEnd());
+        }
+        for (NodeTransition m : rp.getNodeActions()) {
+            endVars.add(m.getEnd());
+        }
         IntVar[] costs = endVars.toArray(new IntVar[endVars.size()]);
         IntVar cost = VariableFactory.bounded(rp.makeVarLabel("costEndVars"), 0, Integer.MAX_VALUE/100, rp.getSolver());
         costConstraints.add(IntConstraintFactory.sum(costs, cost));

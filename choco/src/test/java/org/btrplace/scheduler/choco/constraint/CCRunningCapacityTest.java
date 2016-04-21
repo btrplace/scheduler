@@ -61,7 +61,7 @@ public class CCRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(plan.getSize(), 0);
     }
@@ -86,7 +86,7 @@ public class CCRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 1);
@@ -116,7 +116,7 @@ public class CCRunningCapacityTest {
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
         l.forEach(System.out::println);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);
@@ -156,7 +156,7 @@ public class CCRunningCapacityTest {
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(5);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         System.out.println(plan);
         Assert.assertNull(plan);
@@ -227,7 +227,7 @@ public class CCRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(2, plan.getSize());
     }
@@ -250,7 +250,7 @@ public class CCRunningCapacityTest {
         l.add(sc);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Iterator<Action> ite = plan.iterator();

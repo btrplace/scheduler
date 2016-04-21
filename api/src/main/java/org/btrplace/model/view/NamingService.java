@@ -152,7 +152,7 @@ public final class NamingService<E extends Element> implements ModelView {
             return false;
         }
 
-        NamingService that = (NamingService) o;
+        NamingService<?> that = (NamingService<?>) o;
 
         return elemId.equals(that.elemId) && resolve.equals(that.resolve);
     }

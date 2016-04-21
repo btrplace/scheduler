@@ -23,6 +23,7 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.model.Element;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 import java.util.HashMap;
@@ -42,9 +43,9 @@ public class DefaultTemplateFactory implements TemplateFactory {
 
     private Map<String, Template> nodeTpls;
 
-    private NamingService namingServerNodes;
+    private NamingService<Node> namingServerNodes;
 
-    private NamingService namingServerVMs;
+    private NamingService<VM> namingServerVMs;
 
     private Model mo;
 
@@ -54,7 +55,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
      * @param srvNodes the nodes naming service to rely on
      * @param srvVMs   the vms naming service to rely on
      */
-    public DefaultTemplateFactory(NamingService srvNodes, NamingService srvVMs, Model m) {
+    public DefaultTemplateFactory(NamingService<Node> srvNodes, NamingService<VM> srvVMs, Model m) {
         this.namingServerNodes = srvNodes;
         this.namingServerVMs = srvVMs;
         this.mo = m;

@@ -41,9 +41,9 @@ public final class Launcher {
             System.exit(1);
         }
         try {
-            Class c = Class.forName(args[0]);
+            Class<?> c = Class.forName(args[0]);
             boolean validInterface = false;
-            for (Class i : c.getInterfaces()) {
+            for (Class<?> i : c.getInterfaces()) {
                 if (i.equals(Example.class)) {
                     validInterface = true;
                     break;

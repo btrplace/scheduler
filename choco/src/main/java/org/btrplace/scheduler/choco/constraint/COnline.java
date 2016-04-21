@@ -25,7 +25,7 @@ import org.btrplace.model.constraint.Online;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.transition.Transition;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 
@@ -58,7 +58,7 @@ public class COnline implements ChocoConstraint {
             return false;
         }
         Node nId = cstr.getInvolvedNodes().iterator().next();
-        Transition m = rp.getNodeAction(nId);
+        NodeTransition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(1, Cause.Null);
             if (rp.getSourceModel().getMapping().isOnline(nId)) {

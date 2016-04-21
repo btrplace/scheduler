@@ -36,7 +36,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Created by vkherbac on 16/09/14.
+ * @author Vincent Kherbache
  */
 public class Launcher {
 

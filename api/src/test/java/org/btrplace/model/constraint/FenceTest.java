@@ -22,10 +22,7 @@ import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link Fence}.
@@ -40,7 +37,7 @@ public class FenceTest {
         List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
 
-        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
+        Set<Node> nodes = new HashSet<>(Collections.singletonList(ns.get(0)));
         Fence f = new Fence(vms.get(0), nodes);
         Assert.assertNotNull(f.getChecker());
         Assert.assertEquals(vms.get(0), f.getInvolvedVMs().iterator().next());

@@ -240,11 +240,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException {
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
-        for (Transition action : nodeActions) {
+        for (NodeTransition action : nodeActions) {
             action.insertActions(s, plan);
         }
 
-        for (Transition action : vmActions) {
+        for (VMTransition action : vmActions) {
             action.insertActions(s, plan);
         }
 

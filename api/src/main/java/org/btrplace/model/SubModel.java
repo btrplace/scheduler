@@ -57,7 +57,7 @@ public class SubModel implements Model {
      * @param ns the node to restrict the model on.
      */
     public SubModel(Model p, ElementBuilder b, Collection<Node> ns) {
-        this(p, b, ns, Collections.<VM>emptySet());
+        this(p, b, ns, Collections.emptySet());
     }
 
     /**

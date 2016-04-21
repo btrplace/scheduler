@@ -252,7 +252,6 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      *
      * @param net the network to populate
      * @param   o the JSON object to convert
-     * @return  the Link
      */
     public void linkFromJSON(Network net, JSONObject o) throws JSONConverterException {
         net.connect(requiredInt(o, "id"),

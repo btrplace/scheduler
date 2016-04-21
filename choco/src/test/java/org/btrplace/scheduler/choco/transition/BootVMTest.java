@@ -63,7 +63,7 @@ public class BootVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
+        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())
@@ -112,7 +112,7 @@ public class BootVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
+        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>(), map.getAllVMs(), new HashSet<>(), new HashSet<>())

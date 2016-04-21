@@ -38,7 +38,7 @@ public class BtrpElement extends DefaultBtrpOperand {
     /**
      * Make a new element.
      *
-     * @param ty the element type. Either {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#node}.
+     * @param ty the element type. Either {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#NODE}.
      * @param n  the element name
      * @param el the associated BtrPlace element
      */

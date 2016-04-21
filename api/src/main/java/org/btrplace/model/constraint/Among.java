@@ -102,9 +102,7 @@ public class Among extends SimpleConstraint {
     @Override
     public Collection<Node> getInvolvedNodes() {
         Set<Node> s = new HashSet<>();
-        for (Collection<Node> x : pGroups) {
-            s.addAll(x);
-        }
+        pGroups.forEach(s::addAll);
         return s;
     }
 

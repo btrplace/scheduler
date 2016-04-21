@@ -23,7 +23,6 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -56,7 +55,7 @@ public class COnlineTest {
         Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).off(n1).get();
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(n1)));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Online(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().isOnline(n1));

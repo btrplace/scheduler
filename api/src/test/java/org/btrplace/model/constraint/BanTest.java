@@ -25,10 +25,7 @@ import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link Ban}.
@@ -40,7 +37,7 @@ public class BanTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode()));
+        Set<Node> nodes = new HashSet<>(Collections.singletonList(mo.newNode()));
         VM v = mo.newVM();
         Ban b = new Ban(v, nodes);
         Assert.assertTrue(b.getInvolvedVMs().contains(v));
@@ -66,7 +63,7 @@ public class BanTest {
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(1));
         map.addRunningVM(vms.get(2), ns.get(2));
-        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
+        Set<Node> nodes = new HashSet<>(Collections.singletonList(ns.get(0)));
 
         Ban b = new Ban(vms.get(2), nodes);
         Assert.assertEquals(b.isSatisfied(m), true);

@@ -22,7 +22,11 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force the maximum end time of a migration by an absolute
@@ -121,10 +125,6 @@ public class Deadline implements SatConstraint {
      * @return the associated list of constraints
      */
     public static List<Deadline> newDeadline(Collection<VM> vms, String deadline) {
-        List<Deadline> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Deadline(v, deadline));
-        }
-        return l;
+        return vms.stream().map(v -> new Deadline(v, deadline)).collect(Collectors.toList());
     }
 }

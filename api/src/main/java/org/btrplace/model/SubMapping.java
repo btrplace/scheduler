@@ -65,7 +65,7 @@ public class SubMapping extends AbstractMapping {
      * @param sc the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
      */
     public SubMapping(Mapping p, Collection<Node> sc) {
-        this(p, sc, Collections.<VM>emptySet());
+        this(p, sc, Collections.emptySet());
     }
 
     @Override

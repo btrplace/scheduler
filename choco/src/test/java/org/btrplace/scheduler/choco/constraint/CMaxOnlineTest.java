@@ -57,7 +57,7 @@ public class CMaxOnlineTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(3);
         //cra.setTimeLimit(3);
-        ReconfigurationPlan plan = cra.solve(model, Collections.<SatConstraint>singleton(maxon));
+        ReconfigurationPlan plan = cra.solve(model, Collections.singleton(maxon));
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
     }
 

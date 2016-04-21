@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Offline;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.scheduler.SchedulerException;
@@ -63,7 +62,7 @@ public class COfflineTest {
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).get();
 
         DefaultChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration<>(10));
         cra.setTimeLimit(-1);
         List x = Offline.newOffline(map.getAllNodes());
         ReconfigurationPlan plan = cra.solve(model, x);
@@ -100,7 +99,7 @@ public class COfflineTest {
         Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).get();
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
@@ -113,7 +112,7 @@ public class COfflineTest {
         Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).get();
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNull(plan);
     }
 }

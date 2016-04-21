@@ -32,37 +32,37 @@ import org.testng.annotations.Test;
 public class ExamplesIntegration {
 
     @Test
-    public void testGettingStarted() throws Exception {
+    public void testGettingStarted() {
         Example ex = new GettingStarted();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
-    public void testSolvingTuning() throws Exception {
+    public void testSolvingTuning() {
         Example ex = new SolverTuning();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
-    public void testModelCustomization() throws Exception {
+    public void testModelCustomization() {
         Example ex = new ModelCustomization();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
-    public void testDecommissioning() throws Exception {
+    public void testDecommissioning() {
         Example ex = new Decommissionning();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
-    public void testNetworkAndMigrations() throws Exception {
+    public void testNetworkAndMigrations() {
         Example ex = new NetworkAndMigrations();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }
 
     @Test
-    public void testAdvancedMigScheduling() throws Exception {
+    public void testAdvancedMigScheduling() {
         Example ex = new AdvancedMigScheduling();
         Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
     }

@@ -24,7 +24,6 @@ import org.btrplace.btrpsl.constraint.ListOfParam;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.migration.Serialize;
 
 import java.util.Collections;
@@ -53,7 +52,7 @@ public class SerializeBuilder extends DefaultSatConstraintBuilder {
      * @return  a constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<Serialize> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
@@ -67,6 +66,6 @@ public class SerializeBuilder extends DefaultSatConstraintBuilder {
             t.ignoreError("Parameter '" + params[0].getName() + "' expects a list of at least 2 VMs");
             return Collections.emptyList();
         }
-        return (List) Collections.singletonList(new Serialize(new HashSet<>(s)));
+        return Collections.singletonList(new Serialize(new HashSet<>(s)));
     }
 }

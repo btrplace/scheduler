@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by fhermeni on 17/02/2015.
+ * @author Vincent Kherbache
  */
 public class CMinMTTRTest {
 
