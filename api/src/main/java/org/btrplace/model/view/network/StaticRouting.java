@@ -92,22 +92,6 @@ public class StaticRouting extends Routing {
     }
 
     @Override
-    public int getMaxBW(Node n1, Node n2) {
-        int max = Integer.MAX_VALUE;
-        for (Link inf : getPath(n1, n2)) {
-            if (inf.getCapacity() < max) {
-                max = inf.getCapacity();
-            }
-            Switch sw = inf.getSwitch();
-            if (sw.getCapacity() >= 0 && sw.getCapacity() < max) {
-                //The >= 0 stays for historical reasons
-                max = sw.getCapacity();
-            }
-        }
-        return max;
-    }
-
-    @Override
     public Routing copy() {
         StaticRouting srouting = new StaticRouting();
         srouting.net = net; // Do not associate view->routing, only routing->view

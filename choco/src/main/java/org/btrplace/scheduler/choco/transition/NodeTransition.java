@@ -27,7 +27,7 @@ import org.chocosolver.solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public interface NodeTransition extends Transition {
+public interface NodeTransition extends Transition<NodeState> {
 
     /**
      * Get the node manipulated by the action.

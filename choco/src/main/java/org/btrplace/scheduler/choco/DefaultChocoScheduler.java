@@ -34,7 +34,6 @@ import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -139,33 +138,25 @@ public class DefaultChocoScheduler implements ChocoScheduler {
             if (p == null) {
                 return null;
             }
-            // Remember each migration's destination node
-            if (!p.getActions().isEmpty()) {
 
-                // Add Fence constraints for each destination node chosen
-                List<SatConstraint> newCstrs = p.getActions().stream()
-                        .filter(a -> a instanceof MigrateVM)
-                        .map(a -> new Fence(((MigrateVM) a).getVM(),
-                                            Collections.singleton(((MigrateVM) a).getDestinationNode())))
-                        .collect(Collectors.toList());
+            // Add Fence constraints for each destination node chosen
+            List<SatConstraint> newCstrs = p.getActions().stream()
+                    .filter(a -> a instanceof MigrateVM)
+                    .map(a -> new Fence(((MigrateVM) a).getVM(),
+                            Collections.singleton(((MigrateVM) a).getDestinationNode())))
+                    .collect(Collectors.toList());
 
-                Model result = p.getResult();
-                if (result == null) {
-                    throw new SchedulerException(p.getOrigin(), "The plan is not viable");
-                }
-                // Add Root constraints to all staying VMs
-                newCstrs.addAll(i.getMapping().getRunningVMs().stream()
-                    .filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
-                            result.getMapping().getVMLocation(v).id())
-                    .map(Root::new)
-                    .collect(Collectors.toList()));
-
-                // Add the new constraints to the list
-                if (!newCstrs.isEmpty()) {
-                    cstrs = new ArrayList<>(cstrs);
-                    cstrs.addAll(newCstrs);
-                }
+            Model result = p.getResult();
+            if (result == null) {
+                throw new SchedulerException(p.getOrigin(), "The plan is not viable");
             }
+            // Add Root constraints to all staying VMs
+            newCstrs.addAll(i.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
+                    result.getMapping().getVMLocation(v).id()).map(Root::new).collect(Collectors.toList()));
+
+
+            // Add the old constraints
+            newCstrs.addAll(cstrs);
             // Re-attach the network view
             i.attach(net);
 
@@ -176,7 +167,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                 ps.setTimeLimit((int) (timeout / 1000));
             }
 
-            return runner.solve(ps, new Instance(i, cstrs, opt));
+            return runner.solve(ps, new Instance(i, newCstrs, opt));
         }
         // Solve and return the computed plan
         return runner.solve(params, new Instance(i, cstrs, opt));

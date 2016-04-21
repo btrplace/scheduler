@@ -47,8 +47,8 @@ import java.util.Map;
  */
 public class TemplateAssignment extends BtrPlaceTree {
 
-    private NamingService namingServiceNodes;
-    private NamingService namingServiceVMs;
+    private NamingService<Node> namingServiceNodes;
+    private NamingService<VM> namingServiceVMs;
 
     private Model mo;
 
@@ -72,7 +72,7 @@ public class TemplateAssignment extends BtrPlaceTree {
      * @param symbolsTable the symbol table
      * @param errs         the errors
      */
-    public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService nsNodes, NamingService nsVMs, ErrorReporter errs) {
+    public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService<Node> nsNodes, NamingService<VM> nsVMs, ErrorReporter errs) {
         super(t, errs);
         this.script = s;
         this.tpls = tplFactory;

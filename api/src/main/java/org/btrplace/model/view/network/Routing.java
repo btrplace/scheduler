@@ -64,7 +64,21 @@ public abstract class Routing implements Copyable<Routing> {
      * @param n2    the destination node
      * @return  the bandwidth
      */
-    public abstract int getMaxBW(Node n1, Node n2);
+    public int getMaxBW(Node n1, Node n2) {
+        int max = Integer.MAX_VALUE;
+        for (Link inf : getPath(n1, n2)) {
+            if (inf.getCapacity() < max) {
+                max = inf.getCapacity();
+            }
+            Switch sw = inf.getSwitch();
+            if (sw.getCapacity() >= 0 && sw.getCapacity() < max) {
+                //The >= 0 stays for historical reasons
+                max = sw.getCapacity();
+            }
+
+        }
+        return max;
+    }
 
     /**
      * Recursive method to get the first physical path found from a switch to a destination node.

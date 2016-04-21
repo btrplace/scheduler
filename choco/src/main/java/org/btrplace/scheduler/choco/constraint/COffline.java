@@ -27,7 +27,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.transition.Transition;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -62,7 +62,7 @@ public class COffline implements ChocoConstraint {
 
         Node nId = cstr.getInvolvedNodes().iterator().next();
         int id = rp.getNode(nId);
-        Transition m = rp.getNodeAction(nId);
+        NodeTransition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(0, Cause.Null);
             if (rp.getSourceModel().getMapping().isOffline(nId)) {
