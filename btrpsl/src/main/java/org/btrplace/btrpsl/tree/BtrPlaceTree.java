@@ -71,6 +71,16 @@ public class BtrPlaceTree extends CommonTree {
     }
 
     /**
+     * Report an error from an exception for the current token
+     * @param e the exception
+     * @return an empty operand
+     */
+    public IgnorableOperand ignoreError(Exception e) {
+        append(token, e.getMessage());
+        return IgnorableOperand.getInstance();
+    }
+
+    /**
      * Add all the error messages included in a reporter.
      *
      * @param err the error reporter

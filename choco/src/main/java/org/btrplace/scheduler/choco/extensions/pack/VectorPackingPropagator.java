@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.extensions.pack;
 
 import org.chocosolver.memory.IStateBool;
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.solver.ICause;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.constraints.PropagatorPriority;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -131,8 +130,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int i = 0; i < deltaMonitor.length; i++) {
             deltaMonitor[i] = this.vars[i].monitorDelta(this);
         }
-        if (withHeap) attachHeapDecorator();
-        if (withKS) attachKPSimpleDecorator();
+        if (withHeap) {
+            attachHeapDecorator();
+        }
+        if (withKS) {
+            attachKPSimpleDecorator();
+        }
 
         //make backtrackable stuff
         this.potentialLoad = new IStateInt[nbDims][nbBins];
@@ -245,7 +248,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      *
      * @throws ContradictionException if a contradiction (rules 1) is raised
      */
-    public void fixPoint() throws ContradictionException {
+    private void fixPoint() throws ContradictionException {
         boolean noFixPoint = true;
         while (noFixPoint) {
             for (int d = 0; d < nbDims; d++) {
@@ -388,16 +391,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     //***********************************************************************************************************************//
 
 
-    protected ICause getACause() {
-        return this;
-    }
-
     /**
      * initialize the internal data: sumItemSize, assignedLoad, potentialLoad, sumLoadInf, sumLoadSup, maxSlackBinHeap
      * shrink the item-to-bins assignment variables: 0 <= bins[i] < nbBins
      * shrink the bin load variables: assignedLoad <= binLoad <= potentialLoad
      */
-    protected void initialize() throws ContradictionException {
+    private void initialize() throws ContradictionException {
 
         sumISizes = new long[nbDims];
         computeSumItemSizes();

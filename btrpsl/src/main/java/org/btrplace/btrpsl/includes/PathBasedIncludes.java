@@ -50,24 +50,10 @@ public class PathBasedIncludes implements Includes {
      * Make a new instance that will browse a first folder.
      *
      * @param vBuilder the builder to parse the scripts
-     * @param path     the first folder to look into
-     */
-    public PathBasedIncludes(ScriptBuilder vBuilder, File path) {
-        if (!path.isDirectory()) {
-            throw new IllegalArgumentException(path + " must be an existing directory");
-        }
-        this.paths = new LinkedList<>();
-        this.paths.add(path);
-        this.builder = vBuilder;
-    }
-
-    /**
-     * Make a new instance that will browse the current working directory.
-     *
-     * @param vBuilder the builder to parse the scripts
      */
     public PathBasedIncludes(ScriptBuilder vBuilder) {
-        this(vBuilder, new File(System.getProperty("user.dir")));
+        this.paths = new LinkedList<>();
+        this.builder = vBuilder;
     }
 
     /**
@@ -142,38 +128,6 @@ public class PathBasedIncludes implements Includes {
      */
     public List<File> getPaths() {
         return this.paths;
-    }
-
-    /**
-     * Build a PathBasedIncludes from a sequence of paths.
-     * Paths are separated by a {@link File#pathSeparator}
-     *
-     * @param vBuilder the script builder to make the scripts
-     * @param paths    the paths to consider
-     * @return the includes or {@code null} if at least one path is not an existing directory
-     */
-    public static PathBasedIncludes fromPaths(ScriptBuilder vBuilder, String paths) {
-        if (!paths.contains(File.pathSeparator)) {
-            File f = new File(paths);
-            if (!f.isDirectory()) {
-                return null;
-            }
-            return new PathBasedIncludes(vBuilder, f);
-        }
-        PathBasedIncludes incs = null;
-        String[] toks = paths.split(File.pathSeparator);
-        for (int i = 0; i < toks.length; i++) {
-            File f = new File(toks[i]);
-            if (f.exists() && !f.isDirectory()) {
-                return null;
-            }
-            if (i == 0) {
-                incs = new PathBasedIncludes(vBuilder, f);
-            } else {
-                incs.addPath(f);
-            }
-        }
-        return incs;
     }
 
     @Override

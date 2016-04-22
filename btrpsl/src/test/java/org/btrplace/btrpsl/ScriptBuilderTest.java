@@ -271,7 +271,8 @@ public class ScriptBuilderTest {
 
     public void textExportRestrictions() {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
-        PathBasedIncludes includes = new PathBasedIncludes(b, new File(RC_ROOT));
+        PathBasedIncludes includes = new PathBasedIncludes(b);
+        includes.addPath(new File(RC_ROOT));
         b.setIncludes(includes);
 
         try {
@@ -345,7 +346,8 @@ public class ScriptBuilderTest {
         //    \-d
         //
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
-        PathBasedIncludes includes = new PathBasedIncludes(b, new File(RC_ROOT + "deps"));
+        PathBasedIncludes includes = new PathBasedIncludes(b);
+        includes.addPath(new File(RC_ROOT + "deps"));
         b.setIncludes(includes);
 
         Script v = b.build(new File(RC_ROOT + "deps/a.btrp"));

@@ -201,7 +201,7 @@ public class DefaultParameters implements Parameters {
             c.getDeclaredConstructor();
             return views.add(c);
         } catch (Exception e) {
-            throw new IllegalArgumentException("No default constructor available for '" + c.getName() + "'");
+            throw new IllegalArgumentException("No default constructor available for '" + c.getName() + "'", e);
         }
     }
 

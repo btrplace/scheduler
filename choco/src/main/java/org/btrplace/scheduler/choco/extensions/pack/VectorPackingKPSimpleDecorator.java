@@ -89,7 +89,7 @@ public class VectorPackingKPSimpleDecorator {
             // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
             // ie. !p.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
             if (p.bins[i].contains(bin) && p.iSizes[dim][i] > 0) {
-                p.bins[i].removeValue(bin, p.getACause());
+                p.bins[i].removeValue(bin, p);
                 candidate.get(bin).clear(i);
                 p.potentialLoad[dim][bin].add(-1 * p.iSizes[dim][i]);
                 if (p.bins[i].isInstantiated()) {

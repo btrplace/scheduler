@@ -316,7 +316,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         try {
             return getVM((Integer) o.get(id));
         } catch (ClassCastException e) {
-            throw new JSONConverterException("Unable to read a VM identifier from string at key '" + id + "'");
+            throw new JSONConverterException("Unable to read a VM identifier from string at key '" + id + "'", e);
         }
     }
 
@@ -333,7 +333,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         try {
             return getNode((Integer) o.get(id));
         } catch (ClassCastException e) {
-            throw new JSONConverterException("Unable to read a Node identifier from string at key '" + id + "'");
+            throw new JSONConverterException("Unable to read a Node identifier from string at key '" + id + "'", e);
         }
     }
 

@@ -277,16 +277,16 @@ public class Network implements ModelView {
      * @return  the list of links
      */
     public List<Link> getConnectedLinks(PhysicalElement pe) {
-        List<Link> links = new ArrayList<>();
+        List<Link> myLinks = new ArrayList<>();
         for (Link l : this.links) {
             if (l.getElement().equals(pe)) {
-                links.add(l);
+                myLinks.add(l);
             }
             else if (l.getSwitch().equals(pe)) {
-                links.add(l);
+                myLinks.add(l);
             }
         }
-        return links;
+        return myLinks;
     }
 
     /**
@@ -297,7 +297,9 @@ public class Network implements ModelView {
     public List<Node> getConnectedNodes() {
         List<Node> nodes = new ArrayList<>();
         for (Link l : links) {
-            if (l.getElement() instanceof Node) nodes.add((Node) l.getElement());
+            if (l.getElement() instanceof Node) {
+                nodes.add((Node) l.getElement());
+            }
         }
         return nodes;
     }

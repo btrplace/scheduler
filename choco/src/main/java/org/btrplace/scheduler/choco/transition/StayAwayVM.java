@@ -42,7 +42,8 @@ public class StayAwayVM implements VMTransition {
 
     private BoolVar zero;
 
-    private VMState from, to;
+    private VMState from;
+    private VMState to;
     /**
      * Make a new model.
      *

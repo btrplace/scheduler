@@ -93,9 +93,6 @@ public class Launcher {
             // For debug purpose
             cra.setVerbosity(2);
             plan = cra.solve(i.getModel(), i.getSatConstraints());
-            if (plan == null) {
-                throw new RuntimeException("No solution !");
-            }
         } finally {
             System.out.println(cra.getStatistics());
         }

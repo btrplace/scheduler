@@ -105,7 +105,9 @@ public class CSync implements ChocoConstraint {
                 if (net != null) {
                     if (!vm1.getDSlice().getHoster().isInstantiated() || !vm2.getDSlice().getHoster().isInstantiated()){
                         RelocatableVM vm = vm2;
-                        if (!vm1.getDSlice().getHoster().isInstantiated()) vm = vm1;
+                        if (!vm1.getDSlice().getHoster().isInstantiated()) {
+                            vm = vm1;
+                        }
 
                         // Log an error and return false instead of throwing an exception
                         /*throw new SchedulerException(mo, "The 'Sync' constraint must know the destination " +
@@ -127,31 +129,26 @@ public class CSync implements ChocoConstraint {
 
                     // Check if the migrations paths share a common link
                     if (!Collections.disjoint(route1, route2)) {
-                        for (Link l1 : route1) { for (Link l2 : route2) {
-                            if (l1.equals(l2)) {
-                                // If the common link found is already the maximal BW in one of the path => Exception
-                                if (l1.getCapacity() == net.getRouting().getMaxBW(src1, dst1) ||
-                                        l1.getCapacity() == net.getRouting().getMaxBW(src2, dst2)) {
-
-                                    // Log an error and return false instead of throwing an exception
-                                    /*throw new SchedulerException(mo, "The migrations of " + vm1.getVM().toString() +
-                                            " and " + vm2.getVM().toString() + " can not be synchronized as" +
-                                            " their migration paths share a common link that will slowdown" +
-                                            " unnecessarily both migrations, so they must be scheduled sequentially.");
-                                    */
-                                    rp.getLogger().error("The migrations of " + vm1.getVM().toString() +
-                                            " and " + vm2.getVM().toString() + " can not be synchronized as" +
-                                            " their migration paths share a common link that will slowdown" +
-                                            " unnecessarily both migrations, so they must be scheduled sequentially.");
-                                    return false;
+                        for (Link l1 : route1) {
+                            for (Link l2 : route2) {
+                                if (l1.equals(l2)) {
+                                    // If the common link found is already the maximal BW in one of the path => Exception
+                                    if (l1.getCapacity() == net.getRouting().getMaxBW(src1, dst1) ||
+                                            l1.getCapacity() == net.getRouting().getMaxBW(src2, dst2)) {
+                                        rp.getLogger().error("The migrations of " + vm1.getVM().toString() +
+                                                " and " + vm2.getVM().toString() + " can not be synchronized as" +
+                                                " their migration paths share a common link that will slowdown" +
+                                                " unnecessarily both migrations, so they must be scheduled sequentially.");
+                                        return false;
+                                    }
                                 }
                             }
-                        }}
+                        }
                     }
 
                     // Sync the start or end depending of the migration algorithm
-                    IntVar firstMigSync = (vm1.usesPostCopy()) ? vm1.getStart() : vm1.getEnd();
-                    IntVar secondMigSync = (vm2.usesPostCopy()) ? vm2.getStart() : vm2.getEnd();
+                    IntVar firstMigSync = vm1.usesPostCopy() ? vm1.getStart() : vm1.getEnd();
+                    IntVar secondMigSync = vm2.usesPostCopy() ? vm2.getStart() : vm2.getEnd();
 
                     //LCF.ifThen(LCF.and(moveFirst, moveSecond),
                     s.post(ICF.arithm(firstMigSync, "=", secondMigSync));

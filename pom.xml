@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.20</version>
+            <version>1.7.21</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -224,10 +224,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>choco.repos</id>
-            <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
-        </repository>
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>

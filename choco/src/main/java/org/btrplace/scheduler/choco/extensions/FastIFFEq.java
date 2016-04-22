@@ -121,9 +121,9 @@ public class FastIFFEq extends Constraint {
         public ESat isEntailed() {
             if (vars[0].isInstantiated()) {
                 if (vars[0].contains(0)) {
-                    return !vars[1].contains(constant) ? ESat.TRUE : (vars[1].isInstantiated()) ? ESat.FALSE : ESat.UNDEFINED;
+                    return !vars[1].contains(constant) ? ESat.TRUE : vars[1].isInstantiated() ? ESat.FALSE : ESat.UNDEFINED;
                 }
-                return !vars[1].contains(constant) ? ESat.FALSE : (vars[1].isInstantiated()) ? ESat.TRUE : ESat.UNDEFINED;
+                return !vars[1].contains(constant) ? ESat.FALSE : vars[1].isInstantiated() ? ESat.TRUE : ESat.UNDEFINED;
             }
             return ESat.UNDEFINED;
         }

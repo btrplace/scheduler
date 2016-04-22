@@ -214,7 +214,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return plans;
     }
 
-    private ReconfigurationPlan makeResultingPlan() throws SchedulerException {
+    private ReconfigurationPlan makeResultingPlan() {
 
         //Check for the solution
         ESat status = solver.isFeasible();
@@ -283,7 +283,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.set(seq);
     }
 
-    private void addContinuousResourceCapacities() throws SchedulerException {
+    private void addContinuousResourceCapacities() {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().size(); j++) {
@@ -303,7 +303,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
-    private void linkCardinalityWithSlices() throws SchedulerException {
+    private void linkCardinalityWithSlices() {
         IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
@@ -379,7 +379,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         nodes = Collections.unmodifiableList(nodes);
     }
 
-    private void makeVMTransitions() throws SchedulerException {
+    private void makeVMTransitions() {
         Mapping map = model.getMapping();
         vmActions = new ArrayList<>(vms.size());
         for (VM vmId : vms) {
@@ -430,7 +430,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void makeNodeTransitions() throws SchedulerException {
+    private void makeNodeTransitions() {
 
         Mapping m = model.getMapping();
         nodeActions = new ArrayList<>(nodes.size());

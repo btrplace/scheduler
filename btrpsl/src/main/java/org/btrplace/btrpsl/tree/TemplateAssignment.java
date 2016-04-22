@@ -167,7 +167,7 @@ public class TemplateAssignment extends BtrPlaceTree {
                 ignoreError("VM '" + id + "' already created");
             }
         } catch (ElementBuilderException ex) {
-            ignoreError(ex.getMessage());
+            ignoreError(ex);
         }
     }
 
@@ -189,7 +189,7 @@ public class TemplateAssignment extends BtrPlaceTree {
                 ignoreError("Node '" + id + "' already created");
             }
         } catch (ElementBuilderException ex) {
-            ignoreError(ex.getMessage());
+            ignoreError(ex);
         }
     }
 }

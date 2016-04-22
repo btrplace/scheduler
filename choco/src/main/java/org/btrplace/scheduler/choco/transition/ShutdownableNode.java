@@ -81,7 +81,8 @@ public class ShutdownableNode implements NodeTransition {
 
     public static final String PREFIX = "shutdownableNode(";
     private Node node;
-    private BoolVar isOnline, isOffline;
+    private BoolVar isOnline;
+    private BoolVar isOffline;
     private IntVar duration;
     private IntVar end;
     private IntVar hostingStart;

@@ -89,7 +89,7 @@ public class ExportStatement extends BtrPlaceTree {
                 script.addExportable(op.label(), op, scope);
             }
         } catch (UnsupportedOperationException ex) {
-            return ignoreError(ex.getMessage());
+            return ignoreError(ex);
         }
 
 

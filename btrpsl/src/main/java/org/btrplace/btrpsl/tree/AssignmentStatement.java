@@ -109,7 +109,7 @@ public class AssignmentStatement extends BtrPlaceTree {
                 return ignoreError("Unsupported decomposition");
             }
         } catch (UnsupportedOperationException e) {
-            return ignoreError(e.getMessage());
+            return ignoreError(e);
         }
         return IgnorableOperand.getInstance();
     }

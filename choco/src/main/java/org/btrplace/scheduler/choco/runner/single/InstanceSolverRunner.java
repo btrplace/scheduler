@@ -173,9 +173,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         //Resolve the view dependencies, add them and inject them
         views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
         views.forEach(rp::addView);
-        return views.stream().allMatch((v) -> v.inject(params, rp)) &&
-                cConstraints.stream().allMatch((c) -> c.inject(params, rp)) &&
-                views.stream().allMatch((v) -> v.beforeSolve(rp));
+        return views.stream().allMatch(v -> v.inject(params, rp)) &&
+                cConstraints.stream().allMatch(c -> c.inject(params, rp)) &&
+                views.stream().allMatch(v -> v.beforeSolve(rp));
 
     }
 

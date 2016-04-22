@@ -90,7 +90,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         }
 
         int j = 0; //a separate counter because there is not necessarily a dSlice for each action
-        //for (int i = 0; i < vmActions.length; i++) {
         for (VMTransition action : vmActions) {
             Slice slice = action.getDSlice();
             if (slice != null) {

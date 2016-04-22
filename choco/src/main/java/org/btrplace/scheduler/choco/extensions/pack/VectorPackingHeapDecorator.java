@@ -61,11 +61,11 @@ public class VectorPackingHeapDecorator {
      * @param bin the bin
      * @return the load slack of bin on dimension bin
      */
-    public int loadSlack(int dim, int bin) {
+    private int loadSlack(int dim, int bin) {
         return p.loads[dim][bin].getUB() - p.loads[dim][bin].getLB();
     }
 
-    public void reHeap() {
+    private void reHeap() {
         for (int d = 0; d < p.nbDims; d++) {
             maxSlackBinHeap.get(d).clear();
             for (int b = 0; b < p.nbBins; b++) {
@@ -125,7 +125,9 @@ public class VectorPackingHeapDecorator {
         }
         checkReHeap(loadsHaveChanged);
         for (int d = 0; d < p.nbDims; d++) {
-            if (maxSlackBinHeap.get(d).isEmpty()) continue;
+            if (maxSlackBinHeap.get(d).isEmpty()) {
+                continue;
+            }
             int nChanges;
             long deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
             long deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
@@ -134,18 +136,26 @@ public class VectorPackingHeapDecorator {
                 if (deltaToSup > deltaFromInf) {
                     nChanges += filterLoads(d, (int) deltaFromInf, true);
                     deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
-                    if (deltaToSup < 0) p.contradiction(null, "");
+                    if (deltaToSup < 0) {
+                        p.contradiction(null, "");
+                    }
                     nChanges += filterLoads(d, (int) deltaToSup, false);
                     deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
-                    if (deltaFromInf < 0) p.contradiction(null, "");
+                    if (deltaFromInf < 0) {
+                        p.contradiction(null, "");
+                    }
 
                 } else {
                     nChanges += filterLoads(d, (int) deltaToSup, false);
                     deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
-                    if (deltaFromInf < 0) p.contradiction(null, "");
+                    if (deltaFromInf < 0) {
+                        p.contradiction(null, "");
+                    }
                     nChanges += filterLoads(d, (int) deltaFromInf, true);
                     deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
-                    if (deltaToSup < 0) p.contradiction(null, "");
+                    if (deltaToSup < 0) {
+                        p.contradiction(null, "");
+                    }
 
                 }
             } while (nChanges > 0);
@@ -176,7 +186,7 @@ public class VectorPackingHeapDecorator {
                 else {
                     p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
                 }
-                assert (loadSlack(d, b) == delta);
+                assert loadSlack(d, b) == delta;
                 maxSlackBinHeap.get(d).offer(b);
                 nChanges++;
             } while (!maxSlackBinHeap.get(d).isEmpty() && loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta);

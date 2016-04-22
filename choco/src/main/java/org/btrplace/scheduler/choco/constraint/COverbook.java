@@ -77,29 +77,7 @@ public class COverbook implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
-        //ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        /*if (rc == null) {
-            //No resource given, all the VMs are considered as misplaced
-            Node n = cstr.getInvolvedNodes().iterator().next();
-            return m.getMapping().getRunningVMs(n);
-        } else {
-            //Check if the node is saturated
-            Node n = cstr.getInvolvedNodes().iterator().next();
-            int maxVCapacity = (int) (cstr.getRatio() * rc.getCapacity(n));
-            //Minus the VMs usage
-            for (VM vmId : m.getMapping().getRunningVMs(n)) {
-                maxVCapacity -= rc.getConsumption(vmId);
-                if (maxVCapacity < 0) {
-                    return m.getMapping().getRunningVMs(n);
-                }
-            }
-
-        }*/
-  /*      CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rcm == null) {
-            throw new SchedulerException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
-        }*/
-
+        //Handled by CShareableResource
         return Collections.emptySet();
     }
 
