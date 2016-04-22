@@ -188,7 +188,6 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <argLine>-Xms384m -Xmx768m</argLine>
                 </configuration>
             </plugin>
             <plugin>
