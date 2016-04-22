@@ -69,8 +69,7 @@ public class ImportStatement extends BtrPlaceTree {
         this.script = scr;
     }
 
-    @Override
-    public BtrpOperand go(BtrPlaceTree parent) {
+    private String scriptId() {
         StringBuilder scriptId = new StringBuilder();
         for (int i = 0; i < getChildCount(); i++) {
             scriptId.append(getChild(i));
@@ -78,7 +77,11 @@ public class ImportStatement extends BtrPlaceTree {
                 scriptId.append('.');
             }
         }
-        String id = scriptId.toString();
+        return scriptId.toString();
+    }
+    @Override
+    public BtrpOperand go(BtrPlaceTree parent) {
+        String id = scriptId();
         List<Script> res;
         try {
             res = includes.getScripts(id);
@@ -91,22 +94,21 @@ public class ImportStatement extends BtrPlaceTree {
             return ignoreError(getChild(0).getToken(), "Unable to locate '" + id + "'");
         }
 
-        BtrpSet global = null;
         if (id.endsWith(".*")) { //Prepare the global variable.
-            global = new BtrpSet(1, BtrpOperand.Type.VM);
+            BtrpSet global = new BtrpSet(1, BtrpOperand.Type.VM);
             global.setLabel("$".concat(id.substring(0, id.length() - 2)));
+
+            if (global.size() > 0 && !symTable.declareImmutable(global.label(), global)) {
+                return ignoreError("Unable to add variable '" + global.label() + "'");
+            }
         }
         for (Script v : res) {
-            List<BtrpOperand> toImport = v.getImportables(script.id());
-            for (BtrpOperand op : toImport) {
+            for (BtrpOperand op : v.getImportables(script.id())) {
                 String fqn = v.fullyQualifiedSymbolName(op.label());
                 if (!symTable.declareImmutable(fqn, op)) {
                     return ignoreError("Unable to import '" + fqn + "': already declared");
                 }
             }
-        }
-        if (global != null && global.size() > 0 && !symTable.declareImmutable(global.label(), global)) {
-            return ignoreError("Unable to add variable '" + global.label() + "'");
         }
         return IgnorableOperand.getInstance();
     }

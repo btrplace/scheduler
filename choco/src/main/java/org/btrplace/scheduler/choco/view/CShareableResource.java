@@ -24,6 +24,7 @@ import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.constraint.ResourceCapacity;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.view.ResourceRelated;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.*;
@@ -506,43 +507,44 @@ public class CShareableResource implements ChocoView {
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
         for (SatConstraint c : i.getSatConstraints()) {
-            if (c instanceof Preserve) {
-                if (((Preserve) c).getResource().equals(rc.getResourceIdentifier())) {
-                    preserve(c.getInvolvedVMs().iterator().next(), ((Preserve) c).getAmount());
-                }
-            } else if (c instanceof Overbook) {
-                if (((Overbook) c).getResource().equals(rc.getResourceIdentifier())) {
-                    ratio(c.getInvolvedNodes().iterator().next(), ((Overbook) c).getRatio());
-                }
-            } else if (c instanceof ResourceCapacity && c.getInvolvedNodes().size() == 1) {
-                if (((ResourceCapacity) c).getResource().equals(rc.getResourceIdentifier())) {
-                    capacity(c.getInvolvedNodes().iterator().next(), ((ResourceCapacity) c).getAmount());
-                }
+            if (!(c instanceof ResourceRelated) || ((ResourceRelated) c).getResource().equals(rc.getResourceIdentifier())) {
+                continue;
+            }
 
+            if (c instanceof Preserve) {
+                preserve(c.getInvolvedVMs().iterator().next(), ((Preserve) c).getAmount());
+            } else if (c instanceof Overbook) {
+                ratio(c.getInvolvedNodes().iterator().next(), ((Overbook) c).getRatio());
+            } else if (c instanceof ResourceCapacity && c.getInvolvedNodes().size() == 1) {
+                capacity(c.getInvolvedNodes().iterator().next(), ((ResourceCapacity) c).getAmount());
             }
         }
         Mapping m = i.getModel().getMapping();
         Set<VM> candidates = new HashSet<>();
         for (Node n : m.getOnlineNodes()) {
-            int free = rc.getCapacity(n);
-            if (wantedCapacity.containsKey(n)) {
-                free -= wantedCapacity.get(n);
-            }
-            if (wantedRatios.containsKey(n)) {
-                free *= wantedRatios.get(n);
-            }
-            for (VM vm : m.getRunningVMs(n)) {
-                if (wantedAmount.containsKey(vm)) {
-                    free -= wantedAmount.get(vm);
-                } else {
-                    free -= rc.getConsumption(vm);
-                }
-            }
-            if (free < 0) {
+            if (overloaded(m, n)) {
                 candidates.addAll(m.getRunningVMs(n));
             }
         }
         return candidates;
+    }
+
+    private boolean overloaded(Mapping m, Node n) {
+        int free = rc.getCapacity(n);
+        if (wantedCapacity.containsKey(n)) {
+            free -= wantedCapacity.get(n);
+        }
+        if (wantedRatios.containsKey(n)) {
+            free *= wantedRatios.get(n);
+        }
+        for (VM vm : m.getRunningVMs(n)) {
+            if (wantedAmount.containsKey(vm)) {
+                free -= wantedAmount.get(vm);
+            } else {
+                free -= rc.getConsumption(vm);
+            }
+        }
+        return free < 0;
     }
 
     @Override

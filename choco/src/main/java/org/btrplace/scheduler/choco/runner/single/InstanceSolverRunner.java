@@ -100,39 +100,17 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp = null;
         start = System.currentTimeMillis();
         measures = new ArrayList<>();
+
         //Build the core problem
         coreRPDuration = -System.currentTimeMillis();
         rp = buildRP();
-        //The core views have been instantiated and available through rp.getViews()
-
-        //Set the maximum duration
-        try {
-            rp.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
-        } catch (ContradictionException e) {
-            rp.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
-            return null;
-        }
         coreRPDuration += System.currentTimeMillis();
 
         //Customize the core problem
         speRPDuration = -System.currentTimeMillis();
-
-        //Resolve the view dependencies, add them and inject them
-        views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
-        views.forEach(rp::addView);
-        if (!views.stream().allMatch((v) -> v.inject(params, rp))) {
+        if (!specialise()) {
             return new InstanceResult(null, getStatistics());
         }
-
-
-        if (!cConstraints.stream().allMatch((c) -> c.inject(params, rp))) {
-            return new InstanceResult(null, getStatistics());
-        }
-
-        if (!views.stream().allMatch((v) -> v.beforeSolve(rp))) {
-            return new InstanceResult(null, getStatistics());
-        }
-
         speRPDuration += System.currentTimeMillis();
 
         //statistics
@@ -158,6 +136,23 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             measures.add(sol);
         });
 
+        setVerbosity();
+
+        //The actual solving process
+        ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
+        return buildResult(p);
+    }
+
+    private InstanceResult buildResult(ReconfigurationPlan p) {
+        if (p != null) {
+            Solution s = solutions.getLastSolution();
+            views.forEach(v -> v.insertActions(rp, s, p));
+        }
+        return new InstanceResult(p, getStatistics());
+    }
+
+
+    private void setVerbosity() {
         if (params.getVerbosity() >=1) {
             Chatterbox.showSolutions(rp.getSolver());
         }
@@ -171,14 +166,17 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         if (params.getVerbosity() >= 4) {
             Chatterbox.showContradiction(rp.getSolver());
         }
-        //The actual solving process
-        ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
+    }
 
-        if (p != null) {
-            Solution s = solutions.getLastSolution();
-            views.forEach(v -> v.insertActions(rp, s, p));
-        }
-        return new InstanceResult(p, getStatistics());
+    private boolean specialise() {
+
+        //Resolve the view dependencies, add them and inject them
+        views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
+        views.forEach(rp::addView);
+        return views.stream().allMatch((v) -> v.inject(params, rp)) &&
+                cConstraints.stream().allMatch((c) -> c.inject(params, rp)) &&
+                views.stream().allMatch((v) -> v.beforeSolve(rp));
+
     }
 
     private ReconfigurationProblem buildRP() throws SchedulerException {
@@ -230,7 +228,16 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             rpb.setManageableVMs(toManage);
         }
 
-        return rpb.build();
+        //The core views have been instantiated and available through rp.getViews()
+        //Set the maximum duration
+        ReconfigurationProblem p = rpb.build();
+        try {
+            p.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
+        } catch (ContradictionException e) {
+            p.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
+            return null;
+        }
+        return p;
     }
 
     private List<ChocoView> makeViews() throws SchedulerException {

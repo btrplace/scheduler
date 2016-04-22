@@ -19,6 +19,7 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
+import org.btrplace.model.view.ResourceRelated;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
  *
  * @author Fabien Hermenier
  */
-public class Overbook extends SimpleConstraint {
+public class Overbook extends SimpleConstraint implements ResourceRelated {
 
     private String rcId;
 
@@ -91,11 +92,7 @@ public class Overbook extends SimpleConstraint {
         return nodes.stream().map(n -> new Overbook(n, rc, r)).collect(Collectors.toList());
     }
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return an identifier
-     */
+    @Override
     public String getResource() {
         return this.rcId;
     }

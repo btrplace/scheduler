@@ -413,6 +413,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     case SLEEPING:
                         sleeping.add(vmId);
                         break;
+                    default:
+                        throw new SchedulerException(model, "Unsupported VM transition " + curState + " -> " + nextState);
                 }
             }
 

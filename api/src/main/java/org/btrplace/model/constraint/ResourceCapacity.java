@@ -19,6 +19,7 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
+import org.btrplace.model.view.ResourceRelated;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -37,7 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class ResourceCapacity extends SimpleConstraint {
+public class ResourceCapacity extends SimpleConstraint implements ResourceRelated {
 
     private Set<Node> nodes;
 
@@ -100,11 +101,7 @@ public class ResourceCapacity extends SimpleConstraint {
         this.rcId = rc;
     }
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return a String
-     */
+    @Override
     public String getResource() {
         return this.rcId;
     }

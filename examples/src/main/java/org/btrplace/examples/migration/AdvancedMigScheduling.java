@@ -43,20 +43,31 @@ import java.util.List;
  */
 public class AdvancedMigScheduling implements Example {
 
-    @Override
-    public boolean run() {
+    private Node srcNode1;
+    private Node srcNode2;
+    private Node srcNode3;
+    private Node srcNode4;
+    private Node dstNode1;
+    private Node dstNode2;
 
+    private VM vm0;
+    private VM vm1;
+    private VM vm2;
+    private VM vm3;
+
+
+    private Model makeModel() {
         // New default model
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
 
         // Create and boot 4 source nodes and 2 destination nodes
-        Node srcNode1 = mo.newNode();
-        Node srcNode2 = mo.newNode();
-        Node srcNode3 = mo.newNode();
-        Node srcNode4 = mo.newNode();
-        Node dstNode1 = mo.newNode();
-        Node dstNode2 = mo.newNode();
+        srcNode1 = mo.newNode();
+        srcNode2 = mo.newNode();
+        srcNode3 = mo.newNode();
+        srcNode4 = mo.newNode();
+        dstNode1 = mo.newNode();
+        dstNode2 = mo.newNode();
 
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
@@ -66,14 +77,21 @@ public class AdvancedMigScheduling implements Example {
         ma.addOfflineNode(dstNode2);
 
         // Create and host 1 VM per source node
-        VM vm0 = mo.newVM();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
+        vm0 = mo.newVM();
+        vm1 = mo.newVM();
+        vm2 = mo.newVM();
+        vm3 = mo.newVM();
         ma.addRunningVM(vm0, srcNode1);
         ma.addRunningVM(vm1, srcNode2);
         ma.addRunningVM(vm2, srcNode3);
         ma.addRunningVM(vm3, srcNode4);
+        return mo;
+    }
+
+    @Override
+    public boolean run() {
+
+        Model mo = makeModel();
 
         // Create, define, and attach CPU and Mem resource views for nodes and VMs
         int mem_src = 8;

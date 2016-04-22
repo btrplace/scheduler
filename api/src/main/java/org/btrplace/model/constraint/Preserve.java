@@ -19,6 +19,7 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.VM;
+import org.btrplace.model.view.ResourceRelated;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
  *
  * @author Fabien Hermenier
  */
-public class Preserve implements SatConstraint {
+public class Preserve implements SatConstraint, ResourceRelated {
 
     private VM vm;
 
@@ -60,11 +61,8 @@ public class Preserve implements SatConstraint {
         this.amount = q;
     }
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return the identifier
-     */
+
+    @Override
     public String getResource() {
         return this.rc;
     }
