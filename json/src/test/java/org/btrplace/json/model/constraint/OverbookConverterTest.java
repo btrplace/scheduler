@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.Overbook;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.OverbookConverter}.
  *
@@ -35,7 +33,7 @@ import java.io.IOException;
 public class OverbookConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         OverbookConverter conv = new OverbookConverter();
         conv.setModel(mo);

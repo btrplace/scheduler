@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.Online;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.OnlineConverter}.
  *
@@ -35,7 +33,7 @@ import java.io.IOException;
 public class OnlineConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         OnlineConverter conv = new OnlineConverter();
         conv.setModel(mo);

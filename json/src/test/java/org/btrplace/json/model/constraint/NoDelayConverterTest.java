@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.NoDelay;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.NoDelayConverter}.
  *
@@ -36,7 +34,7 @@ import java.io.IOException;
 public class NoDelayConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         NoDelayConverter conv = new NoDelayConverter();
         conv.setModel(mo);

@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.migration.Deadline;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.migration.DeadlineConverter}.
  *
@@ -36,7 +34,7 @@ import java.io.IOException;
 public class DeadlineConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         DeadlineConverter conv = new DeadlineConverter();
         conv.setModel(mo);

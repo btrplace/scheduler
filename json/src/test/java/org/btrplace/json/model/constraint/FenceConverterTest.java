@@ -25,7 +25,6 @@ import org.btrplace.model.constraint.Fence;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -37,7 +36,7 @@ import java.util.HashSet;
 public class FenceConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         FenceConverter conv = new FenceConverter();
         conv.setModel(mo);

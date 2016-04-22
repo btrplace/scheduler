@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.Root;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.RootConverter}.
  *
@@ -35,7 +33,7 @@ import java.io.IOException;
 public class RootConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         RootConverter conv = new RootConverter();
         conv.setModel(mo);

@@ -38,7 +38,7 @@ public class ConstraintConverterTest {
         }
 
         @Override
-        public Class getSupportedConstraint() {
+        public Class<?> getSupportedConstraint() {
             throw new UnsupportedOperationException();
         }
 
@@ -60,7 +60,7 @@ public class ConstraintConverterTest {
 
     @Test
     public void testCheckId() throws JSONConverterException {
-        ConstraintConverter c = new Mock("foo");
+        ConstraintConverter<?> c = new Mock("foo");
         JSONObject o = new JSONObject();
         o.put("id", "foo");
         c.checkId(o);
@@ -68,14 +68,14 @@ public class ConstraintConverterTest {
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testBadCheckIdNoId() throws JSONConverterException {
-        ConstraintConverter c = new Mock("foo");
+        ConstraintConverter<?> c = new Mock("foo");
         JSONObject o = new JSONObject();
         c.checkId(o);
     }
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testBadCheckIdBadId() throws JSONConverterException {
-        ConstraintConverter c = new Mock("foo");
+        ConstraintConverter<?> c = new Mock("foo");
         JSONObject o = new JSONObject();
         o.put("id", "bar");
         c.checkId(o);

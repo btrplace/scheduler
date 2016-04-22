@@ -23,8 +23,6 @@ import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.MappingConverter}.
  *
@@ -33,7 +31,7 @@ import java.io.IOException;
 public class MappingConverterTest {
 
     @Test
-    public void testSimple() throws JSONConverterException, IOException {
+    public void testSimple() throws JSONConverterException {
         Model mo = new DefaultModel();
         Mapping c = mo.getMapping();
         Node n1 = mo.newNode();

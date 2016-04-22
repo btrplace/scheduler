@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.migration.Sync;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.migration.SyncConverter}.
  *
@@ -36,7 +34,7 @@ import java.io.IOException;
 public class SyncConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         SyncConverter conv = new SyncConverter();
         conv.setModel(mo);

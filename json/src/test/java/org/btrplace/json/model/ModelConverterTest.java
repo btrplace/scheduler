@@ -25,8 +25,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link ModelConverterTest}.
  *
@@ -44,7 +42,7 @@ public class ModelConverterTest {
     }
 
     @Test
-    public void testConversion() throws JSONConverterException, IOException {
+    public void testConversion() throws JSONConverterException {
         ModelConverter conv = new ModelConverter();
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();

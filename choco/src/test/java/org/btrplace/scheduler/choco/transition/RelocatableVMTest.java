@@ -182,10 +182,9 @@ public class RelocatableVMTest {
      * The re-instantiation is possible but will lead in a waste of time.
      *
      * @throws org.btrplace.scheduler.SchedulerException
-     * @throws ContradictionException
      */
     @Test
-    public void testNotWorthyReInstantiation() throws SchedulerException, ContradictionException {
+    public void testNotWorthyReInstantiation() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 

@@ -26,7 +26,6 @@ import org.btrplace.model.constraint.MaxOnline;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,7 +38,7 @@ import java.util.Set;
 public class MaxOnlineConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model model = new DefaultModel();
         Set<Node> s = new HashSet<>(Arrays.asList(model.newNode(), model.newNode(), model.newNode()));
         MaxOnline mo = new MaxOnline(s, 2);

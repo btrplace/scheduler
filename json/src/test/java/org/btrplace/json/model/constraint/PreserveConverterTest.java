@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.Preserve;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.model.constraint.Preserve}.
  *
@@ -35,7 +33,7 @@ import java.io.IOException;
 public class PreserveConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         PreserveConverter conv = new PreserveConverter();
         conv.setModel(mo);

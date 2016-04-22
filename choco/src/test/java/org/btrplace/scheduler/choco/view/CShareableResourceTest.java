@@ -24,7 +24,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.*;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -91,7 +90,7 @@ public class CShareableResourceTest {
      * Place some VMs and check realNodeUsage is updated accordingly
      */
     @Test
-    public void testRealNodeUsage() throws SchedulerException, ContradictionException {
+    public void testRealNodeUsage() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
 
@@ -161,7 +160,7 @@ public class CShareableResourceTest {
      * The default overbooking ratio of 1 will make this problem having no solution.
      */
     @Test
-    public void testDefaultOverbookRatio() throws ContradictionException, SchedulerException {
+    public void testDefaultOverbookRatio() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();

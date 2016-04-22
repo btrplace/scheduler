@@ -25,8 +25,6 @@ import org.btrplace.model.constraint.Offline;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.OfflineConverter}.
  *
@@ -35,7 +33,7 @@ import java.io.IOException;
 public class OfflineConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         OfflineConverter conv = new OfflineConverter();
         conv.setModel(mo);

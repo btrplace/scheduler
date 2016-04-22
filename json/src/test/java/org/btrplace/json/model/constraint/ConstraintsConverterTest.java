@@ -26,7 +26,6 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,7 +70,7 @@ public class ConstraintsConverterTest {
     public static class MockConstraintConverter extends ConstraintConverter<MockSatConstraint> {
 
         @Override
-        public Class getSupportedConstraint() {
+        public Class<MockSatConstraint> getSupportedConstraint() {
             return MockSatConstraint.class;
         }
 
@@ -138,7 +137,7 @@ public class ConstraintsConverterTest {
     }
 
     @Test
-    public void testWithMultipleViews() throws JSONConverterException, IOException {
+    public void testWithMultipleViews() throws JSONConverterException {
         ConstraintsConverter c = new ConstraintsConverter();
         org.testng.Assert.assertNull(c.register(new MockConstraintConverter()));
         List<SatConstraint> l = new ArrayList<>();

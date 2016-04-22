@@ -120,7 +120,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testRequiredOnline() throws SchedulerException, ContradictionException {
+    public void testRequiredOnline() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         VM vm1 = mo.newVM();

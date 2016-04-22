@@ -23,8 +23,6 @@ import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.AttributesConverter}.
  *
@@ -33,7 +31,7 @@ import java.io.IOException;
 public class AttributesConverterTest {
 
     @Test
-    public void testSimple() throws IOException, JSONConverterException {
+    public void testSimple() throws JSONConverterException {
         Model mo = new DefaultModel();
         Attributes attrs = new DefaultAttributes();
 

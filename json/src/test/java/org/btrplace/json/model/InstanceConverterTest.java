@@ -27,7 +27,6 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,7 @@ import java.util.List;
 public class InstanceConverterTest {
 
     @Test
-    public void testConversion() throws JSONConverterException, IOException {
+    public void testConversion() throws JSONConverterException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
         Node n1 = mo.newNode();

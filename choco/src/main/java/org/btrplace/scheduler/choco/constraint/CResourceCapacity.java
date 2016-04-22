@@ -117,33 +117,32 @@ public class CResourceCapacity implements ChocoConstraint {
         if (!cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
-        } else {
-            int[] alias = new int[cstr.getInvolvedNodes().size()];
-            int i = 0;
-            for (Node n : cstr.getInvolvedNodes()) {
-                alias[i++] = rp.getNode(n);
-            }
-
-            TIntArrayList cUse = new TIntArrayList();
-            List<IntVar> dUse = new ArrayList<>();
-
-            for (VM vmId : rp.getVMs()) {
-                VMTransition a = rp.getVMAction(vmId);
-                Slice c = a.getCSlice();
-                Slice d = a.getDSlice();
-                if (c != null) {
-                    cUse.add(rcm.getSourceResource().getConsumption(vmId));
-                }
-                if (d != null) {
-                    dUse.add(rcm.getVMsAllocation().get(rp.getVM(vmId)));
-                }
-            }
-            ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
-            if (v == null) {
-                throw new SchedulerException(rp.getSourceModel(), "View '" + AliasedCumulatives.VIEW_ID + "' is required but missing");
-            }
-            ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
         }
+        int[] alias = new int[cstr.getInvolvedNodes().size()];
+        int i = 0;
+        for (Node n : cstr.getInvolvedNodes()) {
+            alias[i++] = rp.getNode(n);
+        }
+
+        TIntArrayList cUse = new TIntArrayList();
+        List<IntVar> dUse = new ArrayList<>();
+
+        for (VM vmId : rp.getVMs()) {
+            VMTransition a = rp.getVMAction(vmId);
+            Slice c = a.getCSlice();
+            Slice d = a.getDSlice();
+            if (c != null) {
+                cUse.add(rcm.getSourceResource().getConsumption(vmId));
+            }
+            if (d != null) {
+                dUse.add(rcm.getVMsAllocation().get(rp.getVM(vmId)));
+            }
+        }
+        ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
+        if (v == null) {
+            throw new SchedulerException(rp.getSourceModel(), "View '" + AliasedCumulatives.VIEW_ID + "' is required but missing");
+        }
+        ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
         return true;
     }
 

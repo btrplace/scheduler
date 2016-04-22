@@ -174,7 +174,7 @@ public class IssuesTest {
      * Test a suspicious bug in issue #5
      */
     @Test
-    public void testIssue5c() throws SchedulerException, ContradictionException {
+    public void testIssue5c() throws SchedulerException {
 
         Model model = new DefaultModel();
         Node n1 = model.newNode();

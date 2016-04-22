@@ -26,9 +26,7 @@ import org.btrplace.model.constraint.Split;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.*;
-
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.SplitConverter}.
@@ -38,7 +36,7 @@ import java.util.*;
 public class SplitConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
 
         Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));

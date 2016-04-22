@@ -30,8 +30,6 @@ import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link ReconfigurationPlanConverter}.
  *
@@ -47,7 +45,7 @@ public class ReconfigurationPlanConverterTest {
     }
 
     @Test
-    public void testConversion() throws JSONConverterException, IOException {
+    public void testConversion() throws JSONConverterException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();

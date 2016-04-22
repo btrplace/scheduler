@@ -27,9 +27,7 @@ import org.btrplace.model.constraint.Among;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.*;
-
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.AmongConverter}.
@@ -39,7 +37,7 @@ import java.util.*;
 public class AmongConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         AmongConverter conv = new AmongConverter();
         Model mo = new DefaultModel();
         conv.setModel(mo);

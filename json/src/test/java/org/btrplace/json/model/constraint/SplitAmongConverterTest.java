@@ -27,7 +27,6 @@ import org.btrplace.model.constraint.SplitAmong;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +41,7 @@ import java.util.HashSet;
 public class SplitAmongConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));

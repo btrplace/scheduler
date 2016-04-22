@@ -86,7 +86,7 @@ public class DurationEvaluators {
      * @param a the action' class
      * @return the registered evaluator, if exists
      */
-    public ActionDurationEvaluator getEvaluator(Class<? extends Action> a) {
+    public ActionDurationEvaluator<Element> getEvaluator(Class<? extends Action> a) {
         return durations.get(a);
     }
 

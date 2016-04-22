@@ -27,9 +27,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
-
 /**
  * Unit tests for {@link org.btrplace.json.model.view.ShareableResourceConverter}.
  *
@@ -38,7 +35,7 @@ import java.io.IOException;
 public class ShareableResourceConverterTest {
 
     @Test
-    public void testSimple() throws JSONConverterException, IOException {
+    public void testSimple() throws JSONConverterException {
         Model mo = new DefaultModel();
         ShareableResource rc = new ShareableResource("foo", 3, 8);
         rc.setConsumption(mo.newVM(), 3);
@@ -63,7 +60,7 @@ public class ShareableResourceConverterTest {
     }
 
     @Test(dependsOnMethods = {"testSimple"})
-    public void testWithDifferentRcId() throws JSONConverterException, IOException {
+    public void testWithDifferentRcId() throws JSONConverterException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();

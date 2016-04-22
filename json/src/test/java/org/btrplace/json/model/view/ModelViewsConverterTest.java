@@ -25,10 +25,8 @@ import org.btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Unit tests for {@link org.btrplace.json.model.view.ModelViewsConverter}.
@@ -96,7 +94,7 @@ public class ModelViewsConverterTest {
     }
 
     @Test(dependsOnMethods = {"testRegister"})
-    public void testWithExistingConverter() throws JSONConverterException, IOException {
+    public void testWithExistingConverter() throws JSONConverterException {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         MockModelView m = new MockModelView("bar");
@@ -106,7 +104,7 @@ public class ModelViewsConverterTest {
     }
 
     @Test
-    public void testWithMultipleViews() throws JSONConverterException, IOException {
+    public void testWithMultipleViews() throws JSONConverterException {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         List<ModelView> l = new ArrayList<>();

@@ -25,7 +25,6 @@ import org.btrplace.model.constraint.Seq;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Arrays;
 public class SeqConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         SeqConverter conv = new SeqConverter();
         conv.setModel(mo);

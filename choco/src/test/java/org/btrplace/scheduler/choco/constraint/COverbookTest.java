@@ -31,7 +31,6 @@ import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -209,7 +208,7 @@ public class COverbookTest {
      * to get the resources immediately
      */
     @Test
-    public void testWithIncrease() throws SchedulerException, ContradictionException {
+    public void testWithIncrease() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
