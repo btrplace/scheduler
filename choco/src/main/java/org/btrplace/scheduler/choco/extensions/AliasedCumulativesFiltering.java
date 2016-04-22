@@ -176,18 +176,22 @@ public class AliasedCumulativesFiltering {
         }
     }
 
+    private void initProfile() {
+        for (int d = 0; d < nbDims; d++) {
+            //What is necessarily used on the resource
+            profilesMin[d].clear();
+
+            //Maximum possible usage on the resource
+            profilesMax[d].clear();
+
+            profilesMax[d].put(0, capacities[d] - startupFree[d]);
+            profilesMin[d].put(0, capacities[d] - startupFree[d]);
+        }
+    }
+
     private void computeProfiles() {
 
-        for (int i = 0; i < nbDims; i++) {
-            //sure about what is used on the resource
-            profilesMin[i].clear();
-
-            //simultaneous max in the worst case on the resource
-            profilesMax[i].clear();
-
-            profilesMax[i].put(0, capacities[i] - startupFree[i]);
-            profilesMin[i].put(0, capacities[i] - startupFree[i]);
-        }
+        initProfile();
 
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
@@ -263,24 +267,29 @@ public class AliasedCumulativesFiltering {
             toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
         }
 
-        if (DEBUG) {
-            LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
-                    + " capacities=(" + Arrays.toString(capacities) + ") ---");
-            for (int x = 0; x < vIn.size(); x++) {
-                int i = vIn.get(x);
-                LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
-            }
+        summary();
+    }
 
-            for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
-            }
-            LOGGER.debug("---");
+    private void summary() {
+        if (!DEBUG) {
+            return;
+        }
+        LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
+                + " capacities=(" + Arrays.toString(capacities) + ") ---");
+        for (int x = 0; x < vIn.size(); x++) {
+            int i = vIn.get(x);
+            LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
+        }
+
+        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+            LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
+        }
+        LOGGER.debug("---");
 
 
-            for (int i = 0; i < nbDims; i++) {
-                LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
-                LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
-            }
+        for (int i = 0; i < nbDims; i++) {
+            LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
+            LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
         }
     }
 

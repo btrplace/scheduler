@@ -212,22 +212,17 @@ public class CNetwork implements ChocoView {
             for (VM vm : rp.getVMs()) {
                 VMTransition a = rp.getVMAction(vm);
 
-                if (a != null && a instanceof RelocatableVM) {
+                if (a instanceof RelocatableVM
+                        && !a.getDSlice().getHoster().isInstantiatedTo(a.getCSlice().getHoster().getValue())) {
 
-                    if (a.getDSlice().getHoster().isInstantiated()) {
+                    Node src = source.getMapping().getVMLocation(vm);
+                    Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
+                    List<Link> path = net.getRouting().getPath(src, dst);
 
-                        if (a.getCSlice().getHoster().getValue() != a.getDSlice().getHoster().getValue()) {
-
-                            Node src = source.getMapping().getVMLocation(vm);
-                            Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
-                            List<Link> path = net.getRouting().getPath(src, dst);
-
-                            // If the link is on migration path
-                            if (path.contains(l)) {
-                                tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
-                                heightsList.add(((RelocatableVM) a).getBandwidth());
-                            }
-                        }
+                    // If the link is on migration path
+                    if (path.contains(l)) {
+                        tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
+                        heightsList.add(((RelocatableVM) a).getBandwidth());
                     }
                 }
             }

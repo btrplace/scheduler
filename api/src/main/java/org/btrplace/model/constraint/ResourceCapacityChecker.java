@@ -69,7 +69,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean start(KillVM a) {
-        if (getConstraint().isContinuous()/* && srcRunning.remove(a.getVM())*/) {
+        if (getConstraint().isContinuous()) {
             return leave(rc.getConsumption(a.getVM()), a.getNode());
         }
         return true;
@@ -77,10 +77,11 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean start(MigrateVM a) {
-        if (getConstraint().isContinuous()) {
-            if (!(getNodes().contains(a.getSourceNode()) && getNodes().contains(a.getDestinationNode()))) {
-                return leave(rc.getConsumption(a.getVM()), a.getSourceNode()) && arrive(rc.getConsumption(a.getVM()), a.getDestinationNode());
-            }
+        if (getConstraint().isContinuous() &&
+                !getNodes().contains(a.getSourceNode()) &&
+                getNodes().contains(a.getDestinationNode())) {
+            return leave(rc.getConsumption(a.getVM()), a.getSourceNode()) &&
+                    arrive(rc.getConsumption(a.getVM()), a.getDestinationNode());
         }
         return true;
     }

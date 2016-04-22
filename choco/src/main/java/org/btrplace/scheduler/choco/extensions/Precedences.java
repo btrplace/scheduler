@@ -224,7 +224,8 @@ public class Precedences extends Constraint {
 
         private void recomputeHorizonForHost(int h) {
             if (h < horizonUB.length) {
-                int lb = 0, ub = 0;
+                int lb = 0;
+                int ub = 0;
                 for (int id : endsByHost[h]) {
                     IntVar end = othersEnd[id];
                     lb = Math.max(end.getLB(), lb);

@@ -31,7 +31,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
@@ -58,6 +57,7 @@ public class AdvancedMigScheduling implements Example {
         Node srcNode4 = mo.newNode();
         Node dstNode1 = mo.newNode();
         Node dstNode2 = mo.newNode();
+
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
         ma.addOnlineNode(srcNode3);
@@ -76,23 +76,13 @@ public class AdvancedMigScheduling implements Example {
         ma.addRunningVM(vm3, srcNode4);
 
         // Create, define, and attach CPU and Mem resource views for nodes and VMs
-        int mem_vm = 8;
-        int cpu_vm = 4;
         int mem_src = 8;
         int cpu_src = 4;
         int mem_dst = 16;
         int cpu_dst = 8;
-        ShareableResource rcMem = new ShareableResource("mem", 0, 0);
-        ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
+        ShareableResource rcMem = new ShareableResource("mem", 0, 8);
+        ShareableResource rcCPU = new ShareableResource("cpu", 0, 4);
         // VMs resources consumption
-        rcMem.setConsumption(vm0, mem_vm)
-             .setConsumption(vm1, mem_vm)
-                .setConsumption(vm2, mem_vm)
-                .setConsumption(vm3, mem_vm);
-        rcCPU.setConsumption(vm0, cpu_vm)
-                .setConsumption(vm1, cpu_vm)
-                .setConsumption(vm2, cpu_vm)
-                .setConsumption(vm3, cpu_vm);
         // Nodes resources capacity
         rcMem.setCapacity(srcNode1, mem_src)
                 .setCapacity(srcNode2, mem_src)
@@ -140,27 +130,15 @@ public class AdvancedMigScheduling implements Example {
         // Create constraints
         List<SatConstraint> cstrs = new ArrayList<>();
         // We want to boot the destination nodes
-        cstrs.add(new Online(dstNode1));
-        cstrs.add(new Online(dstNode2));
+        cstrs.addAll(Online.newOnline(Arrays.asList(dstNode1, dstNode2)));
         // We want to shutdown the source nodes
-        cstrs.add(new Offline(srcNode1));
-        cstrs.add(new Offline(srcNode2));
-        cstrs.add(new Offline(srcNode3));
-        cstrs.add(new Offline(srcNode4));
+        cstrs.addAll(Offline.newOffline(Arrays.asList(srcNode1, srcNode2, srcNode3, srcNode4)));
 
         // Try to solve as is, and show the computed plan
-        try {
-            ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) {
-                return false;
-            }
-            System.out.println(p);
-            System.out.flush();
-        } catch (SchedulerException e) {
-            e.printStackTrace();
+        if (!solve(mo, cstrs)) {
             return false;
         }
-        
+
         /********* Add some migrations scheduling constraints *********/
 
         // We want vm0 and vm1 migrations to terminate at the same time
@@ -176,17 +154,16 @@ public class AdvancedMigScheduling implements Example {
         cstrs.add(new Deadline(vm3, "+0:0:10"));
 
         // Try to solve, and show the computed plan
-        try {
-            ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) {
-                return false;
-            }
-            System.out.println(p);
-            System.out.flush();
-        } catch (SchedulerException e) {
-            e.printStackTrace();
+        return solve(mo, cstrs);
+    }
+
+    private boolean solve(Model mo, List<SatConstraint> cstrs) {
+        ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
+        if (p == null) {
             return false;
         }
+        System.out.println(p);
+        System.out.flush();
         return true;
     }
 }

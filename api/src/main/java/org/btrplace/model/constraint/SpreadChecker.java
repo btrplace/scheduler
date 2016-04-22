@@ -104,10 +104,8 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         Set<Node> forbidden = new HashSet<>();
         Mapping map = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (map.isRunning(vm)) {
-                if (!forbidden.add(map.getVMLocation(vm))) {
-                    return false;
-                }
+            if (map.isRunning(vm) && !forbidden.add(map.getVMLocation(vm))) {
+                return false;
             }
         }
         return true;

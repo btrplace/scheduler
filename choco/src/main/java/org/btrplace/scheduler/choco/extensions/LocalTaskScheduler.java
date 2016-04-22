@@ -186,21 +186,59 @@ public class LocalTaskScheduler {
 
         boolean allinstantiated = true;
 
+        initProfile();
+
+        allinstantiated &= insertCSlices();
+        allinstantiated &= insertDSlices();
+
+        //Now transforms into an absolute profile
+        sortedMinProfile = null;
+        sortedMinProfile = profilesMin[0].keys();
+        Arrays.sort(sortedMinProfile);
+
+        sortedMaxProfile = null;
+        sortedMaxProfile = profilesMax[0].keys();
+
+        Arrays.sort(sortedMaxProfile);
+
         for (int d = 0; d < nbDims; d++) {
-            //What is necessarily used on the resource
-            profilesMin[d].clear();
-
-            //Maximum possible usage on the resource
-            profilesMax[d].clear();
-
-            profilesMax[d].put(0, capacities[me][d] - startupFree[d]);
-            profilesMin[d].put(0, capacities[me][d] - startupFree[d]);
+            toAbsoluteFreeResources(profilesMin[d], sortedMinProfile);
+            toAbsoluteFreeResources(profilesMax[d], sortedMaxProfile);
         }
 
-        int lastInf = 0;//out.isEmpty() ? 0 : Integer.MAX_VALUE;
-        int lastSup = 0;
+        summary();
+        return allinstantiated;
+    }
 
+    private boolean insertDSlices() throws ContradictionException {
+        boolean allinstantiated = true;
+        int lastSup = 0;
+        for (int x = 0; x < vIn.size(); x++) {
+            int dt = vIn.get(x);
+
+            dStarts[dt].updateLowerBound(early.getLB(), aCause);
+            allinstantiated &= dStarts[dt].isInstantiated() || associatedToCSliceOnCurrentNode(dt);
+
+
+            int tl = dStarts[dt].getLB();
+            int tu = dStarts[dt].getUB();
+            if (tu > lastSup) {
+                lastSup = tu;
+            }
+
+            for (int d = 0; d < nbDims; d++) {
+                profilesMin[d].put(tu, profilesMin[d].get(tu) + dUsages[dt][d]);
+                profilesMax[d].put(tl, profilesMax[d].get(tl) + dUsages[dt][d]);
+            }
+        }
+        early.updateUpperBound(lastSup, aCause);
+        return allinstantiated;
+    }
+
+    private boolean insertCSlices() throws ContradictionException {
+        boolean allinstantiated = true;
         // the cTasks
+        int lastInf = 0;//out.isEmpty() ? 0 : Integer.MAX_VALUE;
         for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
 
             cEnds[ct].updateUpperBound(last.getUB(), aCause);
@@ -234,44 +272,23 @@ public class LocalTaskScheduler {
             }
         }
         last.updateLowerBound(lastInf, aCause);
+        return allinstantiated;
+    }
 
-        lastSup = 0;
-        // the dTasks
-        for (int x = 0; x < vIn.size(); x++) {
-            int dt = vIn.get(x);
-
-            dStarts[dt].updateLowerBound(early.getLB(), aCause);
-            allinstantiated &= dStarts[dt].isInstantiated() || associatedToCSliceOnCurrentNode(dt);
-
-
-            int tl = dStarts[dt].getLB();
-            int tu = dStarts[dt].getUB();
-            if (tu > lastSup) {
-                lastSup = tu;
-            }
-
-            for (int d = 0; d < nbDims; d++) {
-                profilesMin[d].put(tu, profilesMin[d].get(tu) + dUsages[dt][d]);
-                profilesMax[d].put(tl, profilesMax[d].get(tl) + dUsages[dt][d]);
-            }
-        }
-        early.updateUpperBound(lastSup, aCause);
-
-        //Now transforms into an absolute profile
-        sortedMinProfile = null;
-        sortedMinProfile = profilesMin[0].keys();
-        Arrays.sort(sortedMinProfile);
-
-        sortedMaxProfile = null;
-        sortedMaxProfile = profilesMax[0].keys();
-
-        Arrays.sort(sortedMaxProfile);
-
+    private void initProfile() {
         for (int d = 0; d < nbDims; d++) {
-            toAbsoluteFreeResources(profilesMin[d], sortedMinProfile);
-            toAbsoluteFreeResources(profilesMax[d], sortedMaxProfile);
-        }
+            //What is necessarily used on the resource
+            profilesMin[d].clear();
 
+            //Maximum possible usage on the resource
+            profilesMax[d].clear();
+
+            profilesMax[d].put(0, capacities[me][d] - startupFree[d]);
+            profilesMin[d].put(0, capacities[me][d] - startupFree[d]);
+        }
+    }
+
+    private void summary() {
         if (me == DEBUG || DEBUG == DEBUG_ALL) {
             LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
                     + " init=" + Arrays.toString(capacities[me]) + "; early=" + early.toString() + "; last=" + last.toString());
@@ -291,9 +308,7 @@ public class LocalTaskScheduler {
             }
             LOGGER.debug("/--- " + me + "---/");
         }
-        return allinstantiated;
     }
-
     private boolean increase(int ct, int dt) {
         for (int d = 0; d < nbDims; d++) {
             if (dUsages[dt][d] > cUsages[ct][d]) {

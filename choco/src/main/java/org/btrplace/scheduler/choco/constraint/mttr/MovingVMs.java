@@ -71,13 +71,11 @@ public class MovingVMs implements VariableSelector<IntVar> {
             if (!h.isInstantiated()) {
                 VM vm = actions.get(i).getVM();
                 Node nId = map.getVMLocation(vm);
-                if (nId != null) {
-                    //VM was running
                     if (!h.contains(rp.getNode(nId))) {
+                        //VM was running, otherwise -1 so not inside h
                         idx.set(i);
                         return true;
                     }
-                }
             }
             i++;
         }

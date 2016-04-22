@@ -224,10 +224,8 @@ public class DisjointMultiple extends Constraint {
                         for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
                             if (vars[i].removeValue(val, this)) {
                                 candidates[g][val].add(-1);
-                                if (vars[i].isInstantiated()) {
-                                    if (!required[g].get(vars[i].getValue())) {
-                                        setRequired(vars[i].getValue(), g);
-                                    }
+                                if (vars[i].isInstantiated() && !required[g].get(vars[i].getValue())) {
+                                    setRequired(vars[i].getValue(), g);
                                 }
                             }
                         }
