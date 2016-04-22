@@ -2,9 +2,6 @@
 
 source bin/commons.sh
 
-
-
-
 #Tests are passing
 echo "** Testing **"
 mvn test >tests.out 2>&1 ||err "  Unstable build" tests.out
@@ -12,7 +9,7 @@ mvn test >tests.out 2>&1 ||err "  Unstable build" tests.out
 #No open issues in the current milestone
 VERSION=`./bin/version.py --release`
 echo "** Version to release: ${VERSION} **"
-./bin/github.py milestone-close ${VERSION}||exit 1
+./bin/github.py milestone-close ${VERSION} >milestone.out 2>&1 ||err "Unable to close the milestone ${VERSION}" milestone.out
 echo "  Milestone ${VERSION} closed"
 
 #Extract the version
