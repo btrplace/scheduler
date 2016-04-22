@@ -5,11 +5,12 @@ source bin/commons.sh
 #Tests are passing
 echo "** Testing **"
 mvn test >tests.out 2>&1 ||err "  Unstable build" tests.out
+echo "  OK"
 
 #No open issues in the current milestone
 VERSION=`./bin/version.py --release`
 echo "** Version to release: ${VERSION} **"
-./bin/github.py milestone-close ${VERSION} >milestone.out 2>&1 ||err "Unable to close the milestone ${VERSION}" milestone.out
+./bin/github.py milestone-close ${VERSION} >milestone.out 2>&1 ||err "  unable to close the milestone ${VERSION}" milestone.out
 echo "  Milestone ${VERSION} closed"
 
 #Extract the version
@@ -22,7 +23,7 @@ if [ $? -ne 0 ]; then
     echo "  Tag ${TAG} does not exist. Tagging"
     git tag ${TAG} >tag.out 2>&1 ||err "Unable to tag with ${TAG}" tag.out        
     echo "  Tagged locally"
-    git push deploy --tags >push.out 2>&1 ||err "Unable to push the tag ${TAG}" push.out
+    git push deploy --tags >push.out 2>&1 ||err "  unable to push the tag ${TAG}" push.out
     echo "  Tag pushed"    
 else
     echo "  Already done"
