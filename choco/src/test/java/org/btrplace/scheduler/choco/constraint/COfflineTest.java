@@ -32,7 +32,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Unit tests for {@link COffline}.
@@ -64,8 +63,7 @@ public class COfflineTest {
         DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration<>(10));
         cra.setTimeLimit(-1);
-        List x = Offline.newOffline(map.getAllNodes());
-        ReconfigurationPlan plan = cra.solve(model, x);
+        ReconfigurationPlan plan = cra.solve(model, Offline.newOffline(map.getAllNodes()));
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);
         Assert.assertEquals(plan.getDuration(), 10);

@@ -43,7 +43,7 @@ public class ResourceCapacityBuilder extends DefaultSatConstraintBuilder {
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
@@ -61,6 +61,6 @@ public class ResourceCapacityBuilder extends DefaultSatConstraintBuilder {
         }
 
         return ns != null ?
-                (List) Collections.singletonList(new ResourceCapacity(new HashSet<>(ns), rcId, v.intValue())) : Collections.emptyList();
+                Collections.singletonList(new ResourceCapacity(new HashSet<>(ns), rcId, v.intValue())) : Collections.emptyList();
     }
 }

@@ -279,7 +279,7 @@ public class DisjointMultiple extends Constraint {
             private int group;
 
             @Override
-            public UnaryIntProcedure set(Integer idxVar) {
+            public UnaryIntProcedure<Integer> set(Integer idxVar) {
                 this.group = getGroup(idxVar);
                 return this;
             }

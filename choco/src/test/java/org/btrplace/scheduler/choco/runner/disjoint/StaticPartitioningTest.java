@@ -76,7 +76,7 @@ public class StaticPartitioningTest {
         Model s2 = new SubModel(origin, eb, Collections.singletonList(n2), Collections.singleton(vm2));
 
         Instance i0 = new Instance(origin, new MinMTTR());
-        final Instance i1 = new Instance(s1, (List) Running.newRunning(Collections.singletonList(vm1)), new MinMTTR());
+        final Instance i1 = new Instance(s1, Running.newRunning(Collections.singletonList(vm1)), new MinMTTR());
         final Instance i2 = new Instance(s2, new MinMTTR());
         i2.getSatConstraints().add(new Running(vm2));
 
@@ -125,7 +125,7 @@ public class StaticPartitioningTest {
         Model s2 = new SubModel(origin, eb, Collections.singletonList(n2), Collections.singleton(vm2));
 
         Instance i0 = new Instance(origin, new MinMTTR());
-        final Instance i1 = new Instance(s1, (List) Running.newRunning(Collections.singletonList(vm1)), new MinMTTR());
+        final Instance i1 = new Instance(s1, Running.newRunning(Collections.singletonList(vm1)), new MinMTTR());
         final Instance i2 = new Instance(s2, new MinMTTR());
         i2.getSatConstraints().add(new Running(vm1)); //Error, vm1 is in s1, not s2
 

@@ -371,7 +371,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
 
         @Override
-        public UnaryIntProcedure set(Integer idxVar) {
+        public UnaryIntProcedure<Integer> set(Integer idxVar) {
             this.idxVar = idxVar;
             return this;
         }

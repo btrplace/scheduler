@@ -43,10 +43,10 @@ public class RootBuilder extends DefaultSatConstraintBuilder {
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
-            return vms != null ? (List) Root.newRoots(vms) : Collections.emptyList();
+            return vms != null ? Root.newRoots(vms) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

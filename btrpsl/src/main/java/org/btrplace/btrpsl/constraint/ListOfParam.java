@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ListOfParam extends DefaultConstraintParam<List> {
+public class ListOfParam extends DefaultConstraintParam<List<Object>> {
 
     protected boolean canBeEmpty = true;
 
@@ -85,13 +85,13 @@ public class ListOfParam extends DefaultConstraintParam<List> {
     }
 
     @Override
-    public List transform(SatConstraintBuilder cb, BtrPlaceTree tree, BtrpOperand op) {
+    public List<Object> transform(SatConstraintBuilder cb, BtrPlaceTree tree, BtrpOperand op) {
 
         if (op == IgnorableOperand.getInstance()) {
             return Collections.emptyList();
         }
 
-        List s = makeList(depth, op);
+        List<Object> s = makeList(depth, op);
 
         if (!canBeEmpty && s.isEmpty()) {
             tree.ignoreError("In '" + cb.getFullSignature() + "', '" + getName() + "' expects a non-empty set");
@@ -100,7 +100,7 @@ public class ListOfParam extends DefaultConstraintParam<List> {
         return s;
     }
 
-    private List makeList(int d, BtrpOperand o) {
+    private List<Object> makeList(int d, BtrpOperand o) {
         List<Object> h = new ArrayList<>();
         if (d == 0) {
             if (o.type() == BtrpOperand.Type.VM || o.type() == BtrpOperand.Type.NODE) {

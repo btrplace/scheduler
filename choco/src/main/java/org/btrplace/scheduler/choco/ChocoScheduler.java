@@ -53,7 +53,7 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      * solution.
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SchedulerException;
+    ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs) throws SchedulerException;
 
     /**
      * Get the solver used to solve a problem.

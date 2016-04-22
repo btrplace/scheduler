@@ -30,7 +30,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -77,7 +76,7 @@ public class DefaultChocoSchedulerTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(1);
         try {
-            System.err.println(cra.solve(mo, (Collection) Running.newRunning(map.getAllVMs())));
+            System.err.println(cra.solve(mo, Running.newRunning(map.getAllVMs())));
         } catch (SchedulerException e) {
             SolvingStatistics stats = cra.getStatistics();
             Assert.assertNotNull(stats);

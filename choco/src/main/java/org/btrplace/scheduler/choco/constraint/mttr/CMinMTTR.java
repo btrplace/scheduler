@@ -117,7 +117,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
                 ite.remove();
             }
         }
-        List<AbstractStrategy> strategies = new ArrayList<>();
+        List<AbstractStrategy<?>> strategies = new ArrayList<>();
 
         Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
         if (!vmsToExclude.isEmpty()) {
@@ -165,7 +165,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     /*
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
-    private void placeVMs(Parameters ps, List<AbstractStrategy> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
+    private void placeVMs(Parameters ps, List<AbstractStrategy<?>> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
         if (!actions.isEmpty()) {
             IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));

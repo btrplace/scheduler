@@ -43,7 +43,7 @@ public class Instance {
      * @param cs the list of satisfaction oriented constraints to consider
      * @param o  the optimization constraint
      */
-    public Instance(Model m, Collection<SatConstraint> cs, OptConstraint o) {
+    public Instance(Model m, Collection<? extends SatConstraint> cs, OptConstraint o) {
         cstrs = new ArrayList<>(cs);
         this.mo = m;
         this.opt = o;

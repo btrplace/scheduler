@@ -80,7 +80,7 @@ public class LocalTaskScheduler {
 
     private IntVar last;
 
-    private Propagator aCause;
+    private Propagator<?> aCause;
 
     public LocalTaskScheduler(int me,
                               IntVar early,
@@ -96,7 +96,7 @@ public class LocalTaskScheduler {
                               IStateIntVector vIn,
                               int[] associateCTask,
                               int[] associateDTask,
-                              Propagator iCause) {
+                              Propagator<?> iCause) {
         this.early = early;
         this.last = last;
         this.aCause = iCause;

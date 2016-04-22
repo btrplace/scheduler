@@ -43,7 +43,7 @@ public interface Scheduler {
      * Accordingly, an empty plan denotes a model that already satisfies all the constraints
      * @throws SchedulerException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint obj) throws SchedulerException;
+    ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs, OptConstraint obj) throws SchedulerException;
 
     /**
      * Compute a reconfiguration plan to reach a solution to an instance

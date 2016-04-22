@@ -43,7 +43,7 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
@@ -60,7 +60,7 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
         }
 
         return ns != null ?
-                (List) Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
+                Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
                 Collections.emptyList();
     }
 }

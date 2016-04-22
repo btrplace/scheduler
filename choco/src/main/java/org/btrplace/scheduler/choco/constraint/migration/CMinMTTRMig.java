@@ -104,7 +104,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     private void injectSchedulingHeuristic(IntVar cost) {
 
         // Init a list of strategies
-        List<AbstractStrategy> strategies = new ArrayList<>();
+        List<AbstractStrategy<?>> strategies = new ArrayList<>();
 
         // Init a list of vars
         List<IntVar> endVars = new ArrayList<>();

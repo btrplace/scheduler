@@ -273,7 +273,7 @@ public class Disjoint extends Constraint {
             private int var;
 
             @Override
-            public UnaryIntProcedure set(Integer idxVar) {
+            public UnaryIntProcedure<Integer> set(Integer idxVar) {
                 this.var = idxVar;
                 return this;
             }

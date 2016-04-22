@@ -102,7 +102,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SchedulerException {
+    public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs) throws SchedulerException {
         return solve(i, cstrs, new MinMTTR());
     }
 
@@ -123,7 +123,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
+    public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
         // If a network view is attached, ensure that all the migrations' destination node are defined
         Network net = (Network) i.getView(Network.VIEW_ID);
         stages = null;

@@ -42,7 +42,7 @@ public class PreserveBuilder extends DefaultSatConstraintBuilder {
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
@@ -60,6 +60,6 @@ public class PreserveBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
 
-        return s != null && rcId != null ? (List) Preserve.newPreserve(s, rcId, v.intValue()) : Collections.emptyList();
+        return s != null && rcId != null ? Preserve.newPreserve(s, rcId, v.intValue()) : Collections.emptyList();
     }
 }
