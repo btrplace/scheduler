@@ -32,7 +32,7 @@ def createRelease(tag, changes):
 
 
 def getRelease(tag):
-	r = requests.get(api() + "/releases/tags/%s%s" %(TAG_HEADER,tag))
+	r = requests.get(api() + "/releases/tags/%s%s" %(TAG_HEADER,tag), headers=header())
 	if r.status_code == 200:
 		return r.json()
 	print ("Unable to get the release object '%s%s': %d\n%s" % (TAG_HEADER,tag, r.status_code, r.text), file=sys.stderr)
@@ -47,7 +47,7 @@ def pushChanges(r, changes):
 	print("ERROR %d: %s" % (r.status_code, r.text), file=sys.stderr)
 
 def getMilestoneId(v):
-	res = requests.get(api() + "/milestones?state=all")
+	res = requests.get(api() + "/milestones?state=all", headers=header())
 	if res.status_code != 200:
 		print("ERROR %d\n:%s" % (res.status_code, res.text), file=sys.stderr)
 		return False
