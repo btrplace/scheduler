@@ -289,13 +289,14 @@ public class TaskScheduler extends Constraint {
         }
 
         private boolean updateVInsAndWatch(int dt) {
-            while (dt < dHosters.length && dHosters[dt].isInstantiated()) {
-                int h = dHosters[dt].getValue();
-                vIns[h].add(dt);
-                dt++;
+            int d = dt;
+            while (d < dHosters.length && dHosters[d].isInstantiated()) {
+                int h = dHosters[d].getValue();
+                vIns[h].add(d);
+                d++;
             }
-            watchDTask.set(dt);
-            return dt < dHosters.length;
+            watchDTask.set(d);
+            return d < dHosters.length;
         }
 
         private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[] change) {

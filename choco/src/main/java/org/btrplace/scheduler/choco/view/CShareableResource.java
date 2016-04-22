@@ -476,25 +476,25 @@ public class CShareableResource implements ChocoView {
         return true;
     }
 
-    private void ratio(Node n, double d) {
+    private double ratio(Node n, double d) {
         if (wantedRatios.containsKey(n)) {
-            d = Math.min(d, wantedRatios.get(n));
+            return Math.min(d, wantedRatios.get(n));
         }
-        wantedRatios.put(n, d);
+        return d;
     }
 
-    private void preserve(VM v, int a) {
+    private int consumption(VM v, int a) {
         if (wantedAmount.containsKey(v)) {
-            a = Math.max(a, wantedAmount.get(v));
+            return Math.max(a, wantedAmount.get(v));
         }
-        wantedAmount.put(v, a);
+        return a;
     }
 
-    private void capacity(Node n, int a) {
+    private int capacity(Node n, int a) {
         if (wantedCapacity.containsKey(n)) {
-            a = Math.max(a, wantedCapacity.get(n));
+            return Math.max(a, wantedCapacity.get(n));
         }
-        wantedCapacity.put(n, a);
+        return a;
     }
 
     /**
@@ -510,13 +510,15 @@ public class CShareableResource implements ChocoView {
             if (!(c instanceof ResourceRelated) || ((ResourceRelated) c).getResource().equals(rc.getResourceIdentifier())) {
                 continue;
             }
-
             if (c instanceof Preserve) {
-                preserve(c.getInvolvedVMs().iterator().next(), ((Preserve) c).getAmount());
+                VM v = c.getInvolvedVMs().iterator().next();
+                wantedAmount.put(v, consumption(v, ((Preserve) c).getAmount()));
             } else if (c instanceof Overbook) {
-                ratio(c.getInvolvedNodes().iterator().next(), ((Overbook) c).getRatio());
+                Node n = c.getInvolvedNodes().iterator().next();
+                wantedRatios.put(n, ratio(n, ((Overbook) c).getRatio()));
             } else if (c instanceof ResourceCapacity && c.getInvolvedNodes().size() == 1) {
-                capacity(c.getInvolvedNodes().iterator().next(), ((ResourceCapacity) c).getAmount());
+                Node n = c.getInvolvedNodes().iterator().next();
+                wantedCapacity.put(n, capacity(n, ((ResourceCapacity) c).getAmount()));
             }
         }
         Mapping m = i.getModel().getMapping();

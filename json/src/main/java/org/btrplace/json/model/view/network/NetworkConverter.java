@@ -228,15 +228,15 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      * @return  the PhysicalElement
      */
     public PhysicalElement physicalElementFromJSON(Network net, JSONObject o) throws JSONConverterException {
-
         String type = requiredString(o, "type");
         switch (type) {
             case "node":
                 return requiredNode(o, "id");
             case "switch":
                 return getSwitch(net, requiredInt(o, "id"));
+            default:
+                throw new JSONConverterException("type '" + type + "' is not a physical element");
         }
-        throw new JSONConverterException("type '" + type + "' is not a physical element");
     }
 
     private Switch getSwitch(Network net, int id) {

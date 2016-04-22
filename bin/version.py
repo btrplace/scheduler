@@ -3,6 +3,7 @@
 #basically, it is faster and more robust than mvn versions
 from __future__ import print_function
 import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import ParseError
 import sys
 
 def toRelease(v):
@@ -25,7 +26,7 @@ def parseVersion():
 	try:
 		tree = ET.parse('./pom.xml')
 		return tree.find("{http://maven.apache.org/POM/4.0.0}version").text
-	except:
+	except ParseError:
 		print("Unable to parse 'pom.xml'", file=sys.stderr)
 		return None
 
