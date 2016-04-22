@@ -13,6 +13,7 @@ Coverity, Findbugs, Sonar & co.
 - no more Cloneable. Moved to an ad-hoc Copyable interface
 - the migration scheduler is faster and more robust
 
+
 version 0.44 - 17 Jan 2016
 ----------------------
 See milestone [0.44](https://github.com/btrplace/scheduler/milestones/0.44)
