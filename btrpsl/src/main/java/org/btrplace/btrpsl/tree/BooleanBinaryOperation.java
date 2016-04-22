@@ -60,9 +60,13 @@ public class BooleanBinaryOperation extends BtrPlaceTree {
             return ignoreError("Expression expected, but was '" + r + "'");
         }
 
-        boolean b1 = !(((BtrpNumber) l).getIntValue() == BtrpNumber.FALSE.getIntValue());
-        boolean b2 = !(((BtrpNumber) r).getIntValue() == BtrpNumber.FALSE.getIntValue());
+        boolean b1 = BtrpNumber.TRUE.equals(l);
+        boolean b2 = BtrpNumber.TRUE.equals(r);
 
+        return eval(b1, b2);
+    }
+
+    private BtrpNumber eval(boolean b1, boolean b2) {
         if (and) {
             return b1 && b2 ? BtrpNumber.TRUE : BtrpNumber.FALSE;
         }
