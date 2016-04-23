@@ -90,7 +90,6 @@ public abstract class AbstractCumulatives implements ChocoView {
             }
         }
 
-
         int i = 0;
         cHosts = new IntVar[cS.size()];
         cEnds = new IntVar[cS.size()];
@@ -111,16 +110,20 @@ public abstract class AbstractCumulatives implements ChocoView {
             i++;
         }
 
+        associations = makeAssociations();
+        return true;
+    }
 
-        associations = new int[dHosts.length];
+    private int[] makeAssociations() {
+        int[] res = new int[dHosts.length];
         //No associations task by default, then we create the associations.
-        for (i = 0; i < associations.length; i++) {
+        for (int i = 0; i < associations.length; i++) {
             associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
         for (Map.Entry<VM, int[]> e : non.entrySet()) {
             int[] assoc = e.getValue();
-            associations[assoc[0]] = assoc[1];
+            res[assoc[0]] = assoc[1];
         }
-        return true;
+        return res;
     }
 }
