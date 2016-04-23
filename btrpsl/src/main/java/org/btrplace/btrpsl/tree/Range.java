@@ -60,14 +60,15 @@ public class Range extends BtrPlaceTree {
         if (first == IgnorableOperand.getInstance() || last == IgnorableOperand.getInstance()) {
             return IgnorableOperand.getInstance();
         }
-        if (first.type() != BtrpOperand.Type.NUMBER || last.type() != BtrpOperand.Type.NUMBER) {
-            return ignoreError(getChild(first.type() == BtrpOperand.Type.NUMBER ? 1 : 0).getToken(), "Bounds must be numbers");
+        if (first.type() != BtrpOperand.Type.NUMBER || !((BtrpNumber) first).isInteger()) {
+            return ignoreError(getChild(0).getToken(), "Bounds must be integers");
         }
+        if (last.type() != BtrpOperand.Type.NUMBER || !((BtrpNumber) last).isInteger()) {
+            return ignoreError(getChild(1).getToken(), "Bounds must be integers");
+        }
+        
         BtrpNumber begin = (BtrpNumber) first;
         BtrpNumber end = (BtrpNumber) last;
-        if (!begin.isInteger() || !end.isInteger()) {
-            return ignoreError(getChild(begin.isInteger() ? 1 : 0).getToken(), "Bounds must be integers");
-        }
 
         if (begin.getBase() != end.getBase()) {
             return ignoreError(getChild(1).getToken(), "bounds must be expressed in the same base");
