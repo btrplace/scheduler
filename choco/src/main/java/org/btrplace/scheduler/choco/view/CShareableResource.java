@@ -302,15 +302,14 @@ public class CShareableResource implements ChocoView {
                 try {
                     v.updateLowerBound(prevUsage, Cause.Null);
                 } catch (ContradictionException e) {
-                    p.getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
-                            rc.getResourceIdentifier(), vm, prevUsage);
+                    p.getLogger().error("Unable to set the minimal '" + rc.getResourceIdentifier() + "' usage for " + vm + " to its current usage (" + prevUsage + ")", e);
                     return false;
                 }
             } else {
                 try {
                     v.updateLowerBound(v.getLB(), Cause.Null);
                 } catch (ContradictionException e) {
-                    p.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getLB());
+                    p.getLogger().error("Unable to set the VM '" + rc.getResourceIdentifier() + "' consumption to '" + v.getLB() + "'", e);
                     return false;
                 }
             }
@@ -436,6 +435,7 @@ public class CShareableResource implements ChocoView {
         return true;
     }
 
+
     private boolean linkVirtualToPhysicalUsage(int nIdx) {
         Node n = rp.getNode(nIdx);
         double r = ratios.get(nIdx).getUB();
@@ -453,16 +453,13 @@ public class CShareableResource implements ChocoView {
 
 
         if (r == 1) {
-            solver.post(IntConstraintFactory.arithm(phyRcUsage.get(nIdx), "=", virtRcUsage.get(nIdx)));
-            try {
-                virtRcUsage.get(nIdx).updateUpperBound(phyRcUsage.get(nIdx).getUB(), Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict the virtual '" + getResourceIdentifier() + "' capacity of " + n + " to " + phyRcUsage.get(nIdx).getUB(), ex);
-                return false;
-            }
-            return true;
+            return noOverbook(nIdx);
         }
+        return overbook(nIdx, r);
+    }
 
+    private boolean overbook(int nIdx, double r) {
+        Node n = rp.getNode(nIdx);
         int maxPhy = getSourceResource().getCapacity(n);
         int maxVirt = (int) (maxPhy * r);
         if (maxVirt != 0) {
@@ -474,6 +471,17 @@ public class CShareableResource implements ChocoView {
             phyRcUsage.get(nIdx).instantiateTo(0, Cause.Null);
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to restrict the physical '" + getResourceIdentifier() + "' capacity of " + n + " to " + maxPhy, ex);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean noOverbook(int nIdx) {
+        solver.post(IntConstraintFactory.arithm(phyRcUsage.get(nIdx), "=", virtRcUsage.get(nIdx)));
+        try {
+            virtRcUsage.get(nIdx).updateUpperBound(phyRcUsage.get(nIdx).getUB(), Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to restrict the virtual '" + getResourceIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + phyRcUsage.get(nIdx).getUB(), ex);
             return false;
         }
         return true;

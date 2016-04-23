@@ -74,7 +74,7 @@ public class CResourceCapacity implements ChocoConstraint {
                 try {
                     v.updateUpperBound(cstr.getAmount(), Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to restrict to up to {}, the maximum '{}' usage on '{}': ", cstr.getAmount(), rcm.getResourceIdentifier(), n, e.getMessage());
+                    rp.getLogger().error("Unable to restrict to up to " + cstr.getAmount() + ", the maximum '" + rcm.getResourceIdentifier() + "' usage on " + n, e);
                     return false;
                 }
             } else {

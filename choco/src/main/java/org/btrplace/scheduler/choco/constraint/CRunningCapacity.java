@@ -119,7 +119,7 @@ public class CRunningCapacity implements ChocoConstraint {
         try {
             v.updateUpperBound(cstr.getAmount(), Cause.Null);
         } catch (ContradictionException e) {
-            rp.getLogger().error("Unable to cap the amount of VMs on '{}' to {}, : ", n, cstr.getAmount(), e.getMessage());
+            rp.getLogger().error("Unable to cap the amount of VMs on " + n + " to " + cstr.getAmount(), e);
             return false;
         }
 

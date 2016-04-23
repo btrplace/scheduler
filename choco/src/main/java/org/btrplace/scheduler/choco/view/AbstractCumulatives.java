@@ -117,8 +117,8 @@ public abstract class AbstractCumulatives implements ChocoView {
     private int[] makeAssociations() {
         int[] res = new int[dHosts.length];
         //No associations task by default, then we create the associations.
-        for (int i = 0; i < associations.length; i++) {
-            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
+        for (int i = 0; i < res.length; i++) {
+            res[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
         for (Map.Entry<VM, int[]> e : non.entrySet()) {
             int[] assoc = e.getValue();
