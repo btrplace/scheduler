@@ -66,7 +66,7 @@ public class Range extends BtrPlaceTree {
         if (last.type() != BtrpOperand.Type.NUMBER || !((BtrpNumber) last).isInteger()) {
             return ignoreError(getChild(1).getToken(), "Bounds must be integers");
         }
-        
+
         BtrpNumber begin = (BtrpNumber) first;
         BtrpNumber end = (BtrpNumber) last;
 

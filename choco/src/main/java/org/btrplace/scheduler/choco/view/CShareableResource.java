@@ -437,6 +437,7 @@ public class CShareableResource implements ChocoView {
     }
 
     private boolean linkVirtualToPhysicalUsage(int nIdx) {
+        Node n = rp.getNode(nIdx);
         double r = ratios.get(nIdx).getUB();
         if (r == UNCHECKED_RATIO) {
             //Default overbooking ratio is 1.
@@ -446,7 +447,7 @@ public class CShareableResource implements ChocoView {
         try {
             ratios.get(nIdx).updateBounds(r, r, Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to set '{}' to {}", ratios.get(nIdx), r);
+            rp.getLogger().error("Unable to set '" + ratios.get(nIdx) + " ' to " + r, ex);
             return false;
         }
 
@@ -456,22 +457,24 @@ public class CShareableResource implements ChocoView {
             try {
                 virtRcUsage.get(nIdx).updateUpperBound(phyRcUsage.get(nIdx).getUB(), Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), phyRcUsage.get(nIdx).getUB(), ex.getMessage());
+                rp.getLogger().error("Unable to restrict the virtual '" + getResourceIdentifier() + "' capacity of " + n + " to " + phyRcUsage.get(nIdx).getUB(), ex);
                 return false;
             }
-        } else {
-            int maxPhy = getSourceResource().getCapacity(rp.getNode(nIdx));
-            int maxVirt = (int) (maxPhy * r);
-            if (maxVirt != 0) {
-                solver.post(new RoundedUpDivision(phyRcUsage.get(nIdx), virtRcUsage.get(nIdx), r));
-            } else {
-                try {
-                    phyRcUsage.get(nIdx).instantiateTo(0, Cause.Null);
-                } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to restrict the physical '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), maxPhy, ex.getMessage());
-                    return false;
-                }
-            }
+            return true;
+        }
+
+        int maxPhy = getSourceResource().getCapacity(n);
+        int maxVirt = (int) (maxPhy * r);
+        if (maxVirt != 0) {
+            solver.post(new RoundedUpDivision(phyRcUsage.get(nIdx), virtRcUsage.get(nIdx), r));
+            return true;
+        }
+
+        try {
+            phyRcUsage.get(nIdx).instantiateTo(0, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to restrict the physical '" + getResourceIdentifier() + "' capacity of " + n + " to " + maxPhy, ex);
+            return false;
         }
         return true;
     }
