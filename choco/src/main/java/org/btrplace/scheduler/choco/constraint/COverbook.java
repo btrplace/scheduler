@@ -69,7 +69,7 @@ public class COverbook implements ChocoConstraint {
         try {
             v.updateUpperBound(cstr.getRatio(), Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
+            rp.getLogger().error("Unable to restrict " + u + " overbook to up to " + cstr.getRatio() + " for resource " + cstr.getResource(), ex);
             return false;
         }
         return true;

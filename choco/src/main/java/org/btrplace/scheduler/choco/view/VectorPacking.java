@@ -84,7 +84,7 @@ public class VectorPacking extends Packing {
                 try {
                     ss.instantiateTo(ss.getLB(), Cause.Null);
                 } catch (ContradictionException ex) {
-                    p.getLogger().error("Unable post the vector packing constraint");
+                    p.getLogger().error("Unable post the vector packing constraint", ex);
                     return false;
                 }
             }

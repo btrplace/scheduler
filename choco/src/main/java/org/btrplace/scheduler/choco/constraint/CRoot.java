@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.Instance;
+import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Root;
 import org.btrplace.scheduler.SchedulerException;
@@ -61,7 +62,8 @@ public class CRoot implements ChocoConstraint {
             try {
                 dSlice.getHoster().instantiateTo(cSlice.getHoster().getValue(), Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to force VM '{}' to be running on node '{}'", vm, rp.getSourceModel().getMapping().getVMLocation(vm));
+                Node n = rp.getSourceModel().getMapping().getVMLocation(vm);
+                rp.getLogger().error("Unable to force '" + vm + "' to be running on node '" + n + "'", ex);
                 return false;
             }
         }

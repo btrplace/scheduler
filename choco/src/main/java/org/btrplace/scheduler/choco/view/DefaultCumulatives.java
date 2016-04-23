@@ -195,7 +195,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             try {
                 s.getDuration().instantiateTo(0, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().info("Unable to set the duration of slice {} to 0", s.getSubject());
+                rp.getLogger().info("Unable to set the duration of slice " + s.getSubject() + " to 0", ex);
                 return false;
             }
         } else {

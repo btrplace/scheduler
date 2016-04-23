@@ -69,7 +69,7 @@ public class COffline implements ChocoConstraint {
                 m.getStart().instantiateTo(0, Cause.Null);
             }
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
+            rp.getLogger().error("Unable to force node '" + nId + "' at being offline", ex);
             return false;
         }
         for (VMTransition am : rp.getVMActions()) {
@@ -78,7 +78,7 @@ public class COffline implements ChocoConstraint {
                 try {
                     s.getHoster().removeValue(id, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to remove VM '{}' of node {}: {}", am.getVM(), nId, e.getMessage());
+                    rp.getLogger().error("Unable to remove " + am.getVM() + " of node " + nId, e);
                 }
             }
         }

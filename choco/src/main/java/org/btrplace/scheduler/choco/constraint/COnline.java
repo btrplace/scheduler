@@ -65,7 +65,7 @@ public class COnline implements ChocoConstraint {
                 m.getStart().instantiateTo(0, Cause.Null);
             }
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force node '{}' at being online", nId);
+            rp.getLogger().error("Unable to force node '" + nId + "' at being online", ex);
             return false;
         }
         return true;

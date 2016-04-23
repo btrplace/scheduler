@@ -66,7 +66,7 @@ public class CPreserve implements ChocoConstraint {
             try {
                 v.updateLowerBound(cstr.getAmount(), Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
+                rp.getLogger().error("Unable to set the '" + cstr.getResource() + "' consumption for VM '" + vm + "' to " + cstr.getAmount(), ex);
                 return false;
             }
         }

@@ -95,7 +95,7 @@ public class CGather implements ChocoConstraint {
             try {
                 s.getHoster().instantiateTo(nIdx, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs());
+                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in " + cstr.getInvolvedVMs(), ex);
                 return false;
             }
         }

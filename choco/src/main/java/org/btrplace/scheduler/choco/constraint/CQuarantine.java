@@ -64,7 +64,7 @@ public class CQuarantine implements ChocoConstraint {
                 try {
                     d.instantiateTo(nIdx, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to root VM '{}' on '{}': {}", vm, n, e.getMessage());
+                    rp.getLogger().error("Unable to root " + vm + " on " + n, e);
                     return false;
                 }
             } else {
@@ -72,7 +72,7 @@ public class CQuarantine implements ChocoConstraint {
                 try {
                     d.removeValue(nIdx, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to disallow VM '{}' to be hosted on '{}': {}", vm, n, e.getMessage());
+                    rp.getLogger().error("Unable to disallow " + vm + " to be hosted on " + n, e);
                     return false;
                 }
             }

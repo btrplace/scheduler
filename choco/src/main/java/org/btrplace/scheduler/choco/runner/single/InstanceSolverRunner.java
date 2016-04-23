@@ -234,7 +234,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         try {
             p.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
         } catch (ContradictionException e) {
-            p.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
+            p.getLogger().error("Unable to restrict the maximum plan duration to " + params.getMaxEnd(), e);
             return null;
         }
         return p;

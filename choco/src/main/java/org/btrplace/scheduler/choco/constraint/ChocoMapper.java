@@ -124,7 +124,7 @@ public class ChocoMapper {
         try {
             cc.getDeclaredConstructor(c);
         } catch (Exception e) {
-            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getSimpleName() + ")' available");
+            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getSimpleName() + ")' available", e);
         }
     }
 
@@ -183,7 +183,7 @@ public class ChocoMapper {
         try {
             return cc.getDeclaredConstructor(c.getClass()).newInstance(c);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getClass().getSimpleName() + ")' available");
+            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getClass().getSimpleName() + ")' available", ex);
         }
     }
 
@@ -203,7 +203,7 @@ public class ChocoMapper {
         try {
             return cc.getDeclaredConstructor(c.getClass()).newInstance(c);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getClass().getSimpleName() + ")' available");
+            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getClass().getSimpleName() + ")' available", ex);
         }
     }
 }

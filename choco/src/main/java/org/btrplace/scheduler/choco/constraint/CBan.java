@@ -74,7 +74,7 @@ public class CBan implements ChocoConstraint {
                     try {
                         t.getHoster().removeValue(x, Cause.Null);
                     } catch (ContradictionException e) {
-                        rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
+                        rp.getLogger().error("Unable to disallow " + vm + " to be running on " + rp.getNode(x), e);
                         return false;
                     }
                 }

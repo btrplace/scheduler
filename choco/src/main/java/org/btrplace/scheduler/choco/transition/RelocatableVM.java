@@ -255,7 +255,6 @@ public class RelocatableVM implements KeepRunningVM {
                 assert b;
             // Re-instantiation
             } else {
-                try {
                     VM newVM = rp.cloneVM(vm);
                     if (newVM == null) {
                         rp.getLogger().error("Unable to get a new int to plan the re-instantiate of VM {}", vm);
@@ -281,10 +280,6 @@ public class RelocatableVM implements KeepRunningVM {
                     boot.addEvent(Action.Hook.PRE, new SubstitutedVMEvent(vm, newVM));
                     return plan.add(boot) && plan.add(new org.btrplace.plan.event.ShutdownVM(
                                                         vm, src, boot.getEnd(), s.getIntVal(cSlice.getEnd())));
-                } catch (SchedulerException ex) {
-                    rp.getLogger().error(ex.getMessage());
-                    return false;
-                }
             }
         }
         return true;
