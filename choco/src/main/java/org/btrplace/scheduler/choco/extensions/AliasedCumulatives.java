@@ -301,36 +301,24 @@ public class AliasedCumulatives extends Constraint {
 
             //A map to save the changes of the resource (relatives to the previous moment) in the resources distribution
             TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
-
-            for (int i = 0; i < nbDims; i++) {
-                changes[i] = new TIntIntHashMap();
-            }
-
-
-            for (int i = 0; i < nbDims; i++) {
-                for (int j = 0; j < dHostersVals.length; j++) {
-                    //for each placed dSlices, we get the used resource and the moment the slice arrives on it
-                    int nIdx = dHostersVals[j];
-                    if (isIn(nIdx)) {
-                        changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
-                    }
-                }
-            }
-
             int[] currentFree = Arrays.copyOf(capacities, capacities.length);
 
             for (int i = 0; i < nbDims; i++) {
+                changes[i] = new TIntIntHashMap();
+                for (int j = 0; j < dHostersVals.length; j++) {
+                    //for each placed dSlices, we get the used resource and the moment the slice arrives on it
+                    if (isIn(dHostersVals[j])) {
+                        changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
+                    }
+                }
+
                 for (int j = 0; j < cHostersVals.length; j++) {
-                    int nIdx = cHostersVals[j];
-                    if (isIn(nIdx)) {
+                    if (isIn(cHostersVals[j])) {
                         changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j]) + cUsages[i][j]);
                         currentFree[i] -= cUsages[i][j];
                     }
                 }
-            }
 
-            for (int i = 0; i < nbDims; i++) {
-                //Now we check the evolution of the absolute free space.
                 for (int x = 0; x < changes[i].keys().length; x++) {
                     currentFree[i] += changes[i].get(x);
                     if (currentFree[i] < 0) {
@@ -344,6 +332,6 @@ public class AliasedCumulatives extends Constraint {
         private boolean isIn(int idx) {
             return alias.contains(idx);
         }
-
     }
+
 }
