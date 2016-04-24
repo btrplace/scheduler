@@ -16,20 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.model.view;
+package org.btrplace.plan;
+
+import org.btrplace.model.constraint.SatConstraint;
 
 /**
- * Specify an element related to a resource.
+ * Exception that notifies a constraint violation.
  *
  * @author Fabien Hermenier
  */
-@FunctionalInterface
-public interface ResourceRelated {
+public class SatConstraintViolationException extends Exception {
+
+    private final SatConstraint cstr;
 
     /**
-     * Get the resource identifier.
+     * Declare a new exception.
      *
-     * @return the identifier
+     * @param cstr the violated constraint
+     * @param msg  the error message
      */
-    String getResource();
+    public SatConstraintViolationException(SatConstraint cstr, String msg) {
+        super(msg);
+        this.cstr = cstr;
+    }
+
+    /**
+     * Get the violated constraint
+     *
+     * @return a constraint
+     */
+    public SatConstraint getConstraint() {
+        return cstr;
+    }
 }

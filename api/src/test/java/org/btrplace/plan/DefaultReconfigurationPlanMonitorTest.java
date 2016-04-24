@@ -93,19 +93,19 @@ public class DefaultReconfigurationPlanMonitorTest {
         Assert.assertFalse(exec.isBlocked(a3));
     }
 
-    @Test(dependsOnMethods = {"testInit", "testGoodCommits"})
+    @Test(dependsOnMethods = {"testInit", "testGoodCommits"}, expectedExceptions = InfeasibleActionException.class)
     public void testCommitBlocked() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
-        Assert.assertNull(exec.commit(a3));
+        exec.commit(a3);
     }
 
-    @Test(dependsOnMethods = {"testInit", "testGoodCommits"})
+    @Test(dependsOnMethods = {"testInit", "testGoodCommits"}, expectedExceptions = InfeasibleActionException.class)
     public void testDoubleCommit() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
         Assert.assertNotNull(exec.commit(a1));
-        Assert.assertNull(exec.commit(a1));
+        exec.commit(a1);
     }
 
     @Test(dependsOnMethods = {"testInit", "testGoodCommits"})

@@ -5,6 +5,10 @@ version 0.46 - soon come
 ----------------------
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)
 
+- API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
+
+
+
 version 0.45 - 22 Apr 2016
 ----------------------
 See milestone [0.45](https://github.com/btrplace/scheduler/milestones/0.45)

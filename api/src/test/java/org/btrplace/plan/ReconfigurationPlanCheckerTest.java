@@ -49,7 +49,7 @@ public class ReconfigurationPlanCheckerTest {
     }
 
     @Test(dependsOnMethods = {"tesAddandRemove"})
-    public void testSequencing() throws ReconfigurationPlanCheckerException {
+    public void testSequencing() throws SatConstraintViolationException {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
@@ -87,7 +87,7 @@ public class ReconfigurationPlanCheckerTest {
     }
 
     @Test
-    public void testWithNoActions() throws ReconfigurationPlanCheckerException {
+    public void testWithNoActions() throws SatConstraintViolationException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         List<Node> ns = Util.newNodes(mo, 10);

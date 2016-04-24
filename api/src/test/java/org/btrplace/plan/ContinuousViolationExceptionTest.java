@@ -16,20 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.model.view;
+package org.btrplace.plan;
+
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.plan.event.Action;
+import org.mockito.Mockito;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * Specify an element related to a resource.
- *
  * @author Fabien Hermenier
  */
-@FunctionalInterface
-public interface ResourceRelated {
+public class ContinuousViolationExceptionTest {
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return the identifier
-     */
-    String getResource();
+    @Test
+    public void test() {
+        SatConstraint c = Mockito.mock(SatConstraint.class);
+        Action a = Mockito.mock(Action.class);
+        Model m = new DefaultModel();
+        ContinuousViolationException ex = new ContinuousViolationException(c, a);
+        Assert.assertEquals(ex.getAction(), a);
+        Assert.assertEquals(ex.getConstraint(), c);
+        Assert.assertFalse(ex.toString().contains("null"));
+    }
+
 }

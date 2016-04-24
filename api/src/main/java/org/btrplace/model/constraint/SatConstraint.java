@@ -23,7 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlanChecker;
-import org.btrplace.plan.ReconfigurationPlanCheckerException;
+import org.btrplace.plan.SatConstraintViolationException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -108,7 +108,7 @@ public interface SatConstraint extends Constraint {
         chk.addChecker(getChecker());
         try {
             chk.check(p);
-        } catch (ReconfigurationPlanCheckerException ex) {
+        } catch (SatConstraintViolationException ex) {
             return false;
         }
         return true;

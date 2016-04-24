@@ -16,20 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.model.view;
+package org.btrplace.plan;
+
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.plan.event.Action;
 
 /**
- * Specify an element related to a resource.
+ * An exception to signal an action violates a given constraint.
  *
  * @author Fabien Hermenier
  */
-@FunctionalInterface
-public interface ResourceRelated {
+public class ContinuousViolationException extends SatConstraintViolationException {
+
+    private final Action action;
 
     /**
-     * Get the resource identifier.
+     * New constraint.
      *
-     * @return the identifier
+     * @param cstr   the violated constraint
+     * @param action the action that violates the constraint
      */
-    String getResource();
+    public ContinuousViolationException(SatConstraint cstr, Action action) {
+        super(cstr, "Constraint '" + cstr + "' is violated by the action '" + action + "'");
+        this.action = action;
+    }
+
+    public Action getAction() {
+        return action;
+    }
 }

@@ -102,7 +102,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
         synchronized (lock) {
             boolean ret = a.apply(curModel);
             if (!ret) {
-                return null;
+                throw new InfeasibleActionException(curModel, a);
             }
             nbCommitted++;
             //Browse all its dependencies for the action

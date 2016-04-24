@@ -125,7 +125,7 @@ public class CGather implements ChocoConstraint {
         try {
             i.instantiateTo(v, Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'", ex);
             return false;
         }
         return true;

@@ -310,10 +310,10 @@ public class Network implements ModelView {
      * @param mo                the model to use, it may contains naming services for switches or nodes that will
      *                          replace the generic names mainly based on the id number.
      * @param out               the output dot file to create
-     * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams) 
-     * @return  true if it succeed, false otherwise
+     * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams)
+     * @throws IOException if an error occurred while writing
      */
-    public boolean generateDot(Model mo, String out, boolean fromLeftToRight) {
+    public void generateDot(Model mo, String out, boolean fromLeftToRight) throws IOException {
 
         List<Node> nodes = getConnectedNodes();
         Set<Link> drawedLinks = new HashSet<>();
@@ -369,10 +369,7 @@ public class Network implements ModelView {
                 }
             }
             dot.append("}\n");
-        } catch (IOException e) {
-            return false;
         }
-        return true;
     }
 
     /**
@@ -380,20 +377,20 @@ public class Network implements ModelView {
      *
      * @param out               the output dot file to create
      * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams) 
-     * @return  {@code true} if it succeed, {@code false} otherwise
+     * @throws IOException if an error occurred while writing
      */
-    public boolean generateDot(String out, boolean fromLeftToRight) {
-        return generateDot(null, out, fromLeftToRight);
+    public void generateDot(String out, boolean fromLeftToRight) throws IOException {
+        generateDot(null, out, fromLeftToRight);
     }
 
     /**
      * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
      *
      * @param out   the output dot file to create
-     * @return  {@code true} if it succeed, {@code false} otherwise
+     * @throws IOException if an error occurred while writing
      */
-    public boolean generateDot(String out) {
-        return generateDot(null, out, false);
+    public void generateDot(String out) throws IOException {
+        generateDot(null, out, false);
     }
 
     /**

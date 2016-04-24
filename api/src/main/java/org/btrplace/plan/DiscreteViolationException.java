@@ -16,20 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.model.view;
+package org.btrplace.plan;
+
+import org.btrplace.model.Model;
+import org.btrplace.model.constraint.SatConstraint;
 
 /**
- * Specify an element related to a resource.
+ * An exception to signal a model violates a given constraint.
  *
  * @author Fabien Hermenier
  */
-@FunctionalInterface
-public interface ResourceRelated {
+public class DiscreteViolationException extends SatConstraintViolationException {
+
+    private final Model mo;
 
     /**
-     * Get the resource identifier.
+     * New constraint.
      *
-     * @return the identifier
+     * @param cstr the violated constraint
+     * @param mo   the model that violates the constraint
      */
-    String getResource();
+    public DiscreteViolationException(SatConstraint cstr, Model mo) {
+        super(cstr, "Constraint '" + cstr + "' is violated by the following model:\n" + mo);
+        this.mo = mo;
+    }
+
+    /**
+     * Get the model that violates the constraint
+     *
+     * @return a model
+     */
+    public Model getModel() {
+        return mo;
+    }
 }
