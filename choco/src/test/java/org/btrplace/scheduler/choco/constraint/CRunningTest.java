@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Running;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,7 +39,7 @@ public class CRunningTest {
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).get();
+        mo.getMapping().on(n1).ready(vm1).run(n1, vm2);
 
         Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         CRunning k = new CRunning(new Running(vm1));

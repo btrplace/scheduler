@@ -26,7 +26,6 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -58,7 +57,7 @@ public class COfflineTest {
         Node n1 = model.newNode();
         Node n2 = model.newNode();
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).get();
+        Mapping map = model.getMapping().on(n1, n2);
 
         DefaultChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration<>(10));
@@ -77,7 +76,7 @@ public class COfflineTest {
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).get();
+        Mapping map = mo.getMapping().on(n1, n2);
 
         Offline off = new Offline(n1);
         COffline coff = new COffline(off);
@@ -95,7 +94,7 @@ public class COfflineTest {
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).get();
+        mo.getMapping().on(n1, n2).run(n1, vm1);
         ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNotNull(plan);
@@ -108,7 +107,7 @@ public class COfflineTest {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).get();
+        mo.getMapping().on(n1).run(n1, vm1);
         ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNull(plan);

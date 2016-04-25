@@ -150,7 +150,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
                 throw new SchedulerException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
             }
             vmPosition.put(v.id(), p);
-            p = ((p + 1) % parts.size());
+            p = (p + 1) % parts.size();
         }
 
         //Split the constraints

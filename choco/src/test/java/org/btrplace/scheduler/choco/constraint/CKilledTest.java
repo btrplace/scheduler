@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Killed;
 import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,7 +40,7 @@ public class CKilledTest {
         VM vm2 = mo.newVM();
         VM vm5 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2).get();
+        mo.getMapping().ready(vm1).on(n1).run(n1, vm2);
 
         CKilled k = new CKilled(new Killed(vm5));
         Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());

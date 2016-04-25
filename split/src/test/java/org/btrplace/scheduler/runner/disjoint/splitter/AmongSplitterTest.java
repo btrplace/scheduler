@@ -54,12 +54,12 @@ public class AmongSplitterTest {
     public static final Node n5 = mo.newNode();
 
 
-    public static final Mapping map = new MappingFiller(mo.getMapping())
+    public static final Mapping map = mo.getMapping()
             .on(n1, n2, n3, n4)
             .run(n1, vm1, vm2)
             .run(n2, vm3)
             .run(n3, vm4)
-            .run(n4, vm5).get();
+            .run(n4, vm5);
 
     @Test
     public void testSplittable() throws SchedulerException {

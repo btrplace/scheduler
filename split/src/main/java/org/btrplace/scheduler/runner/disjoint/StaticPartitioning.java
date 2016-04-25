@@ -53,6 +53,14 @@ public abstract class StaticPartitioning implements InstanceSolver {
     private SolvingStatistics stats;
 
     /**
+     * Make a new partitioning algorithm.
+     * The number of workers is set to the number of available cores.
+     */
+    public StaticPartitioning() {
+        workersCount = Runtime.getRuntime().availableProcessors();
+    }
+
+    /**
      * Get the number of workers that are used to solve instances.
      *
      * @return a number >= 1
@@ -70,13 +78,6 @@ public abstract class StaticPartitioning implements InstanceSolver {
         this.workersCount = s;
     }
 
-    /**
-     * Make a new partitioning algorithm.
-     * The number of workers is set to the number of available cores.
-     */
-    public StaticPartitioning() {
-        workersCount = Runtime.getRuntime().availableProcessors();
-    }
 
     @Override
     public ReconfigurationPlan solve(Parameters cra, Instance orig) throws SchedulerException {

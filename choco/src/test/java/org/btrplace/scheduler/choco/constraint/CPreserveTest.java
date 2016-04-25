@@ -27,7 +27,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -51,7 +50,7 @@ public class CPreserveTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         ShareableResource rc = new ShareableResource("cpu", 7, 7);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 3);
@@ -84,7 +83,7 @@ public class CPreserveTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3);
         ShareableResource rc = new ShareableResource("cpu", 10, 10);
         rc.setCapacity(n1, 7);
         rc.setConsumption(vm1, 3);

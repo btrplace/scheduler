@@ -27,7 +27,6 @@ import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -52,10 +51,10 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).get();
+                .sleep(n2, vm5);
         List<SatConstraint> l = new ArrayList<>();
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
@@ -77,9 +76,9 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5);
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 4);
@@ -104,9 +103,9 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4).ready(vm5).get();
+                .run(n2, vm3, vm4).ready(vm5);
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm5));
@@ -133,11 +132,11 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .ready(vm1)
                 .run(n1, vm2)
                 .run(n2, vm3, vm4)
-                .run(n3, vm5).get();
+                .run(n3, vm5);
         List<SatConstraint> l = new ArrayList<>();
 
         List<VM> seq = new ArrayList<>();
@@ -173,9 +172,9 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4).ready(vm5).get();
+                .run(n2, vm4).ready(vm5);
 
         RunningCapacity c = new RunningCapacity(map.getAllNodes(), 4);
         CRunningCapacity cc = new CRunningCapacity(c);
@@ -198,10 +197,10 @@ public class CCRunningCapacityTest {
         Node n2 = model.newNode();
         Node n3 = model.newNode();
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
         Collection<SatConstraint> ctrs = new HashSet<>();
         ctrs.add(new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 2));
 
@@ -217,7 +216,7 @@ public class CCRunningCapacityTest {
         VM vm2 = mo.newVM();
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        mo.getMapping().on(n1).run(n1, vm1, vm2).ready(vm3);
 
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm1));
@@ -240,7 +239,7 @@ public class CCRunningCapacityTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        mo.getMapping().on(n1).run(n1, vm1, vm2).ready(vm3);
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm1));
         l.add(new Ready(vm2));
@@ -269,7 +268,7 @@ public class CCRunningCapacityTest {
         VM vm2 = mo.newVM();
         VM vm4 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm2, vm4).get();
+        Mapping m = mo.getMapping().on(n1).run(n1, vm1).ready(vm2, vm4);
 
         RunningCapacity c = new RunningCapacity(Collections.singleton(n1), 1);
         CRunningCapacity cc = new CRunningCapacity(c);

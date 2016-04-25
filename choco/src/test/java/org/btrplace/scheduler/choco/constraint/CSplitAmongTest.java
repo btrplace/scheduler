@@ -27,7 +27,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,12 +56,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -116,12 +115,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -165,12 +164,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -212,12 +211,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -265,12 +264,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);

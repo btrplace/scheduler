@@ -28,7 +28,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -61,11 +60,11 @@ public class CNoDelayTest {
         resources.setCapacity(n2, 3);
         resources.setConsumption(vm1, 4);
 
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
                 .run(n3, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
 
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
@@ -103,11 +102,11 @@ public class CNoDelayTest {
         resources.setCapacity(n2, 3);
         resources.setConsumption(vm1, 4);
 
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
                 .run(n3, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
 
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
@@ -145,11 +144,11 @@ public class CNoDelayTest {
         resources.setCapacity(n2, 3);
         resources.setConsumption(vm1, 4);
 
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
                 .run(n3, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
 
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);

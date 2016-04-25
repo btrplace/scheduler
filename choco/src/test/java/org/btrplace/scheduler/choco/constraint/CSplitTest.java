@@ -27,7 +27,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -58,12 +57,12 @@ public class CSplitTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4, vm5)
                 .run(n4, vm6)
-                .run(n5, vm7, vm8).get();
+                .run(n5, vm7, vm8);
 
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
@@ -104,10 +103,10 @@ public class CSplitTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2, vm3/* violation*/)
                 .run(n3, vm4, vm5, vm6/*violation*/)
-                .run(n5, vm7, vm8).get();
+                .run(n5, vm7, vm8);
 
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);
@@ -143,10 +142,10 @@ public class CSplitTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4, vm5)
-                .run(n5, vm6, vm7, vm8).get();
+                .run(n5, vm6, vm7, vm8);
         System.out.println(map);
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);

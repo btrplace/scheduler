@@ -151,7 +151,6 @@ public class Bench {
         } catch (SchedulerException ex) {
             Assert.fail(ex.getMessage(), ex);
         }
-        mo = null;
     }
 
     public static void main(String[] args) {

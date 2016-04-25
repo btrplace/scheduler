@@ -29,7 +29,6 @@ import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -158,10 +157,10 @@ public class COverbookTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2, vm3)
-                .run(n3, vm4, vm5, vm6).get();
+                .run(n3, vm4, vm5, vm6);
         ShareableResource rcCPU = new ShareableResource("cpu", 1, 1);
         mo.attach(rcCPU);
         Overbook o1 = new Overbook(n1, "cpu", 1);
@@ -183,7 +182,7 @@ public class COverbookTest {
         VM vm1 = mo.newVM();
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm3).get();
+        Mapping m = mo.getMapping().on(n1).run(n1, vm1).ready(vm3);
 
         ShareableResource rcCPU = new ShareableResource("cpu", 2, 2);
 
@@ -213,7 +212,7 @@ public class COverbookTest {
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1).run(n1, vm1, vm2);
 
         org.btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
         rc.setCapacity(n1, 5);

@@ -47,7 +47,6 @@ public class ForgeVMTest {
     @Test
     public void testBasics() throws SchedulerException {
         Model mo = new DefaultModel();
-        Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
 
         mo.getAttributes().put(vm1, "template", "small");
@@ -72,7 +71,6 @@ public class ForgeVMTest {
     @Test(expectedExceptions = {SchedulerException.class})
     public void testWithoutTemplate() throws SchedulerException {
         Model mo = new DefaultModel();
-        Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
 
         Parameters ps = new DefaultParameters();

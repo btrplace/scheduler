@@ -6,7 +6,7 @@ version 0.46 - soon come
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)
 
 - API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
-
+- API change: The code to split problems and solve them in parallel moved to its own module named 'split'
 
 
 version 0.45 - 22 Apr 2016

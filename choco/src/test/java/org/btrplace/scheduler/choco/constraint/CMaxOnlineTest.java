@@ -27,7 +27,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -47,10 +46,10 @@ public class CMaxOnlineTest {
         VM vm1 = model.newVM();
         VM vm2 = model.newVM();
         VM vm3 = model.newVM();
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
-                .run(n3, vm3).get();
+                .run(n3, vm3);
         MappingUtils.fill(map, model.getMapping());
         Set<Node> nodes = map.getAllNodes();
         MaxOnline maxon = new MaxOnline(nodes, 1);
@@ -76,10 +75,10 @@ public class CMaxOnlineTest {
         resources.setCapacity(n2, 8);
         resources.setCapacity(n3, 2);
         resources.setConsumption(vm4, 2);
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
-                .run(n3, vm3).get();
+                .run(n3, vm3);
         model.attach(resources);
         MappingUtils.fill(map, model.getMapping());
         Set<Node> nodes = map.getAllNodes();
@@ -131,9 +130,9 @@ public class CMaxOnlineTest {
         ShareableResource resources = new ShareableResource("cpu", 4, 1);
         resources.setCapacity(n1, 8);
         resources.setConsumption(vm4, 2);
-        Mapping map = new MappingFiller().on(n1, n3).off(n2)
+        Mapping map = model.getMapping().on(n1, n3).off(n2)
                 .run(n1, vm1, vm4)
-                .run(n3, vm3).get();
+                .run(n3, vm3);
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
         MaxOnline maxon = new MaxOnline(map.getAllNodes(), 2, true);
@@ -165,10 +164,10 @@ public class CMaxOnlineTest {
         resources.setCapacity(n1, 4);
         resources.setCapacity(n2, 8);
         resources.setConsumption(vm4, 2);
-        Mapping map = new MappingFiller().on(n1, n2, n3).off(n4, n5)
+        Mapping map = model.getMapping().on(n1, n2, n3).off(n4, n5)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
-                .run(n3, vm3).get();
+                .run(n3, vm3);
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
 
