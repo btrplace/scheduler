@@ -69,7 +69,7 @@ public class IssuesTest {
         resources.setCapacity(n1, 2);
         resources.setCapacity(n2, 2);
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
+        Mapping map = model.getMapping().on(n1, n2).off(n3).run(n1, vm1, vm2);
         model.attach(resources);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
@@ -144,8 +144,8 @@ public class IssuesTest {
         VM vm3 = model.newVM();
         VM vm4 = model.newVM();
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
-                .run(n2, vm1, vm2, vm3, vm4).get();
+        Mapping map = model.getMapping().on(n1, n2, n3)
+                .run(n2, vm1, vm2, vm3, vm4);
 
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
@@ -186,8 +186,8 @@ public class IssuesTest {
         VM vm4 = model.newVM();
 
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
-                .run(n2, vm1, vm2, vm3, vm4).get();
+        Mapping map = model.getMapping().on(n1, n2, n3)
+                .run(n2, vm1, vm2, vm3, vm4);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .build();
@@ -219,7 +219,7 @@ public class IssuesTest {
         VM vm1 = model.newVM();
         VM vm2 = model.newVM();
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
+        Mapping map = model.getMapping().on(n1, n2).off(n3).run(n1, vm1, vm2);
         //model.attach(resources);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).build();
         Solver solver = rp.getSolver();
@@ -279,11 +279,10 @@ public class IssuesTest {
         VM vm6 = model.newVM();
 
 
-        new MappingFiller(model.getMapping()).on(n1, n2, n3, n4)
+        model.getMapping().on(n1, n2, n3, n4)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
-                .run(n3, vm5, vm6)
-                .get();
+                .run(n3, vm5, vm6);
 
         Set<SatConstraint> ctrsC = new HashSet<>();
         Set<VM> vms1 = new HashSet<>(Arrays.asList(vm1, vm3, vm5));

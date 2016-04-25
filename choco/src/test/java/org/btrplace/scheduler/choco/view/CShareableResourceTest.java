@@ -96,7 +96,6 @@ public class CShareableResourceTest {
 
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
 
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
@@ -144,7 +143,6 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        Parameters ps = new DefaultParameters();
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
@@ -166,7 +164,7 @@ public class CShareableResourceTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
 
-        Mapping ma = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
+        mo.getMapping().on(n1).run(n1, vm1, vm2);
 
         ShareableResource rc = new ShareableResource("foo", 0, 0);
         rc.setConsumption(vm1, 2);
@@ -191,7 +189,7 @@ public class CShareableResourceTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2);
 
         org.btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
         rc.setCapacity(n1, 32);

@@ -24,7 +24,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -46,7 +45,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
 
@@ -66,7 +65,7 @@ public class CGatherTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
 
@@ -88,7 +87,7 @@ public class CGatherTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         Gather g = new Gather(map.getAllVMs());
         CGather c = new CGather(g);
@@ -107,7 +106,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -130,7 +129,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n2, vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n2, vm1, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -150,7 +149,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1, n2).ready(vm1, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();

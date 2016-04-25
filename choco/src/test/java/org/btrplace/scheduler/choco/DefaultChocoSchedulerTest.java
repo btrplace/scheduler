@@ -172,7 +172,7 @@ public class DefaultChocoSchedulerTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
 
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
+        mo.on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
 
         //A satisfied constraint
         Fence c1 = new Fence(vm1, new HashSet<>(Arrays.asList(n1, n2)));
@@ -182,7 +182,7 @@ public class DefaultChocoSchedulerTest {
 
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
         mo = new DefaultModel();
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
+        mo.on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoScheduler cra = new DefaultChocoScheduler();
         OptConstraint o = new OptConstraint() {
             @Override
@@ -217,12 +217,11 @@ public class DefaultChocoSchedulerTest {
         VM vm4 = mo.newVM();
         VM vm5 = mo.newVM();
         VM vm6 = mo.newVM();
-        VM vm7 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5);
+        mo.getMapping().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5);
         SatConstraint cstr = mock(SatConstraint.class);
         when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
         when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, n4));
@@ -270,10 +269,10 @@ public class DefaultChocoSchedulerTest {
         Preserve pMem = new Preserve(vm1, "mem", 2);
 
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
+        mo.getMapping().on(n1, n2)
                 .run(n1, vm1)
                 .run(n2, vm3, vm4)
-                .ready(vm2).get();
+                .ready(vm2);
 
         mo.attach(cpu);
         mo.attach(mem);

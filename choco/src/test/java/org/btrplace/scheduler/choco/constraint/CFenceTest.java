@@ -25,7 +25,6 @@ import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,12 +53,12 @@ public class CFenceTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4)
+        mo.getMapping().on(n1, n2, n3, n4)
                 .off(n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).get();
+                .sleep(n4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
@@ -86,10 +85,10 @@ public class CFenceTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
-                .run(n3, vm3).get();
+                .run(n3, vm3);
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(vm2, on);

@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Sleeping;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,7 +40,7 @@ public class CSleepingTest {
         VM vm2 = mo.newVM();
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).sleep(n1, vm3).get();
+        mo.getMapping().on(n1).ready(vm1).run(n1, vm2).sleep(n1, vm3);
         Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         CSleeping k = new CSleeping(new Sleeping(vm3));
         Assert.assertEquals(0, k.getMisPlacedVMs(i).size());

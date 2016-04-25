@@ -303,4 +303,85 @@ public interface Mapping extends Copyable<Mapping> {
         }
         return null;
     }
+
+
+    // -----------------------------------------
+    // Quick methods to ease creation of mapping
+    // -----------------------------------------
+
+    /**
+     * Quick way to set VMs running on a given online node.
+     *
+     * @param n   the online node
+     * @param vms the VMs to add
+     * @return {@code this}
+     * @throws IllegalArgumentException if {@code n} is not online
+     */
+    default Mapping run(Node n, VM... vms) {
+        for (VM vm : vms) {
+            if (!this.addRunningVM(vm, n)) {
+                throw new IllegalArgumentException("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Quick way to set VMs sleeping on a given online node.
+     *
+     * @param n   the online node
+     * @param vms the VMs to add
+     * @return {@code this}
+     * @throws IllegalArgumentException if {@code n} is not online
+     */
+    default Mapping sleep(Node n, VM... vms) {
+        for (VM vm : vms) {
+            if (!this.addSleepingVM(vm, n)) {
+                throw new IllegalArgumentException("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Quick way to set VMs ready.
+     *
+     * @param vms the VMs to add
+     * @return {@code this}
+     */
+    default Mapping ready(VM... vms) {
+        for (VM vm : vms) {
+            this.addReadyVM(vm);
+        }
+        return this;
+    }
+
+    /**
+     * Quick way to add online nodes.
+     *
+     * @param nodes the nodes to add
+     * @return {@code this}
+     */
+    default Mapping on(Node... nodes) {
+        for (Node n : nodes) {
+            this.addOnlineNode(n);
+        }
+        return this;
+    }
+
+    /**
+     * Quick way to add offline nodes.
+     *
+     * @param nodes the nodes to state
+     * @return {@code this}
+     * @throws IllegalArgumentException if the nodes are hosting VMs
+     */
+    default Mapping off(Node... nodes) {
+        for (Node n : nodes) {
+            if (!this.addOfflineNode(n)) {
+                throw new IllegalArgumentException("Unable to set '" + n + "' offline. Is it hosting VMs ?");
+            }
+        }
+        return this;
+    }
 }

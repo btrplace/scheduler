@@ -24,7 +24,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,8 +44,8 @@ public class CSpreadTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
-                .run(n1, vm1).run(n2, vm2).get();
+        mo.getMapping().on(n1, n2, n3)
+                .run(n1, vm1).run(n2, vm2);
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -72,8 +71,8 @@ public class CSpreadTest {
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
-                .run(n1, vm1).run(n2, vm2).get();
+        mo.getMapping().on(n1, n2, n3)
+                .run(n1, vm1).run(n2, vm2);
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -97,9 +96,9 @@ public class CSpreadTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
+        Mapping map = mo.getMapping().on(n1, n2)
                 .run(n1, vm1, vm3)
-                .run(n2, vm2).get();
+                .run(n2, vm2);
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
@@ -121,7 +120,7 @@ public class CSpreadTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
+        mo.getMapping().on(n1, n2).run(n1, vm1, vm2);
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoScheduler cra = new DefaultChocoScheduler();

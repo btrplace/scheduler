@@ -27,7 +27,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,9 +53,9 @@ public class CLonelyTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5);
 
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -85,9 +84,9 @@ public class CLonelyTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).get();
+                .run(n2, vm4, vm5);
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
@@ -112,9 +111,9 @@ public class CLonelyTest {
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).get();
+                .run(n2, vm4, vm5);
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
 

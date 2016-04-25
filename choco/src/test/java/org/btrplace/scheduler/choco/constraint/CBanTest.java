@@ -23,7 +23,6 @@ import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -87,11 +86,11 @@ public class CBanTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).get();
+                .sleep(n4, vm5);
 
         Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
 

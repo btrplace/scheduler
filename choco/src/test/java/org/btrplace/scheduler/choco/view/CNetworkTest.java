@@ -31,7 +31,6 @@ import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -126,7 +125,7 @@ public class CNetworkTest {
         Node n2 = mo.newNode();
         VM v = mo.newVM();
 
-        new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, v).get();
+        mo.getMapping().on(n1, n2).run(n1, v);
         ShareableResource mem = new ShareableResource("mem", 10000, 5000);
         Network net = new Network();
         mo.attach(net);
