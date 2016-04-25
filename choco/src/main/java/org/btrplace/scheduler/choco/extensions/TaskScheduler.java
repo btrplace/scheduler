@@ -314,7 +314,7 @@ public class TaskScheduler extends Constraint {
             return map;
         }
 
-        private String prettyChanges(TIntObjectHashMap<int[]> changes) {
+        private static String prettyChanges(TIntObjectHashMap<int[]> changes) {
             int[] moments = changes.keys(new int[changes.size()]);
             Arrays.sort(moments);
             StringBuilder b = new StringBuilder();

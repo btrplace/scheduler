@@ -190,7 +190,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         return true;
     }
 
-    private boolean zeroDuration(ReconfigurationProblem rp, BoolVar stay, Slice s) {
+    private static boolean zeroDuration(ReconfigurationProblem rp, BoolVar stay, Slice s) {
         if (stay.isInstantiatedTo(1)) {
             try {
                 s.getDuration().instantiateTo(0, Cause.Null);

@@ -113,10 +113,7 @@ public class CDeadlineTest {
         Assert.assertNotNull(p);
         
         // Check if the deadline is respected
-        MigrateVM mig1 = null;
-        for (Action a : p.getActions()) {
-            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm1)) mig1 = (MigrateVM) a;
-        }
+        Action mig1 = p.getActions().stream().filter(s -> s instanceof MigrateVM && ((MigrateVM) s).getVM().equals(vm1)).findAny().get();
         Assert.assertTrue(mig1.getEnd() <= 90);
 
         // TODO: use methods on DeadlineChecker to verify that the action terminates at time ?

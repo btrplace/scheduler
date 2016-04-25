@@ -77,7 +77,7 @@ public class TimedBasedActionComparator implements Comparator<Action> {
         return d;
     }
 
-    private int delay(Action a1, Action a2, boolean onStart) {
+    private static int delay(Action a1, Action a2, boolean onStart) {
         if (onStart) {
             return a1.getStart() - a2.getStart();
         }

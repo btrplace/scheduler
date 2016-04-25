@@ -30,7 +30,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  * @see TransitionUtils
  */
-public interface Transition<E extends Enum<?>> {
+public interface Transition<E extends Enum<E>> {
 
     /**
      * Get the moment the action starts.

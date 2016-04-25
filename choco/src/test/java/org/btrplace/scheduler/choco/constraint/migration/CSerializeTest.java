@@ -27,7 +27,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
@@ -111,11 +110,8 @@ public class CSerializeTest {
         Assert.assertNotNull(p);
 
         // Check if the serialize constraint is respected
-        MigrateVM mig1 = null, mig2 = null ;
-        for (Action a : p.getActions()) {
-            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm1)) mig1 = (MigrateVM) a;
-            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm2)) mig2 = (MigrateVM) a;
-        }
+        MigrateVM mig1 = (MigrateVM) p.getActions().stream().filter(s -> s instanceof MigrateVM && ((MigrateVM) s).getVM().equals(vm1)).findAny().get();
+        MigrateVM mig2 = (MigrateVM) p.getActions().stream().filter(s -> s instanceof MigrateVM && ((MigrateVM) s).getVM().equals(vm2)).findAny().get();
         Assert.assertTrue(mig1.getStart() >= mig2.getEnd() || mig2.getStart() >= mig1.getEnd());
 
         // TODO: use methods on SerializeChecker to verify that the actions are serialized ?

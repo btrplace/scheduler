@@ -263,7 +263,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         return cc;
     }
 
-    private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {
+    private static void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {
         for (VM v : vms) {
             //This loop prevent from a useless allocation of memory when there is no issue
             if (!m.getMapping().contains(v)) {
@@ -281,7 +281,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * @param ns the nodes to check
      * @throws org.btrplace.scheduler.SchedulerException if at least one of the given nodes is not in the RP.
      */
-    private void checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerException {
+    private static void checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerException {
         for (Node node : ns) {
             if (!mo.getMapping().contains(node)) {
                 throw new SchedulerException(mo, "Unknown node '" + node + "'");

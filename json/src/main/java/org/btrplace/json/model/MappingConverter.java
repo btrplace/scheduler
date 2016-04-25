@@ -98,7 +98,7 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
      * @return the resulting set of nodes
      * @throws JSONConverterException if at least one of the parsed node already exists
      */
-    private Set<Node> newNodes(Model mo, JSONObject o, String key) throws JSONConverterException {
+    private static Set<Node> newNodes(Model mo, JSONObject o, String key) throws JSONConverterException {
         checkKeys(o, key);
         Object x = o.get(key);
         if (!(x instanceof JSONArray)) {
@@ -125,7 +125,7 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
      * @return the resulting set of VMs
      * @throws JSONConverterException if at least one of the parsed VM already exists
      */
-    private Set<VM> newVMs(Model mo, JSONObject o, String key) throws JSONConverterException {
+    private static Set<VM> newVMs(Model mo, JSONObject o, String key) throws JSONConverterException {
         checkKeys(o, key);
         Object x = o.get(key);
         if (!(x instanceof JSONArray)) {

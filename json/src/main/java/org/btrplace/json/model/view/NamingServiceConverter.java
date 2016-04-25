@@ -58,7 +58,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
     }
 
     @Override
-    public NamingService fromJSON(JSONObject o) throws JSONConverterException {
+    public NamingService<? extends Element> fromJSON(JSONObject o) throws JSONConverterException {
         String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
             return null;
@@ -67,10 +67,10 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         NamingService ns;
         String type = requiredString(o, "type");
         switch (type) {
-            case "vm":
+            case NamingService.VM_ID:
                 ns = NamingService.newVMNS();
                 break;
-            case "node":
+            case NamingService.NODE_ID:
                 ns = NamingService.newNodeNS();
                 break;
             default:
@@ -82,7 +82,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String n = e.getKey();
             int v = Integer.parseInt(e.getValue().toString());
-            Element el = "vm".equals(type) ? getVM(v) : getNode(v);
+            Element el = NamingService.VM_ID.equals(type) ? getVM(v) : getNode(v);
             if (!ns.register(el, n)) {
                 throw new JSONConverterException("Duplicated name '" + n + "'");
             }

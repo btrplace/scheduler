@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
-    private void putAttributes(Attributes attrs, Element e, JSONObject entries) {
+    private static void putAttributes(Attributes attrs, Element e, JSONObject entries) {
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();

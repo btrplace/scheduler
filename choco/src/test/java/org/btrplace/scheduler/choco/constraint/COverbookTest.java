@@ -232,18 +232,8 @@ public class COverbookTest {
         Assert.assertNotNull(p);
         System.out.println(p);
         Assert.assertEquals(p.getSize(), 2);
-        //An allocate action at the moment the vm2 leaved.
-        Action al = null;
-        Action sh = null;
-        for (Action a : p) {
-            if (a instanceof Allocate) {
-                al = a;
-            } else if (a instanceof ShutdownVM) {
-                sh = a;
-            } else {
-                Assert.fail();
-            }
-        }
+        Action al = p.getActions().stream().filter(s -> s instanceof Allocate).findAny().get();
+        Action sh = p.getActions().stream().filter(s -> s instanceof ShutdownVM).findAny().get();
         Assert.assertTrue(sh.getEnd() <= al.getStart());
     }
 }

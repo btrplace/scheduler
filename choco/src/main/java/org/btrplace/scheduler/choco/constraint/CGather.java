@@ -102,7 +102,7 @@ public class CGather implements ChocoConstraint {
         return true;
     }
 
-    private boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
+    private static boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
         Solver s = rp.getSolver();
         for (int i = 0; i < dSlices.size(); i++) {
             for (int j = 0; j < i; j++) {

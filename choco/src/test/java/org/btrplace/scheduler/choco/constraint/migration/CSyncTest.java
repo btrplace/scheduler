@@ -47,7 +47,7 @@ public class CSyncTest {
 
     @Test
     public void testOk() throws SchedulerException {
-        
+
         // New default model
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
@@ -108,16 +108,13 @@ public class CSyncTest {
 
         // Solve it using the Min Max Time To Repair Migration scheduling oriented objective
         ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
-        
+
         // It works BUT the VMs are synchronized by default (thanks to BW optimization), is Sync a useless constraint ?
         Assert.assertNotNull(p);
 
         // Check if the sync constraint is respected
-        MigrateVM mig1 = null, mig2 = null ;
-        for (Action a : p.getActions()) {
-            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm1)) mig1 = (MigrateVM) a;
-            if (a instanceof MigrateVM && ((MigrateVM) a).getVM().equals(vm2)) mig2 = (MigrateVM) a;
-        }
+        Action mig1 = p.getActions().stream().filter(s -> s instanceof MigrateVM && ((MigrateVM) s).getVM().equals(vm1)).findAny().get();
+        Action mig2 = p.getActions().stream().filter(s -> s instanceof MigrateVM && ((MigrateVM) s).getVM().equals(vm2)).findAny().get();
         Assert.assertTrue(mig1.getEnd() == mig2.getEnd());
 
         // TODO: use methods on SyncChecker to verify that the actions are synchronized ?
@@ -186,7 +183,7 @@ public class CSyncTest {
 
         // Solve it using the Min Max Time To Repair Migration scheduling oriented objective
         ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
-        
+
         // Unable to sync two migrations on the same path !
         Assert.assertNull(p);
     }

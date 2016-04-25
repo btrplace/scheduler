@@ -89,7 +89,7 @@ public class SolverTuning implements Example {
         return true;
     }
 
-    private void solve(ChocoScheduler cra, Model model, Set<SatConstraint> constraints) {
+    private static void solve(ChocoScheduler cra, Model model, Set<SatConstraint> constraints) {
         try {
             ReconfigurationPlan p = cra.solve(model, constraints);
             if (p != null) {

@@ -68,7 +68,7 @@ public class Slice {
                 ", on=" + printValue(getHoster()) + '}';
     }
 
-    private String printValue(IntVar v) {
+    private static String printValue(IntVar v) {
         if (v.isInstantiated()) {
             return Integer.toString(v.getValue());
         }

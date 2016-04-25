@@ -57,7 +57,7 @@ public interface SatConstraintBuilder {
      *
      * @return a non-empty array.
      */
-    ConstraintParam[] getParameters();
+    ConstraintParam<?>[] getParameters();
 
     /**
      * Build the constraint

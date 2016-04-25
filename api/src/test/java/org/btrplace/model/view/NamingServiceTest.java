@@ -39,14 +39,14 @@ public class NamingServiceTest {
         Node n = mo.newNode();
         Assert.assertTrue(ns.register(n, "n0"));
         Assert.assertFalse(ns.register(mo.newNode(), "n0"));
-        Assert.assertEquals(ns.getElementIdentifier(), "node");
+        Assert.assertEquals(ns.getElementIdentifier(), NamingService.NODE_ID);
         Assert.assertEquals(ns.getNamedElements().size(), 1);
     }
 
     @Test(dependsOnMethods = {"testRegisterAndGets"})
     public void testResolution() {
         NamingService<VM> ns = NamingService.newVMNS();
-        Assert.assertEquals(ns.getElementIdentifier(), "vm");
+        Assert.assertEquals(ns.getElementIdentifier(), NamingService.VM_ID);
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         ns.register(v, "vm0");

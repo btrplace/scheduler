@@ -87,7 +87,7 @@ public class CSpread implements ChocoConstraint {
         return true;
     }
 
-    private void disallowOverlap(Solver s, VMTransition t1, VMTransition t2) {
+    private static void disallowOverlap(Solver s, VMTransition t1, VMTransition t2) {
         Slice dI = t1.getDSlice();
         Slice cJ = t1.getCSlice();
 
@@ -106,7 +106,7 @@ public class CSpread implements ChocoConstraint {
     /**
      * Establish the precedence constraint {@code c.getEnd() <= d.getStart()} if the two slices may overlap.
      */
-    private void precedenceIfOverlap(Solver s, Slice d, Slice c) {
+    private static void precedenceIfOverlap(Solver s, Slice d, Slice c) {
         //No need to place the constraints if the slices do not have a chance to overlap
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))

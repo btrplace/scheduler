@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class TransitionUtilsTest {
 
-    private List<VMTransition> makeActions() {
+    private static List<VMTransition> makeActions() {
         List<VMTransition> as = new ArrayList<>();
         Solver s = new Solver();
         for (int i = 0; i < 10; i++) {

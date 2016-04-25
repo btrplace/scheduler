@@ -326,7 +326,7 @@ public class LocalTaskScheduler {
         return associateCTask[dSlice] != NO_ASSOCIATIONS && out.get(associateCTask[dSlice]);
     }
 
-    private String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
+    private static String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < ascMoments.length; i++) {
             int t = ascMoments[i];

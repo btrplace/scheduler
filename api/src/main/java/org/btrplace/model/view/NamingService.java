@@ -40,16 +40,26 @@ public final class NamingService<E extends Element> implements ModelView {
 
     /**
      * The root view identifier.
-     * Will be suffixed by either "vm" or "node
+     * Will be suffixed by either {@link #NODE_ID} or {@link #VM_ID}.
      */
     public static final String ID = "btrpsl.ns.";
+
+    /**
+     * Identifier to be attached for the naming service for nodes.
+     */
+    public static final String NODE_ID = "node";
+
+    /**
+     * Identifier to be attached for the naming service for VMs.
+     */
+    public static final String VM_ID = "vm";
 
     private String elemId;
 
     /**
      * Make a new service.
      *
-     * @param eId "vm" or "node"
+     * @param eId {@link #VM_ID} or {@link NODE_ID}
      */
     private NamingService(String eId) {
         resolve = new HashMap<>();
@@ -65,7 +75,7 @@ public final class NamingService<E extends Element> implements ModelView {
     /**
      * Get the element identifier of this naming service
      *
-     * @return "vm" or "node" for a naming service dedicated to the VMs or the nodes respectively
+     * @return {@link VM_ID} or {@link NODE_ID} for a naming service dedicated to the VMs or the nodes respectively
      */
     public String getElementIdentifier() {
         return elemId;
@@ -127,7 +137,7 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
-        if ("vm".equals(elemId)) {
+        if (VM_ID.equals(elemId)) {
             if (rev.containsKey(nextId)) {
                 //the new id already exists. It is a failure scenario.
                 return false;
@@ -194,7 +204,7 @@ public final class NamingService<E extends Element> implements ModelView {
      * @return a new naming service
      */
     public static NamingService<Node> newNodeNS() {
-        return new NamingService<>("node");
+        return new NamingService<>(NODE_ID);
     }
 
     /**
@@ -203,6 +213,6 @@ public final class NamingService<E extends Element> implements ModelView {
      * @return a new naming service
      */
     public static NamingService<VM> newVMNS() {
-        return new NamingService<>("vm");
+        return new NamingService<>(VM_ID);
     }
 }

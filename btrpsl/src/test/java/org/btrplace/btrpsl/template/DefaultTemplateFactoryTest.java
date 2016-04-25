@@ -78,9 +78,6 @@ public class DefaultTemplateFactoryTest {
 
         String tplName;
 
-        private NamingService<Node> srvNodes;
-        private NamingService<VM> srvVMs;
-
         public Model mo;
 
         @Override
@@ -106,12 +103,10 @@ public class DefaultTemplateFactoryTest {
 
         @Override
         public void setNamingServiceVMs(NamingService<VM> srvVMs) {
-            this.srvVMs = srvVMs;
         }
 
         @Override
         public void setNamingServiceNodes(NamingService<Node> srvNodes) {
-            this.srvNodes = srvNodes;
         }
     }
 

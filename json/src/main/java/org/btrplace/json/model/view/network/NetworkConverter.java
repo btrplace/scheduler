@@ -239,7 +239,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         }
     }
 
-    private Switch getSwitch(Network net, int id) {
+    private static Switch getSwitch(Network net, int id) {
         for (Switch s : net.getSwitches()) {
             if (s.id() == id) {
                 return s;

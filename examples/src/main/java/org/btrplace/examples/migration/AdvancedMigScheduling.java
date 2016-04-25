@@ -175,7 +175,7 @@ public class AdvancedMigScheduling implements Example {
         return solve(mo, cstrs);
     }
 
-    private boolean solve(Model mo, List<SatConstraint> cstrs) {
+    private static boolean solve(Model mo, List<SatConstraint> cstrs) {
         ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
         if (p == null) {
             return false;

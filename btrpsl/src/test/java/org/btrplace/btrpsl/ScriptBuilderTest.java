@@ -196,7 +196,7 @@ public class ScriptBuilderTest {
         ScriptBuilder b = new ScriptBuilder(mo);
         Script v = b.build("namespace test.template;\nVM[1..5] : tinyVMs;\nfrontend : mediumVMs; @N[1..12] : defaultNodes;\n");
         Assert.assertEquals(v.getVMs().size(), 6);
-        NamingService<VM> srvVMs = (NamingService<VM>) mo.getView(NamingService.ID + "vm");
+        NamingService<VM> srvVMs = (NamingService<VM>) mo.getView(NamingService.ID + NamingService.VM_ID);
         for (VM el : v.getVMs()) {
             String name = srvVMs.resolve(el);
             if (name.endsWith("frontend")) {

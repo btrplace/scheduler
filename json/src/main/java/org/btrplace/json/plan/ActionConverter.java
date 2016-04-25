@@ -218,7 +218,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(BootNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootNode");
-        o.put("node", toJSON(a.getNode()));
+        o.put(NODE_LABEL, toJSON(a.getNode()));
         return o;
     }
 

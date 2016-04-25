@@ -322,7 +322,7 @@ public class AliasedCumulativesFiltering {
                 && out.get(associations[dSlice]);
     }
 
-    private String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
+    private static String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < ascMoments.length; i++) {
             int t = ascMoments[i];

@@ -26,7 +26,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -91,21 +90,17 @@ public class CNetworkTest {
         // Try to solve using the custom Min MTTR objective for migration scheduling
         ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
         Assert.assertNotNull(p);
-        
+
         // The switch is non-blocking
         Assert.assertEquals(swMain.getCapacity(), Integer.MAX_VALUE);
-        
+
         // Check the migration path and bandwidth
-        MigrateVM mig = null;
-        for (Action a : p.getActions()) { if (a instanceof MigrateVM) {
-            mig = (MigrateVM) a;
-            Assert.assertTrue(net.getRouting().getPath(((MigrateVM) a).getSourceNode(),
-                    ((MigrateVM) a).getDestinationNode()).containsAll(net.getLinks()));
-            Assert.assertEquals(net.getRouting().getMaxBW(((MigrateVM) a).getSourceNode(),
-                    ((MigrateVM) a).getDestinationNode()), bw);
-            Assert.assertEquals(((MigrateVM) a).getBandwidth(), bw);
-            break;
-        }}
+        MigrateVM mig = (MigrateVM) p.getActions().stream().filter(s -> s instanceof MigrateVM).findFirst().get();
+        Assert.assertTrue(net.getRouting().getPath(mig.getSourceNode(),
+                mig.getDestinationNode()).containsAll(net.getLinks()));
+        Assert.assertEquals(net.getRouting().getMaxBW(mig.getSourceNode(),
+                mig.getDestinationNode()), bw);
+        Assert.assertEquals(mig.getBandwidth(), bw);
 
         // Check the migration duration computation
         double bandwidth_octet = mig.getBandwidth()/9, durationMin, durationColdPages, durationHotPages, durationTotal;

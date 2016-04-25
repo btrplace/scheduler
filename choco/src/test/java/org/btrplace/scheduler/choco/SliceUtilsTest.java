@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class SliceUtilsTest {
 
-    private List<Slice> makeSlices() {
+    private static List<Slice> makeSlices() {
         Model mo = new DefaultModel();
         Solver csp = new Solver();
         List<Slice> l = new ArrayList<>();

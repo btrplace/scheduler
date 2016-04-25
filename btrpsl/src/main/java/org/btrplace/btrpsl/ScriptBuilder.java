@@ -97,12 +97,12 @@ public class ScriptBuilder {
 
         this.model = mo;
 
-        namingServiceNodes = (NamingService) mo.getView(NamingService.ID + "node");
+        namingServiceNodes = (NamingService) mo.getView(NamingService.ID + NamingService.NODE_ID);
         if (namingServiceNodes == null) {
             namingServiceNodes = NamingService.newNodeNS();
             mo.attach(namingServiceNodes);
         }
-        namingServiceVMs = (NamingService) mo.getView(NamingService.ID + "vm");
+        namingServiceVMs = (NamingService) mo.getView(NamingService.ID + NamingService.VM_ID);
         if (namingServiceVMs == null) {
             namingServiceVMs = NamingService.newVMNS();
             mo.attach(namingServiceVMs);

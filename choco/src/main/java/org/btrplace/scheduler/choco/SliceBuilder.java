@@ -104,7 +104,7 @@ public class SliceBuilder {
      * @param t1 first variable
      * @param t2 second variable
      */
-    private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
+    private static void ticksSooner(Solver s, IntVar t1, IntVar t2) {
         if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
             s.post(new Arithmetic(t1, Operator.LE, t2));
         }

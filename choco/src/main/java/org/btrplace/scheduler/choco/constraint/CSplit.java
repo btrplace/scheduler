@@ -120,7 +120,7 @@ public class CSplit implements ChocoConstraint {
         return true;
     }
 
-    private void fullfillOthers(ReconfigurationProblem rp, TIntArrayList[] otherPositions, List<IntVar>[] otherEnds, List<List<VM>> vmGroups) {
+    private static void fullfillOthers(ReconfigurationProblem rp, TIntArrayList[] otherPositions, List<IntVar>[] otherEnds, List<List<VM>> vmGroups) {
         Mapping map = rp.getSourceModel().getMapping();
         //Fulfill the others stuff.
         for (int i = 0; i < vmGroups.size(); i++) {
@@ -165,7 +165,7 @@ public class CSplit implements ChocoConstraint {
         return bad;
     }
 
-    private boolean inOtherGroup(List<Collection<VM>> groups, Collection<VM> grp, VM vmOnN) {
+    private static boolean inOtherGroup(List<Collection<VM>> groups, Collection<VM> grp, VM vmOnN) {
         for (Collection<VM> s : groups) {
             if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
                 return true;

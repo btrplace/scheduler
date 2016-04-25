@@ -160,7 +160,7 @@ public class CAmong implements ChocoConstraint {
         return true;
     }
 
-    private boolean fence(Parameters ps, ReconfigurationProblem rp, Collection<VM> vms, Collection<Node> group) {
+    private static boolean fence(Parameters ps, ReconfigurationProblem rp, Collection<VM> vms, Collection<Node> group) {
         for (VM v : vms) {
             if (!new CFence(new Fence(v, group)).inject(ps, rp)) {
                 return false;

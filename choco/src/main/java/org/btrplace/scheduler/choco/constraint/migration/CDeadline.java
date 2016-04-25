@@ -63,7 +63,7 @@ public class CDeadline implements ChocoConstraint {
      * @throws ParseException if the timestamp string doesn't match the format "hh:mm:ss" for an absolute timestamp
      *         or "+hh:mm:ss" for relative timestamp
      */
-    private int convertTimestamp(String timestamp) throws ParseException {
+    private static int convertTimestamp(String timestamp) throws ParseException {
 
         // Get the deadline from timestamp
         int deadline;

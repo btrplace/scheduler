@@ -170,7 +170,7 @@ public class DefaultAttributes implements Attributes {
         return b.toString();
     }
 
-    private String stringify(Map<String, Object> map) {
+    private static String stringify(Map<String, Object> map) {
         StringBuilder b = new StringBuilder();
         for (Map.Entry<String, Object> attr : map.entrySet()) {
             b.append(" <").append(attr.getKey()).append(',');

@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class OneOfParam extends DefaultConstraintParam<Object> {
 
-    protected List<ConstraintParam> paramsList;
+    protected List<ConstraintParam<?>> paramsList;
 
     /**
      * Make a new multiple types parameter.
@@ -41,7 +41,7 @@ public class OneOfParam extends DefaultConstraintParam<Object> {
      * @param n         the parameter name
      * @param params    the list of different parameters types
      */
-    public OneOfParam(String n, ConstraintParam... params) {
+    public OneOfParam(String n, ConstraintParam<?>... params) {
         super(n, "oneOf");
         paramsList = Arrays.asList(params);
     }
@@ -50,7 +50,7 @@ public class OneOfParam extends DefaultConstraintParam<Object> {
     public String prettySignature() {
 
         StringBuilder b = new StringBuilder();
-        for (Iterator<ConstraintParam> ite = paramsList.iterator(); ite.hasNext(); ) {
+        for (Iterator<ConstraintParam<?>> ite = paramsList.iterator(); ite.hasNext(); ) {
             b.append(ite.next().prettySignature());
             if (ite.hasNext()) {
                 b.append(" || ");
@@ -71,7 +71,7 @@ public class OneOfParam extends DefaultConstraintParam<Object> {
             return null;
         }
 
-        for (ConstraintParam c : paramsList) {
+        for (ConstraintParam<?> c : paramsList) {
             if (c.isCompatibleWith(tree, op)) {
                 return c.transform(cb, tree, op);
             }
@@ -85,7 +85,7 @@ public class OneOfParam extends DefaultConstraintParam<Object> {
         if (o == IgnorableOperand.getInstance()) {
             return true;
         }
-        for (ConstraintParam c : paramsList) {
+        for (ConstraintParam<?> c : paramsList) {
             if (c.isCompatibleWith(t, o)) {
                 return true;
             }

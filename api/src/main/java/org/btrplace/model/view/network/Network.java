@@ -322,7 +322,7 @@ public class Network implements ModelView {
         NamingService<Node> nsNodes = null;
         NamingService<Switch> nsSwitches = null;
         if (mo != null) {
-            nsNodes = (NamingService<Node>) mo.getView(NamingService.ID + "node");
+            nsNodes = (NamingService<Node>) mo.getView(NamingService.ID + NamingService.NODE_ID);
             nsSwitches = (NamingService<Switch>) mo.getView(NamingService.ID + "switch");
         }
 
@@ -409,7 +409,7 @@ public class Network implements ModelView {
      * @param megabits  the amount in megabit (mb)
      * @return  a String containing a pretty formatted output
      */
-    private String bitsToString(long megabits) {
+    private static String bitsToString(long megabits) {
         int unit = 1000;
         if (megabits < unit) {
             return megabits + " mb";

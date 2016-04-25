@@ -93,7 +93,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
      * @return the container that was previously registered for a constraint. {@code null} if there was
      * no registered converter
      */
-    public ConstraintConverter register(ConstraintConverter<? extends Constraint> c) {
+    public ConstraintConverter<? extends Constraint> register(ConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);
         return json2java.put(c.getJSONId(), c);
 

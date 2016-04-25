@@ -810,7 +810,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertFalse(rp.addView(view));
     }
 
-    private int usedNodes(Mapping m) {
+    private static int usedNodes(Mapping m) {
         int nb = 0;
         for (Node n : m.getOnlineNodes()) {
             if (!m.getRunningVMs(n).isEmpty()) {
