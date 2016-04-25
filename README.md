@@ -32,6 +32,7 @@ Next, just declare the useful dependencies:
 * `org.btrplace:scheduler-choco`: the default implementation of the VM scheduler using the Constraint Programming
 solver Choco
 * `org.btrplace:scheduler-json`: to serialize models using JSON
+* `org.btrplace:scheduler-split`: to split the instances to solve
 * `org.btrplace:btrpsl`: a scripting language to express constraints
 * `org.btrplace:bench`: a simple CLI to perform benchmarks
 * `org.btrplace:scheduler-examples`: the examples illustrated in the [tutorials](https://github.com/btrplace/scheduler/wiki/Tutorials) section

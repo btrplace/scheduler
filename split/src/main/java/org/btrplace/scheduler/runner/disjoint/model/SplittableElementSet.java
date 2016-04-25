@@ -50,9 +50,11 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
      * @param idx the partition associated to each element. Format {@link org.btrplace.model.Element#id()} -> key
      */
     public SplittableElementSet(Collection<E> c, TIntIntHashMap idx) {
-        values = new ArrayList<>(c);
         this.index = idx;
-        Collections.sort(values, this);
+        Set<E> s = new TreeSet<>(this);
+        s.addAll(c);
+        values = new ArrayList<>(s);
+        //Collections.sort(values, this);
     }
 
     /**
