@@ -29,8 +29,6 @@ before_install:
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
-- python --version
-- pip install --user codecov
 install:
 - true
 jdk:
@@ -59,5 +57,5 @@ addons:
     branch_pattern: coverity
     notification_email: fabien.hermenier@unice.fr
 after_success:
-- codecov
+- bash <(curl -s https://codecov.io/bash)
 - curl http://testr-1154.appspot.com/assets/testR.py |python
