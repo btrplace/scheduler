@@ -42,6 +42,7 @@
         <module>examples</module>
         <module>btrpsl</module>
         <module>bench</module>
+        <module>split</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

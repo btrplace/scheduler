@@ -49,9 +49,6 @@ public class DependencyBasedPlanApplier extends DefaultPlanApplier {
             Set<Action> newFeasible = new HashSet<>();
             for (Action a : feasible) {
                 Set<Action> s = rpm.commit(a);
-                if (s == null) {
-                    return null;
-                }
                 fireAction(a);
                 newFeasible.addAll(s);
                 nbCommitted++;

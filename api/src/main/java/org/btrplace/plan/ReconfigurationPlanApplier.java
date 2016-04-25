@@ -48,7 +48,7 @@ public interface ReconfigurationPlanApplier {
      * Apply a plan.
      *
      * @param p the plan to apply
-     * @return the resulting model if the application succeed. {@code null} otherwise
+     * @return the resulting model if the application succeed.
      */
     Model apply(ReconfigurationPlan p);
 

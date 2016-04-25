@@ -244,6 +244,7 @@ public class CNetwork implements ChocoView {
         for(Switch sw : net.getSwitches()) {
 
             // Only if the capacity is limited
+            //TODO: should be > max usage in worst case
             if (sw.getCapacity() > 0) {
 
                 for (VM vm : rp.getVMs()) {

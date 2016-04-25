@@ -44,7 +44,7 @@ public class MappingFiller {
     public MappingFiller run(Node n, VM... vms) {
         for (VM vm : vms) {
             if (!map.addRunningVM(vm, n)) {
-                System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
+                throw new IllegalArgumentException("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
             }
         }
         return this;
@@ -53,7 +53,7 @@ public class MappingFiller {
     public MappingFiller sleep(Node n, VM... vms) {
         for (VM vm : vms) {
             if (!map.addSleepingVM(vm, n)) {
-                System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
+                throw new IllegalArgumentException("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
             }
         }
         return this;
@@ -76,7 +76,7 @@ public class MappingFiller {
     public MappingFiller off(Node... nodes) {
         for (Node n : nodes) {
             if (!map.addOfflineNode(n)) {
-                System.err.println("Unable to set '" + n + "' offline. Is it hosting VMs ?");
+                throw new IllegalArgumentException("Unable to set '" + n + "' offline. Is it hosting VMs ?");
             }
         }
         return this;

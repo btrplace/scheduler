@@ -17,25 +17,33 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
+        <groupId>org.btrplace</groupId>
         <version>0.46-SNAPSHOT</version>
     </parent>
-    <artifactId>scheduler-choco</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>split</artifactId>
     <name>scheduler-choco</name>
-    <description>Implementation of the VM scheduler that use
-        the Constraint Programming solver CHOCO to compute solutions.
+    <description>
+        Instance solvers that split a single problem into smaller parts
+        to solve them in parallel.
     </description>
+
 
     <dependencies>
         <dependency>
             <groupId>org.btrplace</groupId>
             <artifactId>scheduler-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btrplace</groupId>
+            <artifactId>scheduler-choco</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -47,12 +55,6 @@
             <groupId>org.choco-solver</groupId>
             <artifactId>choco-solver</artifactId>
             <version>3.3.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.btrplace</groupId>
-            <artifactId>scheduler-json</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
