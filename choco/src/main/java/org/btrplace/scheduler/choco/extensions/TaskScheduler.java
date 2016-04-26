@@ -204,7 +204,6 @@ public class TaskScheduler extends Constraint {
                 int h = dHosters[dt].getValue();
                 int t = dStarts[dt].getValue();
                 if (t < earlyStarts[h].getValue()) {
-                    //LOGGER.error("D-slice {} arrives too early: {}. Min expected: {}", dHosters[dt], t, earlyStarts[h]);
                     return ESat.FALSE;
                 }
                 for (int d = 0; d < nbDims; d++) {
@@ -220,7 +219,6 @@ public class TaskScheduler extends Constraint {
                 int h = cHosters[ct].getValue();
                 int t = cEnds[ct].getValue();
                 if (t > lastEnds[h].getValue()) {
-                    //LOGGER.error("C-slice {} leaves too late: {}. Max expected: {}", cHosters[ct], t, lastEnds[h]);
                     return ESat.FALSE;
                 }
                 for (int d = 0; d < nbDims; d++) {
@@ -233,12 +231,6 @@ public class TaskScheduler extends Constraint {
             boolean ok = true;
             for (int h = 0; h < nbHosts; h++) {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes[h]);
-                /*LOGGER.debug("--- Resource {} isSatisfied() ? ---", h);
-                LOGGER.debug(" before: {}/{} {}changes: "
-                        , Arrays.toString(initFree[h])
-                        , Arrays.toString(capacities[h])
-                        , prettyChanges(myChanges));
-                */
                 int[] moments = myChanges.keys(new int[myChanges.size()]);
                 Arrays.sort(moments);
                 for (int t : moments) {
@@ -250,24 +242,10 @@ public class TaskScheduler extends Constraint {
                         }
                     }
                     if (bad) {
-                        //LOGGER.info("/!\\ at {}: free={}", t, Arrays.toString(initFree[h]));
                         ok = false;
                         break;
                     }
                 }
-
-                /*if (LOGGER.isDebugEnabled()) {
-                    for (int x = 0; x < cHosters.length; x++) {
-                        if (cHosters[x].getValue() == h) {
-                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEnds[x].getValue() + " uses:" + Arrays.toString(cUsages[x]));
-                        }
-                    }
-                    for (int x = 0; x < dHosters.length; x++) {
-                        if (dHosters[x].getValue() == h) {
-                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStarts[x].getValue() + " uses:" + Arrays.toString(dUsages[x]));
-                        }
-                    }
-                }*/
             }
             return ESat.eval(ok);
         }

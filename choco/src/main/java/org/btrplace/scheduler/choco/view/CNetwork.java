@@ -125,7 +125,7 @@ public class CNetwork implements ChocoView {
                     continue;
                 } catch (ContradictionException e) {
                     rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
-                            " duration variables for " + vm + " migration: " + e.getMessage());
+                            " duration variables for " + vm + " migration", e);
                     return false;
                 }
             }
@@ -167,9 +167,9 @@ public class CNetwork implements ChocoView {
             durationMin = memUsed / bandwidth_octet;
             if (durationMin > hotDirtyDuration) {
 
-                durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
-                        (bandwidth_octet - coldDirtyRate));
-                durationHotPages = ((hotDirtySize / bandwidth_octet) * ((hotDirtySize / hotDirtyDuration) /
+                durationColdPages = (hotDirtySize + (durationMin - hotDirtyDuration) * coldDirtyRate) /
+                        (bandwidth_octet - coldDirtyRate);
+                durationHotPages = (hotDirtySize / bandwidth_octet * ((hotDirtySize / hotDirtyDuration) /
                         (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
                 durationTotal = durationMin + durationColdPages + durationHotPages;
             } else {
@@ -201,7 +201,7 @@ public class CNetwork implements ChocoView {
                 bandwidth.instantiateTo(maxBW, Cause.Null);
             } catch (ContradictionException e) {
                 rp.getLogger().error("Contradiction exception when trying to instantiate bandwidth and " +
-                        " duration variables for " + vm + " migration: " + e.getMessage());
+                        " duration variables for " + vm + " migration: ", e);
                 return false;
             }
         }

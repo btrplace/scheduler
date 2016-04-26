@@ -182,13 +182,11 @@ public class LocalTaskScheduler {
         updateDStartsSup(watchHosts);
     }
 
-    public boolean computeProfiles() throws ContradictionException {
-
-        boolean allinstantiated = true;
+    private boolean computeProfiles() throws ContradictionException {
 
         initProfile();
 
-        allinstantiated &= insertCSlices();
+        boolean allinstantiated = insertCSlices();
         allinstantiated &= insertDSlices();
 
         //Now transforms into an absolute profile
@@ -238,7 +236,7 @@ public class LocalTaskScheduler {
     private boolean insertCSlices() throws ContradictionException {
         boolean allinstantiated = true;
         // the cTasks
-        int lastInf = 0;//out.isEmpty() ? 0 : Integer.MAX_VALUE;
+        int lastInf = 0;
         for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
 
             cEnds[ct].updateUpperBound(last.getUB(), aCause);
@@ -246,26 +244,17 @@ public class LocalTaskScheduler {
 
             int tu = cEnds[ct].getUB();
             int tl = cEnds[ct].getLB();
-            if (tl > lastInf) {
-                lastInf = tl;
-            }
+            lastInf = Math.max(tl, lastInf);
 
-            boolean increasing = associatedToDSliceOnCurrentNode(ct) && increase(ct, associateDTask[ct]);
             // the cTask does not migrate and its demand increases on at least one dimension
-            if (increasing) {
-                if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug(me + " " + cEnds[ct].toString() + " increasing");
-                }
-                for (int d = 0; d < nbDims; d++) {
+            boolean increasing = associatedToDSliceOnCurrentNode(ct) && increase(ct, associateDTask[ct]);
+
+            for (int d = 0; d < nbDims; d++) {
+                if (increasing) {
                     profilesMax[d].put(tl, profilesMax[d].get(tl) - cUsages[ct][d]);
                     profilesMin[d].put(tu, profilesMin[d].get(tu) - cUsages[ct][d]);
-                }
-                // else the cTask free resources (by migration or decreased demand on all dimensions)
-            } else {
-                if (me == DEBUG || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug(me + " " + cEnds[ct].toString() + " < or non-associated (" + (associateDTask[ct] >= 0 ? dStarts[associateDTask[ct]].toString() : "no rev") + "?)");
-                }
-                for (int d = 0; d < nbDims; d++) {
+                } else {
+                    //the cTask free resources (by migration or decreasing demand on dimensions
                     profilesMin[d].put(tl, profilesMin[d].get(tl) - cUsages[ct][d]);
                     profilesMax[d].put(tu, profilesMax[d].get(tu) - cUsages[ct][d]);
                 }
@@ -340,9 +329,8 @@ public class LocalTaskScheduler {
         return b.toString();
     }
 
-    public boolean checkInvariant() throws ContradictionException {
-        for (int x = 0; x < sortedMinProfile.length; x++) {
-            int t = sortedMinProfile[x];
+    private boolean checkInvariant() throws ContradictionException {
+        for (int t : sortedMinProfile) {
             for (int d = 0; d < nbDims; d++) {
                 if (profilesMin[d].get(t) > capacities[me][d]) {
                     if (me == DEBUG || DEBUG == DEBUG_ALL) {
@@ -365,9 +353,6 @@ public class LocalTaskScheduler {
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
             if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
-                if (DEBUG == me || DEBUG == DEBUG_ALL) {
-                    LOGGER.debug("(" + me + ") - try to update lb of " + dStarts[i]);
-                }
 
                 int lastT = -1;
                 for (int x = sortedMinProfile.length - 1; x >= 0; x--) {
@@ -418,8 +403,7 @@ public class LocalTaskScheduler {
             if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
                 int lastT = -1;
-                for (int x = 0; x < sortedMinProfile.length; x++) {
-                    int t = sortedMinProfile[x];
+                for (int t : sortedMinProfile) {
                     if (t >= cEnds[i].getUB()) {
                         break;
                     } else if (t >= cEnds[i].getLB() &&

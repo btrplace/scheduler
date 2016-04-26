@@ -39,8 +39,8 @@ public class TransitionFactory {
      * Make a new factory.
      */
     public TransitionFactory() {
-        vmAMB2 = new HashMap<>();
-        nodeAMB = new HashMap<>();
+        vmAMB2 = new EnumMap<>(VMState.class);
+        nodeAMB = new EnumMap<>(NodeState.class);
     }
 
     /**
