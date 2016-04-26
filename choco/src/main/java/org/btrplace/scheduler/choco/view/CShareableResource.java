@@ -424,12 +424,8 @@ public class CShareableResource implements ChocoView {
             for (VM vm : rp.getSourceModel().getMapping().getRunningVMs(n)) {
                 usage += getSourceResource().getConsumption(vm);
                 if (usage > capa) {
-                    break;
+                    throw new SchedulerException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
                 }
-            }
-
-            if (usage > capa) {
-                throw new SchedulerException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
             }
         }
         return true;
