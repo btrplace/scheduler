@@ -198,39 +198,27 @@ public class AliasedCumulativesFiltering {
 
         for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
 
-            int t = cEnds[j].getLB();
-            if (t < lastInf) {
-                lastInf = t;
+            boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
+            if (DEBUG) {
+                LOGGER.debug("{} increasing", cEnds[j].toString());
             }
 
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                if (DEBUG) {
-                    LOGGER.debug("{} increasing", cEnds[j].toString());
-                }
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
-                }
+            int lb = cEnds[j].getLB();
+            int ub = cEnds[j].getUB();
 
-            } else {
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
-                }
+            lastInf = Math.min(lb, lastInf);
+            lastSup = Math.max(ub, lastSup);
 
+            for (int i = 0; i < nbDims; i++) {
+                if (increasing) {
+                    profilesMax[i].put(lb, profilesMax[i].get(lb) - cUsages[i][j]);
+                    profilesMin[i].put(ub, profilesMin[i].get(ub) - cUsages[i][j]);
+                } else {
+                    profilesMin[i].put(lb, profilesMin[i].get(lb) - cUsages[i][j]);
+                    profilesMax[i].put(ub, profilesMax[i].get(ub) - cUsages[i][j]);
+                }
             }
 
-            t = cEnds[j].getUB();
-            if (t > lastSup) {
-                lastSup = t;
-            }
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
-                }
-            } else {
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
-                }
-            }
         }
         if (out.isEmpty()) {
             lastInf = 0;
@@ -249,17 +237,12 @@ public class AliasedCumulativesFiltering {
                 profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
             }
         }
+
         //Now transforms into an absolute profile
-        sortedMinProfile = null;
         sortedMinProfile = profilesMin[0].keys();
         Arrays.sort(sortedMinProfile);
 
-        sortedMaxProfile = null;
         sortedMaxProfile = profilesMax[0].keys();
-        for (int i = 0; i < nbDims; i++) {
-            profilesMax[i].keys(sortedMaxProfile);
-        }
-
         Arrays.sort(sortedMaxProfile);
 
         for (int i = 0; i < nbDims; i++) {
