@@ -199,9 +199,6 @@ public class AliasedCumulativesFiltering {
         for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
 
             boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
-            if (DEBUG) {
-                LOGGER.debug("{} increasing", cEnds[j].toString());
-            }
 
             int lb = cEnds[j].getLB();
             int ub = cEnds[j].getUB();
