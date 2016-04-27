@@ -81,7 +81,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
             endVars.add(m.getEnd());
         }
         IntVar[] costs = endVars.toArray(new IntVar[endVars.size()]);
-        IntVar cost = VariableFactory.bounded(rp.makeVarLabel("costEndVars"), 0, Integer.MAX_VALUE/100, rp.getSolver());
+        IntVar cost = VariableFactory.bounded(rp.makeVarLabel("costEndVars"), 0, Integer.MAX_VALUE / 100, rp.getSolver());
         costConstraints.add(IntConstraintFactory.sum(costs, cost));
 
         // Set the objective, minimize the cost
@@ -99,7 +99,7 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
     /**
      * Inject a specific scheduling heuristic to the solver.
      *
-     * @param cost  the global cost variable.
+     * @param cost the global cost variable.
      */
     private void injectSchedulingHeuristic(IntVar cost) {
 

@@ -41,10 +41,10 @@ import java.util.Map;
  * @author Vincent Kherbache
  */
 public class NetworkConverterTest {
-    
+
     @Test
     public void switchesAndLinksTest() throws JSONConverterException {
-        
+
         Model mo = new DefaultModel();
         Network net = new Network();
         Switch s = net.newSwitch(1000);
@@ -54,7 +54,7 @@ public class NetworkConverterTest {
         mo.getMapping().addOnlineNode(n2);
         net.connect(1000, s, n1, n2);
         mo.attach(net);
-        
+
         ModelConverter mc = new ModelConverter();
         JSONObject jo = mc.toJSON(mo);
         System.err.println(jo);
@@ -96,6 +96,7 @@ public class NetworkConverterTest {
             for (StaticRouting.NodesMap nm2 : routes2.keySet()) {
                 Assert.assertTrue(nm.equals(nm2));
                 Assert.assertTrue(routes.get(nm).equals(routes2.get(nm2)));
-        }}
+            }
+        }
     }
 }

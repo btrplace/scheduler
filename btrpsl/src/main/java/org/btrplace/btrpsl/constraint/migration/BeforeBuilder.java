@@ -49,10 +49,10 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
     /**
      * Build a precedence constraint.
      *
-     * @param t     the current tree
-     * @param args  can be a non-empty set of vms ({@see Precedence} constraint) or
-     *              a timestamp string ({@see Deadline} constraint)
-     * @return  a constraint
+     * @param t    the current tree
+     * @param args can be a non-empty set of vms ({@see Precedence} constraint) or
+     *             a timestamp string ({@see Deadline} constraint)
+     * @return a constraint
      */
     @Override
     public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
@@ -79,16 +79,14 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
                 return Collections.emptyList();
             }
             return Precedence.newPrecedence(s, s2);
-        }
-        else if (obj instanceof String) {
+        } else if (obj instanceof String) {
             String timestamp = (String) obj;
             if ("".equals(timestamp)) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a non-empty string");
                 return Collections.emptyList();
             }
             return Deadline.newDeadline(s, timestamp);
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
     }

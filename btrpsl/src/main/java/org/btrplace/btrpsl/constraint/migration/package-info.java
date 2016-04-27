@@ -17,6 +17,6 @@
  */
 
 /**
- *  Constraints related to migration control.
+ * Constraints related to migration control.
  */
 package org.btrplace.btrpsl.constraint.migration;

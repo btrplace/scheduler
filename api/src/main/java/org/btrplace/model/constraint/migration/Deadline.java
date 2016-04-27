@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * A constraint to force the maximum end time of a migration by an absolute
  * or relative deadline in the form of a timestamp.
- * 
+ *
  * @author Vincent Kherbache
  */
 public class Deadline implements SatConstraint {
@@ -54,7 +54,7 @@ public class Deadline implements SatConstraint {
     /**
      * Get the deadline timestamp.
      *
-     * @return  the timestamp
+     * @return the timestamp
      */
     public String getTimestamp() {
         return timestamp;

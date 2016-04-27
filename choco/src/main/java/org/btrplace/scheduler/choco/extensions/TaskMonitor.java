@@ -28,6 +28,7 @@ import org.chocosolver.solver.variables.events.IntEventType;
 
 /**
  * Monitor to maintain start + duration = end
+ *
  * @author Fabien Hermenier
  */
 public class TaskMonitor implements IVariableMonitor<IntVar> {

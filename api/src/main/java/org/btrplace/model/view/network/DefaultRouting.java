@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Default implementation of {@link Routing}.
  * Allows to retrieve physical path (L2) between network elements by looking at physical connections.
- *
+ * <p>
  * If instantiated manually, it should be first attached to an existing network view,
  * see {@link #setNetwork(Network)}.
  *

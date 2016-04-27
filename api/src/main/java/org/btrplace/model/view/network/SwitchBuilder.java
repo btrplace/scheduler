@@ -38,8 +38,8 @@ public interface SwitchBuilder extends Copyable<SwitchBuilder> {
     /**
      * Generate a new Switch.
      *
-     * @param id    the identifier to use for the Switch.
-     * @return      a Switch or {@code null} if the identifier is already used.
+     * @param id the identifier to use for the Switch.
+     * @return a Switch or {@code null} if the identifier is already used.
      */
     Switch newSwitch(int id, int capacity);
 
@@ -54,8 +54,8 @@ public interface SwitchBuilder extends Copyable<SwitchBuilder> {
     /**
      * Check if a given Switch has been defined fot this network view.
      *
-     * @param   sw the Switch to check.
-     * @return  {@code true} if the Switch already exists.
+     * @param sw the Switch to check.
+     * @return {@code true} if the Switch already exists.
      */
     boolean contains(Switch sw);
 }

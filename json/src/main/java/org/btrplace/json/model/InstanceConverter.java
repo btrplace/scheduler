@@ -61,6 +61,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     /**
      * Quick deserialization for a pure legacy BtrPlace instance.
      * The file must be encoded in UTF-8.
+     *
      * @param path the file containing the json message. If the file name ends with ".gz", a gzipped file is assumed
      * @return the resulting instance
      * @throws IllegalArgumentException if the json format is incorrect

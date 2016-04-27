@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 /**
  * A network view that allows to create switches and connect them to nodes or together using links.
  * It contains the mapping between connected physical elements and allows to retrieve a full path
- * between two nodes through a specific routing implementation {@link Routing#getPath(Node, Node)} 
- * 
+ * between two nodes through a specific routing implementation {@link Routing#getPath(Node, Node)}
+ *
  * @author Vincent Kherbache
  * @see Routing#getPath(Node, Node)
  */
@@ -70,7 +70,7 @@ public class Network implements ModelView {
      * Make a new custom instance relying on a given switch builder, a {@link DefaultRouting} and a
      * {@link DefaultLinkBuilder}.
      *
-     * @param sb    the switch builder to use
+     * @param sb the switch builder to use
      */
     public Network(SwitchBuilder sb) {
         this(new DefaultRouting(), sb, new DefaultLinkBuilder());
@@ -80,7 +80,7 @@ public class Network implements ModelView {
      * Make a new custom instance relying on a given link builder, a {@link DefaultRouting} and a
      * {@link DefaultSwitchBuilder}.
      *
-     * @param lb    the link builder to use
+     * @param lb the link builder to use
      */
     public Network(LinkBuilder lb) {
         this(new DefaultRouting(), new DefaultSwitchBuilder(), lb);
@@ -90,7 +90,7 @@ public class Network implements ModelView {
      * Make a new custom instance relying on a given routing implementation, a {@link DefaultSwitchBuilder} and a
      * {@link DefaultLinkBuilder}.
      *
-     * @param routing   the routing implementation to use
+     * @param routing the routing implementation to use
      */
     public Network(Routing routing) {
         this(routing, new DefaultSwitchBuilder(), new DefaultLinkBuilder());
@@ -100,8 +100,8 @@ public class Network implements ModelView {
      * Make a new custom instance relying on a given routing implementation, a given switch builder, and a
      * {@link DefaultLinkBuilder}.
      *
-     * @param routing   the routing implementation to use
-     * @param sb        the switch builder to use
+     * @param routing the routing implementation to use
+     * @param sb      the switch builder to use
      */
     public Network(Routing routing, SwitchBuilder sb) {
         this(routing, sb, new DefaultLinkBuilder());
@@ -111,8 +111,8 @@ public class Network implements ModelView {
      * Make a new custom instance relying on a given routing implementation, a given link builder, and a
      * {@link DefaultSwitchBuilder}.
      *
-     * @param routing   the routing implementation to use
-     * @param lb        the link builder to use
+     * @param routing the routing implementation to use
+     * @param lb      the link builder to use
      */
     public Network(Routing routing, LinkBuilder lb) {
         this(routing, new DefaultSwitchBuilder(), lb);
@@ -122,9 +122,9 @@ public class Network implements ModelView {
      * Make a new full custom instance relying on a given routing implementation, a given switch builder, and a
      * given link builder
      *
-     * @param routing   the routing implementation to use
-     * @param sb        the switch builder to use
-     * @param lb        the link builder to use
+     * @param routing the routing implementation to use
+     * @param sb      the switch builder to use
+     * @param lb      the link builder to use
      */
     public Network(Routing routing, SwitchBuilder sb, LinkBuilder lb) {
         switches = new ArrayList<>();
@@ -139,7 +139,7 @@ public class Network implements ModelView {
      *
      * @param id       the switch identifier
      * @param capacity the switch maximal capacity (put a nul or negative number for non-blocking switch)
-     * @return  the switch
+     * @return the switch
      */
     public Switch newSwitch(int id, int capacity) {
         Switch s = swBuilder.newSwitch(id, capacity);
@@ -247,8 +247,8 @@ public class Network implements ModelView {
 
     /**
      * Get the full list of links
-     * 
-     * @return  the list of links
+     *
+     * @return the list of links
      */
     public List<Link> getLinks() {
         return links;
@@ -256,31 +256,34 @@ public class Network implements ModelView {
 
     /**
      * Get the full list of switches
-     * 
-     * @return  the list of switches
+     *
+     * @return the list of switches
      */
-    public List<Switch> getSwitches() { return switches; }
+    public List<Switch> getSwitches() {
+        return switches;
+    }
 
     /**
      * Get the routing implementation
      *
      * @return the routing used
      */
-    public Routing getRouting() { return routing; }
+    public Routing getRouting() {
+        return routing;
+    }
 
     /**
      * Get the list of links connected to a given physical element
-     * 
-     * @param pe    the physical element
-     * @return  the list of links
+     *
+     * @param pe the physical element
+     * @return the list of links
      */
     public List<Link> getConnectedLinks(PhysicalElement pe) {
         List<Link> myLinks = new ArrayList<>();
         for (Link l : this.links) {
             if (l.getElement().equals(pe)) {
                 myLinks.add(l);
-            }
-            else if (l.getSwitch().equals(pe)) {
+            } else if (l.getSwitch().equals(pe)) {
                 myLinks.add(l);
             }
         }
@@ -289,8 +292,8 @@ public class Network implements ModelView {
 
     /**
      * Get the full list of nodes that have been connected into the network
-     * 
-     * @return  the list of nodes
+     *
+     * @return the list of nodes
      */
     public List<Node> getConnectedNodes() {
         List<Node> nodes = new ArrayList<>();
@@ -305,10 +308,10 @@ public class Network implements ModelView {
     /**
      * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
      *
-     * @param mo                the model to use, it may contains naming services for switches or nodes that will
-     *                          replace the generic names mainly based on the id number.
-     * @param out               the output dot file to create
-     * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams)
+     * @param mo              the model to use, it may contains naming services for switches or nodes that will
+     *                        replace the generic names mainly based on the id number.
+     * @param out             the output dot file to create
+     * @param fromLeftToRight if true: force diagram's shapes to be placed side by side (create larger diagrams)
      * @throws IOException if an error occurred while writing
      */
     public void generateDot(Model mo, String out, boolean fromLeftToRight) throws IOException {
@@ -332,7 +335,7 @@ public class Network implements ModelView {
                 dot.append("node").
                         append(String.valueOf(n.id())).
                         append(" [shape=box, color=green, label=\"").
-                        append((nsNodes==null)?"Node "+String.valueOf(n.id()):nsNodes.resolve(n)).
+                        append((nsNodes == null) ? "Node " + String.valueOf(n.id()) : nsNodes.resolve(n)).
                         append("\"];\n");
             }
             // Draw switches
@@ -341,7 +344,7 @@ public class Network implements ModelView {
                         append(String.valueOf(s.id())).
                         append(" [shape=circle, color=blue, label=\"").
                         append("Switch " + String.valueOf(s.id())).
-                        append((s.getCapacity()>0)?"\\n["+bitsToString(s.getCapacity())+"/s"+"]":"");
+                        append((s.getCapacity() > 0) ? "\\n[" + bitsToString(s.getCapacity()) + "/s" + "]" : "");
                 dot.append("\"];\n");
             }
             // Draw links
@@ -352,8 +355,7 @@ public class Network implements ModelView {
                                 append(" -> ");
                         if (l.getElement() instanceof Node) {
                             dot.append("node").append(String.valueOf(((Node) l.getElement()).id()));
-                        }
-                        else {
+                        } else {
                             Switch dsw = l.getSwitch().equals(s) ? (Switch) l.getElement() : l.getSwitch();
                             dot.append("switch").append(String.valueOf(dsw.id()));
                         }
@@ -371,8 +373,8 @@ public class Network implements ModelView {
     /**
      * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
      *
-     * @param out               the output dot file to create
-     * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams) 
+     * @param out             the output dot file to create
+     * @param fromLeftToRight if true: force diagram's shapes to be placed side by side (create larger diagrams)
      * @throws IOException if an error occurred while writing
      */
     public void generateDot(String out, boolean fromLeftToRight) throws IOException {
@@ -382,7 +384,7 @@ public class Network implements ModelView {
     /**
      * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
      *
-     * @param out   the output dot file to create
+     * @param out the output dot file to create
      * @throws IOException if an error occurred while writing
      */
     public void generateDot(String out) throws IOException {
@@ -402,8 +404,8 @@ public class Network implements ModelView {
     /**
      * Convert megabits into a more 'human readable' format (from 'long' to 'String')
      *
-     * @param megabits  the amount in megabit (mb)
-     * @return  a String containing a pretty formatted output
+     * @param megabits the amount in megabit (mb)
+     * @return a String containing a pretty formatted output
      */
     private static String bitsToString(long megabits) {
         int unit = 1000;
@@ -411,18 +413,18 @@ public class Network implements ModelView {
             return megabits + " mb";
         }
         int exp = (int) (Math.log(megabits) / Math.log(unit));
-        return new DecimalFormat("#.##").format(megabits / Math.pow(unit, exp)) + "GTPE".charAt(exp-1) + "b";
+        return new DecimalFormat("#.##").format(megabits / Math.pow(unit, exp)) + "GTPE".charAt(exp - 1) + "b";
     }
 
     /**
      * Create and attach a default network view to the given model.
      * Basically, the Network consists of a main non-blocking switch connected
      * to all the existing nodes in the model using 1Gbit/sec. links.
-     *
+     * <p>
      * Note: replace the previous Network view attached to the model (if exists).
-     * 
-     * @param mo    the model to add/replace the Network view
-     * @return  the new 'default' network view, already attached to the given model
+     *
+     * @param mo the model to add/replace the Network view
+     * @return the new 'default' network view, already attached to the given model
      */
     public static Network createDefaultNetwork(Model mo) {
         return createDefaultNetwork(mo, 1000);
@@ -433,12 +435,12 @@ public class Network implements ModelView {
      * Basically, the Network consists of a main non-blocking switch connected
      * to all the existing nodes in the model using links with the given
      * bandwidth in Mbit/sec.
-     *
+     * <p>
      * Note: replace the previous Network view attached to the model (if exists).
      *
-     * @param mo    the model to add/replace the Network view
-     * @param bw    the links bandwidth
-     * @return  the new 'default' network view, already attached to the given model
+     * @param mo the model to add/replace the Network view
+     * @param bw the links bandwidth
+     * @return the new 'default' network view, already attached to the given model
      */
     public static Network createDefaultNetwork(Model mo, int bw) {
         Network net = new Network();

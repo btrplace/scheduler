@@ -36,8 +36,9 @@ import java.util.List;
 
 /**
  * Serialize/Un-serialize a {@link org.btrplace.model.view.network.Network} view.
- *
+ * <p>
  * By default, it also registers a {@link DefaultRoutingConverter} and a {@link StaticRoutingConverter}.
+ *
  * @author Vincent Kherbache
  */
 public class NetworkConverter extends ModelViewConverter<Network> {
@@ -64,6 +65,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
 
     /**
      * Remove a routing converter.
+     *
      * @param r the converter to remove
      * @return {@code true} iff it has been removed
      */
@@ -78,7 +80,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         container.put("switches", switchesToJSON(net.getSwitches()));
         container.put("links", linksToJSON(net.getLinks()));
         container.put("routing", routingToJSON(net.getRouting()));
-        
+
         // TODO: manage possible custom LinkBuilder and SwitchBuilder implementations.
 
         return container;
@@ -86,7 +88,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
 
     @Override
     public Network fromJSON(JSONObject o) throws JSONConverterException {
-        
+
         String id = requiredString(o, "id");
         // Create, setup, and return the Network
 
@@ -109,7 +111,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      * Convert a Switch to a JSON object.
      *
      * @param s the switch to convert
-     * @return  the JSON object
+     * @return the JSON object
      */
     public JSONObject switchToJSON(Switch s) {
         JSONObject o = new JSONObject();
@@ -136,7 +138,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      * Convert a PhysicalElement to a JSON object.
      *
      * @param pe the physical element to convert
-     * @return  the JSON object
+     * @return the JSON object
      */
     public JSONObject physicalElementToJSON(PhysicalElement pe) throws JSONConverterException {
         JSONObject o = new JSONObject();
@@ -156,7 +158,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      * Convert a Link to a JSON object.
      *
      * @param s the switch to convert
-     * @return  the JSON object
+     * @return the JSON object
      */
     public JSONObject linkToJSON(Link s) throws JSONConverterException {
         JSONObject o = new JSONObject();
@@ -183,10 +185,10 @@ public class NetworkConverter extends ModelViewConverter<Network> {
 
     /**
      * Convert a Routing implementation into a JSON object
-     * 
-     * @param routing   the routing implementation to convert
-     * @return  the JSON formatted routing object
-     * @throws  JSONConverterException if the Routing implementation is not known
+     *
+     * @param routing the routing implementation to convert
+     * @return the JSON formatted routing object
+     * @throws JSONConverterException if the Routing implementation is not known
      */
     public JSONObject routingToJSON(Routing routing) throws JSONConverterException {
 
@@ -211,9 +213,9 @@ public class NetworkConverter extends ModelViewConverter<Network> {
 
     /**
      * Convert a JSON array of switches to a Java List of switches.
+     *
      * @param net the network to populate
-     * @param a the json array
-
+     * @param a   the json array
      */
     public void switchesFromJSON(Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {
@@ -225,7 +227,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      * Convert a JSON physical element object to a Java PhysicalElement object.
      *
      * @param o the JSON object to convert the physical element to convert
-     * @return  the PhysicalElement
+     * @return the PhysicalElement
      */
     public PhysicalElement physicalElementFromJSON(Network net, JSONObject o) throws JSONConverterException {
         String type = requiredString(o, "type");
@@ -247,11 +249,12 @@ public class NetworkConverter extends ModelViewConverter<Network> {
         }
         return null;
     }
+
     /**
      * Convert a JSON link object into a Java Link object.
      *
      * @param net the network to populate
-     * @param   o the JSON object to convert
+     * @param o   the JSON object to convert
      */
     public void linkFromJSON(Network net, JSONObject o) throws JSONConverterException {
         net.connect(requiredInt(o, "id"),
@@ -265,7 +268,7 @@ public class NetworkConverter extends ModelViewConverter<Network> {
      * Convert a JSON array of links to a Java List of links.
      *
      * @param net the network to populate
-     * @param a the json array
+     * @param a   the json array
      */
     public void linksFromJSON(Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {
@@ -277,8 +280,8 @@ public class NetworkConverter extends ModelViewConverter<Network> {
     /**
      * Convert a JSON routing object into the corresponding java Routing implementation.
      *
-     * @param   o the JSON object to convert
-     * @throws  JSONConverterException if the Routing implementation is not known
+     * @param o the JSON object to convert
+     * @throws JSONConverterException if the Routing implementation is not known
      */
     public Routing routingFromJSON(JSONObject o) throws JSONConverterException {
 

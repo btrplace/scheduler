@@ -72,6 +72,7 @@ public class BtrPlaceTree extends CommonTree {
 
     /**
      * Report an error from an exception for the current token
+     *
      * @param e the exception
      * @return an empty operand
      */

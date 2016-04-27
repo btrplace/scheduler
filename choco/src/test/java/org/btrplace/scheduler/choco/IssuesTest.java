@@ -451,6 +451,7 @@ public class IssuesTest {
     public static void main(String[] args) throws Exception {
         testIssue89();
     }
+
     @Test
     public static void testIssue89() throws Exception {
         final Model model = new DefaultModel();

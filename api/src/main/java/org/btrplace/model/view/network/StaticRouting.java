@@ -25,7 +25,7 @@ import java.util.*;
 /**
  * Specific implementation of {@link Routing}.
  * If a specific path is not found from static routing rules, it automatically looks for physical connections.
- *
+ * <p>
  * If instantiated manually, it should be first attached to an existing network view, see {@link #setNetwork(Network)}.
  *
  * @author Vincent Kherbache
@@ -44,9 +44,9 @@ public class StaticRouting extends Routing {
 
     /**
      * Get the static route between two given nodes.
-     * 
-     * @param nm    the nodes map
-     * @return  the static route
+     *
+     * @param nm the nodes map
+     * @return the static route
      */
     public List<Link> getStaticRoute(NodesMap nm) {
         return routes.get(nm);
@@ -55,7 +55,7 @@ public class StaticRouting extends Routing {
     /**
      * Get all the registered static routes.
      *
-     * @return  the static routes
+     * @return the static routes
      */
     public Map<NodesMap, List<Link>> getStaticRoutes() {
         return routes;

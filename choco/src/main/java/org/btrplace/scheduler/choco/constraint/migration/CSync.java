@@ -76,7 +76,7 @@ public class CSync implements ChocoConstraint {
         Model mo = rp.getSourceModel();
 
         // Not enough VMs
-        if(sec.getInvolvedVMs().size() < 2) {
+        if (sec.getInvolvedVMs().size() < 2) {
             return true;
         }
 
@@ -96,14 +96,14 @@ public class CSync implements ChocoConstraint {
         // Get the networking view if attached
         Network net = Network.get(mo);
 
-        for (int i=0 ; i < migrationList.size(); i++) {
-            for (int j=i+1 ; j < migrationList.size(); j++) {
+        for (int i = 0; i < migrationList.size(); i++) {
+            for (int j = i + 1; j < migrationList.size(); j++) {
                 RelocatableVM vm1 = migrationList.get(i);
                 RelocatableVM vm2 = migrationList.get(j);
 
                 // Manage network related exceptions
                 if (net != null) {
-                    if (!vm1.getDSlice().getHoster().isInstantiated() || !vm2.getDSlice().getHoster().isInstantiated()){
+                    if (!vm1.getDSlice().getHoster().isInstantiated() || !vm2.getDSlice().getHoster().isInstantiated()) {
                         RelocatableVM vm = vm2;
                         if (!vm1.getDSlice().getHoster().isInstantiated()) {
                             vm = vm1;

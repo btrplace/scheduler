@@ -47,7 +47,7 @@ public class CNetworkTest {
 
     /**
      * Test the instantiation and the creation of the variables.
-     * 
+     *
      * @throws org.btrplace.scheduler.SchedulerException if an error occurs during the solving process (it should not)
      */
     @Test
@@ -103,7 +103,7 @@ public class CNetworkTest {
         Assert.assertEquals(mig.getBandwidth(), bw);
 
         // Check the migration duration computation
-        double bandwidth_octet = mig.getBandwidth()/9, durationMin, durationColdPages, durationHotPages, durationTotal;
+        double bandwidth_octet = mig.getBandwidth() / 9, durationMin, durationColdPages, durationHotPages, durationTotal;
         durationMin = memUsed / bandwidth_octet;
         durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
                 (bandwidth_octet - coldDirtyRate));

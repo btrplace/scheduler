@@ -79,6 +79,7 @@ public class ImportStatement extends BtrPlaceTree {
         }
         return scriptId.toString();
     }
+
     @Override
     public BtrpOperand go(BtrPlaceTree parent) {
         String id = scriptId();

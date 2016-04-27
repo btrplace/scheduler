@@ -106,15 +106,15 @@ public class RelocatableVM implements KeepRunningVM {
         // Default values
         start = rp.getStart();
         end = rp.getStart();
-        duration =  VariableFactory.zero(s);
+        duration = VariableFactory.zero(s);
         state = VariableFactory.one(s);
-        
+
         // If not manageable, the VM stays on the current host
         if (!p.getManageableVMs().contains(e)) {
             stay = VariableFactory.one(s);
             doReinstantiation = VariableFactory.zero(s);
             manageable = false;
-            
+
             IntVar host = rp.makeCurrentHost(vm, PREFIX_STAY, vm, ").host");
             cSlice = new SliceBuilder(rp, vm, PREFIX_STAY, vm.toString(), ").cSlice")
                     .setHoster(host)
@@ -158,7 +158,7 @@ public class RelocatableVM implements KeepRunningVM {
         // Compute the re-instantiation duration
         int reInstantiateDuration = bootDuration + forgeD;
         reInstantiateDuration = forgeD; // Compliant with CMaxOnlineTest and others
-        
+
         // Get the networking view if attached
         Network network = Network.get(mo);
         IntVar migrationDuration;
@@ -169,7 +169,7 @@ public class RelocatableVM implements KeepRunningVM {
 
             // Create unbounded/large domain vars for migration duration and bandwidth
             migrationDuration = p.makeUnboundedDuration(PREFIX, vm, ").duration");
-            bandwidth = VF.bounded(PREFIX + vm + ").bandwidth", 0, Integer.MAX_VALUE/100, s);
+            bandwidth = VF.bounded(PREFIX + vm + ").bandwidth", 0, Integer.MAX_VALUE / 100, s);
         }
         // No networking view, set the duration from the evaluator
         else {
@@ -192,7 +192,7 @@ public class RelocatableVM implements KeepRunningVM {
             // Re-instantiate or migrate
             // (Prefer the re-instantiation if the duration are the same, otherwise choose the min)
             LCF.ifThenElse(LCF.or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // can be instantiated externally !
-                                  new Arithmetic(migrationDuration, Operator.LT, reInstantiateDuration)),
+                    new Arithmetic(migrationDuration, Operator.LT, reInstantiateDuration)),
                     new Arithmetic(duration, Operator.EQ, migrationDuration),
                     new Arithmetic(duration, Operator.EQ, reInstantiateDuration)
             );
@@ -250,39 +250,38 @@ public class RelocatableVM implements KeepRunningVM {
 
                 if (getBandwidth() != null) {
                     a = new MigrateVM(vm, src, dst, st, ed, s.getIntVal(getBandwidth()));
-                }
-                else {
+                } else {
                     a = new MigrateVM(vm, src, dst, st, ed);
                 }
                 boolean b = plan.add(a);
                 assert b;
-            // Re-instantiation
+                // Re-instantiation
             } else {
                     VM newVM = rp.cloneVM(vm);
                     if (newVM == null) {
                         rp.getLogger().error("Unable to get a new int to plan the re-instantiate of VM {}", vm);
                         return false;
                     }
-                    org.btrplace.plan.event.ForgeVM fvm = new org.btrplace.plan.event.ForgeVM(
-                            newVM,
-                            s.getIntVal(dSlice.getStart()) - 
-                                    dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm),
-                            s.getIntVal(dSlice.getStart())
-                    );
+                org.btrplace.plan.event.ForgeVM fvm = new org.btrplace.plan.event.ForgeVM(
+                        newVM,
+                        s.getIntVal(dSlice.getStart()) -
+                                dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm),
+                        s.getIntVal(dSlice.getStart())
+                );
                     //forge the new VM from a template
-                    boolean b = plan.add(fvm);
-                    assert b;
+                boolean b = plan.add(fvm);
+                assert b;
                     //Boot the new VM
                     int endForging = fvm.getEnd();
-                    org.btrplace.plan.event.BootVM boot = new org.btrplace.plan.event.BootVM(
-                            newVM,
-                            dst,
-                            endForging,
-                            endForging + dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, newVM)
-                    );
+                org.btrplace.plan.event.BootVM boot = new org.btrplace.plan.event.BootVM(
+                        newVM,
+                        dst,
+                        endForging,
+                        endForging + dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, newVM)
+                );
                     boot.addEvent(Action.Hook.PRE, new SubstitutedVMEvent(vm, newVM));
-                    return plan.add(boot) && plan.add(new org.btrplace.plan.event.ShutdownVM(
-                                                        vm, src, boot.getEnd(), s.getIntVal(cSlice.getEnd())));
+                return plan.add(boot) && plan.add(new org.btrplace.plan.event.ShutdownVM(
+                        vm, src, boot.getEnd(), s.getIntVal(cSlice.getEnd())));
             }
         }
         return true;
@@ -292,7 +291,9 @@ public class RelocatableVM implements KeepRunningVM {
         return bandwidth;
     }
 
-    public boolean usesPostCopy() { return postCopy; }
+    public boolean usesPostCopy() {
+        return postCopy;
+    }
 
     @Override
     public VM getVM() {

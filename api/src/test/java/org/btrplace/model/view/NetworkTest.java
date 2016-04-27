@@ -61,7 +61,7 @@ public class NetworkTest {
             Assert.assertTrue(l.getCapacity() == 2000);
             Assert.assertTrue(l.getSwitch() == s || l.getElement() instanceof Switch);
         }
-        
+
         Assert.assertTrue(net.getRouting().getPath(n1, n2).size() == 2);
         Assert.assertTrue(net.getRouting().getPath(n1, n2).containsAll(net.getLinks()));
     }

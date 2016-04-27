@@ -66,7 +66,7 @@ public class CSerialize implements ChocoConstraint {
         Solver s = rp.getSolver();
 
         // Not enough VMs
-        if(ser.getInvolvedVMs().size() < 2) {
+        if (ser.getInvolvedVMs().size() < 2) {
             return true;
         }
 

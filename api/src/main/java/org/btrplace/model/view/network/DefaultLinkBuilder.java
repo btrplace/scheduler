@@ -25,7 +25,7 @@ import java.util.BitSet;
 /**
  * Default implementation of {@link LinkBuilder}.
  * Use a BitSet to generate identifiers and avoid duplication.
- * 
+ *
  * @author Vincent Kherbache
  */
 public class DefaultLinkBuilder implements LinkBuilder {

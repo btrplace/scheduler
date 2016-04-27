@@ -67,7 +67,7 @@ public class CPrecedence implements ChocoConstraint {
         Solver s = rp.getSolver();
 
         // Not enough / too much VMs
-        if(pr.getInvolvedVMs().size() != 2) {
+        if (pr.getInvolvedVMs().size() != 2) {
             rp.getLogger().error("Unable to inject the constraint '" + pr + "', the amount of involved VMs must be 2.");
             return false;
         }

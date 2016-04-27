@@ -39,8 +39,8 @@ public interface LinkBuilder extends Copyable<LinkBuilder> {
     /**
      * Generate a new Link.
      *
-     * @param id    the identifier to use for the Link.
-     * @return      a Link or {@code null} if the identifier is already used.
+     * @param id the identifier to use for the Link.
+     * @return a Link or {@code null} if the identifier is already used.
      */
     Link newLink(int id, int capacity, Switch sw, PhysicalElement pe);
 
@@ -55,8 +55,8 @@ public interface LinkBuilder extends Copyable<LinkBuilder> {
     /**
      * Check if a given Link has been defined fot this network view.
      *
-     * @param   l the Link to check.
-     * @return  {@code true} if the Link already exists.
+     * @param l the Link to check.
+     * @return {@code true} if the Link already exists.
      */
     boolean contains(Link l);
 }

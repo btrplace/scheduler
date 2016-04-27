@@ -36,7 +36,7 @@ public class Serialize implements SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms   a list of at least 2 VMs to serialize
+     * @param vms a list of at least 2 VMs to serialize
      */
     public Serialize(Set<VM> vms) {
         this.vms = vms;
@@ -45,8 +45,8 @@ public class Serialize implements SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vm1   the first VM to serialize
-     * @param vm2   the second VM to serialize
+     * @param vm1 the first VM to serialize
+     * @param vm2 the second VM to serialize
      */
     public Serialize(VM vm1, VM vm2) {
         this(new HashSet<>(Arrays.asList(vm1, vm2)));

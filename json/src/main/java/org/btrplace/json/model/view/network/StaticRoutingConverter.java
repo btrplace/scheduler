@@ -34,8 +34,9 @@ import java.util.Map;
 
 /**
  * A converter to (un-)serialise a {@link StaticRouting}.
- *
+ * <p>
  * All the routes are serialized.
+ *
  * @author Fabien Hermenier
  */
 public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {

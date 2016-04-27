@@ -25,6 +25,7 @@ import org.btrplace.model.view.network.Routing;
 
 /**
  * A converter to (un-)serialise a {@link DefaultRouting}.
+ *
  * @author Fabien Hermenier
  */
 public class DefaultRoutingConverter extends RoutingConverter<DefaultRouting> {

@@ -85,7 +85,9 @@ public class CNetwork implements ChocoView {
     }
 
     @Override
-    public String getIdentifier() { return net.getIdentifier(); }
+    public String getIdentifier() {
+        return net.getIdentifier();
+    }
 
     @Override
     public boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
@@ -241,7 +243,7 @@ public class CNetwork implements ChocoView {
         }
 
         // Switches capacity limitation
-        for(Switch sw : net.getSwitches()) {
+        for (Switch sw : net.getSwitches()) {
 
             // Only if the capacity is limited
             //TODO: should be > max usage in worst case

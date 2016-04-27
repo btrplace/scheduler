@@ -35,6 +35,7 @@ public interface NetworkElement {
 
     /**
      * Get the bandwidth capacity.
+     *
      * @return a positive value
      */
     int getCapacity();

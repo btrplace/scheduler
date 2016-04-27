@@ -47,7 +47,7 @@ public class CPrecedenceTest {
 
     @Test
     public void testOk() throws SchedulerException {
-        
+
         // New default model
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
@@ -86,7 +86,8 @@ public class CPrecedenceTest {
         rcCPU.setCapacity(srcNode1, cpu_src).setCapacity(srcNode2, cpu_src).setCapacity(dstNode, cpu_dst);
 
         // Set VM attributes 'memory used', 'hot dirty page size', 'hot dirty page duration' and 'cold dirty pages rate'
-        int vm_mu = 6000, vm_mds = 46, vm_mdd = 2; double vm_cdr = 23.6;
+        int vm_mu = 6000, vm_mds = 46, vm_mdd = 2;
+        double vm_cdr = 23.6;
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 6 GiB of memory
         mo.getAttributes().put(vm1, "memUsed", vm_mu);
         // vm2 consumes 6 GiB memory and has a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"

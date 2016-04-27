@@ -48,7 +48,7 @@ public class SyncBuilder extends DefaultSatConstraintBuilder {
      *
      * @param t    the current tree
      * @param args must be 1 set of vms. The set must not be empty
-     * @return  a constraint
+     * @return a constraint
      */
     @Override
     public List<Sync> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {

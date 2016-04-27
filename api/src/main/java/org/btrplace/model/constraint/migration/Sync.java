@@ -36,10 +36,11 @@ import java.util.Objects;
 public class Sync implements SatConstraint {
 
     private Collection<VM> vms;
+
     /**
      * Make a new constraint.
      *
-     * @param vms   a list of at least 2 VMs to synchronize
+     * @param vms a list of at least 2 VMs to synchronize
      */
     public Sync(Collection<VM> vms) {
         this.vms = vms;
@@ -48,8 +49,8 @@ public class Sync implements SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vm1   the first VM to synchronize
-     * @param vm2   the second VM t synchronize
+     * @param vm1 the first VM to synchronize
+     * @param vm2 the second VM t synchronize
      */
     public Sync(VM vm1, VM vm2) {
         this(Arrays.asList(vm1, vm2));
