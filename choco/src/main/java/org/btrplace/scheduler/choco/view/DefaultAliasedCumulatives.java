@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,13 +21,14 @@ package org.btrplace.scheduler.choco.view;
 import gnu.trove.list.array.TIntArrayList;
 import org.btrplace.model.VM;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.AliasedCumulatives;
 import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,18 +48,14 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
 
     private List<int[]> aliases;
 
-    /**
-     * Make a new builder.
-     *
-     * @param p the associated problem
-     */
-    public DefaultAliasedCumulatives(ReconfigurationProblem p) {
-        super(p);
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        super.inject(ps, rp);
         capacities = new TIntArrayList();
         aliases = new ArrayList<>();
 
+        return true;
     }
-
 
     /**
      * Add a constraint
@@ -83,6 +80,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
      */
     @Override
     public boolean beforeSolve(ReconfigurationProblem r) {
+        super.beforeSolve(r);
         for (int i = 0; i < aliases.size(); i++) {
             int capa = capacities.get(i);
             int[] alias = aliases.get(i);
@@ -91,7 +89,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
             for (IntVar dUseDim : dUsages.get(i)) {
                 dUses[i++] = dUseDim.getLB();
             }
-            rp.getSolver().post(new AliasedCumulatives(alias,
+            r.getSolver().post(new AliasedCumulatives(alias,
                     new int[]{capa},
                     cHosts, new int[][]{cUse}, cEnds,
                     dHosts, new int[][]{dUses}, dStarts,
@@ -114,27 +112,5 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
     @Override
     public boolean cloneVM(VM vm, VM clone) {
         return true;
-    }
-
-    /**
-     * Builder associated to this constraint.
-     */
-    public static class Builder extends SolverViewBuilder {
-
-        @Override
-        public String getKey() {
-            return org.btrplace.scheduler.choco.view.AliasedCumulatives.VIEW_ID;
-        }
-
-        @Override
-        public org.btrplace.scheduler.choco.view.AliasedCumulatives build(ReconfigurationProblem p) {
-            return new DefaultAliasedCumulatives(p);
-        }
-
-        @Override
-        public List<String> getDependencies() {
-            return Collections.emptyList();
-        }
-
     }
 }

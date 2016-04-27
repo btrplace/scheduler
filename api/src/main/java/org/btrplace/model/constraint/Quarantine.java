@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,12 +19,12 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to put a node into quarantine.
@@ -37,21 +37,9 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"n : nodes"}, inv = "(!(v : hosted(n)) Root(v)) & (!(v2 /: hosted(n)) Ban(v2, {n}))")
-public class Quarantine extends SatConstraint {
+public class Quarantine implements SatConstraint {
 
-    /**
-     * Instantiate constraints for a collection of nodes.
-     *
-     * @param nodes the nodes to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Quarantine> newQuarantine(Collection<Node> nodes) {
-        List<Quarantine> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Quarantine(n));
-        }
-        return l;
-    }
+    private Node node;
 
     /**
      * Make a new constraint.
@@ -59,7 +47,7 @@ public class Quarantine extends SatConstraint {
      * @param n the node to put into quarantine
      */
     public Quarantine(Node n) {
-        super(Collections.<VM>emptySet(), Collections.singleton(n), true);
+        this.node = n;
     }
 
     @Override
@@ -69,7 +57,7 @@ public class Quarantine extends SatConstraint {
 
     @Override
     public String toString() {
-        return "quarantine(" + "node=" + getInvolvedNodes().iterator().next() + ", continuous" + ")";
+        return "quarantine(" + "node=" + node + ", continuous" + ")";
     }
 
     @Override
@@ -77,4 +65,40 @@ public class Quarantine extends SatConstraint {
         return b;
     }
 
+    /**
+     * Instantiate constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Quarantine> newQuarantine(Collection<Node> nodes) {
+        return nodes.stream().map(Quarantine::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.singleton(node);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Quarantine that = (Quarantine) o;
+        return Objects.equals(node, that.node);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node);
+    }
 }

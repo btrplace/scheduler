@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -29,16 +29,11 @@ import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.LinearToAResourceActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.chocosolver.solver.exception.ContradictionException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Unit tests for {@link COverbook}.
@@ -75,7 +70,7 @@ public class COverbookTest {
         c.add(new Preserve(vms[0], "cpu", 1));
         c.addAll(Online.newOnline(m.getAllNodes()));
         DefaultChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new COverbook.Builder());
+        cra.getMapper().mapConstraint(Overbook.class, COverbook.class);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
     }
@@ -162,10 +157,10 @@ public class COverbookTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2, vm3)
-                .run(n3, vm4, vm5, vm6).get();
+                .run(n3, vm4, vm5, vm6);
         ShareableResource rcCPU = new ShareableResource("cpu", 1, 1);
         mo.attach(rcCPU);
         Overbook o1 = new Overbook(n1, "cpu", 1);
@@ -174,9 +169,10 @@ public class COverbookTest {
         COverbook co1 = new COverbook(o1);
         COverbook co2 = new COverbook(o2);
         COverbook co3 = new COverbook(o3);
-        Assert.assertTrue(co1.getMisPlacedVMs(mo).isEmpty());
-        Assert.assertTrue(co2.getMisPlacedVMs(mo).isEmpty());
-        Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(mo));
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(co1.getMisPlacedVMs(i).isEmpty());
+        Assert.assertTrue(co2.getMisPlacedVMs(i).isEmpty());
+        Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(i));
     }
 
 
@@ -186,7 +182,7 @@ public class COverbookTest {
         VM vm1 = mo.newVM();
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm3).get();
+        Mapping m = mo.getMapping().on(n1).run(n1, vm1).ready(vm3);
 
         ShareableResource rcCPU = new ShareableResource("cpu", 2, 2);
 
@@ -211,12 +207,12 @@ public class COverbookTest {
      * to get the resources immediately
      */
     @Test
-    public void testWithIncrease() throws SchedulerException, ContradictionException {
+    public void testWithIncrease() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1).run(n1, vm1, vm2);
 
         org.btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
         rc.setCapacity(n1, 5);
@@ -234,19 +230,10 @@ public class COverbookTest {
         cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
+        System.out.println(p);
         Assert.assertEquals(p.getSize(), 2);
-        //An allocate action at the moment the vm2 leaved.
-        Action al = null;
-        Action sh = null;
-        for (Action a : p) {
-            if (a instanceof Allocate) {
-                al = a;
-            } else if (a instanceof ShutdownVM) {
-                sh = a;
-            } else {
-                Assert.fail();
-            }
-        }
+        Action al = p.getActions().stream().filter(s -> s instanceof Allocate).findAny().get();
+        Action sh = p.getActions().stream().filter(s -> s instanceof ShutdownVM).findAny().get();
         Assert.assertTrue(sh.getEnd() <= al.getStart());
     }
 }

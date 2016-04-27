@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -81,7 +81,8 @@ public class ShutdownableNode implements NodeTransition {
 
     public static final String PREFIX = "shutdownableNode(";
     private Node node;
-    private BoolVar isOnline, isOffline;
+    private BoolVar isOnline;
+    private BoolVar isOffline;
     private IntVar duration;
     private IntVar end;
     private IntVar hostingStart;
@@ -97,7 +98,6 @@ public class ShutdownableNode implements NodeTransition {
      */
     public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SchedulerException {
         this.node = e;
-
         Solver s = rp.getSolver();
 
         /*
@@ -106,7 +106,7 @@ public class ShutdownableNode implements NodeTransition {
         */
         isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, e, ").online"), rp.getSolver());
         isOffline = VariableFactory.not(isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(e)), 0));
 
         /*
         * D = {0, d}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,6 +18,8 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
 import java.util.Set;
 
 /**
@@ -26,7 +28,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Attributes extends Cloneable {
+public interface Attributes extends Copyable<Attributes> {
 
     /**
      * Put a boolean value.
@@ -82,9 +84,10 @@ public interface Attributes extends Cloneable {
      *
      * @param e the element
      * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
+     * @param def the value to return if the attribute does not exists
+     * @return the value if it has been stated or {@code def}
      */
-    Boolean getBoolean(Element e, String k);
+    boolean get(Element e, String k, boolean def);
 
     /**
      * Get an attribute value as a string.
@@ -93,25 +96,27 @@ public interface Attributes extends Cloneable {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    String getString(Element e, String k);
+    String get(Element e, String k, String def);
 
     /**
      * Get an attribute value as a double.
      *
      * @param e the element
      * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
+     * @param def the value to return if the attribute does not exists
+     * @return the value if it has been stated or {@code def}
      */
-    Double getDouble(Element e, String k);
+    double get(Element e, String k, double def);
 
     /**
      * Get an attribute value as an integer.
      *
      * @param e the element
      * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
+     * @param def the value to return if the attribute does not exists
+     * @return the value if it has been stated or {@code def}
      */
-    Integer getInteger(Element e, String k);
+    int get(Element e, String k, int def);
 
     /**
      * Check if an attribute is set for a given element.
@@ -130,13 +135,6 @@ public interface Attributes extends Cloneable {
      * @return {@code true} iff a value was removed
      */
     boolean unset(Element e, String k);
-
-    /**
-     * Clone the attributes.
-     *
-     * @return a new set of attributes
-     */
-    Attributes clone();
 
     /**
      * Get the elements having attributes defined.

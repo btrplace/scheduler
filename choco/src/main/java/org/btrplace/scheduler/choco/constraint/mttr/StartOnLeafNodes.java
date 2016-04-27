@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
 
     private MovementGraph graph;
 
-    private Node[] nodes;
+    private List<Node> nodes;
 
     /**
      * Make a new heuristics

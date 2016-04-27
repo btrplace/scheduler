@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@ public class EnumVar extends BtrPlaceTree {
     public BtrpOperand expand() {
         String head = getChild(0).getText().substring(0, getChild(0).getText().length() - 1);
         String tail = getChild(getChildCount() - 1).getText().substring(1);
-        BtrpSet res = new BtrpSet(1, BtrpOperand.Type.string);
+        BtrpSet res = new BtrpSet(1, BtrpOperand.Type.STRING);
 
         for (int i = 1; i < getChildCount() - 1; i++) {
             BtrpOperand op = getChild(i).go(this);

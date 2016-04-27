@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,6 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.*;
@@ -35,8 +34,9 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
+
 @SideConstraint(args = {"part <<: vms"}, inv = "{ {host(v). v : p , vmState(v) = running}. p : part} <<: nodes")
-public class Split extends SatConstraint {
+public class Split extends SimpleConstraint {
 
     private Collection<Collection<VM>> sets;
 
@@ -56,7 +56,7 @@ public class Split extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Split(Collection<Collection<VM>> parts, boolean continuous) {
-        super(null, Collections.<Node>emptySet(), continuous);
+        super(continuous);
         Set<VM> all = new HashSet<>();
         int cnt = 0;
         for (Collection<VM> s : parts) {
@@ -74,9 +74,7 @@ public class Split extends SatConstraint {
     @Override
     public Set<VM> getInvolvedVMs() {
         Set<VM> s = new HashSet<>();
-        for (Collection<VM> set : sets) {
-            s.addAll(set);
-        }
+        sets.forEach(s::addAll);
         return s;
     }
 
@@ -93,7 +91,7 @@ public class Split extends SatConstraint {
      * Get the group of VMs that contains the given VM.
      *
      * @param u the VM identifier
-     * @return the group of VM if exists, {@code null} otherwise
+     * @return the group of VM if exists, an empty collection otherwise
      */
     public Collection<VM> getAssociatedVGroup(VM u) {
         for (Collection<VM> vGrp : sets) {
@@ -101,7 +99,7 @@ public class Split extends SatConstraint {
                 return vGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -112,9 +110,9 @@ public class Split extends SatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        Split that = (Split) o;
-        return sets.equals(that.sets) && isContinuous() == that.isContinuous();
+        Split split = (Split) o;
+        return isContinuous() == split.isContinuous() &&
+                Objects.equals(sets, split.sets);
     }
 
     @Override
@@ -124,11 +122,11 @@ public class Split extends SatConstraint {
 
     @Override
     public String toString() {
-        return "split(vms=" + sets + ", " + restrictionToString() + ')';
+        return "split(vms=" + sets + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
-    public SatConstraintChecker<Split> getChecker() {
+    public SplitChecker getChecker() {
         return new SplitChecker(this);
     }
 

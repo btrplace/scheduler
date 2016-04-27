@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,23 +19,22 @@
 package org.btrplace.scheduler.choco.transition;
 
 import org.btrplace.model.*;
+import org.btrplace.model.constraint.Running;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.BootNode;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.DefaultParameters;
-import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
-import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.*;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.Collections;
 
@@ -70,7 +69,7 @@ public class BootableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
@@ -100,7 +99,7 @@ public class BootableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -121,7 +120,7 @@ public class BootableNodeTest {
     }
 
     @Test
-    public void testRequiredOnline() throws SchedulerException, ContradictionException {
+    public void testRequiredOnline() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         VM vm1 = mo.newVM();
@@ -130,21 +129,24 @@ public class BootableNodeTest {
         map.addOfflineNode(n1);
         map.addReadyVM(vm1);
 
-        Parameters ps = new DefaultParameters();
+        ChocoScheduler s = new DefaultChocoScheduler();
+        Parameters ps = s.getParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
-        dev.register(BootVM.class, new ConstantActionDuration(2));
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setParams(ps)
-                .build();
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootVM.class, new ConstantActionDuration<>(2));
 
-        BootableNode na = (BootableNode) rp.getNodeAction(n1);
-        Assert.assertNotNull(rp.solve(0, false));
-        Assert.assertEquals(na.getStart().getValue(), 0);
-        Assert.assertEquals(na.getEnd().getValue(), 5);
-        Assert.assertEquals(na.getHostingStart().getValue(), 5);
-        Assert.assertEquals(na.getHostingEnd().getValue(), 7);
+        ReconfigurationPlan plan = s.solve(mo, Collections.singleton(new Running(vm1)));
+        Assert.assertNotNull(plan);
+        Assert.assertEquals(plan.getSize(), 2);
+        for (Action a : plan.getActions()) {
+            if (a instanceof BootNode) {
+                Assert.assertEquals(a.getStart(), 0);
+                Assert.assertEquals(a.getEnd(), 5);
+            } else {
+                Assert.assertEquals(a.getStart(), 5);
+                Assert.assertEquals(a.getEnd(), 7);
+            }
+        }
     }
 
     @Test
@@ -159,7 +161,7 @@ public class BootableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -181,7 +183,7 @@ public class BootableNodeTest {
         map.addOfflineNode(n2);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(2));
+        dev.register(BootNode.class, new ConstantActionDuration<>(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -209,8 +211,8 @@ public class BootableNodeTest {
         map.addOfflineNode(n4);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
-        dev.register(BootNode.class, new ConstantActionDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
                 .build();

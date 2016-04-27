@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,8 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.chocosolver.solver.variables.IntVar;
+
+import java.util.List;
 
 /**
  * An abstract constraint to create vector packing constraints.
@@ -46,5 +48,5 @@ public abstract class Packing implements ChocoView {
      * @param s    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
      * @param b    the placement variable for each VM. Same order than for {@code l}
      */
-    public abstract void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b);
+    public abstract void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b);
 }

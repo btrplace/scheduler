@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -44,19 +44,17 @@ public class NumberTree extends BtrPlaceTree {
     @Override
     public BtrpOperand go(BtrPlaceTree parent) {
 
-        try {
-            switch (token.getType()) {
-                case ANTLRBtrplaceSL2Lexer.OCTAL:
-                    return new BtrpNumber(Integer.parseInt(getText().substring(1), 8), BtrpNumber.Base.base8);
-                case ANTLRBtrplaceSL2Lexer.HEXA:
-                    return new BtrpNumber(Integer.parseInt(getText().substring(2), 16), BtrpNumber.Base.base16);
-                case ANTLRBtrplaceSL2Lexer.DECIMAL:
-                    return new BtrpNumber(Integer.parseInt(getText()), BtrpNumber.Base.base10);
-                case ANTLRBtrplaceSL2Lexer.FLOAT:
-                    return new BtrpNumber(Double.parseDouble(getText()));
-            }
-        } catch (NumberFormatException e) {
+        switch (token.getType()) {
+            case ANTLRBtrplaceSL2Lexer.OCTAL:
+                return new BtrpNumber(Integer.parseInt(getText().substring(1), 8), BtrpNumber.Base.BASE_8);
+            case ANTLRBtrplaceSL2Lexer.HEXA:
+                return new BtrpNumber(Integer.parseInt(getText().substring(2), 16), BtrpNumber.Base.BASE_16);
+            case ANTLRBtrplaceSL2Lexer.DECIMAL:
+                return new BtrpNumber(Integer.parseInt(getText()), BtrpNumber.Base.BASE_10);
+            case ANTLRBtrplaceSL2Lexer.FLOAT:
+                return new BtrpNumber(Double.parseDouble(getText()));
+            default:
+                return ignoreError("Unsupported integer format: " + getText());
         }
-        return ignoreError("Malformed integer: " + getText());
     }
 }

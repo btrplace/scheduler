@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ public class ActionDurationFromOptionalAttribute<E extends Element> implements A
         Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
             try {
-                return attrs.getInteger(e, key);
+                return attrs.get(e, key, -1);
             } catch (Exception ex) {
                 return parent.evaluate(mo, e);
             }
@@ -65,7 +65,7 @@ public class ActionDurationFromOptionalAttribute<E extends Element> implements A
      *
      * @return an evaluator.
      */
-    public ActionDurationEvaluator getParent() {
+    public ActionDurationEvaluator<E> getParent() {
         return parent;
     }
 

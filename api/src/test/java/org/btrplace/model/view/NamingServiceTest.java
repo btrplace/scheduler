@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -39,14 +39,14 @@ public class NamingServiceTest {
         Node n = mo.newNode();
         Assert.assertTrue(ns.register(n, "n0"));
         Assert.assertFalse(ns.register(mo.newNode(), "n0"));
-        Assert.assertEquals(ns.getElementIdentifier(), "node");
+        Assert.assertEquals(ns.getElementIdentifier(), Node.TYPE);
         Assert.assertEquals(ns.getNamedElements().size(), 1);
     }
 
     @Test(dependsOnMethods = {"testRegisterAndGets"})
     public void testResolution() {
         NamingService<VM> ns = NamingService.newVMNS();
-        Assert.assertEquals(ns.getElementIdentifier(), "vm");
+        Assert.assertEquals(ns.getElementIdentifier(), VM.TYPE);
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         ns.register(v, "vm0");
@@ -77,7 +77,7 @@ public class NamingServiceTest {
         NamingService<Node> ns = NamingService.newNodeNS();
         Model mo = new DefaultModel();
         Node n = mo.newNode();
-        NamingService<Node> ns2 = ns.clone();
+        NamingService<Node> ns2 = ns.copy();
         Assert.assertTrue(ns2.register(n, "n0"));
         Assert.assertNull(ns.resolve(n));
         Assert.assertNull(ns.resolve("n0"));
@@ -94,5 +94,18 @@ public class NamingServiceTest {
         Assert.assertEquals(ns.hashCode(), ns2.hashCode());
         ns2.register(v, "vm0");
         Assert.assertNotEquals(ns, ns2);
+    }
+
+    @Test
+    public void testGetViews() {
+        Model mo = new DefaultModel();
+        Assert.assertNull(NamingService.getVMNames(mo));
+        Assert.assertNull(NamingService.getNodeNames(mo));
+        NamingService<VM> vmNs = NamingService.newVMNS();
+        NamingService<Node> nodeNs = NamingService.newNodeNS();
+        mo.attach(vmNs);
+        mo.attach(nodeNs);
+        Assert.assertEquals(NamingService.getNodeNames(mo), nodeNs);
+        Assert.assertEquals(NamingService.getVMNames(mo), vmNs);
     }
 }

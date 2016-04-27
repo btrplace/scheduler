@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,15 +18,15 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Seq;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.StayAwayVM;
-import org.btrplace.scheduler.choco.transition.Transition;
+import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 
@@ -56,12 +56,12 @@ public class CSequentialVMTransitions implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         List<VM> seq = cstr.getInvolvedVMs();
 
-        List<Transition> ams = new ArrayList<>();
+        List<VMTransition> ams = new ArrayList<>();
         for (VM vmId : seq) {
-            Transition am = rp.getVMAction(vmId);
+            VMTransition am = rp.getVMAction(vmId);
 
             //Avoid VMs with no action model or Transition that do not denotes a state transition
             if (am == null || am instanceof StayAwayVM || am instanceof RelocatableVM) {
@@ -70,11 +70,11 @@ public class CSequentialVMTransitions implements ChocoConstraint {
             ams.add(am);
         }
         if (ams.size() > 1) {
-            Iterator<Transition> ite = ams.iterator();
-            Transition prev = ite.next();
+            Iterator<VMTransition> ite = ams.iterator();
+            VMTransition prev = ite.next();
             Solver s = rp.getSolver();
             while (ite.hasNext()) {
-                Transition cur = ite.next();
+                VMTransition cur = ite.next();
                 s.post(IntConstraintFactory.arithm(prev.getEnd(), "<=", cur.getStart()));
                 prev = cur;
             }
@@ -83,22 +83,7 @@ public class CSequentialVMTransitions implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Seq.class;
-        }
-
-        @Override
-        public CSequentialVMTransitions build(Constraint c) {
-            return new CSequentialVMTransitions((Seq) c);
-        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,14 +19,13 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -51,14 +50,10 @@ public class CPowerView implements ChocoView {
     private Map<Integer, IntVar> powerStarts;
     private Map<Integer, IntVar> powerEnds;
 
-    /**
-     * Make a new view.
-     *
-     * @param rp the problem to rely on
-     */
-    public CPowerView(ReconfigurationProblem rp) {
-        powerStarts = new HashMap<>(rp.getNodes().length);
-        powerEnds = new HashMap<>(rp.getNodes().length);
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        powerStarts = new HashMap<>(rp.getNodes().size());
+        powerEnds = new HashMap<>(rp.getNodes().size());
 
         for (Node n : rp.getNodes()) {
             NodeTransition na = rp.getNodeAction(n);
@@ -73,6 +68,7 @@ public class CPowerView implements ChocoView {
                 powerEnds.put(rp.getNode(n), /*na.getHostingEnd()*/rp.getEnd());
             }
         }
+        return true;
     }
 
     /**
@@ -105,13 +101,4 @@ public class CPowerView implements ChocoView {
         return true;
     }
 
-    @Override
-    public boolean insertActions(ReconfigurationProblem rp, Solution s, ReconfigurationPlan p) {
-        return true;
-    }
-
-    @Override
-    public boolean cloneVM(VM vm, VM clone) {
-        return true;
-    }
 }

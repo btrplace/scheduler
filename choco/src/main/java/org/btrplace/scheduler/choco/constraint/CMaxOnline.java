@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.MaxOnline;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CPowerView;
 import org.chocosolver.solver.Solver;
@@ -59,30 +58,34 @@ public class CMaxOnline implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model model) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         int on = 0;
         for (Node n : constraint.getInvolvedNodes()) {
-            if (model.getMapping().isOnline(n)) {
+            if (i.getModel().getMapping().isOnline(n)) {
                 on++;
             }
         }
         if (on > constraint.getAmount()) {
-            return model.getMapping().getRunningVMs(constraint.getInvolvedNodes());
+            return i.getModel().getMapping().getRunningVMs(constraint.getInvolvedNodes());
         }
         return Collections.emptySet();
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         Solver solver = rp.getSolver();
 
         if (constraint.isContinuous()) {
             CPowerView view = (CPowerView) rp.getView(CPowerView.VIEW_ID);
             if (view == null) {
-                view = new CPowerView(rp);
+                view = new CPowerView();
                 if (!rp.addView(view)) {
                     throw new SchedulerException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
                 }
+                if (!view.inject(ps, rp)) {
+                    throw new SchedulerException(rp.getSourceModel(), "Unable to inject view '" + CPowerView.VIEW_ID + "'");
+                }
+
             }
 
             int numberOfTasks = constraint.getInvolvedNodes().size();
@@ -91,7 +94,7 @@ public class CMaxOnline implements ChocoConstraint {
             for (Node n : constraint.getInvolvedNodes()) {
                 nodeIdx[i++] = rp.getNode(n);
             }
-            //IntVar capacity = VariableFactory.bounded("capacity", constraint.getAmount(), constraint.getAmount(), solver);
+
             IntVar capacity = VariableFactory.fixed("capacity", constraint.getAmount(), solver);
 
             // The state of the node:
@@ -134,23 +137,8 @@ public class CMaxOnline implements ChocoConstraint {
         return true;
     }
 
-    /**
-     * The builder associated to this constraint.
-     *
-     * @author Tu Huynh Dang
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-
-        @Override
-        public ChocoConstraint build(Constraint cstr) {
-            return new CMaxOnline((MaxOnline) cstr);
-        }
-
-        @Override
-        public Class<? extends SatConstraint> getKey() {
-            return MaxOnline.class;
-        }
-
+    @Override
+    public String toString() {
+        return constraint.toString();
     }
-
 }

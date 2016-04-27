@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -74,6 +74,7 @@ public class KillVM implements VMTransition {
      */
     public KillVM(VMState from, ReconfigurationProblem rp, VM e) throws SchedulerException {
         vm = e;
+        this.from = from;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
         state = VariableFactory.zero(rp.getSolver());

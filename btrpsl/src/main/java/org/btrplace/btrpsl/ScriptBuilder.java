@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -97,12 +97,12 @@ public class ScriptBuilder {
 
         this.model = mo;
 
-        namingServiceNodes = (NamingService) mo.getView(NamingService.ID + "node");
+        namingServiceNodes = NamingService.getNodeNames(mo);
         if (namingServiceNodes == null) {
             namingServiceNodes = NamingService.newNodeNS();
             mo.attach(namingServiceNodes);
         }
-        namingServiceVMs = (NamingService) mo.getView(NamingService.ID + "vm");
+        namingServiceVMs = NamingService.getVMNames(mo);
         if (namingServiceVMs == null) {
             namingServiceVMs = NamingService.newVMNS();
             mo.attach(namingServiceVMs);
@@ -150,22 +150,23 @@ public class ScriptBuilder {
         if (dates.containsKey(k) && dates.get(k) == f.lastModified() && cache.containsKey(f.getPath())) {
             LOGGER.debug("get '" + f.getName() + "' from the cache");
             return cache.get(f.getPath());
-        } else {
-            LOGGER.debug(f.getName() + " is built from the file");
-            dates.put(k, f.lastModified());
-            String name = f.getName();
-            try {
-                Script v = build(new ANTLRFileStream(f.getAbsolutePath()));
-                if (!name.equals(v.getlocalName() + Script.EXTENSION)) {
-                    throw new ScriptBuilderException("Script '" + v.getlocalName()
-                            + "' must be declared in a file named '" + v.getlocalName() + Script.EXTENSION);
-                }
-                cache.put(f.getPath(), v);
-                return v;
-            } catch (IOException e) {
-                throw new ScriptBuilderException(e.getMessage(), e);
-            }
         }
+
+        LOGGER.debug(f.getName() + " is built from the file");
+        dates.put(k, f.lastModified());
+        String name = f.getName();
+        try {
+            Script v = build(new ANTLRFileStream(f.getAbsolutePath()));
+            if (!name.equals(v.getlocalName() + Script.EXTENSION)) {
+                throw new ScriptBuilderException("Script '" + v.getlocalName()
+                        + "' must be declared in a file named '" + v.getlocalName() + Script.EXTENSION);
+            }
+            cache.put(f.getPath(), v);
+            return v;
+        } catch (IOException e) {
+            throw new ScriptBuilderException(e.getMessage(), e);
+        }
+
     }
 
     /**
@@ -207,18 +208,20 @@ public class ScriptBuilder {
         try {
             BtrPlaceTree tree = (BtrPlaceTree) parser.script_decl().getTree();
             //First pass, expand range
-            if (tree != null && tree.token != null) {
-                try {
-                    tree.go(tree); //Single instruction
-                } catch (UnsupportedOperationException e) {
-                    errorReporter.append(0, 0, e.getMessage());
-                }
-            } else {
-                for (int i = 0; i < tree.getChildCount(); i++) {
+            if (tree != null) {
+                if (tree.token != null) {
                     try {
-                        tree.getChild(i).go(tree);
+                        tree.go(tree); //Single instruction
                     } catch (UnsupportedOperationException e) {
                         errorReporter.append(0, 0, e.getMessage());
+                    }
+                } else {
+                    for (int i = 0; i < tree.getChildCount(); i++) {
+                        try {
+                            tree.getChild(i).go(tree);
+                        } catch (UnsupportedOperationException e) {
+                            errorReporter.append(0, 0, e.getMessage());
+                        }
                     }
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,18 +38,20 @@ import java.util.List;
 public class InstanceConverterTest {
 
     @Test
-    public void testConversion() throws JSONConverterException, IOException {
+    public void testConversion() throws JSONConverterException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
         Node n1 = mo.newNode();
         VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n1);
         ma.addReadyVM(vm1);
+        ma.addReadyVM(vm2);
 
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnline(ma.getAllNodes()));
-        cstrs.add(new Running(mo.newVM()));
+        cstrs.add(new Running(vm2));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
 
         InstanceConverter conv = new InstanceConverter();

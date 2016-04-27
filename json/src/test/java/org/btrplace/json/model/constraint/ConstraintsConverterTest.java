@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,16 +20,14 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -40,18 +38,31 @@ import java.util.List;
  */
 public class ConstraintsConverterTest {
 
-    public static class MockSatConstraint extends SatConstraint {
+    public static class MockSatConstraint implements SatConstraint {
 
         String str;
 
         public MockSatConstraint(String s) {
-            super(Collections.<VM>emptySet(), Collections.<Node>emptySet(), true);
             str = s;
-
         }
 
         @Override
-        public boolean isSatisfied(Model i) {
+        public Collection<Node> getInvolvedNodes() {
+            return null;
+        }
+
+        @Override
+        public Collection<VM> getInvolvedVMs() {
+            return null;
+        }
+
+        @Override
+        public boolean isContinuous() {
+            return false;
+        }
+
+        @Override
+        public boolean setContinuous(boolean b) {
             return false;
         }
     }
@@ -59,7 +70,7 @@ public class ConstraintsConverterTest {
     public static class MockConstraintConverter extends ConstraintConverter<MockSatConstraint> {
 
         @Override
-        public Class getSupportedConstraint() {
+        public Class<MockSatConstraint> getSupportedConstraint() {
             return MockSatConstraint.class;
         }
 
@@ -126,7 +137,7 @@ public class ConstraintsConverterTest {
     }
 
     @Test
-    public void testWithMultipleViews() throws JSONConverterException, IOException {
+    public void testWithMultipleViews() throws JSONConverterException {
         ConstraintsConverter c = new ConstraintsConverter();
         org.testng.Assert.assertNull(c.register(new MockConstraintConverter()));
         List<SatConstraint> l = new ArrayList<>();

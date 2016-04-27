@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,6 +21,8 @@ package org.btrplace.json.model.view;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Element;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 import java.util.Map;
@@ -58,7 +60,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
     }
 
     @Override
-    public NamingService fromJSON(JSONObject o) throws JSONConverterException {
+    public NamingService<? extends Element> fromJSON(JSONObject o) throws JSONConverterException {
         String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
             return null;
@@ -67,10 +69,10 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         NamingService ns;
         String type = requiredString(o, "type");
         switch (type) {
-            case "vm":
+            case VM.TYPE:
                 ns = NamingService.newVMNS();
                 break;
-            case "node":
+            case Node.TYPE:
                 ns = NamingService.newNodeNS();
                 break;
             default:
@@ -82,7 +84,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String n = e.getKey();
             int v = Integer.parseInt(e.getValue().toString());
-            Element el = type.equals("vm") ? getOrMakeVM(v) : getOrMakeNode(v);
+            Element el = VM.TYPE.equals(type) ? getVM(v) : getNode(v);
             if (!ns.register(el, n)) {
                 throw new JSONConverterException("Duplicated name '" + n + "'");
             }

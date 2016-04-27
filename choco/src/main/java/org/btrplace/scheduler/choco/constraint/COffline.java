@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,16 +18,16 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.transition.Transition;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -54,7 +54,7 @@ public class COffline implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
             return false;
@@ -62,14 +62,14 @@ public class COffline implements ChocoConstraint {
 
         Node nId = cstr.getInvolvedNodes().iterator().next();
         int id = rp.getNode(nId);
-        Transition m = rp.getNodeAction(nId);
+        NodeTransition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(0, Cause.Null);
             if (rp.getSourceModel().getMapping().isOffline(nId)) {
                 m.getStart().instantiateTo(0, Cause.Null);
             }
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
+            rp.getLogger().error("Unable to force node '" + nId + "' at being offline", ex);
             return false;
         }
         for (VMTransition am : rp.getVMActions()) {
@@ -78,9 +78,8 @@ public class COffline implements ChocoConstraint {
                 try {
                     s.getHoster().removeValue(id, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to remove VM '{}' of node {}: {}", am.getVM(), nId, e.getMessage());
+                    rp.getLogger().error("Unable to remove " + am.getVM() + " of node " + nId, e);
                 }
-                //rp.getSolver().post(new solver.constraints.Arithmetic(s.getHoster(), Operator.NQ, id));
             }
         }
         return true;
@@ -88,28 +87,13 @@ public class COffline implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping mapping = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping mapping = i.getModel().getMapping();
         return mapping.getRunningVMs(cstr.getInvolvedNodes().iterator().next());
     }
 
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Offline.class;
-        }
-
-        @Override
-        public COffline build(Constraint c) {
-            return new COffline((Offline) c);
-        }
     }
 }

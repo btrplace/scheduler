@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,21 +20,24 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.OptConstraint;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
+import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
+import org.btrplace.scheduler.choco.runner.StagedSolvingStatistics;
 import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.view.ModelViewMapper;
-import org.btrplace.scheduler.choco.view.SolverViewBuilder;
+import org.btrplace.scheduler.choco.view.ChocoView;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link ChocoScheduler}.
@@ -50,6 +53,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     private InstanceSolver runner;
 
+    private StagedSolvingStatistics stages;
     /**
      * Make a new algorithm.
      *
@@ -98,7 +102,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SchedulerException {
+    public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs) throws SchedulerException {
         return solve(i, cstrs, new MinMTTR());
     }
 
@@ -108,13 +112,70 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
+    public DefaultChocoScheduler setParameters(Parameters p) {
+        params = p;
+        return this;
+    }
+
+    @Override
+    public Parameters getParameters() {
+        return params;
+    }
+
+    @Override
+    public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
+        // If a network view is attached, ensure that all the migrations' destination node are defined
+        Network net = Network.get(i);
+        stages = null;
+        if  (net != null) {
+            stages = new StagedSolvingStatistics();
+            // The network view is useless to take placement decisions
+            i.detach(net);
+
+            // Solve a first time using placement oriented MinMTTR optimisation constraint
+            ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
+            stages.append(runner.getStatistics());
+            if (p == null) {
+                return null;
+            }
+
+            // Add Fence constraints for each destination node chosen
+            List<SatConstraint> newCstrs = p.getActions().stream()
+                    .filter(a -> a instanceof MigrateVM)
+                    .map(a -> new Fence(((MigrateVM) a).getVM(),
+                            Collections.singleton(((MigrateVM) a).getDestinationNode())))
+                    .collect(Collectors.toList());
+
+            Model result = p.getResult();
+            if (result == null) {
+                throw new SchedulerException(p.getOrigin(), "The plan is not viable");
+            }
+            // Add Root constraints to all staying VMs
+            newCstrs.addAll(i.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
+                    result.getMapping().getVMLocation(v).id()).map(Root::new).collect(Collectors.toList()));
+
+
+            // Add the old constraints
+            newCstrs.addAll(cstrs);
+            // Re-attach the network view
+            i.attach(net);
+
+            //New timeout value = elapsed time - initial timeout value
+            Parameters ps = new DefaultParameters(params);
+            if (ps.getTimeLimit() > 0) {
+                long timeout = params.getTimeLimit() * 1000 - runner.getStatistics().getSolvingDuration();
+                ps.setTimeLimit((int) (timeout / 1000));
+            }
+
+            return runner.solve(ps, new Instance(i, newCstrs, opt));
+        }
+        // Solve and return the computed plan
         return runner.solve(params, new Instance(i, cstrs, opt));
     }
 
     @Override
-    public ConstraintMapper getConstraintMapper() {
-        return params.getConstraintMapper();
+    public ChocoMapper getMapper() {
+        return params.getMapper();
     }
 
     @Override
@@ -124,7 +185,11 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
     @Override
     public SolvingStatistics getStatistics() throws SchedulerException {
-        return runner.getStatistics();
+        if (stages == null) {
+            return runner.getStatistics();
+        }
+        stages.append(runner.getStatistics());
+        return stages;
     }
 
     @Override
@@ -138,23 +203,13 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ModelViewMapper getViewMapper() {
-        return params.getViewMapper();
-    }
-
-    @Override
-    public Parameters setViewMapper(ModelViewMapper m) {
-        return params.setViewMapper(m);
-    }
-
-    @Override
     public Parameters setVerbosity(int lvl) {
         return params.setVerbosity(lvl);
     }
 
     @Override
-    public Parameters setConstraintMapper(ConstraintMapper map) {
-        return params.setConstraintMapper(map);
+    public Parameters setMapper(ChocoMapper map) {
+        return params.setMapper(map);
     }
 
     @Override
@@ -178,8 +233,9 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public void setTransitionFactory(TransitionFactory amf) {
+    public Parameters setTransitionFactory(TransitionFactory amf) {
         params.setTransitionFactory(amf);
+        return this;
     }
 
     @Override
@@ -188,17 +244,27 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public void addSolverViewBuilder(SolverViewBuilder b) {
-        params.addSolverViewBuilder(b);
+    public Parameters setRandomSeed(long s) {
+        return params.setRandomSeed(s);
     }
 
     @Override
-    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
-        return params.removeSolverViewBuilder(b);
+    public long getRandomSeed() {
+        return params.getRandomSeed();
     }
 
     @Override
-    public Collection<SolverViewBuilder> getSolverViews() {
-        return params.getSolverViews();
+    public boolean addChocoView(Class<? extends ChocoView> v) {
+        return params.addChocoView(v);
+    }
+
+    @Override
+    public boolean removeChocoView(Class<? extends ChocoView> v) {
+        return params.removeChocoView(v);
+    }
+
+    @Override
+    public List<Class<? extends ChocoView>> getChocoViews() {
+        return params.getChocoViews();
     }
 }

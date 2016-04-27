@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,16 +19,13 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,9 +51,9 @@ public class COnlineTest {
     public void testSolvableProblem() throws SchedulerException {
         Model mo = new DefaultModel();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).off(n1).get();
+        mo.getMapping().off(n1);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(n1)));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Online(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().isOnline(n1));

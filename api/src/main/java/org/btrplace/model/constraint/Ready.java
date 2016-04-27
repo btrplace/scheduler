@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,10 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM at being ready for running.
@@ -36,22 +33,9 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"v : vms"}, inv = "vmState(v) = ready")
-public class Ready extends SatConstraint {
+public class Ready extends SimpleConstraint {
 
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Ready> newReady(Collection<VM> vms) {
-        List<Ready> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Ready(v));
-        }
-        return l;
-    }
-
+    private VM vm;
     /**
      * Make a new discrete constraint.
      *
@@ -68,17 +52,50 @@ public class Ready extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Ready(VM vm, boolean continuous) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), continuous);
+        super(continuous);
+        this.vm = vm;
     }
 
-
     @Override
-    public SatConstraintChecker<Ready> getChecker() {
+    public ReadyChecker getChecker() {
         return new ReadyChecker(this);
     }
 
     @Override
     public String toString() {
-        return "ready(vms=" + getInvolvedVMs().iterator().next() + ", " + restrictionToString() + ")";
+        return "ready(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Ready> newReady(Collection<VM> vms) {
+        return vms.stream().map(Ready::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Ready ready = (Ready) o;
+        return isContinuous() == ready.isContinuous() &&
+                Objects.equals(vm, ready.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, isContinuous());
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
     }
 }

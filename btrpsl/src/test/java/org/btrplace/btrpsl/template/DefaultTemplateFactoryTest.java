@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,13 +21,15 @@ package org.btrplace.btrpsl.template;
 import org.btrplace.btrpsl.Script;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Unit tests for {@link DefaultTemplateFactory}.
@@ -38,8 +40,8 @@ public class DefaultTemplateFactoryTest {
 
     public static class MockVMTemplate implements Template {
 
-        NamingService srvNodes;
-        NamingService srvVMs;
+        NamingService<Node> srvNodes;
+        NamingService<VM> srvVMs;
         String tplName;
 
         @Override
@@ -52,7 +54,7 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public BtrpElement check(Script scr, Element e, Map<String, String> options) throws ElementBuilderException {
+        public BtrpElement check() throws ElementBuilderException {
             return null;
         }
 
@@ -76,14 +78,11 @@ public class DefaultTemplateFactoryTest {
 
         String tplName;
 
-        private NamingService<Node> srvNodes;
-        private NamingService<VM> srvVMs;
-
         public Model mo;
 
         @Override
         public BtrpOperand.Type getElementType() {
-            return BtrpOperand.Type.node;
+            return BtrpOperand.Type.NODE;
         }
 
         public MockNodeTemplate(String n) {
@@ -91,7 +90,7 @@ public class DefaultTemplateFactoryTest {
         }
 
         @Override
-        public BtrpElement check(Script scr, Element e, Map<String, String> options) throws ElementBuilderException {
+        public BtrpElement check() throws ElementBuilderException {
             BtrpElement el = new BtrpElement(getElementType(), "foo", mo.newVM());
             mo.getAttributes().put(el.getElement(), "template", getIdentifier());
             return el;
@@ -104,12 +103,10 @@ public class DefaultTemplateFactoryTest {
 
         @Override
         public void setNamingServiceVMs(NamingService<VM> srvVMs) {
-            this.srvVMs = srvVMs;
         }
 
         @Override
         public void setNamingServiceNodes(NamingService<Node> srvNodes) {
-            this.srvNodes = srvNodes;
         }
     }
 
@@ -121,8 +118,8 @@ public class DefaultTemplateFactoryTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testRegister() {
-        NamingService srvNodes = NamingService.newNodeNS();
-        NamingService srvVMs = NamingService.newVMNS();
+        NamingService<Node> srvNodes = NamingService.newNodeNS();
+        NamingService<VM> srvVMs = NamingService.newVMNS();
         DefaultTemplateFactory tplf = new DefaultTemplateFactory(srvNodes, srvVMs, new DefaultModel());
         MockVMTemplate t1 = new MockVMTemplate("mock1");
         Assert.assertNull(tplf.register(t1));
@@ -189,7 +186,7 @@ public class DefaultTemplateFactoryTest {
         DefaultTemplateFactory tplf = new DefaultTemplateFactory(NamingService.newNodeNS(), NamingService.newVMNS(), mo);
         tplf.register(new MockVMTemplate("mock1"));
         Script scr = new Script();
-        tplf.check(scr, "mock1", mo.newNode(), new HashMap<String, String>());
+        tplf.check(scr, "mock1", mo.newNode(), new HashMap<>());
     }
 
 }

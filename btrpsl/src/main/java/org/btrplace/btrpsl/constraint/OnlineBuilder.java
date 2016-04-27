@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +37,7 @@ public class OnlineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public OnlineBuilder() {
-        super("online", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("online", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     /**
@@ -48,10 +47,10 @@ public class OnlineBuilder extends DefaultSatConstraintBuilder {
      * @return a constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<Online> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
-            return (ns != null ? (List) Online.newOnline(ns) : Collections.emptyList());
+            return ns != null ? Online.newOnline(ns) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.DependencyBasedPlanApplier;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.TimeBasedPlanApplier;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
@@ -124,22 +123,18 @@ public class GettingStarted implements Example {
     }
 
     @Override
-    public boolean run() {
+    public void run() {
 
         Model model = makeModel();
         List<SatConstraint> cstrs = makeConstraints();
 
         ChocoScheduler ra = new DefaultChocoScheduler();
-        try {
-            ReconfigurationPlan plan = ra.solve(model, cstrs);
+        ReconfigurationPlan plan = ra.solve(model, cstrs);
+        if (plan != null) {
             System.out.println("Time-based plan:");
             System.out.println(new TimeBasedPlanApplier().toString(plan));
             System.out.println("\nDependency based plan:");
             System.out.println(new DependencyBasedPlanApplier().toString(plan));
-            return (plan != null);
-        } catch (SchedulerException ex) {
-            System.err.println(ex.getMessage());
-            return false;
         }
     }
 

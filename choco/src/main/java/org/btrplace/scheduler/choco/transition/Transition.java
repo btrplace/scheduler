@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  * @see TransitionUtils
  */
-public interface Transition<E extends Enum<?>> {
+public interface Transition<E extends Enum<E>> {
 
     /**
      * Get the moment the action starts.

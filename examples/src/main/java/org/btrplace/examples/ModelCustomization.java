@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.ShutdownVM;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
@@ -108,7 +107,7 @@ public class ModelCustomization implements Example {
     }
 
     @Override
-    public boolean run() {
+    public void run() {
 
         Model model = makeModel();
         List<SatConstraint> cstrs = makeConstraints(model);
@@ -127,8 +126,8 @@ public class ModelCustomization implements Example {
         ChocoScheduler cra = new DefaultChocoScheduler();
         DurationEvaluators dev = cra.getDurationEvaluators();
         dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
-        dev.register(BootVM.class, new ConstantActionDuration(1));
-        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
+        dev.register(BootVM.class, new ConstantActionDuration<>(1));
+        dev.register(ShutdownVM.class, new ConstantActionDuration<>(1));
 
         //Relocate VM4:
         //  using a migration: (2 * mem + 3) = (2 * 2 + 3) = 7 sec.
@@ -137,14 +136,8 @@ public class ModelCustomization implements Example {
         //  using a migration: (2 * mem + 3) = (2 * 3 + 3) = 9 sec.
         //  using a re-instantiation: forge + boot + shutdown = 10 + 1 + 1 = 12 sec.
 
-        try {
-            cra.doOptimize(true);
-            ReconfigurationPlan plan = cra.solve(model, cstrs);
-            System.out.println(plan);
-        } catch (SchedulerException ex) {
-            System.err.println(ex.getMessage());
-            return false;
-        }
-        return true;
+        cra.doOptimize(true);
+        ReconfigurationPlan plan = cra.solve(model, cstrs);
+        System.out.println(plan);
     }
 }

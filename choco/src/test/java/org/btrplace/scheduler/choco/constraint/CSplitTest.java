@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,13 +20,13 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Split;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,12 +57,12 @@ public class CSplitTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4, vm5)
                 .run(n4, vm6)
-                .run(n5, vm7, vm8).get();
+                .run(n5, vm7, vm8);
 
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
@@ -71,15 +71,16 @@ public class CSplitTest {
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
 
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).isEmpty());
 
         map.addRunningVM(vm5, n1);
-        Set<VM> bad = cs.getMisPlacedVMs(mo);
+        Set<VM> bad = cs.getMisPlacedVMs(i);
         Assert.assertEquals(bad.size(), 3);
 
         Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2) && bad.contains(vm5));
         map.addRunningVM(vm6, n3);
-        bad = cs.getMisPlacedVMs(mo);
+        bad = cs.getMisPlacedVMs(i);
         Assert.assertTrue(bad.contains(vm4) && bad.contains(vm5) && bad.contains(vm6));
 
     }
@@ -102,10 +103,10 @@ public class CSplitTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2, vm3/* violation*/)
                 .run(n3, vm4, vm5, vm6/*violation*/)
-                .run(n5, vm7, vm8).get();
+                .run(n5, vm7, vm8);
 
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);
@@ -117,7 +118,7 @@ public class CSplitTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         //cra.labelVariables(true);
         //cra.setVerbosity(3);
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        ReconfigurationPlan p = cra.solve(mo, Collections.singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
         //System.out.println(p);
@@ -141,10 +142,10 @@ public class CSplitTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4, vm5)
-                .run(n5, vm6, vm7, vm8).get();
+                .run(n5, vm6, vm7, vm8);
         System.out.println(map);
         Collection<VM> g1 = Arrays.asList(vm1, vm2);
         Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);
@@ -162,7 +163,6 @@ public class CSplitTest {
         for (VM v : map.getRunningVMs(n1)) {
             cstrs.add(new Fence(v, Collections.singleton(n3)));
         }
-        cra.setVerbosity(3);
         //cra.setTimeLimit(2);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

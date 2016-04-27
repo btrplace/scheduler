@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,13 +20,13 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -56,46 +56,46 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
         Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg3 = new HashSet<>(Collections.singletonList(vm7));
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
-
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).isEmpty());
 
 
         map.remove(vm7);
         map.addRunningVM(vm6, n5);
         //vg2 is on 2 group of nodes, the whole group is mis-placed
 
-        Assert.assertEquals(cs.getMisPlacedVMs(mo), vg2);
+        Assert.assertEquals(cs.getMisPlacedVMs(i), vg2);
 
 
         map.addRunningVM(vm7, n5);
         //vg1 and vg2 overlap on n1. The two groups are mis-placed
         map.addRunningVM(vm6, n2);
 
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).containsAll(vg1));
-        Assert.assertTrue(cs.getMisPlacedVMs(mo).containsAll(vg2));
-        Assert.assertEquals(cs.getMisPlacedVMs(mo).size(), vg1.size() + vg2.size());
+        Assert.assertTrue(cs.getMisPlacedVMs(i).containsAll(vg1));
+        Assert.assertTrue(cs.getMisPlacedVMs(i).containsAll(vg2));
+        Assert.assertEquals(cs.getMisPlacedVMs(i).size(), vg1.size() + vg2.size());
     }
 
     @Test
@@ -115,23 +115,23 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
         Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg3 = new HashSet<>(Collections.singletonList(vm7));
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -142,7 +142,7 @@ public class CSplitAmongTest {
         map.addRunningVM(vm6, n2);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        ReconfigurationPlan p = cra.solve(mo, Collections.singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
     }
@@ -164,23 +164,23 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
         Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg3 = new HashSet<>(Collections.singletonList(vm7));
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -191,7 +191,7 @@ public class CSplitAmongTest {
         map.addRunningVM(vm6, n2);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        Assert.assertNull(cra.solve(mo, Collections.<SatConstraint>singleton(s)));
+        Assert.assertNull(cra.solve(mo, Collections.singleton(s)));
     }
 
     @Test
@@ -211,12 +211,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -226,7 +226,7 @@ public class CSplitAmongTest {
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
@@ -264,12 +264,12 @@ public class CSplitAmongTest {
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
+        Mapping map = mo.getMapping().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7);
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -279,7 +279,7 @@ public class CSplitAmongTest {
 
         Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
         Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Node> pg3 = new HashSet<>(Collections.singletonList(n5));
         Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
         Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 

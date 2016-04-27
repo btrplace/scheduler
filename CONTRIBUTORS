@@ -1,0 +1,14 @@
+# This is the official list of people who can contribute
+# (and typically have contributed) code to the BtrPlace repository.
+# The AUTHORS file lists the copyright holders; this file
+# lists people.  For example, 'University Nice Sophia Antipolis' employees
+# are listed here but not in AUTHORS, because 'University Nice Sophia Antipolis'
+# holds the copyright.
+
+# Names should be added to this file like so:
+#     Lastname, Firstname <submission email address> <email2> <emailN>
+
+Hermenier, Fabien <fabien.hermenier@unice.fr> <hermenierfabien@gmail.com> <fabien.hermenier@inria.fr>
+Demassey, Sophie <sophie.demassey@mines-paristech.fr> <sofdem@gmail.com>
+Kherbache, Vincent <vincent.kherbache@inria.fr> <vincent@kherbache.fr> <vincent.kherbache@gmail.com>
+Dang, Huynh Tu  <tudang87@gmail.com>

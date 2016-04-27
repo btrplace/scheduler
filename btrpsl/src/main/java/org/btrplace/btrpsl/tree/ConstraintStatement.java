@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ public class ConstraintStatement extends BtrPlaceTree {
         //Get the params
         int i = 0;
         boolean discrete = false;
-        if (getChild(0).getText().equals(">>")) {
+        if (">>".equals(getChild(0).getText())) {
             i = 1;
             discrete = true;
         }
@@ -88,7 +88,7 @@ public class ConstraintStatement extends BtrPlaceTree {
             params.add(getChild(i).go(this));
         }
         if (b != null) {
-            List<SatConstraint> constraints = b.buildConstraint(this, params);
+            List<? extends SatConstraint> constraints = b.buildConstraint(this, params);
             for (SatConstraint c : constraints) {
                 if (c != null) {
                     if (discrete) {

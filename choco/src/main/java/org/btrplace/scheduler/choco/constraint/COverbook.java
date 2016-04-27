@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,13 +19,13 @@
 package org.btrplace.scheduler.choco.constraint;
 
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Cause;
@@ -37,7 +37,7 @@ import java.util.Set;
 
 
 /**
- * Choco implementation of {@link org.btrplace.model.constraint.SatConstraint}.
+ * Choco implementation of {@link Overbook}.
  *
  * @author Fabien Hermenier
  */
@@ -55,7 +55,7 @@ public class COverbook implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
 
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
@@ -69,52 +69,20 @@ public class COverbook implements ChocoConstraint {
         try {
             v.updateUpperBound(cstr.getRatio(), Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
+            rp.getLogger().error("Unable to restrict " + u + " overbook to up to " + cstr.getRatio() + " for resource " + cstr.getResource(), ex);
             return false;
         }
         return true;
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rc == null) {
-            //No resource given, all the VMs are considered as misplaced
-            Node n = cstr.getInvolvedNodes().iterator().next();
-            return m.getMapping().getRunningVMs(n);
-        } else {
-            //Check if the node is saturated
-            Node n = cstr.getInvolvedNodes().iterator().next();
-            int maxVCapacity = (int) (cstr.getRatio() * rc.getCapacity(n));
-            //Minus the VMs usage
-            for (VM vmId : m.getMapping().getRunningVMs(n)) {
-                maxVCapacity -= rc.getConsumption(vmId);
-                if (maxVCapacity < 0) {
-                    return m.getMapping().getRunningVMs(n);
-                }
-            }
-
-        }
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        //Handled by CShareableResource
         return Collections.emptySet();
     }
 
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Overbook.class;
-        }
-
-        @Override
-        public COverbook build(Constraint c) {
-            return new COverbook((Overbook) c);
-        }
     }
 }

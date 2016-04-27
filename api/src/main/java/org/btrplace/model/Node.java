@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,9 +25,14 @@ package org.btrplace.model;
  * @author Fabien Hermenier
  * @see Model#newNode()
  */
-public class Node implements Element {
+public class Node implements Element,PhysicalElement {
 
     private int id;
+
+    /**
+     * The element identifier
+     */
+    public static final String TYPE = "node";
 
     /**
      * Make a new node.
@@ -45,7 +50,7 @@ public class Node implements Element {
 
     @Override
     public String toString() {
-        return "node#" + id;
+        return TYPE + "#" + id;
     }
 
     @Override

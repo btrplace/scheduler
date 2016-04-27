@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,13 +22,14 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.NoDelay;
-import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by vkherbac on 05/09/14.
+ * A builder for {@link org.btrplace.model.constraint.NoDelay} constraints.
+ *
+ * @author Vincent Kherbache
  */
 public class NoDelayBuilder extends DefaultSatConstraintBuilder {
 
@@ -45,10 +46,11 @@ public class NoDelayBuilder extends DefaultSatConstraintBuilder {
      * @param args must be 1 set of vms. The set must not be empty
      * @return a constraint
      */
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    @Override
+    public List<NoDelay> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<VM> s = (List<VM>) params[0].transform(this, t, args.get(0));
-            return (s != null ? (List) NoDelay.newNoDelay(s) : Collections.emptyList());
+            return s != null ? NoDelay.newNoDelay(s) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

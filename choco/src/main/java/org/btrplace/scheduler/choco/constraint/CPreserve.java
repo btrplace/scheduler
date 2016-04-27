@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Cause;
@@ -53,7 +53,7 @@ public class CPreserve implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         CShareableResource map = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (map == null) {
             throw new SchedulerException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
@@ -62,49 +62,31 @@ public class CPreserve implements ChocoConstraint {
         VM vm = cstr.getInvolvedVMs().iterator().next();
         if (rp.getFutureRunningVMs().contains(vm)) {
             int idx = rp.getVM(vm);
-            IntVar v = map.getVMsAllocation()[idx];
+            IntVar v = map.getVMsAllocation().get(idx);
             try {
                 v.updateLowerBound(cstr.getAmount(), Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
+                rp.getLogger().error("Unable to set the '" + cstr.getResource() + "' consumption for VM '" + vm + "' to " + cstr.getAmount(), ex);
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * {@inheritDoc}.
+     * This implementation is just a stub. A proper estimation will be made directly by {@link CShareableResource#getMisPlacedVMs(Instance)}.
+     *
+     * @param i the instance to inspect
+     * @return an empty set
+     */
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rc == null) {
-            return Collections.singleton(cstr.getInvolvedVMs().iterator().next());
-        } else {
-            VM vm = cstr.getInvolvedVMs().iterator().next();
-            int x = rc.getConsumption(vm);
-            if (x < cstr.getAmount()) {
-                return Collections.singleton(vm);
-            }
-        }
+    public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
     }
 
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Preserve.class;
-        }
-
-        @Override
-        public CPreserve build(Constraint c) {
-            return new CPreserve((Preserve) c);
-        }
     }
 }

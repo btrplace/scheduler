@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -49,9 +49,9 @@ public interface ReconfigurationPlanMonitor {
      *
      * @param a the action to commit
      * @return a set of unblocked actions that may be empty if the operation succeed.
-     * {@code null} if the commit was not allowed because the action was not applyable
+     * @throws InfeasibleActionException if the action was not applyable.
      */
-    Set<Action> commit(Action a);
+    Set<Action> commit(Action a) throws InfeasibleActionException;
 
     /**
      * Get the number of actions that have been committed.

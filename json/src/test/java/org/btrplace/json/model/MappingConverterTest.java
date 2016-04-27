@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,8 +23,6 @@ import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link org.btrplace.json.model.MappingConverter}.
  *
@@ -33,7 +31,7 @@ import java.io.IOException;
 public class MappingConverterTest {
 
     @Test
-    public void testSimple() throws JSONConverterException, IOException {
+    public void testSimple() throws JSONConverterException {
         Model mo = new DefaultModel();
         Mapping c = mo.getMapping();
         Node n1 = mo.newNode();
@@ -51,7 +49,7 @@ public class MappingConverterTest {
         c.addOnlineNode(n3);
         c.addRunningVM(vm4, n3);
         MappingConverter json = new MappingConverter();
-        json.setModel(mo);
+        json.setModel(new DefaultModel());
         String ob = json.toJSONString(c);
         Mapping c2 = json.fromJSON(ob);
         Assert.assertEquals(c, c2);

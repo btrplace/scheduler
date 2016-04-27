@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,20 +19,18 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Offline;
-import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Unit tests for {@link COffline}.
@@ -59,13 +57,12 @@ public class COfflineTest {
         Node n1 = model.newNode();
         Node n2 = model.newNode();
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).get();
+        Mapping map = model.getMapping().on(n1, n2);
 
         DefaultChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration<>(10));
         cra.setTimeLimit(-1);
-        List x = Offline.newOffline(map.getAllNodes());
-        ReconfigurationPlan plan = cra.solve(model, x);
+        ReconfigurationPlan plan = cra.solve(model, Offline.newOffline(map.getAllNodes()));
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);
         Assert.assertEquals(plan.getDuration(), 10);
@@ -79,15 +76,16 @@ public class COfflineTest {
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).get();
+        Mapping map = mo.getMapping().on(n1, n2);
 
         Offline off = new Offline(n1);
         COffline coff = new COffline(off);
 
-        Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(coff.getMisPlacedVMs(i).isEmpty());
 
         map.addRunningVM(vm1, n1);
-        Assert.assertEquals(coff.getMisPlacedVMs(mo), map.getAllVMs());
+        Assert.assertEquals(coff.getMisPlacedVMs(i), map.getAllVMs());
     }
 
     @Test
@@ -96,9 +94,9 @@ public class COfflineTest {
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).get();
+        mo.getMapping().on(n1, n2).run(n1, vm1);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
@@ -109,9 +107,9 @@ public class COfflineTest {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).get();
+        mo.getMapping().on(n1).run(n1, vm1);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNull(plan);
     }
 }

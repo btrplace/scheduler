@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ public class SplitAmongBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public SplitAmongBuilder() {
-        super("splitAmong", new ConstraintParam[]{new ListOfParam("$vms", 2, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.node, false)});
+        super("splitAmong", new ConstraintParam[]{new ListOfParam("$vms", 2, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.NODE, false)});
     }
 
     /**
@@ -50,11 +50,11 @@ public class SplitAmongBuilder extends DefaultSatConstraintBuilder {
      * @return the constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             Collection<Collection<VM>> vs = (Collection<Collection<VM>>) params[0].transform(this, t, args.get(0));
             Collection<Collection<Node>> ps = (Collection<Collection<Node>>) params[1].transform(this, t, args.get(1));
-            return (vs != null && ps != null ? (List) Collections.singletonList(new SplitAmong(vs, ps, false)) : Collections.emptyList());
+            return vs != null && ps != null ? Collections.singletonList(new SplitAmong(vs, ps, false)) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

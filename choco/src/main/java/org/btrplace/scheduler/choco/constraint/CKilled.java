@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,11 +18,11 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Killed;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class CKilled implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
             return false;
@@ -60,8 +60,8 @@ public class CKilled implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping map = i.getModel().getMapping();
         VM v = cstr.getInvolvedVMs().iterator().next();
         if (map.contains(v)) {
             return Collections.singleton(v);
@@ -74,18 +74,4 @@ public class CKilled implements ChocoConstraint {
         return cstr.toString();
     }
 
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Killed.class;
-        }
-
-        @Override
-        public CKilled build(Constraint c) {
-            return new CKilled((Killed) c);
-        }
-    }
 }

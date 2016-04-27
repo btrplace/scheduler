@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ public class PreserveBuilder extends DefaultSatConstraintBuilder {
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
@@ -50,16 +50,16 @@ public class PreserveBuilder extends DefaultSatConstraintBuilder {
         String rcId = (String) params[1].transform(this, t, args.get(1));
         Number v = (Number) params[2].transform(this, t, args.get(2));
 
-        if (v.intValue() < 0) {
+        if (v == null || v.intValue() < 0) {
             t.ignoreError("Parameter '" + params[2].getName() + "' expects a positive integer (" + v + " given)");
             return Collections.emptyList();
         }
 
-        if (v != null && Math.rint(v.doubleValue()) != v.doubleValue()) {
+        if (Math.rint(v.doubleValue()) != v.doubleValue()) {
             t.ignoreError("Parameter '" + params[2].getName() + "' expects an integer, not a real number (" + v + " given)");
             return Collections.emptyList();
         }
 
-        return (s != null && v != null && rcId != null ? (List) Preserve.newPreserve(s, rcId, v.intValue()) : Collections.emptyList());
+        return s != null && rcId != null ? Preserve.newPreserve(s, rcId, v.intValue()) : Collections.emptyList();
     }
 }

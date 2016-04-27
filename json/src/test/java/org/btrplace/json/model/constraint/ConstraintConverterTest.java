@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.constraint.Constraint;
 import org.testng.annotations.Test;
 
 /**
@@ -29,7 +30,7 @@ import org.testng.annotations.Test;
  */
 public class ConstraintConverterTest {
 
-    private class Mock extends ConstraintConverter {
+    private class Mock<E extends Constraint> extends ConstraintConverter<E> {
 
         private String id;
 
@@ -38,7 +39,7 @@ public class ConstraintConverterTest {
         }
 
         @Override
-        public Class getSupportedConstraint() {
+        public Class<E> getSupportedConstraint() {
             throw new UnsupportedOperationException();
         }
 
@@ -48,19 +49,19 @@ public class ConstraintConverterTest {
         }
 
         @Override
-        public Object fromJSON(JSONObject in) throws JSONConverterException {
+        public E fromJSON(JSONObject in) throws JSONConverterException {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public JSONObject toJSON(Object o) throws JSONConverterException {
+        public JSONObject toJSON(E e) throws JSONConverterException {
             throw new UnsupportedOperationException();
         }
     }
 
     @Test
     public void testCheckId() throws JSONConverterException {
-        ConstraintConverter c = new Mock("foo");
+        ConstraintConverter<?> c = new Mock<>("foo");
         JSONObject o = new JSONObject();
         o.put("id", "foo");
         c.checkId(o);
@@ -68,14 +69,14 @@ public class ConstraintConverterTest {
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testBadCheckIdNoId() throws JSONConverterException {
-        ConstraintConverter c = new Mock("foo");
+        ConstraintConverter<?> c = new Mock<>("foo");
         JSONObject o = new JSONObject();
         c.checkId(o);
     }
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testBadCheckIdBadId() throws JSONConverterException {
-        ConstraintConverter c = new Mock("foo");
+        ConstraintConverter<?> c = new Mock<>("foo");
         JSONObject o = new JSONObject();
         o.put("id", "bar");
         c.checkId(o);

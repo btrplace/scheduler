@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 /**
- * Created by vkherbac on 02/09/14.
+ * @author Vincent Kherbache
  */
 public class NoDelayTest {
 

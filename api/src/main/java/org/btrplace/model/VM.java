@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,6 +30,11 @@ public class VM implements Element {
     private int id;
 
     /**
+     * The element identifier.
+     */
+    public static final String TYPE = "vm";
+
+    /**
      * Make a new VM.
      *
      * @param i the VM identifier.
@@ -45,7 +50,7 @@ public class VM implements Element {
 
     @Override
     public String toString() {
-        return "vm#" + id;
+        return TYPE + "#" + id;
     }
 
     @Override

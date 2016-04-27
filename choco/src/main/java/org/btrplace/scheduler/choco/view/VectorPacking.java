@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,18 +18,15 @@
 
 package org.btrplace.scheduler.choco.view;
 
-import org.btrplace.model.VM;
-import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -40,9 +37,7 @@ import java.util.List;
  */
 public class VectorPacking extends Packing {
 
-    private ReconfigurationProblem rp;
-
-    private List<IntVar[]> loads;
+    private List<List<IntVar>> loads;
 
     private List<IntVar[]> bins;
 
@@ -52,22 +47,18 @@ public class VectorPacking extends Packing {
 
     private int dim;
 
-    /**
-     * A new constraint.
-     *
-     * @param p the associated problem
-     */
-    public VectorPacking(ReconfigurationProblem p) {
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         loads = new ArrayList<>();
         bins = new ArrayList<>();
         sizes = new ArrayList<>();
         names = new ArrayList<>();
-        this.rp = p;
         dim = 0;
+        return true;
     }
 
     @Override
-    public void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b) {
+    public void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b) {
         this.loads.add(l);
         this.sizes.add(s);
         this.bins.add(b);
@@ -77,12 +68,13 @@ public class VectorPacking extends Packing {
 
     @Override
     public boolean beforeSolve(ReconfigurationProblem p) {
-        Solver solver = rp.getSolver();
+        super.beforeSolve(p);
+        Solver solver = p.getSolver();
         int[][] aSizes = new int[dim][sizes.get(0).length];
         IntVar[][] aLoads = new IntVar[dim][];
         String[] aNames = new String[dim];
         for (int d = 0; d < dim; d++) {
-            aLoads[d] = Arrays.copyOf(loads.get(d), loads.get(d).length);
+            aLoads[d] = loads.get(d).toArray(new IntVar[loads.get(d).size()]);
             assert bins.get(d).length == 0 || bins.get(d)[0].equals(bins.get(0)[0]);
             aNames[d] = names.get(d);
             IntVar[] s = sizes.get(d);
@@ -92,47 +84,14 @@ public class VectorPacking extends Packing {
                 try {
                     ss.instantiateTo(ss.getLB(), Cause.Null);
                 } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable post the vector packing constraint");
+                    p.getLogger().error("Unable post the vector packing constraint", ex);
                     return false;
                 }
             }
         }
-        if (!rp.getFutureRunningVMs().isEmpty()) {
+        if (!p.getFutureRunningVMs().isEmpty()) {
             solver.post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
-            //IntConstraintFactory.bin_packing(bins.get(0), iSizes[i], loads.get(i), 0));
         }
         return true;
-    }
-
-    @Override
-    public boolean insertActions(ReconfigurationProblem pb, Solution s, ReconfigurationPlan p) {
-        return true;
-    }
-
-    @Override
-    public boolean cloneVM(VM vm, VM clone) {
-        return true;
-    }
-
-    /**
-     * Builder associated to this constraint.
-     */
-    public static class Builder extends SolverViewBuilder {
-
-        @Override
-        public String getKey() {
-            return Packing.VIEW_ID;
-        }
-
-        @Override
-        public Packing build(ReconfigurationProblem p) {
-            return new VectorPacking(p);
-        }
-
-        @Override
-        public List<String> getDependencies() {
-            return Collections.emptyList();
-        }
-
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ public class AmongBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public AmongBuilder() {
-        super("among", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.node, false)});
+        super("among", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$ns", 2, BtrpOperand.Type.NODE, false)});
     }
 
     /**
@@ -52,11 +52,11 @@ public class AmongBuilder extends DefaultSatConstraintBuilder {
      * @return the constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
             Collection<Collection<Node>> nss = (Collection<Collection<Node>>) params[1].transform(this, t, args.get(1));
-            return (vms != null && nss != null) ? (List) Collections.singletonList(new Among(vms, nss)) : Collections.emptyList();
+            return vms != null && nss != null ? Collections.singletonList(new Among(vms, nss)) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

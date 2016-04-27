@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@ package org.btrplace.model.view;
 
 import org.btrplace.model.VM;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class VMConsumptionComparator implements Comparator<VM>, Serializable {
+public class VMConsumptionComparator implements Comparator<VM> {
 
     /**
      * The resources to use to make the comparison.

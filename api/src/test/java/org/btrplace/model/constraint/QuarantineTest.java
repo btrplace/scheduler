@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -96,7 +96,17 @@ public class QuarantineTest {
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vms.get(1), ns.get(1), ns.get(0), 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), false);
+    }
 
-
+    @Test
+    public void testQuarantines() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Quarantine> qs = Quarantine.newQuarantine(ns);
+        Assert.assertEquals(qs.size(), ns.size());
+        qs.stream().forEach((q) -> {
+            Assert.assertTrue(ns.containsAll(q.getInvolvedNodes()));
+            Assert.assertTrue(q.isContinuous());
+        });
     }
 }

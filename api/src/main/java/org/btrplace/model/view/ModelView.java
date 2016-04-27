@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 
 package org.btrplace.model.view;
 
+import org.btrplace.Copyable;
 import org.btrplace.model.VM;
 
 /**
@@ -26,7 +27,7 @@ import org.btrplace.model.VM;
  *
  * @author Fabien Hermenier
  */
-public interface ModelView extends Cloneable {
+public interface ModelView extends Copyable<ModelView> {
 
     /**
      * Get the view identifier.
@@ -34,13 +35,6 @@ public interface ModelView extends Cloneable {
      * @return a non-empty String
      */
     String getIdentifier();
-
-    /**
-     * Copy the view.
-     *
-     * @return a new view that is equals to the current one.
-     */
-    ModelView clone();
 
     /**
      * Notify the view a VM that already exist

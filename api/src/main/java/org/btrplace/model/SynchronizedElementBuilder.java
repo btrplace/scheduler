@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,8 @@ public class SynchronizedElementBuilder implements ElementBuilder {
 
     private ElementBuilder base;
 
-    private final Object vmLock, nodeLock;
+    private final Object vmLock;
+    private final Object nodeLock;
 
     /**
      * Make a new builder.
@@ -84,7 +85,7 @@ public class SynchronizedElementBuilder implements ElementBuilder {
     }
 
     @Override
-    public ElementBuilder clone() {
+    public ElementBuilder copy() {
         return new SynchronizedElementBuilder(base);
     }
 }

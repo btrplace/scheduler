@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -47,8 +47,8 @@ import java.util.Map;
  */
 public class TemplateAssignment extends BtrPlaceTree {
 
-    private NamingService namingServiceNodes;
-    private NamingService namingServiceVMs;
+    private NamingService<Node> namingServiceNodes;
+    private NamingService<VM> namingServiceVMs;
 
     private Model mo;
 
@@ -72,7 +72,7 @@ public class TemplateAssignment extends BtrPlaceTree {
      * @param symbolsTable the symbol table
      * @param errs         the errors
      */
-    public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService nsNodes, NamingService nsVMs, ErrorReporter errs) {
+    public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService<Node> nsNodes, NamingService<VM> nsVMs, ErrorReporter errs) {
         super(t, errs);
         this.script = s;
         this.tpls = tplFactory;
@@ -167,7 +167,7 @@ public class TemplateAssignment extends BtrPlaceTree {
                 ignoreError("VM '" + id + "' already created");
             }
         } catch (ElementBuilderException ex) {
-            ignoreError(ex.getMessage());
+            ignoreError(ex);
         }
     }
 
@@ -185,11 +185,11 @@ public class TemplateAssignment extends BtrPlaceTree {
                 }
             }
             tpls.check(script, tplName, el, opts);
-            if (!script.add(new BtrpElement(BtrpOperand.Type.node, id, el))) {
+            if (!script.add(new BtrpElement(BtrpOperand.Type.NODE, id, el))) {
                 ignoreError("Node '" + id + "' already created");
             }
         } catch (ElementBuilderException ex) {
-            ignoreError(ex.getMessage());
+            ignoreError(ex);
         }
     }
 }

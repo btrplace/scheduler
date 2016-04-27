@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,10 +19,12 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Ready;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Collections;
 
 /**
  * Unit tests for {@link org.btrplace.scheduler.choco.constraint.CReady}.
@@ -38,12 +40,13 @@ public class CReadyTest {
         VM vm2 = mo.newVM();
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2, vm3).get();
+        mo.getMapping().ready(vm1).on(n1).run(n1, vm2, vm3);
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         CReady k = new CReady(new Ready(vm1));
-        Assert.assertEquals(0, k.getMisPlacedVMs(mo).size());
+        Assert.assertEquals(0, k.getMisPlacedVMs(i).size());
 
         k = new CReady(new Ready(vm2));
-        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
-        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm2));
+        Assert.assertEquals(1, k.getMisPlacedVMs(i).size());
+        Assert.assertTrue(k.getMisPlacedVMs(i).contains(vm2));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -38,10 +38,13 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
+
 @SideConstraint(args = {"ns <: nodes", "nb : int"}, inv = "sum([card(running(n)). n : ns]) <= nb")
-public class RunningCapacity extends SatConstraint {
+public class RunningCapacity extends SimpleConstraint {
 
     private int qty;
+
+    private Set<Node> nodes;
 
     /**
      * Make a new discrete constraint on a single node
@@ -82,16 +85,12 @@ public class RunningCapacity extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public RunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+        super(continuous);
+        this.nodes = nodes;
+        this.qty = amount;
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of VMs must be >= 0");
         }
-        this.qty = amount;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && qty == ((RunningCapacity) o).qty;
     }
 
     /**
@@ -104,14 +103,14 @@ public class RunningCapacity extends SatConstraint {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), qty);
+    public String toString() {
+        return "runningCapacity(" + "nodes=" + nodes
+                + ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
-    public String toString() {
-        return "runningCapacity(" + "nodes=" + getInvolvedNodes()
-                + ", amount=" + qty + ", " + restrictionToString() + ')';
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
     }
 
     @Override
@@ -119,4 +118,22 @@ public class RunningCapacity extends SatConstraint {
         return new RunningCapacityChecker(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RunningCapacity that = (RunningCapacity) o;
+        return qty == that.qty &&
+                isContinuous() == that.isContinuous() &&
+                Objects.equals(nodes, that.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(qty, nodes, isContinuous());
+    }
 }

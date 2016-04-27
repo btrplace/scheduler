@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Sleeping;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
 import java.util.Collections;
@@ -51,7 +51,7 @@ public class CSleeping implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
             return false;
@@ -61,9 +61,9 @@ public class CSleeping implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         VM v = cstr.getInvolvedVMs().iterator().next();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         if (!map.isSleeping(v)) {
             return Collections.singleton(v);
         }
@@ -73,20 +73,5 @@ public class CSleeping implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Sleeping.class;
-        }
-
-        @Override
-        public CSleeping build(Constraint c) {
-            return new CSleeping((Sleeping) c);
-        }
     }
 }

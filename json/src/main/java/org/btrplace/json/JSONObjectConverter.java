@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,6 @@ package org.btrplace.json;
 import net.minidev.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 
 /**
@@ -54,10 +53,9 @@ public interface JSONObjectConverter<E> {
      *
      * @param path the file path
      * @return the resulting object
-     * @throws IOException            if an error occurred while reading the stream
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    E fromJSON(File path) throws IOException, JSONConverterException;
+    E fromJSON(File path) throws JSONConverterException;
 
     /**
      * Un-serialize an object from a string.
@@ -93,9 +91,8 @@ public interface JSONObjectConverter<E> {
      * @param e the object to serialize
      * @param w the stream to append to
      * @throws JSONConverterException if an error occurred while converting the object
-     * @throws IOException            if an error occurred while writing the object
      */
-    void toJSON(E e, Appendable w) throws JSONConverterException, IOException;
+    void toJSON(E e, Appendable w) throws JSONConverterException;
 
     /**
      * Serialize an object to a file.
@@ -103,7 +100,6 @@ public interface JSONObjectConverter<E> {
      * @param e    the object
      * @param path the path name
      * @throws JSONConverterException if an error occurred while converting the object
-     * @throws IOException            if an error occurred while writing the object
      */
-    void toJSON(E e, File path) throws JSONConverterException, IOException;
+    void toJSON(E e, File path) throws JSONConverterException;
 }

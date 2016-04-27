@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,13 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.RunningCapacity;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
@@ -57,9 +57,9 @@ public class CRunningCapacity implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         Solver s = rp.getSolver();
-        if (cstr.getInvolvedVMs().size() == 1) {
+        if (cstr.getInvolvedNodes().size() == 1) {
             return filterWithSingleNode(rp);
         }
         if (cstr.isContinuous() && !injectContinuous(rp)) {
@@ -67,7 +67,7 @@ public class CRunningCapacity implements ChocoConstraint {
         }
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
-            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
+            vs.add(rp.getNbRunningVMs().get(rp.getNode(u)));
         }
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
@@ -112,25 +112,24 @@ public class CRunningCapacity implements ChocoConstraint {
 
     private boolean filterWithSingleNode(ReconfigurationProblem rp) {
         Node n = cstr.getInvolvedNodes().iterator().next();
-        IntVar v = rp.getNbRunningVMs()[rp.getNode(n)];
+        IntVar v = rp.getNbRunningVMs().get(rp.getNode(n));
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(v, "<=", cstr.getAmount()));
 
-        //Continuous in practice ?
-        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
-            try {
-                v.updateUpperBound(cstr.getAmount(), Cause.Null);
-            } catch (ContradictionException e) {
-                rp.getLogger().error("Unable to cap the amount of VMs on '{}' to {}, : ", n, cstr.getAmount(), e.getMessage());
-                return false;
-            }
+        try {
+            v.updateUpperBound(cstr.getAmount(), Cause.Null);
+        } catch (ContradictionException e) {
+            rp.getLogger().error("Unable to cap the amount of VMs on " + n + " to " + cstr.getAmount(), e);
+            return false;
         }
-        return true;
+
+        //Continuous in practice ?
+        return !(cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel()));
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping map = i.getModel().getMapping();
         Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
         for (Node n : cstr.getInvolvedNodes()) {
@@ -148,20 +147,5 @@ public class CRunningCapacity implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return RunningCapacity.class;
-        }
-
-        @Override
-        public CRunningCapacity build(Constraint c) {
-            return new CRunningCapacity((RunningCapacity) c);
-        }
     }
 }

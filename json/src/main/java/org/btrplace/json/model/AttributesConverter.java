@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,9 +36,10 @@ import java.util.Map;
  */
 public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
-    private void putAttributes(Attributes attrs, Element e, JSONObject entries) {
-        for (String key : entries.keySet()) {
-            Object value = entries.get(key);
+    private static void putAttributes(Attributes attrs, Element e, JSONObject entries) {
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
             if (value.getClass().equals(Boolean.class)) {
                 attrs.put(e, key, (Boolean) value);
             } else if (value.getClass().equals(String.class)) {
@@ -62,7 +63,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             if (vms != null) {
                 for (Map.Entry<String, Object> e : vms.entrySet()) {
                     String el = e.getKey();
-                    VM vm = getOrMakeVM(Integer.parseInt(el));
+                    VM vm = getVM(Integer.parseInt(el));
                     JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, vm, entries);
                 }
@@ -72,7 +73,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             if (nodes != null) {
                 for (Map.Entry<String, Object> e : nodes.entrySet()) {
                     String el = e.getKey();
-                    Node n = getOrMakeNode(Integer.parseInt(el));
+                    Node n = getNode(Integer.parseInt(el));
                     JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, n, entries);
                 }

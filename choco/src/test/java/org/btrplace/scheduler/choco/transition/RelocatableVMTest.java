@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.solution.Solution;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -65,13 +66,13 @@ public class RelocatableVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantActionDuration(5));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm1);
         Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
         Assert.assertEquals(vm1, am.getVM());
@@ -89,8 +90,7 @@ public class RelocatableVMTest {
         //No VMs on n1, discrete mode
         Solver s = rp.getSolver();
 
-        s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs()[rp.getNode(n1)], "=", 0));
-        System.out.println(s);
+        s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs().get(rp.getNode(n1)), "=", 0));
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -119,17 +119,17 @@ public class RelocatableVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantActionDuration(5));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm1);
 
         //No VMs on n2
-        rp.getNbRunningVMs()[rp.getNode(n2)].instantiateTo(0, Cause.Null);
+        rp.getNbRunningVMs().get(rp.getNode(n2)).instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -182,10 +182,9 @@ public class RelocatableVMTest {
      * The re-instantiation is possible but will lead in a waste of time.
      *
      * @throws org.btrplace.scheduler.SchedulerException
-     * @throws ContradictionException
      */
     @Test
-    public void testNotWorthyReInstantiation() throws SchedulerException, ContradictionException {
+    public void testNotWorthyReInstantiation() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
 
@@ -198,12 +197,12 @@ public class RelocatableVMTest {
         map.addRunningVM(vm1, n1);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantActionDuration(2));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(2));
 
         mo.getAttributes().put(vm1, "template", "small");
         mo.getAttributes().put(vm1, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm1);
@@ -230,26 +229,27 @@ public class RelocatableVMTest {
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(20));
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
-        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
-        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(1));
+        dev.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration<>(20));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));
+        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(2));
+        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
 
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(1));
+        Solution sol = rp.getSolver().getSolutionRecorder().getLastSolution();
+        Assert.assertEquals(sol.getIntVal(am.getRelocationMethod()).intValue(), 1);
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();
         //Check the VM has been relocated
@@ -282,21 +282,21 @@ public class RelocatableVMTest {
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantActionDuration(2));
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
-        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
-        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(1));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(2));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));
+        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(2));
+        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -323,22 +323,22 @@ public class RelocatableVMTest {
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantActionDuration(20));
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
-        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
-        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(1));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(20));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));
+        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(2));
+        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getRelocationMethod().instantiateTo(1, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -378,22 +378,22 @@ public class RelocatableVMTest {
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantActionDuration(20));
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
-        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
-        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(1));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(20));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));
+        dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(2));
+        dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), map.getAllVMs(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getRelocationMethod().instantiateTo(0, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -434,7 +434,7 @@ public class RelocatableVMTest {
         }
         Preserve pr = new Preserve(vm5, "cpu", 5);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(MigrateVM.class, new ConstantActionDuration(20));
+        cra.getDurationEvaluators().register(MigrateVM.class, new ConstantActionDuration<>(20));
 
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -462,7 +462,7 @@ public class RelocatableVMTest {
         map.addRunningVM(vm1, n1);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setManageableVMs(Collections.<VM>emptySet())
+                .setManageableVMs(Collections.emptySet())
                 .build();
         Assert.assertEquals(rp.getVMAction(vm1).getClass(), RelocatableVM.class);
         RelocatableVM m1 = (RelocatableVM) rp.getVMAction(vm1);
@@ -473,7 +473,6 @@ public class RelocatableVMTest {
         Assert.assertTrue(m1.getDuration().isInstantiatedTo(0));
         Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
         Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));
-        System.out.println(rp.getSolver().toString());
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);

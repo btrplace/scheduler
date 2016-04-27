@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -93,8 +93,8 @@ public class SplitAmongTest {
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(sp.equals(new SplitAmong(vGrps, pGrps)));
         Assert.assertEquals(sp.hashCode(), new SplitAmong(vGrps, pGrps).hashCode());
-        Assert.assertFalse(sp.equals(new SplitAmong(Collections.<Collection<VM>>emptyList(), pGrps)));
-        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, Collections.<Collection<Node>>emptyList())));
+        Assert.assertFalse(sp.equals(new SplitAmong(Collections.emptyList(), pGrps)));
+        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, Collections.emptyList())));
 
         SplitAmong sp2 = new SplitAmong(vGrps, pGrps);
         sp2.setContinuous(true);

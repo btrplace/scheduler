@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,12 +21,12 @@ package org.btrplace.scheduler.choco.constraint;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Lonely;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -53,15 +53,15 @@ public class CLonelyTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5);
 
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(l));
         Assert.assertNotNull(plan);
         //System.out.println(plan);
         //Assert.assertEquals(l.isSatisfied(plan.getResult()), SatConstraint.Sat.SATISFIED);
@@ -84,9 +84,9 @@ public class CLonelyTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).get();
+                .run(n2, vm4, vm5);
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
@@ -111,15 +111,16 @@ public class CLonelyTest {
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).get();
+                .run(n2, vm4, vm5);
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
 
         CLonely c = new CLonely(new Lonely(mine));
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm2, n2);
-        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getRunningVMs(n2));
+        Assert.assertEquals(c.getMisPlacedVMs(i), map.getRunningVMs(n2));
     }
 }

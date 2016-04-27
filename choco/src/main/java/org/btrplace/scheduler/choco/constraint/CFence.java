@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,13 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Fence;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.chocosolver.solver.Cause;
@@ -52,7 +52,7 @@ public class CFence implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
@@ -69,18 +69,18 @@ public class CFence implements ChocoConstraint {
                 try {
                     t.getHoster().instantiateTo(rp.getNode(n), Cause.Null);
                 } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to force VM '{}' to be running on node '{}'", vm, n);
+                    rp.getLogger().error("Unable to force VM '" + vm + "' to be running on node '" + n + "'", ex);
                     return false;
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
-                List<Node> otherNodes = new ArrayList<>(rp.getNodes().length - nodes.size());
+                List<Node> otherNodes = new ArrayList<>(rp.getNodes().size() - nodes.size());
                 for (Node n : rp.getNodes()) {
                     if (!nodes.contains(n)) {
                         otherNodes.add(n);
                     }
                 }
-                return new CBan(new Ban(vm, otherNodes)).inject(rp);
+                return new CBan(new Ban(vm, otherNodes)).inject(ps, rp);
 
             }
         }
@@ -88,8 +88,8 @@ public class CFence implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping map = i.getModel().getMapping();
         VM vm = cstr.getInvolvedVMs().iterator().next();
         if (map.isRunning(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
             return Collections.singleton(vm);
@@ -100,20 +100,5 @@ public class CFence implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Fence.class;
-        }
-
-        @Override
-        public CFence build(Constraint c) {
-            return new CFence((Fence) c);
-        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.model.Element;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 import java.util.HashMap;
@@ -42,9 +43,9 @@ public class DefaultTemplateFactory implements TemplateFactory {
 
     private Map<String, Template> nodeTpls;
 
-    private NamingService namingServerNodes;
+    private NamingService<Node> namingServerNodes;
 
-    private NamingService namingServerVMs;
+    private NamingService<VM> namingServerVMs;
 
     private Model mo;
 
@@ -54,7 +55,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
      * @param srvNodes the nodes naming service to rely on
      * @param srvVMs   the vms naming service to rely on
      */
-    public DefaultTemplateFactory(NamingService srvNodes, NamingService srvVMs, Model m) {
+    public DefaultTemplateFactory(NamingService<Node> srvNodes, NamingService<VM> srvVMs, Model m) {
         this.namingServerNodes = srvNodes;
         this.namingServerVMs = srvVMs;
         this.mo = m;
@@ -75,7 +76,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
     @Override
     public void check(Script scr, String tplName, Element e, Map<String, String> attrs) throws ElementBuilderException {
         //Check if the current element already has a template, report an error if they differ
-        String currentTpl = mo.getAttributes().getString(e, "template");
+        String currentTpl = mo.getAttributes().get(e, "template", "");
         if (!tplName.equals(currentTpl)) {
             throw new ElementBuilderException(e.id() + " already implements '" + currentTpl + "'. Redefinition is not allowed");
         }
@@ -88,7 +89,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
         if (tpl == null) {
             throw new ElementBuilderException("Unknown template '" + tplName + "'");
         }
-        tpl.check(scr, e, attrs);
+        tpl.check();
     }
 
     @Override
@@ -97,7 +98,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
         tpl.setNamingServiceVMs(namingServerVMs);
         if (tpl.getElementType() == BtrpOperand.Type.VM) {
             return vmTpls.put(tpl.getIdentifier(), tpl);
-        } else if (tpl.getElementType() == BtrpOperand.Type.node) {
+        } else if (tpl.getElementType() == BtrpOperand.Type.NODE) {
             return nodeTpls.put(tpl.getIdentifier(), tpl);
         }
         return null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,10 +18,12 @@
 
 package org.btrplace.model.view;
 
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A view to denote a resource that nodes share among the VMs they host
@@ -51,7 +53,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResource implements ModelView, Cloneable {
+public class ShareableResource implements ModelView {
 
     /**
      * The base of the view identifier. Once instantiated, it is completed
@@ -131,11 +133,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * @return the capacity of each node. The order is maintained
      */
     public List<Integer> getCapacities(List<Node> ids) {
-        List<Integer> res = new ArrayList<>(ids.size());
-        for (Node n : ids) {
-            res.add(getCapacity(n));
-        }
-        return res;
+        return ids.stream().map(this::getCapacity).collect(Collectors.toList());
     }
 
     /**
@@ -145,11 +143,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * @return the consumption of each VM. The order is maintained
      */
     public List<Integer> getConsumptions(List<VM> ids) {
-        List<Integer> res = new ArrayList<>(ids.size());
-        for (VM vm : ids) {
-            res.add(getConsumption(vm));
-        }
-        return res;
+        return ids.stream().map(this::getConsumption).collect(Collectors.toList());
     }
 
     /**
@@ -297,7 +291,7 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     @Override
-    public ShareableResource clone() {
+    public ShareableResource copy() {
         ShareableResource rc = new ShareableResource(rcId, nodesNoValue, vmsNoValue);
         for (Map.Entry<VM, Integer> e : vmsConsumption.entrySet()) {
             rc.vmsConsumption.put(e.getKey(), e.getValue());
@@ -366,5 +360,16 @@ public class ShareableResource implements ModelView, Cloneable {
             }
         }
         return s;
+    }
+
+    /**
+     * Get the view associated to a model if exists
+     *
+     * @param mo the model to look at
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static ShareableResource get(Model mo, String id) {
+        return (ShareableResource) mo.getView(VIEW_ID_BASE + id);
     }
 }

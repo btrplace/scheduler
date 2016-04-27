@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -56,16 +56,16 @@ public interface ReconfigurationProblem {
     /**
      * Get all the nodes in the model. Indexed by their identifier.
      *
-     * @return an array of node identifiers.
+     * @return an immutable list of Nodes.
      */
-    Node[] getNodes();
+    List<Node> getNodes();
 
     /**
      * Get all the VMs in the model. Indexed by their identifier.
      *
-     * @return an array of VM identifiers
+     * @return an immutable list of VMs
      */
-    VM[] getVMs();
+    List<VM> getVMs();
 
     /**
      * Get the initial Model.
@@ -177,9 +177,9 @@ public interface ReconfigurationProblem {
     /**
      * Get the VMs transition.
      *
-     * @return a list of transitions.
+     * @return an immutable list of transitions.
      */
-    VMTransition[] getVMActions();
+    List<VMTransition> getVMActions();
 
     /**
      * Get the transition associated to a given VM.
@@ -193,17 +193,16 @@ public interface ReconfigurationProblem {
      * Get the transitions associated to a set of VMs.
      *
      * @param id the VMs
-     * @return an array of transition. The order is provided by the collection iterator.
+     * @return an immutable list of transitions.
      */
-    VMTransition[] getVMActions(Collection<VM> id);
+    List<VMTransition> getVMActions(Collection<VM> id);
 
 
     /**
      * Get all the nodes transition.
-     *
-     * @return a list of transitions.
+     * @return an immutable list of transitions.
      */
-    NodeTransition[] getNodeActions();
+    List<NodeTransition> getNodeActions();
 
     /**
      * Get the transition associated to a given node.
@@ -329,9 +328,9 @@ public interface ReconfigurationProblem {
     /**
      * Get the amount of VMs hosted on each node.
      *
-     * @return an array of variable counting the number of VMs on each node
+     * @return an immutable list of variables counting the number of VMs on each node
      */
-    IntVar[] getNbRunningVMs();
+    List<IntVar> getNbRunningVMs();
 
 
     /**

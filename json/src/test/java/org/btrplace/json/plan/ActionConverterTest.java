@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@ import org.btrplace.plan.event.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class ActionConverterTest {
     private static Node n2 = mo.newNode();
 
     @Test
-    public void testMigrate() throws JSONConverterException, IOException {
+    public void testMigrate() throws JSONConverterException {
         MigrateVM a = new MigrateVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -60,7 +59,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testBootVM() throws JSONConverterException, IOException {
+    public void testBootVM() throws JSONConverterException {
         BootVM a = new BootVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -70,7 +69,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testKillVM() throws JSONConverterException, IOException {
+    public void testKillVM() throws JSONConverterException {
         KillVM a = new KillVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -80,7 +79,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testAllocate() throws JSONConverterException, IOException {
+    public void testAllocate() throws JSONConverterException {
         Allocate a = new Allocate(vm1, n1, "foo", 4, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -91,7 +90,7 @@ public class ActionConverterTest {
 
 
     @Test
-    public void testSuspendVM() throws JSONConverterException, IOException {
+    public void testSuspendVM() throws JSONConverterException {
         SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -101,7 +100,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testResumeVM() throws JSONConverterException, IOException {
+    public void testResumeVM() throws JSONConverterException {
         ResumeVM a = new ResumeVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -112,7 +111,7 @@ public class ActionConverterTest {
 
 
     @Test
-    public void testForgeVM() throws JSONConverterException, IOException {
+    public void testForgeVM() throws JSONConverterException {
         ForgeVM a = new ForgeVM(vm1, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -123,7 +122,7 @@ public class ActionConverterTest {
 
 
     @Test
-    public void testShutdownVM() throws JSONConverterException, IOException {
+    public void testShutdownVM() throws JSONConverterException {
         ShutdownVM a = new ShutdownVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -133,7 +132,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testShutdownNode() throws JSONConverterException, IOException {
+    public void testShutdownNode() throws JSONConverterException {
         ShutdownNode a = new ShutdownNode(n1, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -143,7 +142,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testBootNode() throws JSONConverterException, IOException {
+    public void testBootNode() throws JSONConverterException {
         BootNode a = new BootNode(n1, 3, 5);
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
@@ -153,7 +152,7 @@ public class ActionConverterTest {
     }
 
     @Test(dependsOnMethods = "testBootNode")
-    public void testEvents() throws JSONConverterException, IOException {
+    public void testEvents() throws JSONConverterException {
         BootNode a = new BootNode(n1, 3, 5);
         a.addEvent(Action.Hook.PRE, new AllocateEvent(vm1, "foo", 3));
         a.addEvent(Action.Hook.POST, new AllocateEvent(vm2, "bar", 5));
@@ -170,7 +169,7 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void testListSerialization() throws JSONConverterException, IOException {
+    public void testListSerialization() throws JSONConverterException {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         List<Action> l = new ArrayList<>();

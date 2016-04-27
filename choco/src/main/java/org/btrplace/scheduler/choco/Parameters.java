@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,12 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.view.ModelViewMapper;
-import org.btrplace.scheduler.choco.view.SolverViewBuilder;
+import org.btrplace.scheduler.choco.view.ChocoView;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Parameters for a {@link ChocoScheduler}.
@@ -32,6 +31,21 @@ import java.util.Collection;
  * @author Fabien Hermenier
  */
 public interface Parameters {
+
+    /**
+     * Set a seed to use from every random number generators.
+     *
+     * @param s the seed
+     * @return @{code this}
+     */
+    Parameters setRandomSeed(long s);
+
+    /**
+     * Get the seed used by the random number generators.
+     *
+     * @return the seed
+     */
+    long getRandomSeed();
 
     /**
      * State if the algorithm only have to repair the model instead
@@ -43,8 +57,11 @@ public interface Parameters {
     Parameters doRepair(boolean b);
 
     /**
-     * Indicate if the algorithm repair the model.
-     *
+     * Indicate if the algorithm repairs the model.
+     * Each constraint will scan the model to detect the minimum set of VMs
+     * that should be managed to get able to get a solution.
+     * This approach can reduce drastically the solving duration but might be too aggressive
+     * then remove possible solutions.
      * @return {@code true} iff it repairs the model.
      */
     boolean doRepair();
@@ -65,23 +82,6 @@ public interface Parameters {
     boolean doOptimize();
 
     /**
-     * Get the mapper that is used to associate the {@link org.btrplace.model.view.ModelView}
-     * to the {@link org.btrplace.scheduler.choco.view.ChocoView}.
-     *
-     * @return the mapper
-     */
-    ModelViewMapper getViewMapper();
-
-    /**
-     * Set the mapper to use to associate the {@link org.btrplace.model.view.ModelView}
-     * to the {@link org.btrplace.scheduler.choco.view.ChocoView}.
-     *
-     * @param m the mapper to use
-     * @return the current instance
-     */
-    Parameters setViewMapper(ModelViewMapper m);
-
-    /**
      * Set the timeout value for the solving process.
      * Use a negative number to remove any timeout.
      *
@@ -99,19 +99,19 @@ public interface Parameters {
     int getTimeLimit();
 
     /**
-     * Get the mapper that converts {@link org.btrplace.model.constraint.Constraint} to {@link org.btrplace.scheduler.choco.constraint.ChocoConstraint}.
+     * Get the mapper that converts api-side elements to their choco implementation.
      *
      * @return the mapper.
      */
-    ConstraintMapper getConstraintMapper();
+    ChocoMapper getMapper();
 
     /**
-     * Set the mapper that converts {@link org.btrplace.model.constraint.Constraint} to {@link org.btrplace.scheduler.choco.constraint.ChocoConstraint}.
+     * set the mapper that converts api-side elements to their choco implementation.
      *
      * @param map the mapper to use
      * @return the current instance
      */
-    Parameters setConstraintMapper(ConstraintMapper map);
+    Parameters setMapper(ChocoMapper map);
 
     /**
      * Get the evaluator that is used to indicate the estimated duration of each action.
@@ -176,7 +176,7 @@ public interface Parameters {
      *
      * @param amf the factory to rely on
      */
-    void setTransitionFactory(TransitionFactory amf);
+    Parameters setTransitionFactory(TransitionFactory amf);
 
     /**
      * Get the current factory that is used to model the transitions.
@@ -186,24 +186,27 @@ public interface Parameters {
     TransitionFactory getTransitionFactory();
 
     /**
-     * Declare a builder that create solve-only views.
+     * Declare a standalone view to be plugged inside the solver.
+     * The class will be automatically instantiated at the beginning of the solver
+     * specialisation phase. It must provided a default constructor
      *
-     * @param b the builder to add
+     * @param v the class of the view to add
+     * @return {@code true} if the view has been added
      */
-    void addSolverViewBuilder(SolverViewBuilder b);
+    boolean addChocoView(Class<? extends ChocoView> v);
 
     /**
-     * Remove a builder dedicated to solver-only views.
+     * Remove a standalone view already plugged.
      *
-     * @param b the builder to remove
-     * @return {@code true} iff the builder has been removed
+     * @param v the view to remove
+     * @return {@code true} if the view has been removed
      */
-    boolean removeSolverViewBuilder(SolverViewBuilder b);
+    boolean removeChocoView(Class<? extends ChocoView> v);
 
     /**
-     * Get the solver-only view builders.
+     * Get the standalone views.
      *
-     * @return a collection that may be empty
+     * @return a list of views that may be empty
      */
-    Collection<SolverViewBuilder> getSolverViews();
+    List<Class<? extends ChocoView>> getChocoViews();
 }

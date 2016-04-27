@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,12 +30,12 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.Collections;
 
@@ -73,8 +73,8 @@ public class ShutdownableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
-        dev.register(BootNode.class, new ConstantActionDuration(10));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -109,7 +109,7 @@ public class ShutdownableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -140,11 +140,11 @@ public class ShutdownableNodeTest {
         map.addRunningVM(vm1, n1);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantActionDuration(2));
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration<>(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.emptySet(), Collections.emptySet(), Collections.emptySet())
                 .build();
         ShutdownableNode ma = (ShutdownableNode) rp.getNodeAction(n1);
         ma.getState().instantiateTo(0, Cause.Null);
@@ -181,8 +181,8 @@ public class ShutdownableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantActionDuration(2));
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration<>(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -214,10 +214,10 @@ public class ShutdownableNodeTest {
         map.addRunningVM(vm1, n1);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantActionDuration(2));
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration<>(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.emptySet(), Collections.emptySet(), Collections.emptySet())
                 .setParams(ps)
                 .build();
         ShutdownableNode ma1 = (ShutdownableNode) rp.getNodeAction(n1);
@@ -240,8 +240,8 @@ public class ShutdownableNodeTest {
         map.addOfflineNode(n2);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(BootNode.class, new ConstantActionDuration(2));
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .build();
@@ -277,8 +277,8 @@ public class ShutdownableNodeTest {
         map.addOfflineNode(n3);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
-        dev.register(BootNode.class, new ConstantActionDuration(10));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
                 .build();
@@ -330,8 +330,8 @@ public class ShutdownableNodeTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
-        dev.register(BootNode.class, new ConstantActionDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
                 .build();
@@ -368,8 +368,8 @@ public class ShutdownableNodeTest {
         map.addOnlineNode(n4);
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
-        dev.register(BootNode.class, new ConstantActionDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(5));
+        dev.register(BootNode.class, new ConstantActionDuration<>(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
                 .build();

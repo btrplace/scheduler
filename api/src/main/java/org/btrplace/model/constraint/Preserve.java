@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,10 +18,14 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
+import org.btrplace.model.view.ResourceRelated;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
@@ -34,29 +38,15 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"v : vms", "id : string", "qty : int"}, inv = "vmState(v) = running --> cons(v, id) <= qty")
-public class Preserve extends SatConstraint {
+public class Preserve implements SatConstraint, ResourceRelated {
+
+    private VM vm;
 
     private int amount;
 
     private String rc;
 
-    /**
-     * Make multiple constraints
-     *
-     * @param vms the VMs involved in the constraints
-     * @param r   the resource identifier
-     * @param q   the the minimum amount of resources to allocate to each VM. &gt;= 0
-     * @return a list of constraints
-     */
-    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
-        List<Preserve> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Preserve(v, r, q));
-        }
-        return l;
-    }
-
-    /**
+    /*
      * Make a new constraint.
      *
      * @param vm the VM
@@ -64,7 +54,7 @@ public class Preserve extends SatConstraint {
      * @param q  the minimum amount of resources to allocate to each VM. &gt;= 0
      */
     public Preserve(VM vm, String r, int q) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
+        this.vm = vm;
         if (q < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
         }
@@ -72,11 +62,8 @@ public class Preserve extends SatConstraint {
         this.amount = q;
     }
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return the identifier
-     */
+
+    @Override
     public String getResource() {
         return this.rc;
     }
@@ -91,18 +78,8 @@ public class Preserve extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && rc.equals(((Preserve) o).rc) && amount == ((Preserve) o).amount;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), rc, amount);
-    }
-
-    @Override
     public String toString() {
-        return "preserve(vm=" + getInvolvedVMs().iterator().next() +
+        return "preserve(vm=" + vm +
                 ", rc=" + rc +
                 ", amount=" + amount +
                 ", discrete" + ')';
@@ -118,6 +95,46 @@ public class Preserve extends SatConstraint {
         return new PreserveChecker(this);
     }
 
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Preserve preserve = (Preserve) o;
+        return amount == preserve.amount &&
+                Objects.equals(vm, preserve.vm) &&
+                Objects.equals(rc, preserve.rc);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, amount, rc);
+    }
+
+    /**
+     * Make multiple constraints
+     *
+     * @param vms the VMs involved in the constraints
+     * @param r   the resource identifier
+     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
+     * @return a list of constraints
+     */
+    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
+        return vms.stream().map(v -> new Preserve(v, r, q)).collect(Collectors.toList());
+    }
 }
 
 

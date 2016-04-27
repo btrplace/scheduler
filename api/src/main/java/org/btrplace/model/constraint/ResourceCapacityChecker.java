@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -69,7 +69,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean start(KillVM a) {
-        if (getConstraint().isContinuous()/* && srcRunning.remove(a.getVM())*/) {
+        if (getConstraint().isContinuous()) {
             return leave(rc.getConsumption(a.getVM()), a.getNode());
         }
         return true;
@@ -77,10 +77,11 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean start(MigrateVM a) {
-        if (getConstraint().isContinuous()) {
-            if (!(getNodes().contains(a.getSourceNode()) && getNodes().contains(a.getDestinationNode()))) {
-                return leave(rc.getConsumption(a.getVM()), a.getSourceNode()) && arrive(rc.getConsumption(a.getVM()), a.getDestinationNode());
-            }
+        if (getConstraint().isContinuous() &&
+                !getNodes().contains(a.getSourceNode()) &&
+                getNodes().contains(a.getDestinationNode())) {
+            return leave(rc.getConsumption(a.getVM()), a.getSourceNode()) &&
+                    arrive(rc.getConsumption(a.getVM()), a.getDestinationNode());
         }
         return true;
     }
@@ -103,7 +104,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
     @Override
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
-            rc = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
+            rc = ShareableResource.get(mo, getConstraint().getResource());
             free = getConstraint().getAmount();
             Mapping map = mo.getMapping();
             for (Node n : getNodes()) {
@@ -129,7 +130,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean endsWith(Model i) {
-        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
+        ShareableResource r = ShareableResource.get(i, getConstraint().getResource());
         if (r == null) {
             return false;
         }

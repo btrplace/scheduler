@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,6 +35,8 @@ import java.util.Set;
  */
 public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
 
+    private Set<Node> denied;
+
     /**
      * Make a new checker.
      *
@@ -45,7 +47,6 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         denied = new HashSet<>();
     }
 
-    private Set<Node> denied;
 
     @Override
     public boolean startsWith(Model mo) {
@@ -103,10 +104,8 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         Set<Node> forbidden = new HashSet<>();
         Mapping map = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (map.isRunning(vm)) {
-                if (!forbidden.add(map.getVMLocation(vm))) {
-                    return false;
-                }
+            if (map.isRunning(vm) && !forbidden.add(map.getVMLocation(vm))) {
+                return false;
             }
         }
         return true;

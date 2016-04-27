@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -97,7 +97,9 @@ public class TaskScheduler extends Constraint {
 
         private IStateIntVector[] vIns;
 
-        private IntVar[] earlyStarts, lastEnds;
+        private IntVar[] earlyStarts;
+
+        private IntVar[] lastEnds;
 
         private IStateInt watchDTask;
 
@@ -173,7 +175,7 @@ public class TaskScheduler extends Constraint {
                         this.vIns[h],
                         assocs,
                         revAssociations,
-                        aCause
+                        this
                 );
             }
 
@@ -202,7 +204,6 @@ public class TaskScheduler extends Constraint {
                 int h = dHosters[dt].getValue();
                 int t = dStarts[dt].getValue();
                 if (t < earlyStarts[h].getValue()) {
-                    LOGGER.error("D-slice {} arrives too early: {}. Min expected: {}", dHosters[dt], t, earlyStarts[h]);
                     return ESat.FALSE;
                 }
                 for (int d = 0; d < nbDims; d++) {
@@ -218,7 +219,6 @@ public class TaskScheduler extends Constraint {
                 int h = cHosters[ct].getValue();
                 int t = cEnds[ct].getValue();
                 if (t > lastEnds[h].getValue()) {
-                    LOGGER.error("C-slice {} leaves too late: {}. Max expected: {}", cHosters[ct], t, lastEnds[h]);
                     return ESat.FALSE;
                 }
                 for (int d = 0; d < nbDims; d++) {
@@ -231,12 +231,6 @@ public class TaskScheduler extends Constraint {
             boolean ok = true;
             for (int h = 0; h < nbHosts; h++) {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes[h]);
-                LOGGER.debug("--- Resource {} isSatisfied() ? ---", h);
-                LOGGER.debug(" before: {}/{} {}changes: "
-                        , Arrays.toString(initFree[h])
-                        , Arrays.toString(capacities[h])
-                        , prettyChanges(myChanges));
-
                 int[] moments = myChanges.keys(new int[myChanges.size()]);
                 Arrays.sort(moments);
                 for (int t : moments) {
@@ -248,22 +242,8 @@ public class TaskScheduler extends Constraint {
                         }
                     }
                     if (bad) {
-                        LOGGER.info("/!\\ at {}: free={}", t, Arrays.toString(initFree[h]));
                         ok = false;
                         break;
-                    }
-                }
-
-                if (LOGGER.isDebugEnabled()) {
-                    for (int x = 0; x < cHosters.length; x++) {
-                        if (cHosters[x].getValue() == h) {
-                            LOGGER.debug(cEnds[x].getName() + " ends at " + cEnds[x].getValue() + " uses:" + Arrays.toString(cUsages[x]));
-                        }
-                    }
-                    for (int x = 0; x < dHosters.length; x++) {
-                        if (dHosters[x].getValue() == h) {
-                            LOGGER.debug(dStarts[x].getName() + " starts at " + dStarts[x].getValue() + " uses:" + Arrays.toString(dUsages[x]));
-                        }
                     }
                 }
             }
@@ -287,13 +267,14 @@ public class TaskScheduler extends Constraint {
         }
 
         private boolean updateVInsAndWatch(int dt) {
-            while (dt < dHosters.length && dHosters[dt].isInstantiated()) {
-                int h = dHosters[dt].getValue();
-                vIns[h].add(dt);
-                dt++;
+            int d = dt;
+            while (d < dHosters.length && dHosters[d].isInstantiated()) {
+                int h = dHosters[d].getValue();
+                vIns[h].add(d);
+                d++;
             }
-            watchDTask.set(dt);
-            return dt < dHosters.length;
+            watchDTask.set(d);
+            return d < dHosters.length;
         }
 
         private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[] change) {
@@ -311,7 +292,7 @@ public class TaskScheduler extends Constraint {
             return map;
         }
 
-        private String prettyChanges(TIntObjectHashMap<int[]> changes) {
+        private static String prettyChanges(TIntObjectHashMap<int[]> changes) {
             int[] moments = changes.keys(new int[changes.size()]);
             Arrays.sort(moments);
             StringBuilder b = new StringBuilder();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
 
 import java.util.Set;
@@ -38,13 +38,15 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface MisplacedVMsEstimator {
+
 
     /**
      * Get the VMs that are supposed to be mis-placed.
      *
-     * @param m the model to use to inspect the VMs.
+     * @param i the instance to inspect
      * @return a set of VMs identifier that may be empty (when no VMs are misplaced)
      */
-    Set<VM> getMisPlacedVMs(Model m);
+    Set<VM> getMisPlacedVMs(Instance i);
 }

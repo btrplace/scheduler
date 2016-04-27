@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,14 +35,6 @@ import java.util.Set;
  */
 public class DependencyBasedPlanApplier extends DefaultPlanApplier {
 
-
-    /**
-     * Make a new applier.
-     */
-    public DependencyBasedPlanApplier() {
-        super();
-    }
-
     @Override
     public Model apply(ReconfigurationPlan p) {
         int nbCommitted = 0;
@@ -57,9 +49,6 @@ public class DependencyBasedPlanApplier extends DefaultPlanApplier {
             Set<Action> newFeasible = new HashSet<>();
             for (Action a : feasible) {
                 Set<Action> s = rpm.commit(a);
-                if (s == null) {
-                    return null;
-                }
                 fireAction(a);
                 newFeasible.addAll(s);
                 nbCommitted++;

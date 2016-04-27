@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 
@@ -81,6 +82,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         c.register(new SpreadConverter());
         c.register(new MaxOnlineConverter());
         c.register(new MinMTTRConverter());
+        c.register(new MinMTTRMigConverter());
         return c;
     }
 
@@ -91,7 +93,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
      * @return the container that was previously registered for a constraint. {@code null} if there was
      * no registered converter
      */
-    public ConstraintConverter register(ConstraintConverter<? extends Constraint> c) {
+    public ConstraintConverter<? extends Constraint> register(ConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);
         return json2java.put(c.getJSONId(), c);
 
@@ -160,9 +162,11 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
     }
 
     @Override
-    public List<SatConstraint> listFromJSON(File path) throws IOException, JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+    public List<SatConstraint> listFromJSON(File path) throws JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
 
     }
@@ -194,14 +198,20 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
     }
 
     @Override
-    public void toJSON(Collection<SatConstraint> e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(Collection<SatConstraint> e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(Collection<SatConstraint> e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+    public void toJSON(Collection<SatConstraint> e, File path) throws JSONConverterException {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 }

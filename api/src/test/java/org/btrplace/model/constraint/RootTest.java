@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -94,4 +94,15 @@ public class RootTest {
         Assert.assertEquals(r.isSatisfied(p), false);
     }
 
+    @Test
+    public void testRoots() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Root> rs = Root.newRoots(vms);
+        Assert.assertEquals(rs.size(), vms.size());
+        rs.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertTrue(q.isContinuous());
+        });
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,13 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to avoid VM relocation to another host.
@@ -36,21 +36,9 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"v : vms"}, inv = "vmState(v) = running --> ^host(v) = host(v)")
-public class Root extends SatConstraint {
+public class Root implements SatConstraint {
 
-    /**
-     * Instantiate constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Root> newRoots(Collection<VM> vms) {
-        List<Root> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Root(v));
-        }
-        return l;
-    }
+    private VM vm;
 
     /**
      * Make a new constraint.
@@ -58,12 +46,17 @@ public class Root extends SatConstraint {
      * @param vm the VM to disallow to move
      */
     public Root(VM vm) {
-        super(Collections.singleton(vm), Collections.<Node>emptySet(), true);
+        this.vm = vm;
     }
 
     @Override
     public String toString() {
-        return "root(" + "vm=" + getInvolvedVMs().iterator().next() + ", continuous" + ")";
+        return "root(vm=" + vm + ", continuous)";
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
     }
 
     @Override
@@ -72,8 +65,39 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public SatConstraintChecker<Root> getChecker() {
+    public RootChecker getChecker() {
         return new RootChecker(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Root root = (Root) o;
+        return Objects.equals(vm, root.vm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm);
+    }
+
+    @Override
+    public boolean isContinuous() {
+        return true;
+    }
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Root> newRoots(Collection<VM> vms) {
+        return vms.stream().map(Root::new).collect(Collectors.toList());
+    }
 }

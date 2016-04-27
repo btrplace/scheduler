@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,10 +25,7 @@ import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link org.btrplace.model.constraint.Spread}.
@@ -64,8 +61,8 @@ public class SpreadTest {
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Spread(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Spread(x).hashCode());
-        Assert.assertNotEquals(s.hashCode(), new Spread(new HashSet<VM>()).hashCode());
-        x = new HashSet<>(Arrays.asList(mo.newVM()));
+        Assert.assertNotEquals(s.hashCode(), new Spread(new HashSet<>()).hashCode());
+        x = new HashSet<>(Collections.singletonList(mo.newVM()));
         Assert.assertFalse(new Spread(x).equals(s));
         Assert.assertFalse(new Spread(x, false).equals(new Spread(x, true)));
         Assert.assertNotSame(new Spread(x, false).hashCode(), new Spread(x, true).hashCode());

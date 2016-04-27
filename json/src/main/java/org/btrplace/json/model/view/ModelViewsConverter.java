@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.view.network.NetworkConverter;
 import org.btrplace.model.view.ModelView;
 
 import java.io.*;
@@ -53,6 +54,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      * <ul>
      * <li>{@link org.btrplace.json.model.view.ShareableResourceConverter}</li>
      * <li>{@link org.btrplace.json.model.view.NamingServiceConverter}</li>
+     * <li>{@link NetworkConverter}</li>
      * </ul>
      *
      * @return a fulfilled converter.
@@ -61,6 +63,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         ModelViewsConverter converter = new ModelViewsConverter();
         converter.register(new ShareableResourceConverter());
         converter.register(new NamingServiceConverter());
+        converter.register(new NetworkConverter());
         return converter;
     }
 
@@ -71,7 +74,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      * @return the container that was previously registered for a view. {@code null} if there was
      * no registered converter
      */
-    public ModelViewConverter register(ModelViewConverter<? extends ModelView> c) {
+    public ModelViewConverter<? extends ModelView> register(ModelViewConverter<? extends ModelView> c) {
         java2json.put(c.getSupportedView(), c);
         return json2java.put(c.getJSONId(), c);
 
@@ -140,9 +143,11 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     @Override
-    public List<ModelView> listFromJSON(File path) throws IOException, JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+    public List<ModelView> listFromJSON(File path) throws JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
 
     }
@@ -174,14 +179,20 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     @Override
-    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 

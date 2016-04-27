@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -71,12 +71,14 @@ public class KillVM extends Action implements VMStateTransition {
 
     @Override
     public boolean equals(Object o) {
-        if (!super.equals(o)) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        KillVM that = (KillVM) o;
-        return this.id.equals(that.id) &&
-                ((host == null && that.host == null) || (host != null && host.equals(that.host)));
+        KillVM killVM = (KillVM) o;
+        return Objects.equals(id, killVM.id) && Objects.equals(host, killVM.host);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,8 +22,6 @@ package org.btrplace.scheduler.choco.extensions;
 import gnu.trove.list.array.TIntArrayList;
 import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.memory.IStateInt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.constraints.PropagatorPriority;
@@ -33,6 +31,8 @@ import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.util.ESat;
 import org.chocosolver.util.iterators.DisposableValueIterator;
 import org.chocosolver.util.tools.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Kind of a precedence constraint when there is multiple resources.
@@ -86,7 +86,7 @@ public class Precedences extends Constraint {
         }
 
         @Override
-        protected int getPropagationConditions(int idx) {
+        public int getPropagationConditions(int idx) {
             switch (idx) {
                 case 0:
                     return IntEventType.INSTANTIATE.getMask();
@@ -159,7 +159,7 @@ public class Precedences extends Constraint {
             }
 
             if (host.isInstantiated()) {
-                start.updateLowerBound(horizonLB[host.getValue()].get(), aCause);
+                start.updateLowerBound(horizonLB[host.getValue()].get(), this);
             }
         }
 
@@ -168,7 +168,7 @@ public class Precedences extends Constraint {
             switch (idx) {
                 case 0:
                     //The host variable has been instantiated, so its LB can be updated to the LB of the host.
-                    start.updateLowerBound(horizonLB[idx].get(), aCause);
+                    start.updateLowerBound(horizonLB[idx].get(), this);
                     break;
                 case 1:
                     //The moment the task starts has been instantiated
@@ -181,7 +181,7 @@ public class Precedences extends Constraint {
                             for (int i : endsByHost[h]) {
                                 //The task can go on the resource
                                 //the other task must end after this one, so we adjust its UB
-                                othersEnd[i].updateUpperBound(st, aCause);
+                                othersEnd[i].updateUpperBound(st, this);
                             }
                         }
                     } finally {
@@ -196,7 +196,7 @@ public class Precedences extends Constraint {
                     //We recompute the horizon of the associated host
 
                     if (host.isInstantiatedTo(h)) {
-                        start.updateLowerBound(horizonLB[h].get(), aCause);
+                        start.updateLowerBound(horizonLB[h].get(), this);
                     } else if (host.contains(h)) {
                         //Browse the horizon for each of the possible host to update the LB
                         DisposableValueIterator it2 = host.getValueIterator(true);
@@ -211,7 +211,7 @@ public class Precedences extends Constraint {
                         } finally {
                             it2.dispose();
                         }
-                        start.updateLowerBound(min, aCause);
+                        start.updateLowerBound(min, this);
                     }
             }
         }
@@ -224,7 +224,8 @@ public class Precedences extends Constraint {
 
         private void recomputeHorizonForHost(int h) {
             if (h < horizonUB.length) {
-                int lb = 0, ub = 0;
+                int lb = 0;
+                int ub = 0;
                 for (int id : endsByHost[h]) {
                     IntVar end = othersEnd[id];
                     lb = Math.max(end.getLB(), lb);
@@ -242,7 +243,7 @@ public class Precedences extends Constraint {
                 int h = othersHost[o];
                 recomputeHorizonForHost(h);
                 if (host.isInstantiatedTo(h)) {
-                    start.updateLowerBound(horizonLB[h].get(), aCause);
+                    start.updateLowerBound(horizonLB[h].get(), this);
                 }
             }
         }

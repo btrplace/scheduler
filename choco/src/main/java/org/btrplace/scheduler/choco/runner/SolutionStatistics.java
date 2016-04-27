@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -137,5 +137,17 @@ public class SolutionStatistics {
      */
     public boolean hasObjective() {
         return hasObjective;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder()
+                .append(" at ").append(getTime()).append("ms: ")
+                .append(getNbNodes()).append(" node(s), ")
+                .append(getNbBacktracks()).append(" backtrack(s)");
+        if (hasObjective()) {
+            b.append(", objective: ").append(getOptValue());
+        }
+        return b.toString();
     }
 }

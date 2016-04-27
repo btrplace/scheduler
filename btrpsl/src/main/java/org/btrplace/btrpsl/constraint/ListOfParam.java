@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import org.btrplace.btrpsl.element.IgnorableOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ListOfParam extends DefaultConstraintParam<List> {
+public class ListOfParam extends DefaultConstraintParam<List<Object>> {
 
     protected boolean canBeEmpty = true;
 
@@ -84,25 +85,25 @@ public class ListOfParam extends DefaultConstraintParam<List> {
     }
 
     @Override
-    public List transform(SatConstraintBuilder cb, BtrPlaceTree tree, BtrpOperand op) {
+    public List<Object> transform(SatConstraintBuilder cb, BtrPlaceTree tree, BtrpOperand op) {
 
         if (op == IgnorableOperand.getInstance()) {
-            return null;
+            return Collections.emptyList();
         }
 
-        List s = makeList(depth, op);
+        List<Object> s = makeList(depth, op);
 
         if (!canBeEmpty && s.isEmpty()) {
             tree.ignoreError("In '" + cb.getFullSignature() + "', '" + getName() + "' expects a non-empty set");
-            return null;
+            return Collections.emptyList();
         }
         return s;
     }
 
-    private List makeList(int d, BtrpOperand o) {
+    private List<Object> makeList(int d, BtrpOperand o) {
         List<Object> h = new ArrayList<>();
         if (d == 0) {
-            if (o.type() == BtrpOperand.Type.VM || o.type() == BtrpOperand.Type.node) {
+            if (o.type() == BtrpOperand.Type.VM || o.type() == BtrpOperand.Type.NODE) {
                 h.add(((BtrpElement) o).getElement());
             }
         } else {
@@ -113,7 +114,7 @@ public class ListOfParam extends DefaultConstraintParam<List> {
                 if (d == 1) {
 
                     for (BtrpOperand op : x.getValues()) {
-                        if (op.type() == BtrpOperand.Type.VM || op.type() == BtrpOperand.Type.node) {
+                        if (op.type() == BtrpOperand.Type.VM || op.type() == BtrpOperand.Type.NODE) {
                             h.add(((BtrpElement) op).getElement());
                         }
                     }
@@ -129,6 +130,6 @@ public class ListOfParam extends DefaultConstraintParam<List> {
 
     @Override
     public boolean isCompatibleWith(BtrPlaceTree t, BtrpOperand o) {
-        return (o == IgnorableOperand.getInstance() || (o.type() == type && (o.degree() == depth || (depth == 1 && o.degree() == 0))));
+        return o == IgnorableOperand.getInstance() || (o.type() == type && (o.degree() == depth || (depth == 1 && o.degree() == 0)));
     }
 }

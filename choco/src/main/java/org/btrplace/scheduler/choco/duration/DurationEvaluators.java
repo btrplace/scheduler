@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -40,29 +40,6 @@ public class DurationEvaluators {
 
     private Map<Class<? extends Action>, ActionDurationEvaluator<Element>> durations;
 
-
-    /**
-     * Make a new {@code DurationEvaluators} and fulfill it
-     * using default a default evaluator for each action.
-     *
-     * @return a fulfilled evaluators.
-     */
-    public static DurationEvaluators newBundle() {
-        DurationEvaluators dev = new DurationEvaluators();
-
-        //Default constructors
-        dev.register(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
-        dev.register(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
-        dev.register(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
-        dev.register(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
-        dev.register(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
-        dev.register(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
-        dev.register(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
-        dev.register(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
-        dev.register(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
-        dev.register(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
-        return dev;
-    }
 
     /**
      * Make a new mapper.
@@ -109,7 +86,7 @@ public class DurationEvaluators {
      * @param a the action' class
      * @return the registered evaluator, if exists
      */
-    public ActionDurationEvaluator getEvaluator(Class<? extends Action> a) {
+    public ActionDurationEvaluator<Element> getEvaluator(Class<? extends Action> a) {
         return durations.get(a);
     }
 
@@ -131,5 +108,28 @@ public class DurationEvaluators {
             throw new SchedulerException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         return d;
+    }
+
+    /**
+     * Make a new {@code DurationEvaluators} and fulfill it
+     * using default a default evaluator for each action.
+     *
+     * @return a fulfilled evaluators.
+     */
+    public static DurationEvaluators newBundle() {
+        DurationEvaluators dev = new DurationEvaluators();
+
+        //Default constructors
+        dev.register(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
+        dev.register(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        dev.register(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        dev.register(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
+        dev.register(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
+        dev.register(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
+        dev.register(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        dev.register(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        dev.register(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
+        dev.register(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
+        return dev;
     }
 }

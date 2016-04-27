@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link org.btrplace.model.constraint.Sleeping}.
@@ -75,5 +76,17 @@ public class SleepingTest {
         Assert.assertEquals(d.isSatisfied(i), false);
         c.remove(v);
         Assert.assertEquals(d.isSatisfied(i), false);
+    }
+
+    @Test
+    public void testSleeping() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Sleeping> c = Sleeping.newSleeping(vms);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertFalse(q.isContinuous());
+        });
     }
 }

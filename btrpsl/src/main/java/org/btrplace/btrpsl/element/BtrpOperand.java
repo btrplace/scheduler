@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,30 +19,32 @@
 package org.btrplace.btrpsl.element;
 
 
+import org.btrplace.Copyable;
+
 /**
  * Interface specifying an operand with its types and the available operation it may
  * be involved into.
  *
  * @author Fabien Hermenier
  */
-public interface BtrpOperand extends Cloneable {
+public interface BtrpOperand extends Copyable<BtrpOperand> {
 
     /**
      * The possible operand type.
      */
-    public static enum Type {
+    enum Type {
         /**
          * Denotes a virtual machine
          */VM,
         /**
          * Denotes a hosting node
-         */node,
+         */NODE,
         /**
          * Denotes a constant integer
-         */number,
+         */NUMBER,
         /**
          * Denotes a constant string
-         */string,
+         */STRING,
     }
 
     /**
@@ -164,12 +166,6 @@ public interface BtrpOperand extends Cloneable {
      */
     BtrpNumber gt(BtrpOperand other);
 
-    /**
-     * Deep copy of the operand.
-     *
-     * @return a copy of this operand
-     */
-    BtrpOperand clone();
 
     /**
      * Pretty textual representation of the element type.

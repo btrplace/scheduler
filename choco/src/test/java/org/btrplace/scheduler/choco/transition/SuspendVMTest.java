@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,12 +28,12 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,13 +58,13 @@ public class SuspendVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration(5));
+        dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
+                .setNextVMsStates(new HashSet<>(), new HashSet<>(), map.getAllVMs(), new HashSet<>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
-        SuspendVM m = (SuspendVM) rp.getVMActions()[0];
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
+        SuspendVM m = (SuspendVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
@@ -97,14 +97,14 @@ public class SuspendVMTest {
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration(5));
+        dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
+                .setNextVMsStates(new HashSet<>(), new HashSet<>(), map.getAllVMs(), new HashSet<>())
                 .build();
-        SuspendVM m1 = (SuspendVM) rp.getVMActions()[rp.getVM(vm1)];
-        SuspendVM m2 = (SuspendVM) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        SuspendVM m1 = (SuspendVM) rp.getVMActions().get(rp.getVM(vm1));
+        SuspendVM m2 = (SuspendVM) rp.getVMActions().get(rp.getVM(vm2));
+        rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,11 +18,10 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Objects;
 
 /**
  * A constraint to force a set of VMs, if running, to be
@@ -37,7 +36,9 @@ import java.util.Collections;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"vs <: vms"}, inv = "!(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)")
-public class Gather extends SatConstraint {
+public class Gather extends SimpleConstraint {
+
+    private Collection<VM> vms;
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -55,12 +56,13 @@ public class Gather extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Gather(Collection<VM> vms, boolean continuous) {
-        super(vms, Collections.<Node>emptySet(), continuous);
+        super(continuous);
+        this.vms = vms;
     }
 
     @Override
     public String toString() {
-        return "gather(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
+        return "gather(" + "vms=" + vms + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -68,4 +70,26 @@ public class Gather extends SatConstraint {
         return new GatherChecker(this);
     }
 
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return vms;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Gather gather = (Gather) o;
+        return isContinuous() == gather.isContinuous() &&
+                Objects.equals(vms, gather.vms);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vms, isContinuous());
+    }
 }

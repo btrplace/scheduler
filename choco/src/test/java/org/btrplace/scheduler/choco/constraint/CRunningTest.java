@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,10 +19,12 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Running;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Collections;
 
 /**
  * Unit tests for {@link org.btrplace.scheduler.choco.constraint.CRunning}.
@@ -37,13 +39,14 @@ public class CRunningTest {
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).get();
+        mo.getMapping().on(n1).ready(vm1).run(n1, vm2);
 
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         CRunning k = new CRunning(new Running(vm1));
-        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
-        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
+        Assert.assertEquals(1, k.getMisPlacedVMs(i).size());
+        Assert.assertTrue(k.getMisPlacedVMs(i).contains(vm1));
 
         k = new CRunning(new Running(vm2));
-        Assert.assertEquals(0, k.getMisPlacedVMs(mo).size());
+        Assert.assertEquals(0, k.getMisPlacedVMs(i).size());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ public interface ReconfigurationPlanApplier {
      * Apply a plan.
      *
      * @param p the plan to apply
-     * @return the resulting model if the application succeed. {@code null} otherwise
+     * @return the resulting model if the application succeed.
      */
     Model apply(ReconfigurationPlan p);
 

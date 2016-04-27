@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 package org.btrplace.model.view;
 
 import org.btrplace.model.Element;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
@@ -40,34 +41,16 @@ public final class NamingService<E extends Element> implements ModelView {
 
     /**
      * The root view identifier.
-     * Will be suffixed by either "vm" or "node
+     * Will be suffixed by either {@link Node#TYPE} or {@link VM#TYPE}.
      */
     public static final String ID = "btrpsl.ns.";
 
     private String elemId;
 
     /**
-     * Make a naming service dedicated to nodes.
-     *
-     * @return a new naming service
-     */
-    public static NamingService<Node> newNodeNS() {
-        return new NamingService<>("node");
-    }
-
-    /**
-     * Make a naming service dedicated to VMs.
-     *
-     * @return a new naming service
-     */
-    public static NamingService<VM> newVMNS() {
-        return new NamingService<>("vm");
-    }
-
-    /**
      * Make a new service.
      *
-     * @param eId "vm" or "node"
+     * @param eId {@link VM#TYPE} or {@link Node#TYPE}
      */
     private NamingService(String eId) {
         resolve = new HashMap<>();
@@ -83,7 +66,7 @@ public final class NamingService<E extends Element> implements ModelView {
     /**
      * Get the element identifier of this naming service
      *
-     * @return "vm" or "node" for a naming service dedicated to the VMs or the nodes respectively
+     * @return {@link VM#TYPE} or {@link Node#TYPE} for a naming service dedicated to the VMs or the nodes respectively
      */
     public String getElementIdentifier() {
         return elemId;
@@ -145,7 +128,7 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
-        if (elemId.equals("vm")) {
+        if (VM.TYPE.equals(elemId)) {
             if (rev.containsKey(nextId)) {
                 //the new id already exists. It is a failure scenario.
                 return false;
@@ -170,13 +153,13 @@ public final class NamingService<E extends Element> implements ModelView {
             return false;
         }
 
-        NamingService that = (NamingService) o;
+        NamingService<?> that = (NamingService<?>) o;
 
         return elemId.equals(that.elemId) && resolve.equals(that.resolve);
     }
 
     @Override
-    public NamingService<E> clone() {
+    public NamingService<E> copy() {
         NamingService<E> cpy = new NamingService<>(elemId);
         for (Map.Entry<String, E> e : resolve.entrySet()) {
             cpy.resolve.put(e.getKey(), e.getValue());
@@ -206,4 +189,43 @@ public final class NamingService<E extends Element> implements ModelView {
         return b.toString();
     }
 
+    /**
+     * Make a naming service dedicated to nodes.
+     *
+     * @return a new naming service
+     */
+    public static NamingService<Node> newNodeNS() {
+        return new NamingService<>(Node.TYPE);
+    }
+
+    /**
+     * Make a naming service dedicated to VMs.
+     *
+     * @return a new naming service
+     */
+    public static NamingService<VM> newVMNS() {
+        return new NamingService<>(VM.TYPE);
+    }
+
+    /**
+     * Get the naming service for the VMs associated to a model.
+     *
+     * @param mo the model to look at
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static NamingService<VM> getVMNames(Model mo) {
+        return (NamingService<VM>) mo.getView(ID + VM.TYPE);
+    }
+
+    /**
+     * Get the naming service for the nodes associated to a model.
+     *
+     * @param mo the model to look at
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static NamingService<Node> getNodeNames(Model mo) {
+        return (NamingService<Node>) mo.getView(ID + Node.TYPE);
+    }
 }

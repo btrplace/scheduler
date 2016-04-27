@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ public class Instance {
      * @param cs the list of satisfaction oriented constraints to consider
      * @param o  the optimization constraint
      */
-    public Instance(Model m, Collection<SatConstraint> cs, OptConstraint o) {
+    public Instance(Model m, Collection<? extends SatConstraint> cs, OptConstraint o) {
         cstrs = new ArrayList<>(cs);
         this.mo = m;
         this.opt = o;
@@ -56,7 +56,7 @@ public class Instance {
      * @param o the optimization constraint
      */
     public Instance(Model m, OptConstraint o) {
-        this(m, Collections.<SatConstraint>emptyList(), o);
+        this(m, Collections.emptyList(), o);
     }
 
     /**
@@ -97,7 +97,7 @@ public class Instance {
 
         Instance instance = (Instance) o;
 
-        return (cstrs.equals(instance.cstrs) && mo.equals(instance.mo) && opt.equals(instance.opt));
+        return cstrs.equals(instance.cstrs) && mo.equals(instance.mo) && opt.equals(instance.opt);
     }
 
     @Override

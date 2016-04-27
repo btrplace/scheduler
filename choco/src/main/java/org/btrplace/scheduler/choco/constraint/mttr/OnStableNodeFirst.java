@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,14 +18,13 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.btrplace.scheduler.choco.constraint.CObjective;
-import org.chocosolver.memory.IStateInt;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -57,63 +56,64 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private BitSet[] ins;
 
-    private CObjective obj;
-
     private IStateInt firstFree;
 
     private IntVar last;
+
+    private BitSet stays;
+
+    private BitSet move;
 
     /**
      * Make a new heuristics
      *
      * @param rp the problem to rely on
-     * @param o  the objective to rely on
      */
-    public OnStableNodeFirst(ReconfigurationProblem rp, CObjective o) {
+    public OnStableNodeFirst(ReconfigurationProblem rp) {
 
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
-        this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
-        VMTransition[] vmActions = rp.getVMActions();
+        List<VMTransition> vmActions = rp.getVMActions();
 
-        hosts = new IntVar[vmActions.length];
-        starts = new IntVar[vmActions.length];
+        List<IntVar> hosts = new ArrayList<>();
+        List<IntVar> starts = new ArrayList<>();
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
-        oldPos = new int[hosts.length];
-        outs = new BitSet[rp.getNodes().length];
-        ins = new BitSet[rp.getNodes().length];
-        for (int i = 0; i < rp.getNodes().length; i++) {
+        oldPos = new int[vmActions.size()];
+        outs = new BitSet[rp.getNodes().size()];
+        ins = new BitSet[rp.getNodes().size()];
+        for (int i = 0; i < rp.getNodes().size(); i++) {
             outs[i] = new BitSet();
             ins[i] = new BitSet();
         }
 
-        for (int i = 0; i < hosts.length; i++) {
-            VMTransition action = vmActions[i];
+        int j = 0; //a separate counter because there is not necessarily a dSlice for each action
+        for (VMTransition action : vmActions) {
             Slice slice = action.getDSlice();
             if (slice != null) {
                 IntVar h = slice.getHoster();
                 IntVar s = slice.getStart();
-                hosts[i] = h;
+                hosts.add(h);
                 if (s != rp.getEnd()) {
-                    starts[i] = s;
+                    starts.add(s);
                 }
                 VM vm = action.getVM();
                 Node n = cfg.getVMLocation(vm);
                 if (n == null) {
-                    oldPos[i] = -1;
+                    oldPos[j] = -1;
                 } else {
-                    oldPos[i] = rp.getNode(n);
+                    oldPos[j] = rp.getNode(n);
                     //VM i was on node n
-                    outs[rp.getNode(n)].set(i);
+                    outs[rp.getNode(n)].set(j);
                 }
+                j++;
             }
         }
+        this.hosts = hosts.toArray(new IntVar[hosts.size()]);
+        this.starts = starts.toArray(new IntVar[starts.size()]);
     }
-
-    private BitSet stays, move;
 
     /**
      * Invalidate the VM placement.
@@ -154,10 +154,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     @Override
     public IntVar getVariable(IntVar[] scope) {
-
-        // TODO: test last == null ? test coherence between scope and the variable returned
-        if (last == null) return null;
-
         makeIncoming();
         IntVar v = getVMtoLeafNode();
         if (v == null) {
@@ -167,7 +163,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
         v = getMovingVM();
         if (v != null) {
-            obj.postCostConstraints();
             return v;
         }
 
@@ -189,10 +184,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     private IntVar getMovingVM() {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].isInstantiated()) {
-                if (oldPos[i] != hosts[i].getValue()) {
-                    return starts[i];
-                }
+            if (starts[i] != null && !starts[i].isInstantiated() && oldPos[i] != hosts[i].getValue()) {
+                return starts[i];
             }
         }
         return null;
@@ -217,10 +210,6 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                     }
                 }
             }
-        }
-        if (best == null) {
-            //Plug the cost constraints
-            obj.postCostConstraints();
         }
         return best;
     }

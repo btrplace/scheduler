@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 import org.btrplace.plan.event.*;
+import org.btrplace.scheduler.SchedulerException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -242,9 +243,9 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * Check if a plan satisfies all the {@link SatConstraintChecker}.
      *
      * @param p the plan to check
-     * @throws ReconfigurationPlanCheckerException if a violation is detected
+     * @throws SatConstraintViolationException if a violation is detected
      */
-    public void check(ReconfigurationPlan p) throws ReconfigurationPlanCheckerException {
+    public void check(ReconfigurationPlan p) throws SatConstraintViolationException {
         if (checkers.isEmpty()) {
             return;
         }
@@ -290,22 +291,25 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
             }
         }
         Model mo = p.getResult();
+        if (mo == null) {
+            throw new SchedulerException(p.getOrigin(), "The resulting reconfiguration plan is not applyable");
+        }
         checkModel(mo, false);
     }
 
-    private void visitAndThrowOnViolation(Action a) throws ReconfigurationPlanCheckerException {
+    private void visitAndThrowOnViolation(Action a) throws SatConstraintViolationException {
         SatConstraint c = (SatConstraint) a.visit(this);
         if (c != null) {
-            throw new ReconfigurationPlanCheckerException(c, a);
+            throw new ContinuousViolationException(c, a);
         }
     }
 
-    private void visitEvents(Action a, Action.Hook k) throws ReconfigurationPlanCheckerException {
+    private void visitEvents(Action a, Action.Hook k) throws SatConstraintViolationException {
         SatConstraint c;
         for (Event e : a.getEvents(k)) {
             c = (SatConstraint) e.visit(this);
             if (c != null) {
-                throw new ReconfigurationPlanCheckerException(c, a);
+                throw new ContinuousViolationException(c, a);
             }
         }
     }
@@ -316,19 +320,19 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * @param mo    the model to check
      * @param start {@code true} iff the model corresponds to the origin model. Otherwise it is considered
      *              to be the resulting model
-     * @throws ReconfigurationPlanCheckerException if at least one constraint is violated.
+     * @throws SatConstraintViolationException if at least one constraint is violated.
      */
-    private void checkModel(Model mo, boolean start) throws ReconfigurationPlanCheckerException {
+    private void checkModel(Model mo, boolean start) throws SatConstraintViolationException {
         for (SatConstraintChecker<?> c : checkers) {
             if (start && !c.startsWith(mo)) {
                 SatConstraint cs = c.getConstraint();
                 if (cs != null) {
-                    throw new ReconfigurationPlanCheckerException(c.getConstraint(), mo, start);
+                    throw new DiscreteViolationException(c.getConstraint(), mo);
                 }
             } else if (!start && !c.endsWith(mo)) {
                 SatConstraint cs = c.getConstraint();
                 if (cs != null) {
-                    throw new ReconfigurationPlanCheckerException(c.getConstraint(), mo, start);
+                    throw new DiscreteViolationException(c.getConstraint(), mo);
                 }
             }
         }

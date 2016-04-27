@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,16 +19,12 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Ready;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,23 +53,24 @@ public class CFenceTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
         Node n5 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4)
+        mo.getMapping().on(n1, n2, n3, n4)
                 .off(n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).get();
+                .sleep(n4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vm1, ns));
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         ns.add(mo.newNode());
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         vms.add(vm3);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         vms.add(vm4);
-        Set<VM> bad = new CFence(new Fence(vm4, ns)).getMisPlacedVMs(mo);
+        Set<VM> bad = new CFence(new Fence(vm4, ns)).getMisPlacedVMs(i);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
     }
@@ -88,10 +85,10 @@ public class CFenceTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
-                .run(n3, vm3).get();
+                .run(n3, vm3);
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(vm2, on);

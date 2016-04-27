@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultAttributes implements Attributes, Cloneable {
+public class DefaultAttributes implements Attributes {
 
     private Map<VM, Map<String, Object>> vmAttrs;
     private Map<Node, Map<String, Object>> nodeAttrs;
@@ -72,6 +72,47 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
+    public int get(Element e, String k, int def) {
+        if (isSet(e, k)) {
+            return (int) get(e, k);
+        }
+        return def;
+    }
+
+    @Override
+    public double get(Element e, String k, double def) {
+        if (isSet(e, k)) {
+            try {
+                return (int) get(e, k);
+            } catch (ClassCastException ex) {
+                //Not an integer
+            }
+            //Try the double
+            return (double) get(e, k);
+        }
+        return def;
+
+    }
+
+    @Override
+    public String get(Element e, String k, String def) {
+        if (isSet(e, k)) {
+            return (String) get(e, k);
+        }
+        return def;
+
+    }
+
+    @Override
+    public boolean get(Element e, String k, boolean def) {
+        if (isSet(e, k)) {
+            return (Boolean) get(e, k);
+        }
+        return def;
+
+    }
+
+    @Override
     public boolean isSet(Element e, String k) {
         Map<String, Object> m;
         if (e instanceof Node) {
@@ -98,7 +139,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public Attributes clone() {
+    public Attributes copy() {
         DefaultAttributes cpy = new DefaultAttributes();
         for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
             cpy.vmAttrs.put(e.getKey(), new HashMap<>(e.getValue()));
@@ -129,7 +170,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
         return b.toString();
     }
 
-    private String stringify(Map<String, Object> map) {
+    private static String stringify(Map<String, Object> map) {
         StringBuilder b = new StringBuilder();
         for (Map.Entry<String, Object> attr : map.entrySet()) {
             b.append(" <").append(attr.getKey()).append(',');
@@ -199,27 +240,6 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public Boolean getBoolean(Element e, String k) {
-        return (Boolean) get(e, k);
-    }
-
-    @Override
-    public String getString(Element e, String k) {
-        Object o = get(e, k);
-        return o == null ? null : o.toString();
-    }
-
-    @Override
-    public Double getDouble(Element e, String k) {
-        return (Double) get(e, k);
-    }
-
-    @Override
-    public Integer getInteger(Element e, String k) {
-        return (Integer) get(e, k);
-    }
-
-    @Override
     public Set<String> getKeys(Element e) {
         Map<String, Object> m;
         if (e instanceof Node) {
@@ -229,25 +249,27 @@ public class DefaultAttributes implements Attributes, Cloneable {
         } else {
             return Collections.emptySet();
         }
-        return m == null ? Collections.<String>emptySet() : m.keySet();
+        return m == null ? Collections.emptySet() : m.keySet();
     }
 
     @Override
     public boolean castAndPut(Element e, String k, String v) {
         String x = v.toLowerCase().trim();
-        if (x.equals("true")) {
+        if ("true".equals(x)) {
             return put(e, k, true);
-        } else if (x.equals("false")) {
+        } else if ("false".equals(x)) {
             return put(e, k, false);
         }
         try {
             return put(e, k, Integer.parseInt(x));
         } catch (NumberFormatException ignored) {
+            //Not an int
         }
 
         try {
             return put(e, k, Double.parseDouble(x));
         } catch (NumberFormatException ignored) {
+            //not a double either
         }
 
         return put(e, k, v);

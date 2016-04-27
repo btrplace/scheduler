@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -38,14 +38,14 @@ public class QuarantineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public QuarantineBuilder() {
-        super("quarantine", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false)});
+        super("quarantine", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
-            return (ns != null ? (List) Quarantine.newQuarantine(ns) : Collections.emptyList());
+            return ns != null ? Quarantine.newQuarantine(ns) : Collections.emptyList();
         }
         return Collections.emptyList();
     }

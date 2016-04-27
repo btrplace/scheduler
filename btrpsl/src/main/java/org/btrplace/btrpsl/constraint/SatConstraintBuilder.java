@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ public interface SatConstraintBuilder {
      *
      * @return a non-empty array.
      */
-    ConstraintParam[] getParameters();
+    ConstraintParam<?>[] getParameters();
 
     /**
      * Build the constraint
@@ -66,5 +66,5 @@ public interface SatConstraintBuilder {
      * @param params the parameters of the constraint.
      * @return the constraint
      */
-    List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> params);
+    List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> params);
 }

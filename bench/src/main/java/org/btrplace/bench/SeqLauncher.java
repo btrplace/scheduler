@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,9 +25,10 @@ import org.kohsuke.args4j.Option;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
- * Created by vkherbac on 18/09/14.
+ * @author Vincent Kherbache
  */
 public class SeqLauncher {
 
@@ -49,11 +50,11 @@ public class SeqLauncher {
 
         // Parse the cmdline arguments
         CmdLineParser cmdParser = new CmdLineParser(this);
-        cmdParser.setUsageWidth(80);
+        cmdParser.getProperties().withUsageWidth(80);
         try {
             cmdParser.parseArgument(args);
             if (timeout <= 0)
-                throw new CmdLineException("Timeout need to be > 0 !");
+                throw new IllegalArgumentException("Timeout need to be > 0 !");
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println("seqBenchLauncher [-r] [-m] [-t n_sec] -i file_name");
@@ -62,9 +63,7 @@ public class SeqLauncher {
             return;
         }
 
-        try {
-            FileInputStream in = new FileInputStream(inputFile);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), StandardCharsets.UTF_8))) {
             String strLine;
 
             while ((strLine = br.readLine()) != null) {
@@ -72,7 +71,6 @@ public class SeqLauncher {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println(e);
         }
     }

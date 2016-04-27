@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,13 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Quarantine;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -52,7 +52,7 @@ public class CQuarantine implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
@@ -64,7 +64,7 @@ public class CQuarantine implements ChocoConstraint {
                 try {
                     d.instantiateTo(nIdx, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to root VM '{}' on '{}': {}", vm, n, e.getMessage());
+                    rp.getLogger().error("Unable to root " + vm + " on " + n, e);
                     return false;
                 }
             } else {
@@ -72,7 +72,7 @@ public class CQuarantine implements ChocoConstraint {
                 try {
                     d.removeValue(nIdx, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to disallow VM '{}' to be hosted on '{}': {}", vm, n, e.getMessage());
+                    rp.getLogger().error("Unable to disallow " + vm + " to be hosted on " + n, e);
                     return false;
                 }
             }
@@ -81,27 +81,12 @@ public class CQuarantine implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
     }
 
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Quarantine.class;
-        }
-
-        @Override
-        public CQuarantine build(Constraint c) {
-            return new CQuarantine((Quarantine) c);
-        }
     }
 }

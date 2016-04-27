@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public abstract class AllowAllConstraintChecker<C extends SatConstraint> implements SatConstraintChecker<C> {
+public class AllowAllConstraintChecker<C extends SatConstraint> implements SatConstraintChecker<C> {
 
     /**
      * VMs involved in the constraint.
@@ -127,7 +127,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(BootNode a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override
@@ -137,7 +137,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(ShutdownVM a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override
@@ -147,7 +147,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(ShutdownNode a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override
@@ -167,7 +167,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(SuspendVM a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override
@@ -177,7 +177,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(KillVM a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override
@@ -187,7 +187,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(ForgeVM a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override
@@ -220,7 +220,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public void end(Allocate e) {
-
+        //Nothing to complain about the termination
     }
 
     /**
@@ -239,7 +239,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      * @param a the notified action
      */
     public void endRunningVMPlacement(RunningVMPlacement a) {
-
+        //Nothing to complain about the termination
     }
 
     @Override

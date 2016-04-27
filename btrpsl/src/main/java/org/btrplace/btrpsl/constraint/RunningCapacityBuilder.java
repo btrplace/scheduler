@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -39,28 +39,28 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public RunningCapacityBuilder() {
-        super("runningCapacity", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false), new NumberParam("$nb")});
+        super("runningCapacity", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false), new NumberParam("$nb")});
     }
 
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
         List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
         Number v = (Number) params[1].transform(this, t, args.get(1));
-        if (v.doubleValue() < 0) {
+        if (v == null || v.doubleValue() < 0) {
             t.ignoreError("Parameter '" + params[1].getName() + "' expects a positive integer (" + v + " given)");
             return Collections.emptyList();
         }
 
-        if (v != null && Math.rint(v.doubleValue()) != v.doubleValue()) {
+        if (Math.rint(v.doubleValue()) != v.doubleValue()) {
             t.ignoreError("Parameter '" + params[1].getName() + "' expects an integer, not a real number (" + v + " given)");
             return Collections.emptyList();
         }
 
-        return (ns != null && v != null) ?
-                (List) Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
+        return ns != null ?
+                Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
                 Collections.emptyList();
     }
 }

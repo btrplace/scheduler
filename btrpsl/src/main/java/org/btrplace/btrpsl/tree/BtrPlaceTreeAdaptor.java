@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -31,6 +31,8 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.includes.Includes;
 import org.btrplace.btrpsl.template.TemplateFactory;
 import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 /**
@@ -52,9 +54,9 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
 
     private TemplateFactory tpls;
 
-    private NamingService srvNodes;
+    private NamingService<Node> srvNodes;
 
-    private NamingService srvVMs;
+    private NamingService<VM> srvVMs;
 
     private Model model;
 
@@ -64,7 +66,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
      * @param errs the errors to report
      * @param s    the symbol table to use
      */
-    public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService nsNodes, NamingService nsVMs, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
+    public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService<Node> nsNodes, NamingService<VM> nsVMs, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
         this.errors = errs;
         this.srvNodes = nsNodes;
         this.srvVMs = nsVMs;
@@ -80,7 +82,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
     @Override
     public Object create(Token payload) {
         if (payload == null) {
-            return new BtrPlaceTree(payload, errors);
+            return new BtrPlaceTree(null, errors);
         }
         switch (payload.getType()) {
             case ANTLRBtrplaceSL2Lexer.RANGE:
@@ -88,7 +90,7 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.ENUM_VAR:
                 return new EnumVar(payload, symbols, errors);
             case ANTLRBtrplaceSL2Lexer.ENUM_FQDN:
-                return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.node, errors);
+                return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.NODE, errors);
             case ANTLRBtrplaceSL2Lexer.ENUM_ID:
                 return new EnumElement(payload, srvNodes, srvVMs, script, BtrpOperand.Type.VM, errors);
             case ANTLRBtrplaceSL2Lexer.AND:
@@ -115,15 +117,15 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
             case ANTLRBtrplaceSL2Lexer.EQUALS:
                 return new AssignmentStatement(payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.PLUS_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.plus_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.PLUS_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.MINUS_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.minus_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.MINUS_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.DIV_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.div_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.DIV_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.TIMES_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.times_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.TIMES_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.REMAINDER_EQUALS:
-                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.remainder_equals, payload, errors, symbols);
+                return new SelfAssignmentStatement(SelfAssignmentStatement.Type.REMAINDER_EQUALS, payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.VARIABLE:
                 return new VariableTree(payload, errors, symbols);
             case ANTLRBtrplaceSL2Lexer.DIV:

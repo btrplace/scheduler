@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -77,7 +77,7 @@ public class DependenciesExtractor implements ActionVisitor {
         //a consuming action. Otherwise, it's a freeing action
         String rcId = a.getResourceId();
         int newAmount = a.getAmount();
-        ShareableResource rc = (ShareableResource) origin.getView(ShareableResource.VIEW_ID_BASE + rcId);
+        ShareableResource rc = ShareableResource.get(origin, rcId);
         if (rc == null) {
             return false;
         }
@@ -85,9 +85,8 @@ public class DependenciesExtractor implements ActionVisitor {
         if (newAmount > oldAmount) {
             demandingNodes.put(a, a.getHost());
             return getDemandings(a.getHost()).add(a);
-        } else {
-            return getFreeings(a.getHost()).add(a);
         }
+        return getFreeings(a.getHost()).add(a);
     }
 
     @Override
@@ -165,16 +164,15 @@ public class DependenciesExtractor implements ActionVisitor {
     public Set<Action> getDependencies(Action a) {
         if (!demandingNodes.containsKey(a)) {
             return Collections.emptySet();
-        } else {
-            Node n = demandingNodes.get(a);
-            Set<Action> allActions = getFreeings(n);
-            Set<Action> pre = new HashSet<>();
-            for (Action action : allActions) {
-                if (!action.equals(a) && a.getStart() >= action.getEnd()) {
-                    pre.add(action);
-                }
-            }
-            return pre;
         }
+        Node n = demandingNodes.get(a);
+        Set<Action> allActions = getFreeings(n);
+        Set<Action> pre = new HashSet<>();
+        for (Action action : allActions) {
+            if (!action.equals(a) && a.getStart() >= action.getEnd()) {
+                pre.add(action);
+            }
+        }
+        return pre;
     }
 }

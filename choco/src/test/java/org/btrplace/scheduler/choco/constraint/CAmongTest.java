@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,15 +19,11 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Among;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,10 +50,10 @@ public class CAmongTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
@@ -92,10 +88,10 @@ public class CAmongTest {
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
@@ -135,10 +131,10 @@ public class CAmongTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
@@ -174,10 +170,10 @@ public class CAmongTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
         Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
@@ -186,10 +182,11 @@ public class CAmongTest {
 
         Among a = new Among(vms, pGrps);
         CAmong ca = new CAmong(a);
-        Assert.assertEquals(ca.getMisPlacedVMs(mo), Collections.emptySet());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertEquals(ca.getMisPlacedVMs(i), Collections.emptySet());
 
         map.addRunningVM(vm5, n3);
-        Assert.assertEquals(ca.getMisPlacedVMs(mo), vms);
+        Assert.assertEquals(ca.getMisPlacedVMs(i), vms);
     }
 
     @Test
@@ -205,10 +202,10 @@ public class CAmongTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
         Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
@@ -240,10 +237,10 @@ public class CAmongTest {
         Node n3 = mo.newNode();
         Node n4 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5);
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
@@ -274,7 +271,7 @@ public class CAmongTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping())
+        Mapping map = mo.getMapping()
                 .on(n1, n2)
                 .run(n1, vm1).ready(vm2, vm3).get();
 

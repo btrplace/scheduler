@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@ import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.MaxOnline;
-import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,7 +39,7 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public MaxOnlineBuilder() {
-        super("maxOnline", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.node, false), new NumberParam("$nb")});
+        super("maxOnline", new ConstraintParam[]{new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false), new NumberParam("$nb")});
     }
 
     /**
@@ -50,21 +49,21 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
      * @return a constraint
      */
     @Override
-    public List<SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
+    public List<MaxOnline> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
             List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
             Number v = (Number) params[1].transform(this, t, args.get(1));
-            if (v.doubleValue() < 0) {
+            if (v == null || v.doubleValue() < 0) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a positive integer (" + v + " given)");
                 return Collections.emptyList();
             }
 
-            if (v != null && Math.rint(v.doubleValue()) != v.doubleValue()) {
+            if (Math.rint(v.doubleValue()) != v.doubleValue()) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects an integer, not a real number (" + v + " given)");
                 return Collections.emptyList();
             }
 
-            if (ns == null || v == null) {
+            if (ns == null) {
                 return Collections.emptyList();
             }
             Set<Node> s = new HashSet<>(ns);
@@ -72,7 +71,7 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
                 return Collections.emptyList();
             }
 
-            return (List) Collections.singletonList(new MaxOnline(new HashSet<>(ns), v.intValue(), true));
+            return Collections.singletonList(new MaxOnline(new HashSet<>(ns), v.intValue(), true));
         }
         return Collections.emptyList();
     }

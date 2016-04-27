@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -61,11 +61,11 @@ public class VectorPackingHeapDecorator {
      * @param bin the bin
      * @return the load slack of bin on dimension bin
      */
-    public int loadSlack(int dim, int bin) {
+    private int loadSlack(int dim, int bin) {
         return p.loads[dim][bin].getUB() - p.loads[dim][bin].getLB();
     }
 
-    public void reHeap() {
+    private void reHeap() {
         for (int d = 0; d < p.nbDims; d++) {
             maxSlackBinHeap.get(d).clear();
             for (int b = 0; b < p.nbBins; b++) {
@@ -76,7 +76,7 @@ public class VectorPackingHeapDecorator {
         }
     }
 
-    private void checkReHeap(boolean forceReHeap) throws ContradictionException {
+    private void checkReHeap(boolean forceReHeap) {
         int currentWorld = p.getSolver().getEnvironment().getWorldIndex();
         long currentBt = p.getSolver().getMeasures().getBackTrackCount();
         long currentRestart = p.getSolver().getMeasures().getRestartCount();
@@ -101,6 +101,7 @@ public class VectorPackingHeapDecorator {
             this.hp = hp;
         }
 
+        @Override
         public int compare(Integer a, Integer b) {
             return hp.loadSlack(dimension, b) - hp.loadSlack(dimension, a);
         }
@@ -114,7 +115,7 @@ public class VectorPackingHeapDecorator {
      * if loadSlack > sumBinLoadSup - sumItemSizes then update inf(binLoad) = sumItemSizes - (sumBinLoadSup - sup(binLoad))
      * check each rule against the bin with the maximum loadSlack and continue until it does not apply
      *
-     * @throws solver.exception.ContradictionException if a contradiction (rules 1) is raised
+     * @throws ContradictionException if a contradiction (rules 1) is raised
      */
     public void fixPoint(boolean loadsHaveChanged) throws ContradictionException {
         for (int d = 0; d < p.nbDims; d++) {
@@ -124,7 +125,9 @@ public class VectorPackingHeapDecorator {
         }
         checkReHeap(loadsHaveChanged);
         for (int d = 0; d < p.nbDims; d++) {
-            if (maxSlackBinHeap.get(d).isEmpty()) continue;
+            if (maxSlackBinHeap.get(d).isEmpty()) {
+                continue;
+            }
             int nChanges;
             long deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
             long deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
@@ -133,18 +136,26 @@ public class VectorPackingHeapDecorator {
                 if (deltaToSup > deltaFromInf) {
                     nChanges += filterLoads(d, (int) deltaFromInf, true);
                     deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
-                    if (deltaToSup < 0) p.contradiction(null, "");
+                    if (deltaToSup < 0) {
+                        p.contradiction(null, "");
+                    }
                     nChanges += filterLoads(d, (int) deltaToSup, false);
                     deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
-                    if (deltaFromInf < 0) p.contradiction(null, "");
+                    if (deltaFromInf < 0) {
+                        p.contradiction(null, "");
+                    }
 
                 } else {
                     nChanges += filterLoads(d, (int) deltaToSup, false);
                     deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
-                    if (deltaFromInf < 0) p.contradiction(null, "");
+                    if (deltaFromInf < 0) {
+                        p.contradiction(null, "");
+                    }
                     nChanges += filterLoads(d, (int) deltaFromInf, true);
                     deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
-                    if (deltaToSup < 0) p.contradiction(null, "");
+                    if (deltaToSup < 0) {
+                        p.contradiction(null, "");
+                    }
 
                 }
             } while (nChanges > 0);
@@ -166,15 +177,16 @@ public class VectorPackingHeapDecorator {
     private int filterLoads(int d, int delta, boolean isSup) throws ContradictionException {
         assert maxSlackBinHeap != null;
         int nChanges = 0;
-        if (maxSlackBinHeap == null || maxSlackBinHeap.get(d) == null || maxSlackBinHeap.get(d).isEmpty()) {
-            System.out.println("coucou");
-        }
         if (loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta) {
             do {
                 int b = maxSlackBinHeap.get(d).poll();
-                if (isSup) p.filterLoadSup(d, b, delta + p.loads[d][b].getLB());
-                else p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
-                assert (loadSlack(d, b) == delta);
+                if (isSup) {
+                    p.filterLoadSup(d, b, delta + p.loads[d][b].getLB());
+                }
+                else {
+                    p.filterLoadInf(d, b, p.loads[d][b].getUB() - delta);
+                }
+                assert loadSlack(d, b) == delta;
                 maxSlackBinHeap.get(d).offer(b);
                 nChanges++;
             } while (!maxSlackBinHeap.get(d).isEmpty() && loadSlack(d, maxSlackBinHeap.get(d).peek()) > delta);

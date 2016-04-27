@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,9 +21,13 @@ package org.btrplace.model.constraint;
 import org.btrplace.plan.event.*;
 
 /**
- * Created by vkherbac on 01/09/14.
+ * Checker for the {@link org.btrplace.model.constraint.NoDelay} constraint
+ *
+ * @author Vincent Kherbache
+ * @see org.btrplace.model.constraint.NoDelay
  */
 public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
+
     /**
      * Make a new checker.
      *
@@ -58,7 +62,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(ShutdownVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }
@@ -77,7 +81,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(SuspendVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }
@@ -85,7 +89,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(KillVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }
@@ -93,7 +97,7 @@ public class NoDelayChecker extends AllowAllConstraintChecker<NoDelay> {
     @Override
     public boolean start(ForgeVM a) {
         if (getVMs().contains(a.getVM())) {
-            return (a.getStart() == 0);
+            return a.getStart() == 0;
         }
         return true;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -115,7 +115,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
                 JSONObject values = (JSONObject) o;
                 for (Map.Entry<String, Object> e : values.entrySet()) {
                     String k = e.getKey();
-                    VM u = getOrMakeVM(Integer.parseInt(k));
+                    VM u = getVM(Integer.parseInt(k));
                     int v = Integer.parseInt(e.getValue().toString());
                     rc.setConsumption(u, v);
                 }
@@ -131,7 +131,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
                 JSONObject values = (JSONObject) o;
                 for (Map.Entry<String, Object> e : values.entrySet()) {
                     String k = e.getKey();
-                    Node u = getOrMakeNode(Integer.parseInt(k));
+                    Node u = getNode(Integer.parseInt(k));
                     int v = Integer.parseInt(e.getValue().toString());
                     rc.setCapacity(u, v);
                 }

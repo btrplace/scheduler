@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,23 +18,14 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Injectable;
 import org.btrplace.scheduler.choco.MisplacedVMsEstimator;
-import org.btrplace.scheduler.choco.ReconfigurationProblem;
 
 /**
  * An interface to describe a constraint implementation for the solver.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraint extends MisplacedVMsEstimator {
+public interface ChocoConstraint extends MisplacedVMsEstimator, Injectable {
 
-    /**
-     * Inject the constraint into the problem.
-     *
-     * @param rp the problem
-     * @return {@code true} if the injection succeeded, {@code false} if the problem is sure to not have a solution
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred while injecting.
-     */
-    boolean inject(ReconfigurationProblem rp) throws SchedulerException;
 }

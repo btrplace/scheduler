@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@ public abstract class Action implements Event {
     /**
      * Possible moments where an event can be considered.
      */
-    public static enum Hook {
+    public enum Hook {
         /**
          * The event can be considered before executing the action.
          */
@@ -68,7 +68,7 @@ public abstract class Action implements Event {
 
     private int stop;
 
-    private Map<Hook, Set<Event>> events;
+    private EnumMap<Hook, Set<Event>> events;
 
     /**
      * Create an action.
@@ -79,7 +79,7 @@ public abstract class Action implements Event {
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
-        events = new HashMap<>(2);
+        events = new EnumMap<>(Hook.class);
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class Action implements Event {
      */
     public Set<Event> getEvents(Hook k) {
         Set<Event> l = events.get(k);
-        return l == null ? Collections.<Event>emptySet() : l;
+        return l == null ? Collections.emptySet() : l;
     }
 
     /**

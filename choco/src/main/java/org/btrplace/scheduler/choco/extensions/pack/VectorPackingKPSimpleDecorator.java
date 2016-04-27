@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -40,8 +40,6 @@ public class VectorPackingKPSimpleDecorator {
      */
     private VectorPackingPropagator p;
 
-    //private Integer[][] items;
-    //private IStateInt[][] watchCandidate;
     /**
      * the list of candidate items for each bin [nbBins][]
      */
@@ -52,71 +50,18 @@ public class VectorPackingKPSimpleDecorator {
 
     public VectorPackingKPSimpleDecorator(VectorPackingPropagator p) {
         this.p = p;
-        //this.items = new Integer[p.nbDims][p.bins.length];
-        //this.watchCandidate = new IStateInt[p.nbDims][p.nbBins];
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i = 0; i < p.nbBins; i++) {
             candidate.add(new S64BitSet(p.getSolver().getEnvironment(), p.bins.length));
         }
     }
 
-    /*
-    static private class sizeItemComparator implements Comparator<Integer> {
-        int d;
-        VectorPackingPropagator p;
-        public sizeItemComparator(int d, VectorPackingPropagator p) {
-            this.d = d;
-            this.p = p;
-        }
-
-        @Override
-        public int compare(Integer o1, Integer o2) {
-            return p.bins[o2].isInstantiated() ? 1 :
-                   p.bins[o1].isInstantiated() ? -1 :
-                   p.iSizes[d][o1] - p.iSizes[d][o2];
-        }
-    }
-    */
-    /**
-     * initialize the lists of candidates
-     * @throws ContradictionException
-     */
-    /*
-    protected void postInitialize() throws ContradictionException {
-        for (int d=0; d<p.nbDims; d++) {
-            for (int i=0; i<items[d].length; i++) {
-                items[d][i] = i;
-            }
-            Arrays.sort(items[d], new sizeItemComparator(d, p));
-            for (int b=0; b<watchCandidate[d].length; b++) {
-                watchCandidate[d][b].set(items[d].length);
-            }
-            int watchedBins = 0;
-            for (int idx=0; idx<items[d].length; idx++) {
-                if (p.bins[items[d][idx]].isInstantiated() || watchedBins == p.nbBins) break;
-                DisposableValueIterator it = p.bins[items[d][idx]].getValueIterator(true);
-                try {
-                    while (it.hasNext()) {
-                        int b = it.next();
-                        if (watchCandidate[d][b].get()<0) {
-                            watchCandidate[d][b].set(idx);
-                            watchedBins++;
-                        }
-                    }
-                } finally {
-                    it.dispose();
-                }
-            }
-        }
-    }
-    */
 
     /**
      * initialize the lists of candidates
      *
-     * @throws ContradictionException
      */
-    protected void postInitialize() throws ContradictionException {
+    protected void postInitialize() {
         for (int i = 0; i < p.bins.length; i++) {
             if (!p.bins[i].isInstantiated()) {
                 DisposableValueIterator it = p.bins[i].getValueIterator(true);
@@ -139,18 +84,22 @@ public class VectorPackingKPSimpleDecorator {
      * @param bin the full bin
      * @throws ContradictionException
      */
-    private void filterFullBin(int bin) throws ContradictionException {
+    private void filterFullDim(int bin, int dim) throws ContradictionException {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
-            //assert p.bins[i].contains(bin) : p.bins[i] + " bin=" + bin + " item=" + i;
-            p.bins[i].removeValue(bin, p.getACause());
-            if (p.bins[i].isInstantiated()) {
-                p.assignItem(i, p.bins[i].getValue());
+            // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
+            // ie. !p.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
+            if (p.bins[i].contains(bin) && p.iSizes[dim][i] > 0) {
+                p.bins[i].removeValue(bin, p);
+                candidate.get(bin).clear(i);
+                p.potentialLoad[dim][bin].add(-1 * p.iSizes[dim][i]);
+                if (p.bins[i].isInstantiated()) {
+                    p.assignItem(i, p.bins[i].getValue());
+                }
             }
         }
-        candidate.get(bin).clear();
-        for (int d = 0; d < p.nbDims; d++) {
-            p.potentialLoad[d][bin].set(p.assignedLoad[d][bin].get());
-            p.filterLoadSup(d, bin, p.potentialLoad[d][bin].get());
+        if (candidate.get(bin).isEmpty()) {
+            assert p.potentialLoad[dim][bin].get() == p.assignedLoad[dim][bin].get();
+            assert p.loads[dim][bin].getUB() == p.potentialLoad[dim][bin].get();
         }
     }
 
@@ -159,10 +108,8 @@ public class VectorPackingKPSimpleDecorator {
      *
      * @param item the removed item
      * @param bin  the bin
-     * @throws ContradictionException
      */
-    protected void postRemoveItem(int item, int bin) throws ContradictionException {
-        //    checkUpdateWatched(bin, item);
+    protected void postRemoveItem(int item, int bin) {
         assert candidate.get(bin).get(item);
         candidate.get(bin).clear(item);
     }
@@ -177,19 +124,21 @@ public class VectorPackingKPSimpleDecorator {
      * @throws ContradictionException
      */
     protected void postAssignItem(int item, int bin) throws ContradictionException {
-        //checkUpdateWatched(bin, item);
-        //if (hasNoCandidate(bin)) return;
         if (candidate.get(bin).get(item)) { //TODO stop the recursive loop without this (see test2DWithUnorderedItems(seed=120))
             candidate.get(bin).clear(item);
             for (int d = 0; d < p.nbDims; d++) {
                 if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
-                    assert p.loads[d][bin].isInstantiated();
-                    filterFullBin(bin);
-                    return;
+                    filterFullDim(bin, d);
+                    if (candidate.get(bin).isEmpty()) {
+                        for (int d2 = 0; d2 < p.nbDims; d2++) {
+                            p.potentialLoad[d2][bin].set(p.assignedLoad[d2][bin].get());
+                            p.filterLoadSup(d2, bin, p.potentialLoad[d2][bin].get());
+                        }
+                        return;
+                    }
                 }
             }
+
         }
     }
-
-
 }

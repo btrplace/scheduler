@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,22 +35,22 @@ public class SelfAssignmentStatement extends BtrPlaceTree {
     /**
      * The operation.
      */
-    public static enum Type {
+    public enum Type {
         /**
          * +=
-         */plus_equals,
+         */PLUS_EQUALS,
         /**
          * -=
-         */minus_equals,
+         */MINUS_EQUALS,
         /**
          * /=
-         */div_equals,
+         */DIV_EQUALS,
         /**
          * %=
-         */remainder_equals,
+         */REMAINDER_EQUALS,
         /**
          * =
-         */times_equals
+         */TIMES_EQUALS
     }
 
     private Type type;
@@ -84,19 +84,19 @@ public class SelfAssignmentStatement extends BtrPlaceTree {
             BtrpOperand r = getChild(1).go(this);
             BtrpOperand res;
             switch (type) {
-                case plus_equals:
+                case PLUS_EQUALS:
                     res = e.plus(r);
                     break;
-                case minus_equals:
+                case MINUS_EQUALS:
                     res = e.minus(r);
                     break;
-                case times_equals:
+                case TIMES_EQUALS:
                     res = e.times(r);
                     break;
-                case div_equals:
+                case DIV_EQUALS:
                     res = e.div(r);
                     break;
-                case remainder_equals:
+                case REMAINDER_EQUALS:
                     res = e.remainder(r);
                     break;
                 default:

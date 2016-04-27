@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,12 +27,7 @@ import org.btrplace.model.constraint.Among;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.AmongConverter}.
@@ -42,14 +37,14 @@ import java.util.Set;
 public class AmongConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         AmongConverter conv = new AmongConverter();
         Model mo = new DefaultModel();
         conv.setModel(mo);
         Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Set<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
+        Set<Node> p3 = new HashSet<>(Collections.singletonList(mo.newNode()));
 
         Set<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 

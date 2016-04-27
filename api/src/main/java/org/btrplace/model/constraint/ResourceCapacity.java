@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.view.ResourceRelated;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -47,7 +47,9 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"ns <: nodes", "id : string", "qty : int"}, inv = "sum({capa(i, id). i : ns}) <= qty")
-public class ResourceCapacity extends SatConstraint {
+public class ResourceCapacity extends SimpleConstraint implements ResourceRelated {
+
+    private Set<Node> nodes;
 
     private int qty;
 
@@ -96,7 +98,11 @@ public class ResourceCapacity extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction.
      */
     public ResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+        super(continuous);
+        this.nodes = nodes;
+        this.qty = amount;
+        this.rcId = rc;
+
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
         }
@@ -104,11 +110,7 @@ public class ResourceCapacity extends SatConstraint {
         this.rcId = rc;
     }
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return a String
-     */
+    @Override
     public String getResource() {
         return this.rcId;
     }
@@ -124,18 +126,33 @@ public class ResourceCapacity extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o) && rcId.equals(((ResourceCapacity) o).rcId) && qty == ((ResourceCapacity) o).qty;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ResourceCapacity that = (ResourceCapacity) o;
+        return qty == that.qty &&
+                isContinuous() == that.isContinuous() &&
+                Objects.equals(nodes, that.nodes) &&
+                Objects.equals(rcId, that.rcId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), qty, rcId);
+        return Objects.hash(nodes, qty, rcId, isContinuous());
+    }
+
+    @Override
+    public Set<Node> getInvolvedNodes() {
+        return nodes;
     }
 
     @Override
     public String toString() {
-        return "resourceCapacity(" + "nodes=" + getInvolvedNodes()
-                + ", rc=" + rcId + ", amount=" + qty + ", " + restrictionToString() + ')';
+        return "resourceCapacity(" + "nodes=" + nodes
+                + ", rc=" + rcId + ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override

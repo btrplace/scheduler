@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,14 +18,14 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Among;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -55,7 +55,7 @@ public class CSplitAmong implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         if (cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
@@ -77,7 +77,7 @@ public class CSplitAmong implements ChocoConstraint {
             //nodes can move to another group. It also means the group of VMs will never overlap
             a.setContinuous(cstr.isContinuous());
             CAmong ca = new CAmong(a);
-            if (!ca.inject(rp)) {
+            if (!ca.inject(ps, rp)) {
                 return false;
             }
 
@@ -107,11 +107,11 @@ public class CSplitAmong implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         //contains the set of VMs hosted on a group id.
         Collection<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
 
         Set<VM> bad = new HashSet<>();
         for (Collection<VM> vms : cstr.getGroupsOfVMs()) {
@@ -143,20 +143,5 @@ public class CSplitAmong implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return SplitAmong.class;
-        }
-
-        @Override
-        public CSplitAmong build(Constraint c) {
-            return new CSplitAmong((SplitAmong) c);
-        }
     }
 }

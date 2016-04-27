@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,20 +18,24 @@
 
 package org.btrplace.bench;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by vkherbac on 16/09/14.
+ * @author Vincent Kherbache
  */
 public class LauncherTest {
 
+
     public void test() throws IOException {
+
+        String path = new File("").getAbsolutePath() + "/bench/src/test/resources/";
 
         Launcher.main(new String[]{
                 "--repair",
-                "--timeout", "500",
-                "-i", "src/test/resources/wkld-tdsc/li/r6/p5000/c0/1.gz",
-                "-o", "/tmp/nr-r3-p5000-c66-1.csv"
+                "--timeout", "300",
+                "-i", path + "wkld-tdsc/li/r6/p5000/c0/1.gz",
+                "-o", path + "nr-r6-p5000-c66-1.csv"
         });
         System.err.flush();
         System.out.flush();

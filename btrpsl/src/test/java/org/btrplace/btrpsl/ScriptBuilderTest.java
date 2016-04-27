@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import org.btrplace.btrpsl.element.BtrpString;
 import org.btrplace.btrpsl.includes.PathBasedIncludes;
 import org.btrplace.btrpsl.template.DefaultTemplateFactory;
 import org.btrplace.btrpsl.template.DefaultTemplateFactoryTest;
-import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
@@ -197,8 +196,7 @@ public class ScriptBuilderTest {
         ScriptBuilder b = new ScriptBuilder(mo);
         Script v = b.build("namespace test.template;\nVM[1..5] : tinyVMs;\nfrontend : mediumVMs; @N[1..12] : defaultNodes;\n");
         Assert.assertEquals(v.getVMs().size(), 6);
-        NamingService<Node> srvNodes = (NamingService<Node>) mo.getView(NamingService.ID + "node");
-        NamingService<VM> srvVMs = (NamingService<VM>) mo.getView(NamingService.ID + "vm");
+        NamingService<VM> srvVMs = NamingService.getVMNames(mo);
         for (VM el : v.getVMs()) {
             String name = srvVMs.resolve(el);
             if (name.endsWith("frontend")) {
@@ -222,9 +220,9 @@ public class ScriptBuilderTest {
         Assert.assertEquals(v.getVMs().size(), 3);
         for (VM el : v.getVMs()) {
             Assert.assertEquals(mo.getAttributes().getKeys(el).size(), 4); //3 + 1 (the template)
-            Assert.assertEquals(mo.getAttributes().getBoolean(el, "migratable").booleanValue(), true);
-            Assert.assertEquals(mo.getAttributes().getDouble(el, "start"), 7.5);
-            Assert.assertEquals(mo.getAttributes().getInteger(el, "stop").longValue(), 12);
+            Assert.assertEquals(mo.getAttributes().get(el, "migratable", false), true);
+            Assert.assertEquals(mo.getAttributes().get(el, "start", -1.5), 7.5);
+            Assert.assertEquals(mo.getAttributes().get(el, "stop", -1), 12);
         }
     }
 
@@ -273,7 +271,8 @@ public class ScriptBuilderTest {
 
     public void textExportRestrictions() {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
-        PathBasedIncludes includes = new PathBasedIncludes(b, new File(RC_ROOT));
+        PathBasedIncludes includes = new PathBasedIncludes(b);
+        includes.addPath(new File(RC_ROOT));
         b.setIncludes(includes);
 
         try {
@@ -347,7 +346,8 @@ public class ScriptBuilderTest {
         //    \-d
         //
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
-        PathBasedIncludes includes = new PathBasedIncludes(b, new File(RC_ROOT + "deps"));
+        PathBasedIncludes includes = new PathBasedIncludes(b);
+        includes.addPath(new File(RC_ROOT + "deps"));
         b.setIncludes(includes);
 
         Script v = b.build(new File(RC_ROOT + "deps/a.btrp"));
@@ -421,7 +421,7 @@ public class ScriptBuilderTest {
         b.build("namespace foo; VM[1..10] : tiny;\nroot(VM10;");
     }
 
-    public void testMissingEndl() throws ScriptBuilderException {
+    public void testMissingEndl() {
         ScriptBuilder b = new ScriptBuilder(new DefaultModel());
         ErrorReporter r = null;
         try {
@@ -530,7 +530,6 @@ public class ScriptBuilderTest {
         Assert.assertEquals(mo.getMapping().getNbVMs(), 10);
         ChocoScheduler ra = new DefaultChocoScheduler();
         ReconfigurationPlan p = ra.solve(mo, scr.getConstraints());
-        ReconfigurationPlanConverter rpc = new ReconfigurationPlanConverter();
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 10);
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2014 University Nice Sophia Antipolis
+  ~ Copyright (c) 2016 University Nice Sophia Antipolis
   ~
   ~ This file is part of btrplace.
   ~ This library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>0.42-SNAPSHOT</version>
+        <version>0.46-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>
@@ -47,27 +47,4 @@
             <version>1.1.2</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ package org.btrplace.scheduler.choco.extensions;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.memory.IStateIntVector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.ICause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -36,7 +36,7 @@ import java.util.BitSet;
  */
 public class AliasedCumulativesFiltering {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -85,7 +85,9 @@ public class AliasedCumulativesFiltering {
 
     private int[] capacities;
 
-    private int[][] cUsages, dUsages;
+    private int[][] cUsages;
+
+    private int[][] dUsages;
 
     private int nbDims = 0;
 
@@ -102,18 +104,18 @@ public class AliasedCumulativesFiltering {
                                        int[] revAssocs,
                                        ICause aCause) {
 
-        this.associations = assocs;
-        this.cEnds = cEnds;
+        this.associations = assocs.clone();
+        this.cEnds = Arrays.copyOf(cEnds, cEnds.length);
         this.aCause = aCause;
-        this.capacities = capacities;
+        this.capacities = capacities.clone();
         this.nbDims = capacities.length;
-        this.cUsages = cUsages;
-        this.dUsages = dUsages;
+        this.cUsages = cUsages.clone();
+        this.dUsages = dUsages.clone();
 
-        this.dStarts = dStarts;
+        this.dStarts = Arrays.copyOf(dStarts, dStarts.length);
         this.vIn = vIn;
         this.out = outs;
-        revAssociations = revAssocs;
+        revAssociations = revAssocs.clone();
 
         //The amount of free resources at startup
 
@@ -174,57 +176,46 @@ public class AliasedCumulativesFiltering {
         }
     }
 
-    public void computeProfiles() {
+    private void initProfile() {
+        for (int d = 0; d < nbDims; d++) {
+            //What is necessarily used on the resource
+            profilesMin[d].clear();
 
-        for (int i = 0; i < nbDims; i++) {
-            //sure about what is used on the resource
-            profilesMin[i].clear();
+            //Maximum possible usage on the resource
+            profilesMax[d].clear();
 
-            //simultaneous max in the worst case on the resource
-            profilesMax[i].clear();
-
-            profilesMax[i].put(0, capacities[i] - startupFree[i]);
-            profilesMin[i].put(0, capacities[i] - startupFree[i]);
+            profilesMax[d].put(0, capacities[d] - startupFree[d]);
+            profilesMin[d].put(0, capacities[d] - startupFree[d]);
         }
+    }
+
+    private void computeProfiles() {
+
+        initProfile();
 
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
         for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
 
-            int t = cEnds[j].getLB();
-            if (t < lastInf) {
-                lastInf = t;
+            boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
+
+            int lb = cEnds[j].getLB();
+            int ub = cEnds[j].getUB();
+
+            lastInf = Math.min(lb, lastInf);
+            lastSup = Math.max(ub, lastSup);
+
+            for (int i = 0; i < nbDims; i++) {
+                if (increasing) {
+                    profilesMax[i].put(lb, profilesMax[i].get(lb) - cUsages[i][j]);
+                    profilesMin[i].put(ub, profilesMin[i].get(ub) - cUsages[i][j]);
+                } else {
+                    profilesMin[i].put(lb, profilesMin[i].get(lb) - cUsages[i][j]);
+                    profilesMax[i].put(ub, profilesMax[i].get(ub) - cUsages[i][j]);
+                }
             }
 
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                if (DEBUG) {
-                    LOGGER.debug("{} increasing", cEnds[j].toString());
-                }
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
-                }
-
-            } else {
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
-                }
-
-            }
-
-            t = cEnds[j].getUB();
-            if (t > lastSup) {
-                lastSup = t;
-            }
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
-                }
-            } else {
-                for (int i = 0; i < nbDims; i++) {
-                    profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
-                }
-            }
         }
         if (out.isEmpty()) {
             lastInf = 0;
@@ -243,17 +234,12 @@ public class AliasedCumulativesFiltering {
                 profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
             }
         }
+
         //Now transforms into an absolute profile
-        sortedMinProfile = null;
         sortedMinProfile = profilesMin[0].keys();
         Arrays.sort(sortedMinProfile);
 
-        sortedMaxProfile = null;
         sortedMaxProfile = profilesMax[0].keys();
-        for (int i = 0; i < nbDims; i++) {
-            profilesMax[i].keys(sortedMaxProfile);
-        }
-
         Arrays.sort(sortedMaxProfile);
 
         for (int i = 0; i < nbDims; i++) {
@@ -261,24 +247,29 @@ public class AliasedCumulativesFiltering {
             toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
         }
 
-        if (DEBUG) {
-            LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
-                    + " capacities=(" + Arrays.toString(capacities) + ") ---");
-            for (int x = 0; x < vIn.size(); x++) {
-                int i = vIn.get(x);
-                LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
-            }
+        summary();
+    }
 
-            for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
-            }
-            LOGGER.debug("---");
+    private void summary() {
+        if (!DEBUG) {
+            return;
+        }
+        LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
+                + " capacities=(" + Arrays.toString(capacities) + ") ---");
+        for (int x = 0; x < vIn.size(); x++) {
+            int i = vIn.get(x);
+            LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
+        }
+
+        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+            LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
+        }
+        LOGGER.debug("---");
 
 
-            for (int i = 0; i < nbDims; i++) {
-                LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
-                LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
-            }
+        for (int i = 0; i < nbDims; i++) {
+            LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
+            LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
         }
     }
 
@@ -311,7 +302,7 @@ public class AliasedCumulativesFiltering {
                 && out.get(associations[dSlice]);
     }
 
-    private String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
+    private static String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < ascMoments.length; i++) {
             int t = ascMoments[i];
@@ -328,7 +319,7 @@ public class AliasedCumulativesFiltering {
         return b.toString();
     }
 
-    public boolean checkInvariant() {
+    private boolean checkInvariant() {
         for (int x = 0; x < sortedMinProfile.length; x++) {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {

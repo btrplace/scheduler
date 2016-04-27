@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.Constraint;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.chocosolver.solver.Cause;
@@ -53,7 +53,7 @@ public class CBan implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
         if (ban.isContinuous() && !ban.getChecker().startsWith(rp.getSourceModel())) {
             rp.getLogger().error("Constraint {} is not satisfied initially", ban);
@@ -74,7 +74,7 @@ public class CBan implements ChocoConstraint {
                     try {
                         t.getHoster().removeValue(x, Cause.Null);
                     } catch (ContradictionException e) {
-                        rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
+                        rp.getLogger().error("Unable to disallow " + vm + " to be running on " + rp.getNode(x), e);
                         return false;
                     }
                 }
@@ -84,8 +84,8 @@ public class CBan implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping map = i.getModel().getMapping();
         VM vm = ban.getInvolvedVMs().iterator().next();
         if (map.isRunning(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
             return Collections.singleton(vm);
@@ -96,20 +96,5 @@ public class CBan implements ChocoConstraint {
     @Override
     public String toString() {
         return ban.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Ban.class;
-        }
-
-        @Override
-        public CBan build(Constraint cstr) {
-            return new CBan((Ban) cstr);
-        }
     }
 }

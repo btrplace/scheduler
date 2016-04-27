@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,7 +48,7 @@ public class CSeqTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
+        Mapping map = mo.getMapping().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(vm1));
         cstrs.add(new Sleeping(vm2));
@@ -72,7 +71,7 @@ public class CSeqTest {
         VM vm4 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
+        mo.getMapping().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(vm1));
         cstrs.add(new Running(vm2));

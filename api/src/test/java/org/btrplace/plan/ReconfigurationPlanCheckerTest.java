@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ public class ReconfigurationPlanCheckerTest {
     }
 
     @Test(dependsOnMethods = {"tesAddandRemove"})
-    public void testSequencing() throws ReconfigurationPlanCheckerException {
+    public void testSequencing() throws SatConstraintViolationException {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
@@ -61,7 +61,7 @@ public class ReconfigurationPlanCheckerTest {
         m.addReadyVM(vms.get(1));
         m.addRunningVM(vms.get(0), ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        SatConstraintChecker chk = mock(SatConstraintChecker.class);
+        SatConstraintChecker<?> chk = mock(SatConstraintChecker.class);
         MigrateVM m1 = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
         BootVM b1 = new BootVM(vms.get(1), ns.get(0), 1, 5);
         BootNode bn = new BootNode(ns.get(3), 3, 6);
@@ -87,7 +87,7 @@ public class ReconfigurationPlanCheckerTest {
     }
 
     @Test
-    public void testWithNoActions() throws ReconfigurationPlanCheckerException {
+    public void testWithNoActions() throws SatConstraintViolationException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         List<Node> ns = Util.newNodes(mo, 10);
@@ -98,7 +98,7 @@ public class ReconfigurationPlanCheckerTest {
         m.addReadyVM(vms.get(1));
         m.addRunningVM(vms.get(0), ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        SatConstraintChecker chk = mock(SatConstraintChecker.class);
+        SatConstraintChecker<?> chk = mock(SatConstraintChecker.class);
         ReconfigurationPlanChecker rc = new ReconfigurationPlanChecker();
         Assert.assertTrue(rc.addChecker(chk));
 

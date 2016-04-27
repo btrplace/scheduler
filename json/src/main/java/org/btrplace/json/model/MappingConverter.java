@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,14 +18,18 @@
 
 package org.btrplace.json.model;
 
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -54,30 +58,89 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
 
     @Override
     public Mapping fromJSON(JSONObject o) throws JSONConverterException {
-        if (getModel() == null) {
+        Model mo = getModel();
+        if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
         }
         Mapping c = getModel().getMapping();
-        for (Node u : requiredNodes(o, "offlineNodes")) {
+        for (Node u : newNodes(mo, o, "offlineNodes")) {
             c.addOfflineNode(u);
         }
-        for (VM u : requiredVMs(o, "readyVMs")) {
+        for (VM u : newVMs(mo, o, "readyVMs")) {
             c.addReadyVM(u);
         }
         JSONObject ons = (JSONObject) o.get("onlineNodes");
         for (Map.Entry<String, Object> e : ons.entrySet()) {
-            String nId = e.getKey();
-            Node u = getOrMakeNode(Integer.parseInt(nId));
+            int id = Integer.parseInt(e.getKey());
+            Node u = mo.newNode(id);
+            if (u == null) {
+                throw new JSONConverterException("Node '" + id + "' already declared");
+            }
             JSONObject on = (JSONObject) e.getValue();
             c.addOnlineNode(u);
-            for (VM vm : requiredVMs(on, "runningVMs")) {
+            for (VM vm : newVMs(mo, on, "runningVMs")) {
                 c.addRunningVM(vm, u);
             }
-            for (VM vm : requiredVMs(on, "sleepingVMs")) {
+            for (VM vm : newVMs(mo, on, "sleepingVMs")) {
                 c.addSleepingVM(vm, u);
             }
         }
 
         return c;
+    }
+
+    /**
+     * Build nodes from a key.
+     *
+     * @param mo  the model to build
+     * @param o   the object that contains the node
+     * @param key the key associated to the nodes
+     * @return the resulting set of nodes
+     * @throws JSONConverterException if at least one of the parsed node already exists
+     */
+    private static Set<Node> newNodes(Model mo, JSONObject o, String key) throws JSONConverterException {
+        checkKeys(o, key);
+        Object x = o.get(key);
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("array expected at key '" + key + "'");
+        }
+        Set<Node> s = new HashSet<>(((JSONArray) x).size());
+        for (Object i : (JSONArray) x) {
+            int id = (Integer) i;
+            Node n = mo.newNode(id);
+            if (n == null) {
+                throw new JSONConverterException("Node '" + id + "' already declared");
+            }
+            s.add(n);
+        }
+        return s;
+    }
+
+    /**
+     * Build VMs from a key.
+     *
+     * @param mo  the model to build
+     * @param o   the object that contains the vm
+     * @param key the key associated to the VMs
+     * @return the resulting set of VMs
+     * @throws JSONConverterException if at least one of the parsed VM already exists
+     */
+    private static Set<VM> newVMs(Model mo, JSONObject o, String key) throws JSONConverterException {
+        checkKeys(o, key);
+        Object x = o.get(key);
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("array expected at key '" + key + "'");
+        }
+
+        Set<VM> s = new HashSet<>(((JSONArray) x).size());
+        for (Object i : (JSONArray) x) {
+            int id = (Integer) i;
+            VM vm = mo.newVM(id);
+            if (vm == null) {
+                throw new JSONConverterException("VM '" + id + "' already declared");
+            }
+            s.add(vm);
+        }
+        return s;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,13 +19,13 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import gnu.trove.list.array.TIntArrayList;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Split;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.DisjointMultiple;
@@ -55,7 +55,7 @@ public class CSplit implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         List<List<IntVar>> groups = new ArrayList<>();
         List<List<VM>> vmGroups = new ArrayList<>();
         for (Collection<VM> grp : cstr.getSets()) {
@@ -74,20 +74,17 @@ public class CSplit implements ChocoConstraint {
             }
         }
         Solver s = rp.getSolver();
-        int nbNodes = rp.getNodes().length;
+        int nbNodes = rp.getNodes().size();
         IntVar[][] vars = new IntVar[groups.size()][];
         for (int i = 0; i < groups.size(); i++) {
             vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
         }
         s.post(new DisjointMultiple(vars, nbNodes));
 
-        if (cstr.isContinuous() && !injectContinuous(rp, vmGroups, groups)) {
-            return false;
-        }
-        return true;
+        return !(cstr.isContinuous() && !injectContinuous(rp, vmGroups));
     }
 
-    private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups, List<List<IntVar>> groups) {
+    private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups) {
         if (!cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
@@ -123,7 +120,7 @@ public class CSplit implements ChocoConstraint {
         return true;
     }
 
-    private void fullfillOthers(ReconfigurationProblem rp, TIntArrayList[] otherPositions, List<IntVar>[] otherEnds, List<List<VM>> vmGroups) {
+    private static void fullfillOthers(ReconfigurationProblem rp, TIntArrayList[] otherPositions, List<IntVar>[] otherEnds, List<List<VM>> vmGroups) {
         Mapping map = rp.getSourceModel().getMapping();
         //Fulfill the others stuff.
         for (int i = 0; i < vmGroups.size(); i++) {
@@ -145,8 +142,8 @@ public class CSplit implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        Mapping map = i.getModel().getMapping();
         List<Collection<VM>> groups = new ArrayList<>(cstr.getSets());
         //Bad contains the VMs on nodes that host VMs from different groups.
         Set<VM> bad = new HashSet<>();
@@ -168,7 +165,7 @@ public class CSplit implements ChocoConstraint {
         return bad;
     }
 
-    private boolean inOtherGroup(List<Collection<VM>> groups, Collection<VM> grp, VM vmOnN) {
+    private static boolean inOtherGroup(List<Collection<VM>> groups, Collection<VM> grp, VM vmOnN) {
         for (Collection<VM> s : groups) {
             if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
                 return true;
@@ -181,20 +178,5 @@ public class CSplit implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Split.class;
-        }
-
-        @Override
-        public CSplit build(Constraint c) {
-            return new CSplit((Split) c);
-        }
     }
 }

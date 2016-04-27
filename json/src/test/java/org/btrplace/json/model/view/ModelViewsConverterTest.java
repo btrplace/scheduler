@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,10 +25,8 @@ import org.btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Unit tests for {@link org.btrplace.json.model.view.ModelViewsConverter}.
@@ -51,7 +49,7 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public ModelView clone() {
+        public ModelView copy() {
             throw new UnsupportedOperationException();
         }
 
@@ -96,7 +94,7 @@ public class ModelViewsConverterTest {
     }
 
     @Test(dependsOnMethods = {"testRegister"})
-    public void testWithExistingConverter() throws JSONConverterException, IOException {
+    public void testWithExistingConverter() throws JSONConverterException {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         MockModelView m = new MockModelView("bar");
@@ -106,7 +104,7 @@ public class ModelViewsConverterTest {
     }
 
     @Test
-    public void testWithMultipleViews() throws JSONConverterException, IOException {
+    public void testWithMultipleViews() throws JSONConverterException {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         List<ModelView> l = new ArrayList<>();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.ICF;
@@ -78,7 +78,7 @@ public class DefaultReconfigurationProblemTest {
         }
 
         @Override
-        public ModelView clone() {
+        public ModelView copy() {
             throw new UnsupportedOperationException();
         }
 
@@ -166,19 +166,19 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
-        Assert.assertEquals(rp.getVMs().length, 7);
-        Assert.assertEquals(rp.getNodes().length, 3);
-        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length, rp.getManageableVMs().toString());
+        Assert.assertEquals(rp.getVMs().size(), 7);
+        Assert.assertEquals(rp.getNodes().size(), 3);
+        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().size(), rp.getManageableVMs().toString());
         Assert.assertTrue(rp.getStart().isInstantiated() && rp.getStart().getValue() == 0);
 
         //Test the index values of the nodes and the VMs.
-        for (int i = 0; i < rp.getVMs().length; i++) {
+        for (int i = 0; i < rp.getVMs().size(); i++) {
             VM vm = rp.getVM(i);
             Assert.assertEquals(i, rp.getVM(vm));
         }
         Assert.assertEquals(rp.getVM(mo.newVM()), -1);
 
-        for (int i = 0; i < rp.getNodes().length; i++) {
+        for (int i = 0; i < rp.getNodes().size(); i++) {
             Node n = rp.getNode(i);
             Assert.assertEquals(i, rp.getNode(n));
         }
@@ -214,7 +214,7 @@ public class DefaultReconfigurationProblemTest {
         runnings.add(vm6);
         runnings.add(vm5);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<VM>emptySet(), runnings, map.getSleepingVMs(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.emptySet(), runnings, map.getSleepingVMs(), Collections.emptySet())
                 .setManageableVMs(map.getRunningVMs(n1)).build();
         /*
           vm1: running -> running
@@ -270,13 +270,13 @@ public class DefaultReconfigurationProblemTest {
                                 new HashSet<>(),
                                 new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[rp.getVM(vm1)];
+        VMTransition a = rp.getVMActions().get(rp.getVM(vm1));
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ForgeVM.class, a.getClass());
     }
 
     @Test
-    public void testWaitinVMToRun() throws SchedulerException {
+    public void testWaitingVMToRun() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
@@ -307,7 +307,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[0];
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(BootVM.class, a.getClass());
     }
@@ -345,7 +345,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions()[0];
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(RelocatableVM.class, a.getClass());
     }
@@ -383,7 +383,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[0];
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(SuspendVM.class, a.getClass());
     }
@@ -423,7 +423,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         m.getAllVMs()).build();
 
-        for (Transition a : rp.getVMActions()) {
+        for (VMTransition a : rp.getVMActions()) {
             Assert.assertEquals(a.getClass(), KillVM.class);
         }
     }
@@ -460,7 +460,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions()[0];
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ShutdownVM.class, a.getClass());
 
@@ -481,7 +481,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>()).build();
 
-        Transition a = rp.getVMActions()[0];
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(StayAwayVM.class, a.getClass());
     }
@@ -518,7 +518,7 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<>(),
                         new HashSet<>()).build();
-        Transition a = rp.getVMActions()[0];
+        VMTransition a = rp.getVMActions().get(0);
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ResumeVM.class, a.getClass());
     }
@@ -535,7 +535,7 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getNodeActions()[0];
+        NodeTransition a = rp.getNodeActions().get(0);
         Assert.assertEquals(a, rp.getNodeAction(n1));
         Assert.assertEquals(ShutdownableNode.class, a.getClass());
     }
@@ -574,117 +574,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<>(),
                         new HashSet<>()).build();
 
-        Transition a = rp.getNodeActions()[rp.getNode(n3)];
+        NodeTransition a = rp.getNodeActions().get(rp.getNode(n3));
         Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNode.class, a.getClass());
-    }
-
-    @Test
-    public void testGetResourceMapping() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        ShareableResource rc = new ShareableResource("cpu", 0, 0);
-        for (Node n : mo.getMapping().getAllNodes()) {
-            rc.setCapacity(n, 4);
-        }
-
-        for (VM vm : mo.getMapping().getReadyVMs()) {
-            rc.setConsumption(vm, 2);
-        }
-        mo.attach(rc);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + "cpu");
-        Assert.assertNotNull(rcm);
-        Assert.assertNull(rp.getView("bar"));
-        Assert.assertEquals("cpu", rcm.getResourceIdentifier());
-        Assert.assertEquals(rc, rcm.getSourceResource());
-    }
-
-    @Test
-    public void testViewMapping() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-
-        Parameters ps = new DefaultParameters();
-        ModelViewMapper mapper = new ModelViewMapper();
-        ps.setViewMapper(mapper);
-        mapper.register(new ChocoModelViewBuilder() {
-            @Override
-            public Class<? extends ModelView> getKey() {
-                return MockView.class;
-            }
-
-            @Override
-            public SolverViewBuilder build(ModelView v) throws SchedulerException {
-                return new DelegatedBuilder("cmock", Collections.<String>emptyList()) {
-                    @Override
-                    public ChocoView build(ReconfigurationProblem rp) throws SchedulerException {
-                        return new ModelViewMapperTest.CMockView();
-                    }
-                };
-            }
-        });
-
-        MockView v = new MockView();
-        mo.attach(v);
-
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setParams(ps)
-                .build();
-
-        Assert.assertNotNull(rp.getView("mock"));
-        Assert.assertTrue(rp.getView("mock") instanceof ModelViewMapperTest.CMockView);
-    }
-
-    @Test
-    public void testNoViewImplementation() throws SchedulerException {
-        Model mo = new DefaultModel();
-
-        MockView v = new MockView();
-        mo.attach(v);
-
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        Assert.assertNull(rp.getView("mock"));
     }
 
     /**
@@ -724,10 +616,10 @@ public class DefaultReconfigurationProblemTest {
         int[] counts = new int[map.getAllNodes().size()];
         for (Node n : map.getOnlineNodes()) {
             int nIdx = rp.getNode(n);
-            counts[nIdx] = rp.getNbRunningVMs()[nIdx].getValue();
+            counts[nIdx] = rp.getNbRunningVMs().get(nIdx).getValue();
         }
         for (VM vm : rp.getFutureRunningVMs()) {
-            VMTransition vmo = rp.getVMActions()[rp.getVM(vm)];
+            VMTransition vmo = rp.getVMActions().get(rp.getVM(vm));
             int on = vmo.getDSlice().getHoster().getValue();
             counts[on]--;
         }
@@ -764,7 +656,7 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
-                Collections.<VM>emptySet(),
+                Collections.emptySet(),
                 map.getAllVMs());
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(vm2));
@@ -806,7 +698,7 @@ public class DefaultReconfigurationProblemTest {
      * Test a maximization problem: use the maximum number of nodes to host VMs
      *
      * @throws org.btrplace.scheduler.SchedulerException
-     * TODO: re-actiate some day
+     * TODO: re-activate some day
      */
     /*@Test
     public void testMaximization() throws SchedulerException {
@@ -900,12 +792,7 @@ public class DefaultReconfigurationProblemTest {
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
         rp.setObjective(true, nbNodes);
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
-            @Override
-            public int newBound(ReconfigurationProblem rp, int currentValue) {
-                return currentValue / 2;
-            }
-        };
+        ObjectiveAlterer alt = (rp1, currentValue) -> currentValue / 2;
 
         rp.setObjectiveAlterer(alt);
         ReconfigurationPlan plan = rp.solve(0, true);
@@ -923,7 +810,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertFalse(rp.addView(view));
     }
 
-    private int usedNodes(Mapping m) {
+    private static int usedNodes(Mapping m) {
         int nb = 0;
         for (Node n : m.getOnlineNodes()) {
             if (!m.getRunningVMs(n).isEmpty()) {

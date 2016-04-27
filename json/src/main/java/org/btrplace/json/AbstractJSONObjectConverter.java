@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,6 +28,8 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,11 +37,17 @@ import java.util.Set;
 /**
  * Basic abstract scheduler-API/JSON objects converter.
  *
+ * By default, the charset used to encode and decode string is {@link StandardCharsets#UTF_8}.
  * @author Fabien Hermenier
  */
 public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
 
     private Model mo;
+
+    /**
+     * The charset to use by default.
+     */
+    private Charset charset = StandardCharsets.UTF_8;
 
     /**
      * New converters without any model as
@@ -74,6 +82,24 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         } catch (Exception e) {
             throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
         }
+    }
+
+    /**
+     * Get the associated charset.
+     *
+     * @return the current charset
+     */
+    public Charset getCharset() {
+        return charset;
+    }
+
+    /**
+     * Set the charset to use to encode/decode streams
+     *
+     * @param c the charset to use
+     */
+    public void setCharset(Charset c) {
+        this.charset = c;
     }
 
     /**
@@ -186,7 +212,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     public Set<VM> vmsFromJSON(JSONArray a) throws JSONConverterException {
         Set<VM> s = new HashSet<>(a.size());
         for (Object o : a) {
-            s.add(getOrMakeVM((int) o));
+            s.add(getVM((int) o));
         }
         return s;
     }
@@ -200,7 +226,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     public Set<Node> nodesFromJSON(JSONArray a) throws JSONConverterException {
         Set<Node> s = new HashSet<>(a.size());
         for (Object o : a) {
-            s.add(getOrMakeNode((int) o));
+            s.add(getNode((int) o));
         }
         return s;
     }
@@ -249,7 +275,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
         Set<VM> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
-            VM v = getOrMakeVM((Integer) i);
+            VM v = getVM((Integer) i);
             s.add(v);
         }
         return s;
@@ -271,7 +297,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
         Set<Node> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
-            s.add(getOrMakeNode((Integer) i));
+            s.add(getNode((Integer) i));
         }
         return s;
 
@@ -288,8 +314,8 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     public VM requiredVM(JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         try {
-            return getOrMakeVM((Integer) o.get(id));
-        } catch (Exception e) {
+            return getVM((Integer) o.get(id));
+        } catch (ClassCastException e) {
             throw new JSONConverterException("Unable to read a VM identifier from string at key '" + id + "'", e);
         }
     }
@@ -305,16 +331,18 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     public Node requiredNode(JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         try {
-            return getOrMakeNode((Integer) o.get(id));
-        } catch (Exception e) {
+            return getNode((Integer) o.get(id));
+        } catch (ClassCastException e) {
             throw new JSONConverterException("Unable to read a Node identifier from string at key '" + id + "'", e);
         }
     }
 
     @Override
-    public E fromJSON(File path) throws IOException, JSONConverterException {
-        try (FileReader in = new FileReader(path)) {
+    public E fromJSON(File path) throws JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), charset))) {
             return fromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 
@@ -342,36 +370,41 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
 
     /**
      * Get a VM from its identifier.
-     * If the VM is already a part of the model, it is reused.
-     * Otherwise, a new VM is created
+     * The VM is already a part of the model.
      *
-     * @param vmID the VM identifier
+     * @param vmID the node identifier
      * @return the resulting VM
-     * @throws JSONConverterException if there is no model.
+     * @throws JSONConverterException if there is no model, or if the VM is unknown.
      */
-    public VM getOrMakeVM(int vmID) throws JSONConverterException {
+
+    public VM getVM(int vmID) throws JSONConverterException {
         if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
         }
-        mo.newVM(vmID);
-        return new VM(vmID);
+        VM vm = new VM(vmID);
+        if (!mo.contains(vm)) {
+            throw new JSONConverterException("Undeclared vm '" + vmID + "'");
+        }
+        return vm;
     }
 
     /**
      * Get a node from its identifier.
-     * If the node is already a part of the model, it is reused.
-     * Otherwise, a new node is created
+     * The node is already a part of the model
      *
      * @param nodeID the node identifier
      * @return the resulting node
-     * @throws JSONConverterException if there is no model.
+     * @throws JSONConverterException if there is no model, or if the node is unknown.
      */
-    public Node getOrMakeNode(int nodeID) throws JSONConverterException {
+    public Node getNode(int nodeID) throws JSONConverterException {
         if (mo == null) {
-            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
+            throw new JSONConverterException("Unable to extract Nodes without a model to use as a reference");
         }
-        mo.newNode(nodeID);
-        return new Node(nodeID);
+        Node n = new Node(nodeID);
+        if (!mo.contains(n)) {
+            throw new JSONConverterException("Undeclared node '" + nodeID + "'");
+        }
+        return n;
     }
 
     @Override
@@ -380,14 +413,20 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public void toJSON(E e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(E e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(E e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+    public void toJSON(E e, File path) throws JSONConverterException {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), charset))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 

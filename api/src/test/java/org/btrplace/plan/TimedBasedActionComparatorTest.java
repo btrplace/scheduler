@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,8 +25,6 @@ import org.btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Random;
-
 /**
  * Unit tests for {@link TimedBasedActionComparator}.
  *
@@ -36,8 +34,6 @@ public class TimedBasedActionComparatorTest {
 
     private static TimedBasedActionComparator startCmp = new TimedBasedActionComparator();
     private static TimedBasedActionComparator stopCmp = new TimedBasedActionComparator(false, false);
-
-    private static Random rnd = new Random();
 
     private static Model mo = new DefaultModel();
     VM vm = mo.newVM();
@@ -88,26 +84,4 @@ public class TimedBasedActionComparatorTest {
         Assert.assertTrue(startCmp.compare(a, b) > 0);
         Assert.assertTrue(stopCmp.compare(a, b) > 0);
     }
-
-    /**
-     * 0:2 1:3 3:7 1:5 2:3 0:3
-     *
-     * source Model
-     * s(0:2)
-     * s(0:3)
-     *
-     * s(1:3)
-     * s(1:5)
-     *
-     * e(0:2)
-     *
-     * e(0:3)
-     * e(2:3)
-     * e(1:3)
-     * s(3:7)
-     *
-     * e(1:5)
-     * e(1:7)
-     * endsWith(dstModel)
-     */
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 
 /**
  * Tutorials.
+ *
  * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Tutorials">btrplace website</a>
  */
 package org.btrplace.examples;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -29,10 +29,10 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.Collections;
 
@@ -47,16 +47,15 @@ public class ForgeVMTest {
     @Test
     public void testBasics() throws SchedulerException {
         Model mo = new DefaultModel();
-        Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
 
         mo.getAttributes().put(vm1, "template", "small");
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.emptySet(), Collections.emptySet(), Collections.emptySet())
                 .build();
         ForgeVM ma = (ForgeVM) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
@@ -72,15 +71,14 @@ public class ForgeVMTest {
     @Test(expectedExceptions = {SchedulerException.class})
     public void testWithoutTemplate() throws SchedulerException {
         Model mo = new DefaultModel();
-        Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
 
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(7));
         new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.emptySet(), Collections.emptySet(), Collections.emptySet())
                 .build();
 
     }
@@ -96,16 +94,15 @@ public class ForgeVMTest {
         mo.getAttributes().put(vm1, "template", "small");
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
-        dev.register(ShutdownNode.class, new ConstantActionDuration(20));
+        dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(7));
+        dev.register(ShutdownNode.class, new ConstantActionDuration<>(20));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.emptySet(), Collections.emptySet(), Collections.emptySet())
                 .build();
         //Force the node to get offline
         ShutdownableNode n = (ShutdownableNode) rp.getNodeAction(n1);
         n.getState().instantiateTo(0, Cause.Null);
-        System.out.println(rp.getSolver());
         ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);

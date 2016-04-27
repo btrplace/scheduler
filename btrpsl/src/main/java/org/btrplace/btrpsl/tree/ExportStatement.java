@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -89,7 +89,7 @@ public class ExportStatement extends BtrPlaceTree {
                 script.addExportable(op.label(), op, scope);
             }
         } catch (UnsupportedOperationException ex) {
-            return ignoreError(ex.getMessage());
+            return ignoreError(ex);
         }
 
 
@@ -103,11 +103,10 @@ public class ExportStatement extends BtrPlaceTree {
         } else {
             if (o.degree() == 0) {
                 throw new UnsupportedOperationException(o + ": Variable expected");
-            } else {
-                BtrpSet s = (BtrpSet) o;
-                for (BtrpOperand so : s.getValues()) {
-                    ret.addAll(flatten(so));
-                }
+            }
+            BtrpSet s = (BtrpSet) o;
+            for (BtrpOperand so : s.getValues()) {
+                ret.addAll(flatten(so));
             }
         }
         return ret;

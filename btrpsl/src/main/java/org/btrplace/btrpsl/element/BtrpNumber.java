@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@ package org.btrplace.btrpsl.element;
  *
  * @author Fabien Hermenier
  */
-public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
+public class BtrpNumber extends DefaultBtrpOperand {
 
     /**
      * The current real value.
@@ -39,12 +39,12 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     /**
      * Pre-made true value.
      */
-    public static final BtrpNumber TRUE = new BtrpNumber(1, Base.base10);
+    public static final BtrpNumber TRUE = new BtrpNumber(1, Base.BASE_10);
 
     /**
      * Pre-made false value.
      */
-    public static final BtrpNumber FALSE = new BtrpNumber(0, Base.base10);
+    public static final BtrpNumber FALSE = new BtrpNumber(0, Base.BASE_10);
 
     /**
      * The base of the integer.
@@ -72,15 +72,15 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     public BtrpNumber(double d) {
         this.dVal = d;
         this.isInteger = false;
-        this.base = Base.base10;
+        this.base = Base.BASE_10;
     }
 
     /**
-     * @return {@link org.btrplace.btrpsl.element.BtrpOperand.Type#number}
+     * @return {@link org.btrplace.btrpsl.element.BtrpOperand.Type#NUMBER}
      */
     @Override
     public Type type() {
-        return Type.number;
+        return Type.NUMBER;
     }
 
     /**
@@ -196,7 +196,7 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
         }
 
         BtrpNumber x = (BtrpNumber) o;
-        return (dVal == x.dVal);
+        return dVal == x.dVal;
     }
 
     @Override
@@ -214,9 +214,9 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     public String toString() {
         if (isInteger) {
             switch (base) {
-                case base8:
+                case BASE_8:
                     return Integer.toOctalString((int) dVal);
-                case base16:
+                case BASE_16:
                     return Integer.toHexString((int) dVal);
                 default:
                     return Integer.toString((int) dVal);
@@ -278,7 +278,7 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     }
 
     @Override
-    public BtrpNumber clone() {
+    public BtrpNumber copy() {
         if (isInteger) {
             return new BtrpNumber((int) dVal, base);
         }
@@ -297,15 +297,15 @@ public class BtrpNumber extends DefaultBtrpOperand implements Cloneable {
     /**
      * The number base.
      */
-    public static enum Base {
+    public enum Base {
         /**
          * Octal value.
-         */base8,
+         */BASE_8,
         /**
          * Decimal value.
-         */base10,
+         */BASE_10,
         /**
          * Hexadecimal value.
-         */base16
+         */BASE_16
     }
 }

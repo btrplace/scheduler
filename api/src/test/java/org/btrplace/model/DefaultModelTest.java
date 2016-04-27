@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -69,25 +69,27 @@ public class DefaultModelTest {
         when(rc.getIdentifier()).thenReturn("foo");
         ModelView b = mock(ModelView.class);
         when(b.getIdentifier()).thenReturn("bar");
-        when(b.clone()).thenReturn(b);
-        when(rc.clone()).thenReturn(rc);
+        when(b.copy()).thenReturn(b);
+        when(rc.copy()).thenReturn(rc);
         i.attach(rc);
         i.attach(b);
 
         VM vm = i.newVM();
         i.getAttributes().put(vm, "foo", true);
-        Model j = i.clone();
+        Model j = i.copy();
         j.getAttributes().put(vm, "foo", true);
         j.attach(rc);
         j.attach(b);
         Assert.assertTrue(i.equals(i));
-        Assert.assertTrue(i.equals(j));
         Assert.assertEquals(i.hashCode(), j.hashCode());
         j.detach(rc);
         Assert.assertFalse(i.equals(j));
         j.attach(rc);
         j.getMapping().addReadyVM(j.newVM());
         Assert.assertFalse(i.equals(j));
+        j.getAttributes().put(vm, "bar", false);
+        Assert.assertFalse(i.equals(j));
+        j.setAttributes(i.getAttributes());
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testEqualsAndHashCode", "testAttachView", "testDetachView", "testAttributes"})
@@ -95,22 +97,22 @@ public class DefaultModelTest {
         Model i = new DefaultModel();
         ModelView v1 = mock(ModelView.class);
         when(v1.getIdentifier()).thenReturn("foo");
-        when(v1.clone()).thenReturn(v1);
+        when(v1.copy()).thenReturn(v1);
         ModelView v2 = mock(ModelView.class);
         when(v2.getIdentifier()).thenReturn("bar");
-        when(v2.clone()).thenReturn(v2);
+        when(v2.copy()).thenReturn(v2);
         VM u = i.newVM();
         i.getAttributes().put(u, "foo", false);
         i.attach(v1);
         i.attach(v2);
-        Model c = i.clone();
+        Model c = i.copy();
         Assert.assertEquals(c.hashCode(), i.hashCode());
         Assert.assertTrue(c.equals(i));
         i.detach(v1);
         Assert.assertEquals(c.getView("foo"), v1);
         c.detach(v1);
         Assert.assertEquals(i.getView("bar"), v2);
-        Assert.assertEquals(c.getAttributes().getBoolean(u, "foo"), Boolean.FALSE);
+        Assert.assertEquals(c.getAttributes().get(u, "foo"), Boolean.FALSE);
 
     }
 

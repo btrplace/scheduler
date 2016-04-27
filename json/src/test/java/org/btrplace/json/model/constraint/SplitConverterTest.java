@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,12 +26,7 @@ import org.btrplace.model.constraint.Split;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.SplitConverter}.
@@ -41,12 +36,12 @@ import java.util.Set;
 public class SplitConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
 
         Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Collection<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM()));
+        Collection<VM> s3 = new HashSet<>(Collections.singletonList(mo.newVM()));
         Set<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.view.ShareableResource;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -28,7 +27,7 @@ import java.util.Comparator;
  *
  * @author Fabien Hermenier
  */
-public class SliceRcComparator implements Comparator<Slice>, Serializable {
+public class SliceRcComparator implements Comparator<Slice> {
 
     private ShareableResource rc;
 
@@ -47,9 +46,8 @@ public class SliceRcComparator implements Comparator<Slice>, Serializable {
 
     @Override
     public int compare(Slice s1, Slice s2) {
-        int x, y;
-        x = rc.getConsumption(s1.getSubject());
-        y = rc.getConsumption(s2.getSubject());
+        int x = rc.getConsumption(s1.getSubject());
+        int y = rc.getConsumption(s2.getSubject());
         return ratio * (x - y);
     }
 }

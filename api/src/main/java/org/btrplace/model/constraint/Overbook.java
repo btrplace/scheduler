@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,9 +19,13 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.view.ResourceRelated;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to specify and overbooking factor between
@@ -40,11 +44,13 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"n : nodes", "id : string", "qty : float"}, inv = "sum({cons(v, id). v : running(n)}) * qty < capa(n, id)")
-public class Overbook extends SatConstraint {
+public class Overbook extends SimpleConstraint implements ResourceRelated {
 
     private String rcId;
 
     private double ratio;
+
+    private Node node;
 
     /**
      * Make a new constraint with a continuous restriction.
@@ -66,7 +72,8 @@ public class Overbook extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public Overbook(Node n, String rc, double r, boolean continuous) {
-        super(Collections.<VM>emptySet(), Collections.singleton(n), continuous);
+        super(continuous);
+        this.node = n;
         if (r < 1.0d) {
             throw new IllegalArgumentException("The overbooking ratio must be >= 1.0");
         }
@@ -83,18 +90,10 @@ public class Overbook extends SatConstraint {
      * @return the associated list of continuous constraints
      */
     public static List<Overbook> newOverbooks(Collection<Node> nodes, String rc, double r) {
-        List<Overbook> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Overbook(n, rc, r));
-        }
-        return l;
+        return nodes.stream().map(n -> new Overbook(n, rc, r)).collect(Collectors.toList());
     }
 
-    /**
-     * Get the resource identifier.
-     *
-     * @return an identifier
-     */
+    @Override
     public String getResource() {
         return this.rcId;
     }
@@ -110,18 +109,33 @@ public class Overbook extends SatConstraint {
 
     @Override
     public String toString() {
-        return "overbook(node=" + this.getInvolvedNodes().iterator().next()
-                + ", rc=" + rcId + ", ratio=" + ratio + ", " + restrictionToString() + ')';
+        return "overbook(node=" + node
+                + ", rc=" + rcId + ", ratio=" + ratio + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
+    }
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return Collections.singleton(node);
     }
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o) && ratio == ((Overbook) o).ratio && rcId.equals(((Overbook) o).rcId);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Overbook overbook = (Overbook) o;
+        return Double.compare(overbook.ratio, ratio) == 0 &&
+                isContinuous() == overbook.isContinuous() &&
+                Objects.equals(rcId, overbook.rcId) &&
+                Objects.equals(node, overbook.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rcId, ratio);
+        return Objects.hash(rcId, ratio, node, isContinuous());
     }
 
     @Override

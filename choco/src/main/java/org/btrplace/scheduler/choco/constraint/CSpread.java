@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Spread;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
@@ -56,7 +56,7 @@ public class CSpread implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
         List<IntVar> running = placementVariables(rp);
 
@@ -93,7 +93,7 @@ public class CSpread implements ChocoConstraint {
         return true;
     }
 
-    private void disallowOverlap(Solver s, VMTransition t1, VMTransition t2) {
+    private static void disallowOverlap(Solver s, VMTransition t1, VMTransition t2) {
         Slice dI = t1.getDSlice();
         Slice cJ = t1.getCSlice();
 
@@ -112,7 +112,7 @@ public class CSpread implements ChocoConstraint {
     /**
      * Establish the precedence constraint {@code c.getEnd() <= d.getStart()} if the two slices may overlap.
      */
-    private void precedenceIfOverlap(Solver s, Slice d, Slice c) {
+    private static void precedenceIfOverlap(Solver s, Slice d, Slice c) {
         //No need to place the constraints if the slices do not have a chance to overlap
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
@@ -138,10 +138,10 @@ public class CSpread implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         Map<Node, Set<VM>> spots = new HashMap<>();
         Set<VM> bad = new HashSet<>();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
             Node h = map.getVMLocation(vm);
             if (map.isRunning(vm)) {
@@ -163,20 +163,5 @@ public class CSpread implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * The builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Spread.class;
-        }
-
-        @Override
-        public CSpread build(Constraint c) {
-            return new CSpread((Spread) c);
-        }
     }
 }

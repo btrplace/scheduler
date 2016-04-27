@@ -4,3 +4,9 @@ target
 *DS_Store
 *~
 .private
+*.pyc
+*.log
+.classpath
+.project
+.settings
+test-output

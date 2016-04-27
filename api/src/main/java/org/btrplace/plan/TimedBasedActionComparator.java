@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@ package org.btrplace.plan;
 
 import org.btrplace.plan.event.Action;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -33,7 +32,7 @@ import java.util.Comparator;
  *
  * @author Fabien Hermenier
  */
-public class TimedBasedActionComparator implements Comparator<Action>, Serializable {
+public class TimedBasedActionComparator implements Comparator<Action> {
 
     private boolean diffSimultaneous = false;
 
@@ -78,7 +77,7 @@ public class TimedBasedActionComparator implements Comparator<Action>, Serializa
         return d;
     }
 
-    private int delay(Action a1, Action a2, boolean onStart) {
+    private static int delay(Action a1, Action a2, boolean onStart) {
         if (onStart) {
             return a1.getStart() - a2.getStart();
         }

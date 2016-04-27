@@ -1,6 +1,5 @@
-
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,13 +21,15 @@ package org.btrplace.scheduler.choco;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.btrplace.model.*;
-import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.AliasedCumulatives;
+import org.btrplace.scheduler.choco.view.ChocoView;
+import org.btrplace.scheduler.choco.view.Cumulatives;
+import org.btrplace.scheduler.choco.view.Packing;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -40,8 +41,10 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
+import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
 import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
@@ -82,21 +85,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Set<VM> manageable;
 
-    private VM[] vms;
+    private List<VM> vms;
     private TObjectIntHashMap<VM> revVMs;
 
-    private Node[] nodes;
+    private List<Node> nodes;
     private TObjectIntHashMap<Node> revNodes;
 
     private IntVar start;
     private IntVar end;
 
-    private VMTransition[] vmActions;
-    private NodeTransition[] nodeActions;
+    private List<VMTransition> vmActions;
+    private List<NodeTransition> nodeActions;
 
     private DurationEvaluators durEval;
 
-    private IntVar[] vmsCountOnNodes;
+    private List<IntVar> vmsCountOnNodes;
 
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
@@ -104,8 +107,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private TransitionFactory amFactory;
 
-    private SolverViewsManager viewsManager;
-
+    private Map<String, ChocoView> coreViews;
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -140,7 +142,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver = new Solver();
         solver.set(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
-        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, DEFAULT_MAX_TIME, solver);
+        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), solver);
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
@@ -153,23 +155,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-        makeViews(ps);
-        linkCardinalityWithSlices();
-
-    }
-
-    private void makeViews(Parameters ps) throws SchedulerException {
-        List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
-        ModelViewMapper vm = ps.getViewMapper();
-        for (ModelView v : model.getViews()) {
-            ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
-            if (modelViewBuilder != null) {
-                SolverViewBuilder sb = modelViewBuilder.build(v);
-                viewBuilders.add(sb);
+        coreViews = new HashMap<>();
+        for (Class<? extends ChocoView> c : ps.getChocoViews()) {
+            try {
+                ChocoView v = c.newInstance();
+                v.inject(ps, this);
+                addView(v);
+            } catch (Exception e) {
+                throw new SchedulerException(model, "Unable to instantiate solver-only view '" + c.getSimpleName() + "'", e);
             }
         }
-        viewsManager = new SolverViewsManager(this);
-        viewsManager.build(viewBuilders);
     }
 
     @Override
@@ -178,15 +173,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }
+        linkCardinalityWithSlices();
         addContinuousResourceCapacities();
-
-        if (!viewsManager.beforeSolve()) {
-            return null;
-        }
+        getView(Packing.VIEW_ID).beforeSolve(this);
+        getView(Cumulatives.VIEW_ID).beforeSolve(this);
+        getView(AliasedCumulatives.VIEW_ID).beforeSolve(this);
 
         //Set the timeout
         if (timeLimit > 0) {
-            SMF.limitTime(solver, timeLimit * 1000);
+            SMF.limitTime(solver, timeLimit * 1000L);
         }
 
         appendNaiveBranchHeuristic();
@@ -197,7 +192,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
-            solver.getSearchLoop().plugSearchMonitor((IMonitorSolution) () -> {
+            solver.plugMonitor((IMonitorSolution) () -> {
                 int v = objective.getValue();
                 String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
                 solver.post(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
@@ -219,7 +214,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return plans;
     }
 
-    private ReconfigurationPlan makeResultingPlan() throws SchedulerException {
+    private ReconfigurationPlan makeResultingPlan() {
 
         //Check for the solution
         ESat status = solver.isFeasible();
@@ -232,7 +227,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         Solution s = solver.getSolutionRecorder().getLastSolution();
-        return buildReconfigurationPlan(s, model.clone());
+        return buildReconfigurationPlan(s, model.copy());
     }
 
     /**
@@ -242,17 +237,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @return the resulting plan
      * @throws SchedulerException if a error occurred
      */
+    @Override
     public ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException {
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
-        for (Transition action : nodeActions) {
+        for (NodeTransition action : nodeActions) {
             action.insertActions(s, plan);
         }
 
-        for (Transition action : vmActions) {
+        for (VMTransition action : vmActions) {
             action.insertActions(s, plan);
         }
-
-        viewsManager.insertActions(s, plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(s, plan);
@@ -265,14 +259,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      */
     private void appendNaiveBranchHeuristic() {
         StrategiesSequencer seq;
-        if (solver.getSearchLoop().getStrategy() == null) {
-            seq = new StrategiesSequencer(
-                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
 
+        IntStrategy strat = ISF.custom(new FirstFail(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
+        if (solver.getSearchLoop().getStrategy() == null) {
+            seq = new StrategiesSequencer(strat);
         } else {
             seq = new StrategiesSequencer(
                     solver.getSearchLoop().getStrategy(),
-                    ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
+                    strat);
         }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {
@@ -289,11 +283,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.set(seq);
     }
 
-    private void addContinuousResourceCapacities() throws SchedulerException {
+    private void addContinuousResourceCapacities() {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
-        for (int j = 0; j < getVMs().length; j++) {
-            VMTransition a = vmActions[j];
+        for (int j = 0; j < getVMs().size(); j++) {
+            VMTransition a = vmActions.get(j);
             if (a.getDSlice() != null) {
                 iUse.add(VariableFactory.one(solver));
             }
@@ -309,18 +303,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
-    /**
-     * Create the cardinality variables.
-     */
-    private void makeCardinalityVariables() {
-        vmsCountOnNodes = new IntVar[nodes.length];
-        int nbVMs = vms.length;
-        for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = VariableFactory.bounded(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs, solver);
-        }
-    }
-
-    private void linkCardinalityWithSlices() throws SchedulerException {
+    private void linkCardinalityWithSlices() {
         IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
@@ -331,6 +314,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw new SchedulerException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
         }
         ((Packing) v).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
+    }
+
+    /**
+     * Create the cardinality variables.
+     */
+    private void makeCardinalityVariables() {
+        vmsCountOnNodes = new ArrayList<>(nodes.size());
+        int nbVMs = vms.size();
+        for (Node n : nodes) {
+            vmsCountOnNodes.add(VariableFactory.bounded(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, solver));
+        }
+        vmsCountOnNodes = Collections.unmodifiableList(vmsCountOnNodes);
     }
 
     @Override
@@ -360,34 +355,34 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
         allVMs.addAll(ready);
 
-        vms = new VM[allVMs.size()];
+        vms = new ArrayList<>(allVMs.size());
         //0.5f is a default load factor in trove.
         revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1);
 
         int i = 0;
         for (VM vm : allVMs) {
-            vms[i] = vm;
+            vms.add(vm);
             revVMs.put(vm, i++);
         }
-
-        nodes = new Node[model.getMapping().getOnlineNodes().size() + model.getMapping().getOfflineNodes().size()];
-        revNodes = new TObjectIntHashMap<>(nodes.length, 0.5f, -1);
+        vms = Collections.unmodifiableList(vms);
+        nodes = new ArrayList<>();
+        revNodes = new TObjectIntHashMap<>(nodes.size(), 0.5f, -1);
         i = 0;
         for (Node n : model.getMapping().getOnlineNodes()) {
-            nodes[i] = n;
+            nodes.add(n);
             revNodes.put(n, i++);
         }
         for (Node n : model.getMapping().getOfflineNodes()) {
-            nodes[i] = n;
+            nodes.add(n);
             revNodes.put(n, i++);
         }
+        nodes = Collections.unmodifiableList(nodes);
     }
 
-    private void makeVMTransitions() throws SchedulerException {
+    private void makeVMTransitions() {
         Mapping map = model.getMapping();
-        vmActions = new VMTransition[vms.length];
-        for (int i = 0; i < vms.length; i++) {
-            VM vmId = vms[i];
+        vmActions = new ArrayList<>(vms.size());
+        for (VM vmId : vms) {
             VMState curState = VMState.INIT;
             if (map.isRunning(vmId)) {
                 curState = VMState.RUNNING;
@@ -409,9 +404,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             } else {
                 nextState = curState; //by default, maintain state
                 switch(nextState) {
-                    case READY: ready.add(vmId);break;
-                    case RUNNING: running.add(vmId); break;
-                    case SLEEPING: sleeping.add(vmId); break;
+                    case READY:
+                        ready.add(vmId);
+                        break;
+                    case RUNNING:
+                        running.add(vmId);
+                        break;
+                    case SLEEPING:
+                        sleeping.add(vmId);
+                        break;
+                    default:
+                        throw new SchedulerException(model, "Unsupported VM transition " + curState + " -> " + nextState);
                 }
             }
 
@@ -419,25 +422,25 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (am == null) {
                 throw new SchedulerException(model, "No model available for VM transition " + curState + " -> " + nextState);
             }
-            vmActions[i] = am.build(this, vmId);
-            if (vmActions[i].isManaged()) {
+            VMTransition t = am.build(this, vmId);
+            vmActions.add(t);
+            if (t.isManaged()) {
                 manageable.add(vmId);
             }
         }
     }
 
-    private void makeNodeTransitions() throws SchedulerException {
+    private void makeNodeTransitions() {
 
         Mapping m = model.getMapping();
-        nodeActions = new NodeTransition[nodes.length];
-        for (int i = 0; i < nodes.length; i++) {
-            Node nId = nodes[i];
+        nodeActions = new ArrayList<>(nodes.size());
+        for (Node nId : nodes) {
             NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
             NodeTransitionBuilder b = amFactory.getBuilder(state);
             if (b == null) {
                 throw new SchedulerException(model, "No model available for a node transition " + state + " -> (offline|online)");
             }
-            nodeActions[i] = b.build(this, nId);
+            nodeActions.add(b.build(this, nId));
         }
     }
 
@@ -453,30 +456,33 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(Solution s, ReconfigurationPlan p) {
         if (p.getDuration() != s.getIntVal(end)) {
-            LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getValue());
-            return false;
+            throw new SchedulerException(p.getOrigin(), "The plan effective duration (" + p.getDuration() + ") and the computed duration (" + end.getValue() + ") mismatch");
         }
         return true;
     }
 
     @Override
-    public IntVar[] getNbRunningVMs() {
+    public List<IntVar> getNbRunningVMs() {
         return vmsCountOnNodes;
     }
 
     @Override
     public final ChocoView getView(String id) {
-        return viewsManager.get(id);
+        return coreViews.get(id);
     }
 
     @Override
     public Collection<String> getViews() {
-        return viewsManager.getKeys();
+        return coreViews.keySet();
     }
 
     @Override
     public boolean addView(ChocoView v) {
-        return viewsManager.add(v);
+        if (coreViews.containsKey(v.getIdentifier())) {
+            return false;
+        }
+        coreViews.put(v.getIdentifier(), v);
+        return true;
     }
 
     @Override
@@ -486,7 +492,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeHostVariable(Object... n) {
-        return VariableFactory.enumerated(makeVarLabel(n), 0, nodes.length - 1, solver);
+        return VariableFactory.enumerated(makeVarLabel(n), 0, nodes.size() - 1, solver);
     }
 
     @Override
@@ -559,7 +565,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public NodeTransition[] getNodeActions() {
+    public List<NodeTransition> getNodeActions() {
         return nodeActions;
     }
 
@@ -569,12 +575,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Node[] getNodes() {
+    public List<Node> getNodes() {
         return nodes;
     }
 
     @Override
-    public VM[] getVMs() {
+    public List<VM> getVMs() {
         return vms;
     }
 
@@ -620,7 +626,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public VM getVM(int idx) {
-        return vms[idx];
+        return vms.get(idx);
     }
 
     @Override
@@ -630,20 +636,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Node getNode(int idx) {
-        return nodes[idx];
+        return nodes.get(idx);
     }
 
     @Override
-    public VMTransition[] getVMActions() {
+    public List<VMTransition> getVMActions() {
         return vmActions;
     }
 
     @Override
-    public VMTransition[] getVMActions(Collection<VM> ids) {
-        VMTransition[] trans = new VMTransition[ids.size()];
-        int i = 0;
+    public List<VMTransition> getVMActions(Collection<VM> ids) {
+        List<VMTransition> trans = new ArrayList<>(ids.size());//VMTransition[ids.size()];
         for (VM v : ids) {
-            trans[i++] = getVMAction(v);
+            trans.add(getVMAction(v));
         }
         return trans;
     }
@@ -651,13 +656,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public VMTransition getVMAction(VM id) {
         int idx = getVM(id);
-        return idx < 0 ? null : vmActions[idx];
+        return idx < 0 ? null : vmActions.get(idx);
     }
 
     @Override
     public NodeTransition getNodeAction(Node id) {
         int idx = getNode(id);
-        return idx < 0 ? null : nodeActions[idx];
+        return idx < 0 ? null : nodeActions.get(idx);
     }
 
     @Override
@@ -666,7 +671,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (newVM == null) {
             return null;
         }
-        viewsManager.cloneVM(vm, newVM);
+        for (Map.Entry<String, ChocoView> e : coreViews.entrySet()) {
+            e.getValue().cloneVM(vm, newVM);
+        }
         return newVM;
     }
 

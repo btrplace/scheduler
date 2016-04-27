@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,10 +26,10 @@ import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class KillVMTest {
 
         Set<VM> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(org.btrplace.plan.event.KillVM.class, new ConstantActionDuration(1));
+        dev.register(org.btrplace.plan.event.KillVM.class, new ConstantActionDuration<>(1));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
                 .build();

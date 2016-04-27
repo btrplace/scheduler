@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -97,11 +97,11 @@ public class MigrateVMTest {
         Assert.assertEquals(a.hashCode(), b.hashCode());
         b.setBandwidth(200);
         Assert.assertNotEquals(a, b);
-        Assert.assertNotSame(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 4, 5));
-        Assert.assertNotSame(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 3, 4));
-        Assert.assertNotSame(a, new MigrateVM(vms.get(1), ns.get(0), ns.get(1), 3, 5));
-        Assert.assertNotSame(a, new MigrateVM(vms.get(0), ns.get(2), ns.get(1), 3, 5));
-        Assert.assertNotSame(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(2), 3, 5));
+        Assert.assertNotEquals(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 4, 5));
+        Assert.assertNotEquals(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 3, 4));
+        Assert.assertNotEquals(a, new MigrateVM(vms.get(1), ns.get(0), ns.get(1), 3, 5));
+        Assert.assertNotEquals(a, new MigrateVM(vms.get(0), ns.get(2), ns.get(1), 3, 5));
+        Assert.assertNotEquals(a, new MigrateVM(vms.get(0), ns.get(0), ns.get(2), 3, 5));
     }
 
     @Test

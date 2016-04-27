@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -50,11 +50,11 @@ public class DefaultAttributesTest {
         Attributes attrs = new DefaultAttributes();
 
         Assert.assertFalse(attrs.put(vms.get(0), "foo", "bar"));
-        Assert.assertEquals(attrs.getString(vms.get(0), "foo"), "bar");
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", ""), "bar");
         Assert.assertTrue(attrs.put(vms.get(0), "foo", "baz"));
-        Assert.assertEquals(attrs.getString(vms.get(0), "foo"), "baz");
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", ""), "baz");
 
-        Assert.assertNull(attrs.getString(vms.get(0), "__"));
+        Assert.assertEquals(attrs.get(vms.get(0), "__", "++"), "++");
     }
 
 
@@ -63,7 +63,8 @@ public class DefaultAttributesTest {
         Attributes attrs = new DefaultAttributes();
 
         Assert.assertFalse(attrs.put(vms.get(0), "foo", 17.3));
-        Assert.assertEquals(attrs.getDouble(vms.get(0), "foo"), 17.3);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", 8.5), 17.3);
+        Assert.assertEquals(attrs.get(vms.get(0), "fiz", 8.5), 8.5);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -71,9 +72,10 @@ public class DefaultAttributesTest {
         Attributes attrs = new DefaultAttributes();
 
         Assert.assertFalse(attrs.put(vms.get(0), "foo", true));
-        Assert.assertEquals(attrs.getBoolean(vms.get(0), "foo"), Boolean.TRUE);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", false), true);
         Assert.assertTrue(attrs.put(vms.get(0), "foo", false));
-        Assert.assertEquals(attrs.getBoolean(vms.get(0), "foo"), Boolean.FALSE);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo", true), false);
+        Assert.assertEquals(attrs.get(vms.get(0), "__", true), true);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -101,10 +103,10 @@ public class DefaultAttributesTest {
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
     public void testIsSet() {
         Attributes attrs = new DefaultAttributes();
-
         Assert.assertFalse(attrs.isSet(vms.get(0), "foo"));
         attrs.put(vms.get(0), "foo", "bar");
         Assert.assertTrue(attrs.isSet(vms.get(0), "foo"));
+
     }
 
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
@@ -127,13 +129,13 @@ public class DefaultAttributesTest {
             attrs.put(u, Integer.toString(i), i);
             l.add(u);
         }
-        Attributes attrs2 = attrs.clone();
+        Attributes attrs2 = attrs.copy();
 
         attrs.unset(l.get(0), "0");
-        Assert.assertEquals((int) attrs2.getInteger(l.get(0), "0"), 0);
+        Assert.assertEquals(attrs2.get(l.get(0), "0", -1), 0);
 
         attrs2.unset(l.get(1), "1");
-        Assert.assertEquals((int) attrs.getInteger(l.get(1), "1"), 1);
+        Assert.assertEquals(attrs.get(l.get(1), "1", -2), 1);
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testUnset", "testClone"})
@@ -144,7 +146,7 @@ public class DefaultAttributesTest {
             attrs.put(vms.get(0), Integer.toString(i), i);
         }
         Assert.assertTrue(attrs.equals(attrs));
-        Attributes attrs2 = attrs.clone();
+        Attributes attrs2 = attrs.copy();
         Assert.assertTrue(attrs2.equals(attrs));
         Assert.assertTrue(attrs.equals(attrs));
         Assert.assertEquals(attrs.hashCode(), attrs2.hashCode());
@@ -163,6 +165,14 @@ public class DefaultAttributesTest {
         }
         attrs.clear();
         Assert.assertTrue(attrs.getDefined().isEmpty());
+        attrs.put(nodes.get(0), "foo", true);
+        attrs.put(vms.get(0), "bar", true);
+        attrs.clear(nodes.get(0));
+        Assert.assertTrue(attrs.isSet(vms.get(0), "bar"));
+        Assert.assertFalse(attrs.isSet(nodes.get(0), "foo"));
+        attrs.clear(vms.get(0));
+        Assert.assertFalse(attrs.isSet(vms.get(0), "bar"));
+
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -101,7 +101,7 @@ public class SymbolsTable {
      * @return {@code true} if the variable is immutable
      */
     public boolean isImmutable(String label) {
-        return (isDeclared(label) && level.get(label) < 0);
+        return isDeclared(label) && level.get(label) < 0;
     }
 
     /**
@@ -180,12 +180,11 @@ public class SymbolsTable {
      */
     public boolean popTable() {
         if (currentLevel > 0) {
-            //Remove all the variable having a level equals to currentLevel;
+            //Remove all the variable having a level equals to currentLevel
             for (Iterator<Map.Entry<String, Integer>> ite = level.entrySet().iterator(); ite.hasNext(); ) {
                 Map.Entry<String, Integer> e = ite.next();
                 if (e.getValue() == currentLevel) {
                     ite.remove();
-                    level.remove(e.getKey());
                     type.remove(e.getKey());
                 }
             }

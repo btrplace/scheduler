@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,12 +19,12 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import gnu.trove.list.array.TIntArrayList;
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Lonely;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.Disjoint;
 import org.btrplace.scheduler.choco.extensions.Precedences;
@@ -53,7 +53,7 @@ public class CLonely implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         //Remove non future-running VMs
         List<IntVar> myHosts = new ArrayList<>();
         List<IntVar> otherHosts = new ArrayList<>();
@@ -73,7 +73,7 @@ public class CLonely implements ChocoConstraint {
         Solver s = rp.getSolver();
         s.post(new Disjoint(myHosts.toArray(new IntVar[myHosts.size()]),
                 otherHosts.toArray(new IntVar[otherHosts.size()]),
-                rp.getNodes().length));
+                rp.getNodes().size()));
 
         if (cstr.isContinuous()) {
             //Get the position of all the others c-slices and their associated end moment
@@ -118,11 +118,11 @@ public class CLonely implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
         Set<VM> bad = new HashSet<>();
         Set<Node> hosts = new HashSet<>();
         Collection<VM> vms = cstr.getInvolvedVMs();
-        Mapping map = m.getMapping();
+        Mapping map = i.getModel().getMapping();
         for (VM vm : vms) {
             if (map.isRunning(vm)) {
                 hosts.add(map.getVMLocation(vm));
@@ -144,20 +144,5 @@ public class CLonely implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Lonely.class;
-        }
-
-        @Override
-        public CLonely build(Constraint c) {
-            return new CLonely((Lonely) c);
-        }
     }
 }

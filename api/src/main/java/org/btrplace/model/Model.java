@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface Model extends Cloneable, ElementBuilder {
+public interface Model extends ElementBuilder {
 
     /**
      * Get a view already attached to the model
@@ -93,9 +93,10 @@ public interface Model extends Cloneable, ElementBuilder {
     void setAttributes(Attributes attrs);
 
     /**
-     * Clone a model.
+     * {@inheritDoc}
      *
-     * @return a new model
+     * @return a model copy
      */
-    Model clone();
+    @Override
+    Model copy();
 }

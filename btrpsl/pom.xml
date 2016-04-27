@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2014 University Nice Sophia Antipolis
+  ~ Copyright (c) 2016 University Nice Sophia Antipolis
   ~
   ~ This file is part of btrplace.
   ~ This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>0.42-SNAPSHOT</version>
+        <version>0.46-SNAPSHOT</version>
     </parent>
     <name>btrpsl</name>
     <artifactId>btrpsl</artifactId>
@@ -44,12 +44,12 @@
         <dependency>
             <groupId>org.btrplace</groupId>
             <artifactId>scheduler-api</artifactId>
-            <version>0.42-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.btrplace</groupId>
             <artifactId>scheduler-json</artifactId>
-            <version>0.42-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -61,13 +61,13 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.9-RC2</version>
+            <version>0.9.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.btrplace</groupId>
             <artifactId>scheduler-choco</artifactId>
-            <version>0.42-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      * solution.
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SchedulerException;
+    ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs) throws SchedulerException;
 
     /**
      * Get the solver used to solve a problem.
@@ -69,5 +69,18 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      */
     void setInstanceSolver(InstanceSolver p);
 
+    /**
+     * Set the scheduler parameters.
+     *
+     * @param ps the parameters
+     * @return this
+     */
+    ChocoScheduler setParameters(Parameters ps);
 
+    /**
+     * Get the scheduler parameters.
+     *
+     * @return the registered parameters
+     */
+    Parameters getParameters();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,7 +33,8 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
 
     private VM vm;
 
-    private Node src, dst;
+    private Node src;
+    private Node dst;
 
     /**
      * Make a new resume action.
@@ -79,11 +80,9 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     @Override
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
-        return (map.isOnline(src)
-                && map.isOnline(dst)
-                && map.isSleeping(vm)
+        return map.isSleeping(vm)
                 && map.getVMLocation(vm) == src
-                && map.addRunningVM(vm, dst));
+                && map.addRunningVM(vm, dst);
     }
 
     @Override

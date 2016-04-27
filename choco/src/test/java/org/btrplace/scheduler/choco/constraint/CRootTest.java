@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -48,7 +47,7 @@ public class CRootTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).ready(vm3).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2).ready(vm3);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.doRepair(false);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,7 +19,8 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.VM;
-import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
@@ -29,12 +30,10 @@ import org.btrplace.scheduler.choco.transition.TransitionUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,43 +44,28 @@ import java.util.List;
  */
 public class DefaultCumulatives extends AbstractCumulatives implements Cumulatives {
 
-    private List<IntVar[]> capacities;
+    private List<List<IntVar>> capacities;
 
-    /**
-     * Make a new builder.
-     *
-     * @param p the associated problem
-     */
-    public DefaultCumulatives(ReconfigurationProblem p) {
-        super(p);
+    @Override
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+        super.inject(ps, rp);
         capacities = new ArrayList<>();
+        return true;
     }
-
 
     @Override
     public String getIdentifier() {
         return Cumulatives.VIEW_ID;
     }
 
-    @Override
-    public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
-        return true;
-    }
-
-    @Override
-    public boolean cloneVM(VM vm, VM clone) {
-        return true;
-    }
-
     /**
      * Add a dimension.
-     *
-     * @param c    the resource capacity of each of the nodes
+     *  @param c    the resource capacity of each of the nodes
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
     @Override
-    public void addDim(IntVar[] c, int[] cUse, IntVar[] dUse) {
+    public void addDim(List<IntVar> c, int[] cUse, IntVar[] dUse) {
         capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -93,21 +77,22 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      * @return the resulting constraint
      */
     @Override
-    public boolean beforeSolve(ReconfigurationProblem p) {
-        if (p.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {
+    public boolean beforeSolve(ReconfigurationProblem rp) {
+        super.beforeSolve(rp);
+        if (rp.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {
             return true;
         }
 
         int nbDims = capacities.size();
-        int nbRes = capacities.get(0).length;
+        int nbRes = capacities.get(0).size();
 
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[nbRes][nbDims];
         int d = 0;
-        for (IntVar[] capaDim : capacities) {
-            assert capaDim.length == nbRes;
-            for (int j = 0; j < capaDim.length; j++) {
-                capas[j][d] = capaDim[j].getUB();
+        for (List<IntVar> capaDim : capacities) {
+            assert capaDim.size() == nbRes;
+            for (int j = 0; j < capaDim.size(); j++) {
+                capas[j][d] = capaDim.get(j).getUB();
             }
             d++;
         }
@@ -135,7 +120,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             }
             d++;
         }
-        symmetryBreakingForStayingVMs();
+        symmetryBreakingForStayingVMs(rp);
         IntVar[] earlyStarts = TransitionUtils.getHostingStarts(rp.getNodeActions());
         IntVar[] lastEnd = TransitionUtils.getHostingEnds(rp.getNodeActions());
         rp.getSolver().post(
@@ -181,7 +166,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      *
      * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
      */
-    private boolean symmetryBreakingForStayingVMs() {
+    private boolean symmetryBreakingForStayingVMs(ReconfigurationProblem rp) {
         for (VM vm : rp.getFutureRunningVMs()) {
             VMTransition a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
@@ -190,11 +175,11 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                 BoolVar stay = ((KeepRunningVM) a).isStaying();
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
-                if (Boolean.TRUE.equals(ret) && !zeroDuration(stay, cSlice)) {
+                if (Boolean.TRUE.equals(ret) && !zeroDuration(rp, stay, cSlice)) {
                     return false;
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
-                } else if (Boolean.FALSE.equals(ret) && !zeroDuration(stay, dSlice)) {
+                } else if (Boolean.FALSE.equals(ret) && !zeroDuration(rp, stay, dSlice)) {
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
@@ -205,38 +190,17 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         return true;
     }
 
-    private boolean zeroDuration(BoolVar stay, Slice s) {
+    private static boolean zeroDuration(ReconfigurationProblem rp, BoolVar stay, Slice s) {
         if (stay.isInstantiatedTo(1)) {
             try {
                 s.getDuration().instantiateTo(0, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().info("Unable to set the duration of slice {} to 0", s.getSubject());
+                rp.getLogger().info("Unable to set the duration of slice " + s.getSubject() + " to 0", ex);
                 return false;
             }
         } else {
             rp.getSolver().post(new FastImpliesEq(stay, s.getDuration(), 0));
         }
         return true;
-    }
-
-    /**
-     * Builder associated to this constraint.
-     */
-    public static class Builder extends SolverViewBuilder {
-
-        @Override
-        public String getKey() {
-            return Cumulatives.VIEW_ID;
-        }
-
-        @Override
-        public Cumulatives build(ReconfigurationProblem p) {
-            return new DefaultCumulatives(p);
-        }
-
-        @Override
-        public List<String> getDependencies() {
-            return Collections.emptyList();
-        }
     }
 }

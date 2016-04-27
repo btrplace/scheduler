@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@ package org.btrplace.btrpsl.element;
  *
  * @author Fabien Hermenier
  */
-public final class IgnorableOperand extends DefaultBtrpOperand implements Cloneable {
+public final class IgnorableOperand extends DefaultBtrpOperand {
 
     /**
      * Singleton.
@@ -67,7 +67,7 @@ public final class IgnorableOperand extends DefaultBtrpOperand implements Clonea
      * @return {@link #getInstance()}
      */
     @Override
-    public BtrpOperand clone() {
+    public BtrpOperand copy() {
         return SINGLETON;
     }
 }

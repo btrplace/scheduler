@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,17 +19,11 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Overbook;
-import org.btrplace.model.constraint.Preserve;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.*;
-import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -69,21 +63,22 @@ public class CShareableResourceTest {
         rc.setConsumption(vm2, 3);
         rc.setCapacity(n1, 4);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        CShareableResource rcm = new CShareableResource(rp, rc);
+        CShareableResource rcm = new CShareableResource(rc);
+        rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getLB());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getLB());
-        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getUB()); //Will not be running so 0
-        IntVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
-        IntVar pn2 = rcm.getPhysicalUsage()[rp.getNode(n2)];
+        Assert.assertEquals(-1, rcm.getVMsAllocation().get(rp.getVM(vm1)).getLB());
+        Assert.assertEquals(-1, rcm.getVMsAllocation().get(rp.getVM(vm2)).getLB());
+        Assert.assertEquals(0, rcm.getVMsAllocation().get(rp.getVM(vm3)).getUB()); //Will not be running so 0
+        IntVar pn1 = rcm.getPhysicalUsage().get(rp.getNode(n1));
+        IntVar pn2 = rcm.getPhysicalUsage().get(rp.getNode(n2));
         Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
         Assert.assertTrue(pn2.getLB() == 0 && pn2.getUB() == 0);
 
         pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
         Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
 
-        IntVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
-        IntVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
+        IntVar vn1 = rcm.getVirtualUsage().get(rp.getNode(n1));
+        IntVar vn2 = rcm.getVirtualUsage().get(rp.getNode(n2));
         Assert.assertEquals(vn1.getLB(), 0);
         Assert.assertEquals(vn2.getLB(), 0);
 
@@ -95,13 +90,12 @@ public class CShareableResourceTest {
      * Place some VMs and check realNodeUsage is updated accordingly
      */
     @Test
-    public void testRealNodeUsage() throws SchedulerException, ContradictionException {
+    public void testRealNodeUsage() throws SchedulerException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
 
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
 
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
@@ -118,19 +112,16 @@ public class CShareableResourceTest {
         rc.setCapacity(n2, 3);
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        VMTransition avm2 = rp.getVMActions()[rp.getVM(vm2)];
-        avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
-        avm2.getDSlice().getHoster().instantiateTo(1, Cause.Null);
-        CShareableResource rcm = (CShareableResource) rp.getView(org.btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
-        //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm1)].updateLowerBound(2, Cause.Null);
-        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(3, Cause.Null);
-        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Fence(vm1, n1));
+        cstrs.add(new Fence(vm2, n2));
+        ReconfigurationPlan p = s.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
-        Assert.assertTrue(rcm.getVirtualUsage(1).isInstantiatedTo(3));
+        Model res = p.getResult();
+        rc = (ShareableResource.get(res, "foo"));
+        Assert.assertEquals(2, rc.getConsumption(vm1));//rcm.getVirtualUsage(0).isInstantiatedTo(2));
+        Assert.assertEquals(3, rc.getConsumption(vm2));//rcm.getVirtualUsage(1).isInstantiatedTo(3));
     }
 
     @Test
@@ -152,22 +143,13 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        Parameters ps = new DefaultParameters();
-        ModelViewMapper vMapper = ps.getViewMapper();
-        vMapper.register(new CShareableResource.Builder());
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setParams(ps)
-                .build();
-        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
-        //Check the amount of allocated resources on the RP
-        CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getValue(), 5);
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getValue(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();
-        ShareableResource resRc = (ShareableResource) res.getView(rc.getIdentifier());
+        ShareableResource resRc = ShareableResource.get(res, rc.getResourceIdentifier());
         Assert.assertEquals(resRc.getConsumption(vm1), 5);
         Assert.assertEquals(resRc.getConsumption(vm2), 7);
     }
@@ -176,13 +158,13 @@ public class CShareableResourceTest {
      * The default overbooking ratio of 1 will make this problem having no solution.
      */
     @Test
-    public void testDefaultOverbookRatio() throws ContradictionException, SchedulerException {
+    public void testDefaultOverbookRatio() throws SchedulerException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
 
-        Mapping ma = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
+        mo.getMapping().on(n1).run(n1, vm1, vm2);
 
         ShareableResource rc = new ShareableResource("foo", 0, 0);
         rc.setConsumption(vm1, 2);
@@ -191,13 +173,11 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
-        CShareableResource rcm = (CShareableResource) rp.getView(org.btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
-        //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(4, Cause.Null);
-        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoScheduler s = new DefaultChocoScheduler();
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Fence(vm1, n1));
+        cstrs.add(new Preserve(vm2, "foo", 4));
+        ReconfigurationPlan p = s.solve(mo, cstrs);//rp.solve(0, false);
         Assert.assertNull(p);
     }
 
@@ -209,7 +189,7 @@ public class CShareableResourceTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2);
 
         org.btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
         rc.setCapacity(n1, 32);
@@ -232,7 +212,7 @@ public class CShareableResourceTest {
         System.out.println(p);
     }
 
-    @Test(expectedExceptions = SchedulerException.class)
+    @Test
     public void testInitiallyUnsatisfied() throws SchedulerException {
         Model mo = new DefaultModel();
         Node n1 = mo.newNode();
@@ -246,7 +226,35 @@ public class CShareableResourceTest {
         mo.getMapping().addRunningVM(v2, n1);
         mo.attach(rc);
         ChocoScheduler s = new DefaultChocoScheduler();
-        Assert.assertNull(s.solve(mo, new ArrayList<>()));
-        Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
+        try {
+            Assert.assertNull(s.solve(mo, new ArrayList<>()));
+            Assert.fail("Should have thrown an exception");
+        } catch (SchedulerException e) {
+            Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
+        }
+    }
+
+    @Test
+    public void testMisplaced() throws SchedulerException {
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        ShareableResource rc = new ShareableResource("cpu", 10, 1);
+        VM v1 = mo.newVM();
+        VM v2 = mo.newVM();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addRunningVM(v1, n1);
+        mo.getMapping().addRunningVM(v2, n1);
+        mo.attach(rc);
+        List<SatConstraint> l = new ArrayList<>();
+        l.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 5));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        s.doRepair(true);
+        ReconfigurationPlan p = s.solve(mo, l);
+        Assert.assertEquals(s.getStatistics().getNbManagedVMs(), 0);
+        Assert.assertEquals(p.getResult().getMapping(), mo.getMapping());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 2);
     }
 }

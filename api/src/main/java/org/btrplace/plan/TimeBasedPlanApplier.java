@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,16 +33,9 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 
-    /**
-     * Make a new applier.
-     */
-    public TimeBasedPlanApplier() {
-        super();
-    }
-
     @Override
     public Model apply(ReconfigurationPlan p) {
-        Model res = p.getOrigin().clone();
+        Model res = p.getOrigin().copy();
         List<Action> actions = new ArrayList<>(p.getActions());
         Collections.sort(actions, startFirstComparator);
         for (Action a : actions) {

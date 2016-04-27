@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,11 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -34,8 +33,9 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
+
 @SideConstraint(args = {"sched : lists(vms)"}, inv = "!(i, j : range(sched)) i < j --> (!(ai : actions(sched[i])) !(aj : actions(sched[j])) end(aj) <= begin(aj))")
-public class Seq extends SatConstraint {
+public class Seq implements SatConstraint {
 
     private List<VM> order;
 
@@ -45,7 +45,6 @@ public class Seq extends SatConstraint {
      * @param seq the order to ensure
      */
     public Seq(List<VM> seq) {
-        super(seq, Collections.<Node>emptySet(), true);
         Set<VM> s = new HashSet<>(seq);
         if (s.size() != seq.size()) {
             throw new IllegalArgumentException("The list of VMs must not contain duplicates");
@@ -58,26 +57,10 @@ public class Seq extends SatConstraint {
         return order;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Seq that = (Seq) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
-    }
-
-    @Override
-    public int hashCode() {
-        return order.hashCode();
-    }
 
     @Override
     public String toString() {
-        return "sequentialVMTransitions(" + "vms=" + getInvolvedVMs() + ", continuous" + ')';
+        return "seq(vms=" + order + ", continuous" + ')';
     }
 
     @Override
@@ -90,4 +73,25 @@ public class Seq extends SatConstraint {
         return new SeqChecker(this);
     }
 
+    @Override
+    public boolean isContinuous() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Seq seq = (Seq) o;
+        return Objects.equals(order, seq.order);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(order);
+    }
 }

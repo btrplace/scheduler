@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.Gather;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -66,7 +66,7 @@ public class CGather implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         List<Slice> dSlices = getDSlices(rp);
         if (cstr.isContinuous()) {
             //Check for the already running VMs
@@ -85,8 +85,6 @@ public class CGather implements ChocoConstraint {
             }
             if (loc != null) {
                 return placeDSlices(rp, dSlices, rp.getNode(loc));
-            } else {
-                return forceDiscreteCollocation(rp, dSlices);
             }
         }
         return forceDiscreteCollocation(rp, dSlices);
@@ -97,14 +95,14 @@ public class CGather implements ChocoConstraint {
             try {
                 s.getHoster().instantiateTo(nIdx, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs());
+                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in " + cstr.getInvolvedVMs(), ex);
                 return false;
             }
         }
         return true;
     }
 
-    private boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
+    private static boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
         Solver s = rp.getSolver();
         for (int i = 0; i < dSlices.size(); i++) {
             for (int j = 0; j < i; j++) {
@@ -127,7 +125,7 @@ public class CGather implements ChocoConstraint {
         try {
             i.instantiateTo(v, Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'", ex);
             return false;
         }
         return true;
@@ -140,25 +138,10 @@ public class CGather implements ChocoConstraint {
 
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        if (!cstr.isSatisfied(m)) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        if (!cstr.isSatisfied(i.getModel())) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();
-    }
-
-    /**
-     * The builder associated to that constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return Gather.class;
-        }
-
-        @Override
-        public CGather build(Constraint c) {
-            return new CGather((Gather) c);
-        }
     }
 }

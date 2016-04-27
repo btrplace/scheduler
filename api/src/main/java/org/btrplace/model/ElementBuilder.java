@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,6 +18,8 @@
 
 package org.btrplace.model;
 
+import org.btrplace.Copyable;
+
 /**
  * Interface to specify a builder to create node or VMs.
  * Each created element is guarantee for being unique wrt. all the
@@ -25,7 +27,7 @@ package org.btrplace.model;
  *
  * @author Fabien Hermenier
  */
-public interface ElementBuilder {
+public interface ElementBuilder extends Copyable<ElementBuilder> {
 
     /**
      * Generate a new VM.
@@ -74,12 +76,4 @@ public interface ElementBuilder {
      * @return {@code true} iff the VM is booked
      */
     boolean contains(Node n);
-
-    /**
-     * Clone the builder.
-     *
-     * @return a new element builder
-     */
-    ElementBuilder clone();
-
 }

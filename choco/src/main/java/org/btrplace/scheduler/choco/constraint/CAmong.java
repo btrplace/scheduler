@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,14 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Among;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -62,14 +63,14 @@ public class CAmong implements ChocoConstraint {
      * Get the group variable that indicate on which group the VMs are running.
      *
      * @return a variable that may be instantiated but {@code null} until
-     * {@link #inject(org.btrplace.scheduler.choco.ReconfigurationProblem)} has been called
+     * {@link ChocoConstraint#inject(Parameters, ReconfigurationProblem)} has been called
      */
     public IntVar getGroupVariable() {
         return vmGrpId;
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         int nextGrp = -1;
         int curGrp = -1;
@@ -106,11 +107,11 @@ public class CAmong implements ChocoConstraint {
             }
         }
         if (cstr.isContinuous() && curGrp != -1) {
-            return restrictGroup(rp, running, groups, curGrp);
+            return restrictGroup(ps, rp, running, groups, curGrp);
         } else if (groups.size() == 1) {
-            return restrictGroup(rp, running, groups, 0);
+            return restrictGroup(ps, rp, running, groups, 0);
         }
-        return restrictGroup(rp, running, groups, nextGrp);
+        return restrictGroup(ps, rp, running, groups, nextGrp);
     }
 
     private boolean errorReported(ReconfigurationProblem rp, VM vm, int futureGroup, int g) {
@@ -128,12 +129,12 @@ public class CAmong implements ChocoConstraint {
         return false;
     }
 
-    private boolean restrictGroup(ReconfigurationProblem rp, Set<VM> running, List<Collection<Node>> groups, int selected) {
+    private boolean restrictGroup(Parameters ps, ReconfigurationProblem rp, Set<VM> running, List<Collection<Node>> groups, int selected) {
         if (selected == -1) {
             //Now, we create a variable to indicate on which group of nodes the VMs will be
             vmGrpId = VariableFactory.enumerated(rp.makeVarLabel(GROUP_LABEL), 0, groups.size() - 1, rp.getSolver());
             //grp: A table to indicate the group each node belong to, -1 for no group
-            int[] grp = new int[rp.getNodes().length];
+            int[] grp = new int[rp.getNodes().size()];
             for (int i = 0; i < grp.length; i++) {
                 Node n = rp.getNode(i);
                 int idx = getGroup(n, groups);
@@ -152,16 +153,16 @@ public class CAmong implements ChocoConstraint {
         } else {
             //As the group is already known, it's now just a fence constraint
             vmGrpId = VariableFactory.fixed(rp.makeVarLabel(GROUP_LABEL), selected, rp.getSolver());
-            if (!fence(rp, running, groups.get(selected))) {
+            if (!fence(ps, rp, running, groups.get(selected))) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean fence(ReconfigurationProblem rp, Collection<VM> vms, Collection<Node> group) {
+    private static boolean fence(Parameters ps, ReconfigurationProblem rp, Collection<VM> vms, Collection<Node> group) {
         for (VM v : vms) {
-            if (!new CFence(new Fence(v, group)).inject(rp)) {
+            if (!new CFence(new Fence(v, group)).inject(ps, rp)) {
                 return false;
             }
         }
@@ -186,8 +187,8 @@ public class CAmong implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model m) {
-        if (!cstr.isSatisfied(m)) {
+    public Set<VM> getMisPlacedVMs(Instance i) {
+        if (!cstr.isSatisfied(i.getModel())) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();
@@ -196,20 +197,5 @@ public class CAmong implements ChocoConstraint {
     @Override
     public String toString() {
         return cstr.toString();
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends org.btrplace.model.constraint.Constraint> getKey() {
-            return Among.class;
-        }
-
-        @Override
-        public CAmong build(org.btrplace.model.constraint.Constraint c) {
-            return new CAmong((Among) c);
-        }
     }
 }

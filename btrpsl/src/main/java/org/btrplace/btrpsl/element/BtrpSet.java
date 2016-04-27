@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class BtrpSet extends DefaultBtrpOperand implements Cloneable {
+public class BtrpSet extends DefaultBtrpOperand {
 
     /**
      * The operands in the set.
@@ -44,11 +44,6 @@ public class BtrpSet extends DefaultBtrpOperand implements Cloneable {
      */
     private Type t;
 
-    @Override
-    public Type type() {
-        return t;
-    }
-
     /**
      * Make a new set with a specific degree and type
      *
@@ -59,6 +54,11 @@ public class BtrpSet extends DefaultBtrpOperand implements Cloneable {
         values = new ArrayList<>();
         this.degree = d;
         this.t = ty;
+    }
+
+    @Override
+    public Type type() {
+        return t;
     }
 
     @Override
@@ -191,7 +191,7 @@ public class BtrpSet extends DefaultBtrpOperand implements Cloneable {
         BtrpSet res = new BtrpSet(degree + 1, t);
         Set<Set<BtrpOperand>> used = new HashSet<>();
         if (s2.size() == 0) {
-            return this.clone();
+            return this.copy();
         }
         for (BtrpOperand i : mine) {
             Set<BtrpOperand> u = new HashSet<>();
@@ -230,7 +230,7 @@ public class BtrpSet extends DefaultBtrpOperand implements Cloneable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("{");
-        for (Iterator ite = values.iterator(); ite.hasNext(); ) {
+        for (Iterator<BtrpOperand> ite = values.iterator(); ite.hasNext(); ) {
             buf.append(ite.next());
             if (ite.hasNext()) {
                 buf.append(", ");
@@ -241,10 +241,10 @@ public class BtrpSet extends DefaultBtrpOperand implements Cloneable {
     }
 
     @Override
-    public BtrpSet clone() {
+    public BtrpSet copy() {
         BtrpSet elems = new BtrpSet(degree, t);
         for (BtrpOperand e : values) {
-            elems.add(e.clone());
+            elems.add(e.copy());
         }
         return elems;
     }

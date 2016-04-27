@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -45,50 +45,59 @@ public class Range extends BtrPlaceTree {
     @Override
     public BtrpOperand go(BtrPlaceTree parent) {
 
-        BtrpSet s = new BtrpSet(1, BtrpOperand.Type.string);
         if (getChildCount() == 1) {
-            if (getChild(0).getType() != ANTLRBtrplaceSL2Lexer.IDENTIFIER) {
-                BtrpOperand o = getChild(0).go(this);
-                if (o.degree() > 0) {
-                    return ignoreError(getChild(0).getToken(), o + ": sets are not allowed in an enumeration");
-                }
-                s.getValues().add(new BtrpString(getChild(0).go(this).toString()));
-            } else {
-                s.getValues().add(new BtrpString(getChild(0).getText()));
-            }
+            return enumeration();
         } else if (getChildCount() == 2) {
-            BtrpOperand first = getChild(0).go(this);
-            BtrpOperand last = getChild(1).go(this);
-            if (first == IgnorableOperand.getInstance() || last == IgnorableOperand.getInstance()) {
-                return IgnorableOperand.getInstance();
-            }
-            if (first.type() != BtrpOperand.Type.number || last.type() != BtrpOperand.Type.number) {
-                return ignoreError(getChild(first.type() == BtrpOperand.Type.number ? 1 : 0).getToken(), "Bounds must be numbers");
-            }
-            BtrpNumber begin = (BtrpNumber) first;
-            BtrpNumber end = (BtrpNumber) last;
-            if (!begin.isInteger() || !end.isInteger()) {
-                return ignoreError(getChild(begin.isInteger() ? 1 : 0).getToken(), "Bounds must be integers");
-            }
+            return bound();
+        }
+        return ignoreError("Bug in range");
+    }
 
-            if (begin.getBase() != end.getBase()) {
-                return ignoreError(getChild(1).getToken(), "bounds must be expressed in the same base");
-            }
-
-            int from = Math.min(begin.getIntValue(), end.getIntValue());
-            int to = Math.max(begin.getIntValue(), end.getIntValue());
-            for (int i = from; i <= to; i++) {
-                BtrpNumber bi = new BtrpNumber(i, begin.getBase()); //Keep the base
-                s.getValues().add(new BtrpString(bi.toString()));
-            }
-
-            //Set the right line and col number wrt the second number (as the first one is an artificial token)
-            token.setLine(getChild(1).getLine());
-            token.setCharPositionInLine(getChild(1).getCharPositionInLine() - 2); //remove the ".."
-        } else {
-            return ignoreError("Bug in range");
+    private BtrpOperand bound() {
+        BtrpSet s = new BtrpSet(1, BtrpOperand.Type.STRING);
+        BtrpOperand first = getChild(0).go(this);
+        BtrpOperand last = getChild(1).go(this);
+        if (first == IgnorableOperand.getInstance() || last == IgnorableOperand.getInstance()) {
+            return IgnorableOperand.getInstance();
+        }
+        if (first.type() != BtrpOperand.Type.NUMBER || !((BtrpNumber) first).isInteger()) {
+            return ignoreError(getChild(0).getToken(), "Bounds must be integers");
+        }
+        if (last.type() != BtrpOperand.Type.NUMBER || !((BtrpNumber) last).isInteger()) {
+            return ignoreError(getChild(1).getToken(), "Bounds must be integers");
         }
 
+        BtrpNumber begin = (BtrpNumber) first;
+        BtrpNumber end = (BtrpNumber) last;
+
+        if (begin.getBase() != end.getBase()) {
+            return ignoreError(getChild(1).getToken(), "bounds must be expressed in the same base");
+        }
+
+        int from = Math.min(begin.getIntValue(), end.getIntValue());
+        int to = Math.max(begin.getIntValue(), end.getIntValue());
+        for (int i = from; i <= to; i++) {
+            BtrpNumber bi = new BtrpNumber(i, begin.getBase()); //Keep the base
+            s.getValues().add(new BtrpString(bi.toString()));
+        }
+
+        //Set the right line and col number wrt the second number (as the first one is an artificial token)
+        token.setLine(getChild(1).getLine());
+        token.setCharPositionInLine(getChild(1).getCharPositionInLine() - 2); //remove the ".."
+        return s;
+    }
+
+    private BtrpOperand enumeration() {
+        BtrpSet s = new BtrpSet(1, BtrpOperand.Type.STRING);
+        if (getChild(0).getType() != ANTLRBtrplaceSL2Lexer.IDENTIFIER) {
+            BtrpOperand o = getChild(0).go(this);
+            if (o.degree() > 0) {
+                return ignoreError(getChild(0).getToken(), o + ": sets are not allowed in an enumeration");
+            }
+            s.getValues().add(new BtrpString(getChild(0).go(this).toString()));
+        } else {
+            s.getValues().add(new BtrpString(getChild(0).getText()));
+        }
         return s;
     }
 }

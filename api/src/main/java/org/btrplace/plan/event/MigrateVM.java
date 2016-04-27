@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,11 +33,12 @@ import java.util.Objects;
  *
  * @author Fabien Hermenier
  */
-public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
+public class MigrateVM extends Action implements RunningVMPlacement {
 
     private VM vm;
 
-    private Node src, dst;
+    private Node src;
+    private Node dst;
 
     private int bw;
 
@@ -110,15 +111,10 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     @Override
     public boolean applyAction(Model i) {
         Mapping c = i.getMapping();
-        if (c.isOnline(src)
-                && c.isOnline(dst)
-                && c.isRunning(vm)
+        return c.isRunning(vm)
                 && c.getVMLocation(vm).equals(src)
-                && !src.equals(dst)) {
-            c.addRunningVM(vm, dst);
-            return true;
-        }
-        return false;
+                && !src.equals(dst)
+                && c.addRunningVM(vm, dst);
     }
 
     @Override
@@ -130,7 +126,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         return this.vm.equals(that.vm) &&
                 this.src.equals(that.src) &&
                 this.dst.equals(that.dst) &&
-                (this.bw < 0 && that.bw < 0) ||(this.bw == that.bw);
+                this.bw == that.bw;
     }
 
     @Override
@@ -141,7 +137,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     @Override
     public String pretty() {
         String pretty = "migrate(vm=" + vm + ", from=" + src + ", to=" + dst;
-        if(bw > 0) { pretty += ", bw=" + bw; }
+        if (bw > 0) {
+            pretty += ", bw=" + bw;
+        }
         return pretty + ')';
     }
 

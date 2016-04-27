@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@ import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -43,11 +44,11 @@ import java.util.List;
  */
 public class TransitionUtilsTest {
 
-    private VMTransition[] makeActions() {
-        VMTransition[] as = new VMTransition[10];
+    private static List<VMTransition> makeActions() {
+        List<VMTransition> as = new ArrayList<>();
         Solver s = new Solver();
-        for (int i = 0; i < as.length; i++) {
-            as[i] = new MockTransition(s, i);
+        for (int i = 0; i < 10; i++) {
+            as.add(new MockTransition(s, i));
 
         }
         return as;

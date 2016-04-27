@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,8 +25,6 @@ import org.btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 /**
  * Unit tests for {@link ModelConverterTest}.
  *
@@ -44,7 +42,7 @@ public class ModelConverterTest {
     }
 
     @Test
-    public void testConversion() throws JSONConverterException, IOException {
+    public void testConversion() throws JSONConverterException {
         ModelConverter conv = new ModelConverter();
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();

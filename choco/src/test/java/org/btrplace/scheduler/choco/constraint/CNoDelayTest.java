@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Ban;
+import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.NoDelay;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
@@ -27,7 +28,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,9 +36,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unit tests for {@link org.btrplace.model.constraint.Gather}.
+ * Unit tests for {@link org.btrplace.scheduler.choco.constraint.CNoDelay}.
  *
- * @author Fabien Hermenier
+ * @author Vincent Kherbache
+ * @see org.btrplace.scheduler.choco.constraint.CNoDelay
  */
 public class CNoDelayTest {
 
@@ -59,11 +60,11 @@ public class CNoDelayTest {
         resources.setCapacity(n2, 3);
         resources.setConsumption(vm1, 4);
 
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
                 .run(n3, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
 
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
@@ -73,11 +74,11 @@ public class CNoDelayTest {
 
         // 1 solution (priority to vm3): vm3 to n2 ; vm4 to n2 ; vm1 to n3
 
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNotNull(plan);
@@ -101,11 +102,11 @@ public class CNoDelayTest {
         resources.setCapacity(n2, 3);
         resources.setConsumption(vm1, 4);
 
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
                 .run(n3, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
 
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
@@ -115,11 +116,11 @@ public class CNoDelayTest {
 
         // 1 solution (priority to vm4): vm4 to n2 ; vm3 to n2 ; vm1 to n3
 
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNotNull(plan);
@@ -143,11 +144,11 @@ public class CNoDelayTest {
         resources.setCapacity(n2, 3);
         resources.setConsumption(vm1, 4);
 
-        Mapping map = new MappingFiller().on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2)
                 .run(n3, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
 
         MappingUtils.fill(map, model.getMapping());
         model.attach(resources);
@@ -157,11 +158,11 @@ public class CNoDelayTest {
 
         // No solution: unable to migrate vm1 at t=0
 
-        List<SatConstraint> constraints = new ArrayList<SatConstraint>();
+        List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(nd);
         constraints.add(b);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getConstraintMapper().register(new CMaxOnline.Builder());
+        cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
 
         Assert.assertNull(plan);

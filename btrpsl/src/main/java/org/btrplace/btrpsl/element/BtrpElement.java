@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import org.btrplace.model.Element;
  *
  * @author Fabien Hermenier
  */
-public class BtrpElement extends DefaultBtrpOperand implements Cloneable {
+public class BtrpElement extends DefaultBtrpOperand {
 
     private String name;
 
@@ -38,7 +38,7 @@ public class BtrpElement extends DefaultBtrpOperand implements Cloneable {
     /**
      * Make a new element.
      *
-     * @param ty the element type. Either {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#node}.
+     * @param ty the element type. Either {@link org.btrplace.btrpsl.element.BtrpOperand.Type#VM} or {@link org.btrplace.btrpsl.element.BtrpOperand.Type#NODE}.
      * @param n  the element name
      * @param el the associated BtrPlace element
      */
@@ -111,7 +111,7 @@ public class BtrpElement extends DefaultBtrpOperand implements Cloneable {
     }
 
     @Override
-    public BtrpElement clone() {
+    public BtrpElement copy() {
         return new BtrpElement(t, name, e);
     }
 

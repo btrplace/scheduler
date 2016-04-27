@@ -1,20 +1,15 @@
 #!/bin/bash
 
-function quit() {
-    echo "ERROR: $*"
-    exit 1
-}
-
-function getVersion() {
-    mvn ${MVN_ARGS} -Dmaven.repo.local=/tmp/cache org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]\+\\.[0-9]\+" 2>/dev/null
-}
+source bin/commons.sh
 
 V=$(getVersion)
 if [[ ${V} == *-SNAPSHOT ]]; then
-    mvn -Dmaven.repo.local=/tmp/cache clean test||exit 1
-    bin/cache.sh push /tmp/cache
-    ./bin/deploy.sh||quit "Unable to deploy"
-    bin/cache.sh push /tmp/cache
+    echo "** Testing **"
+    mvn test > test.out 2>&1 ||err "  Unstable build" test.out
+    echo "** Releasing to sonatype **"
+    ./bin/deploy.sh > deploy.out 2>&1 ||err "  Unable to deploy" deploy.out
+    echo "** pushing the javadoc **"
+    ./bin/push_javadoc.sh btrplace/apidocs-next.git >javadoc.out 2>&1  || warn "  Unable to push the javadoc" javadoc.out
 else
     echo "${V} is not a snapshot version. Exiting"
     exit 1

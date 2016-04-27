@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -71,13 +71,13 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     private void reset() {
         synchronized (lock) {
-            curModel = plan.getOrigin().clone();
+            curModel = plan.getOrigin().copy();
             pre.clear();
             nbCommitted = 0;
             for (Action a : plan) {
                 Set<Action> deps = plan.getDirectDependencies(a);
                 if (deps.isEmpty()) {
-                    this.dependencies.put(a, new Dependency(a, Collections.<Action>emptySet()));
+                    this.dependencies.put(a, new Dependency(a, Collections.emptySet()));
                 } else {
                     Dependency dep = new Dependency(a, deps);
                     this.dependencies.put(a, dep);
@@ -96,7 +96,11 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     @Override
     public Model getCurrentModel() {
-        return curModel;
+        Model cpy;
+        synchronized (lock) {
+            cpy = curModel.copy();
+        }
+        return cpy;
     }
 
     @Override
@@ -105,7 +109,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
         synchronized (lock) {
             boolean ret = a.apply(curModel);
             if (!ret) {
-                return null;
+                throw new InfeasibleActionException(curModel, a);
             }
             nbCommitted++;
             //Browse all its dependencies for the action
@@ -140,6 +144,14 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     @Override
     public ReconfigurationPlan getReconfigurationPlan() {
-        return plan;
+        ReconfigurationPlan cpy;
+        synchronized (lock) {
+            cpy = new DefaultReconfigurationPlan(plan.getOrigin().copy());
+            for (Action a : plan) {
+                //Cannot clone an action. Sad
+                cpy.add(a);
+            }
+        }
+        return cpy;
     }
 }

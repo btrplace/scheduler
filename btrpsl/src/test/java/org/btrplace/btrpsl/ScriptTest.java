@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -71,8 +71,8 @@ public class ScriptTest {
     public void testNodeAddition() {
         Script v = new Script();
         Model mo = new DefaultModel();
-        BtrpElement n1 = new BtrpElement(BtrpOperand.Type.node, "@N1", mo.newNode());
-        BtrpElement n2 = new BtrpElement(BtrpOperand.Type.node, "@N2", mo.newNode());
+        BtrpElement n1 = new BtrpElement(BtrpOperand.Type.NODE, "@N1", mo.newNode());
+        BtrpElement n2 = new BtrpElement(BtrpOperand.Type.NODE, "@N2", mo.newNode());
 
         v.add(n1);
         v.add(n2);

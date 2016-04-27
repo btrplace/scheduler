@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,5 +36,10 @@ public class SchedulerExceptionTest {
         SchedulerException ex = new SchedulerException(mo, "foo");
         Assert.assertEquals(ex.getModel(), mo);
         Assert.assertEquals(ex.getMessage(), "foo");
+
+        SchedulerException ex2 = new SchedulerException(mo, "foo", ex);
+        Assert.assertEquals(ex2.getModel(), mo);
+        Assert.assertEquals(ex2.getMessage(), "foo");
+        Assert.assertEquals(ex2.getCause(), ex);
     }
 }

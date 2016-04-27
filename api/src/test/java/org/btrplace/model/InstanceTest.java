@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -64,9 +64,12 @@ public class InstanceTest {
         cstrs.addAll(Online.newOnline(ma.getAllNodes()));
         cstrs.add(new Running(vms.get(0)));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
-        Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs), new MinMTTR());
+        Instance i2 = new Instance(mo.copy(), new ArrayList<>(cstrs), new MinMTTR());
 
         Assert.assertEquals(i, i2);
+        Assert.assertTrue(i.equals(i));
+        Assert.assertFalse(i.equals(null));
+        Assert.assertFalse(i.equals(ma));
         Assert.assertEquals(i.hashCode(), i2.hashCode());
 
         i2.getModel().getMapping().addReadyVM(vms.get(2));

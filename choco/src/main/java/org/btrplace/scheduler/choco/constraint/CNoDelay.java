@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,10 +18,10 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.Model;
+import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.NoDelay;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
@@ -33,14 +33,13 @@ import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
-import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * Created by vkherbac on 01/09/14.
+ * @author Vincent Kherbache
  */
 public class CNoDelay implements ChocoConstraint {
 
@@ -56,13 +55,12 @@ public class CNoDelay implements ChocoConstraint {
     }
 
     @Override
-    public Set<VM> getMisPlacedVMs(Model model) {
+    public Set<VM> getMisPlacedVMs(Instance model) {
         return Collections.emptySet();
-        //return new HashSet<VM>(noDelay.getInvolvedVMs());
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
         // Get the solver
         Solver s = rp.getSolver();
@@ -71,23 +69,6 @@ public class CNoDelay implements ChocoConstraint {
         // For each vm involved in the constraint
         VMTransition vt = rp.getVMAction(v);
         // Get the VMTransition start time
-        IntVar start = vt.getStart();
-
-                /*
-                //TODO: Something wrong with "vt.getDuration().getValue()" (not instanciated)
-                // Special case of a 'possible' migration
-                if (vt instanceof RelocatableVM) {
-
-                    if (vt.getDuration().instantiated()) {
-                        // Check if the Transition duration is > 0 (effective migration) and set a boolean accordingly
-                        BoolVar b = (vt.getDuration().getValue() > 0 ? VariableFactory.one(s) : VariableFactory.zero(s));
-
-                        // Add the constraint "(duration > 0) => start = 0" to the solver
-                        s.post(new FastImpliesEq(b, start, 0));
-                    }
-
-                } else {
-                */
         // Add the constraint "start = 0" to the solver
         Slice d = vt.getDSlice();
         if (d == null) {
@@ -98,7 +79,7 @@ public class CNoDelay implements ChocoConstraint {
 
                 d.getStart().instantiateTo(0, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().info("Unable to prevent any delay on '" + v + "'");
+                rp.getLogger().error("Unable to prevent any delay on '" + v + "'", ex);
                 return false;
             }
         } else {
@@ -107,20 +88,5 @@ public class CNoDelay implements ChocoConstraint {
             ChocoUtils.postImplies(s, move, c);
         }
         return true;
-    }
-
-    /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends Constraint> getKey() {
-            return NoDelay.class;
-        }
-
-        @Override
-        public CNoDelay build(Constraint c) {
-            return new CNoDelay((NoDelay) c);
-        }
     }
 }

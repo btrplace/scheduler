@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -33,8 +32,6 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 public class ShareableResourceTest {
-
-    private static Random rnd = new Random();
 
     private static Model mo = new DefaultModel();
     private static List<VM> vms = Util.newVMs(mo, 10);
@@ -50,6 +47,21 @@ public class ShareableResourceTest {
 
         rc = new ShareableResource("bar", -7, 3);
         Assert.assertEquals(rc.getIdentifier(), "ShareableResource.bar");
+
+    }
+
+    @Test
+    public void testGet() {
+        Model mo = new DefaultModel();
+        Assert.assertNull(ShareableResource.get(mo, "cpu"));
+        ShareableResource cpu = new ShareableResource("cpu");
+        ShareableResource mem = new ShareableResource("mem");
+        mo.attach(cpu);
+        Assert.assertEquals(ShareableResource.get(mo, "cpu"), cpu);
+        Assert.assertNull(ShareableResource.get(mo, "mem"));
+        mo.attach(mem);
+        Assert.assertEquals(ShareableResource.get(mo, "cpu"), cpu);
+        Assert.assertEquals(ShareableResource.get(mo, "mem"), mem);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -175,7 +187,7 @@ public class ShareableResourceTest {
         rc1.setConsumption(vms.get(1), 5);
         rc1.setCapacity(nodes.get(0), 10);
         rc1.setCapacity(nodes.get(1), 20);
-        ShareableResource rc2 = rc1.clone();
+        ShareableResource rc2 = rc1.copy();
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
 

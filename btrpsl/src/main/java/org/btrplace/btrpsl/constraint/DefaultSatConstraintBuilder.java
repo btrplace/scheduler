@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ public abstract class DefaultSatConstraintBuilder implements SatConstraintBuilde
     /**
      * The constraint parameters.
      */
-    protected final ConstraintParam[] params;
+    protected final ConstraintParam<?>[] params;
 
     private String id;
 
@@ -45,13 +45,13 @@ public abstract class DefaultSatConstraintBuilder implements SatConstraintBuilde
      * @param n  the constraint name
      * @param ps the expected parameters
      */
-    public DefaultSatConstraintBuilder(String n, ConstraintParam[] ps) {
+    public DefaultSatConstraintBuilder(String n, ConstraintParam<?>[] ps) {
         this.id = n;
         params = ps;
     }
 
     @Override
-    public ConstraintParam[] getParameters() {
+    public ConstraintParam<?>[] getParameters() {
         return params;
     }
 
@@ -105,11 +105,12 @@ public abstract class DefaultSatConstraintBuilder implements SatConstraintBuilde
         //Type checking
         for (int i = 0; i < ops.size(); i++) {
             BtrpOperand o = ops.get(i);
-            ConstraintParam p = params[i];
+            ConstraintParam<?> p = params[i];
+            if (o == IgnorableOperand.getInstance()) {
+                return false;
+            }
             if (!p.isCompatibleWith(t, o)) {
-                if (o != IgnorableOperand.getInstance()) {
-                    t.ignoreError("'" + pretty(ops) + "' cannot be casted to '" + getSignature() + "'");
-                }
+                t.ignoreError("'" + pretty(ops) + "' cannot be casted to '" + getSignature() + "'");
                 return false;
             }
         }

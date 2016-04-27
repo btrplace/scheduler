@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,10 +21,8 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A constraint to force the given VM, when running,
@@ -33,22 +31,11 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"v : vms", "ns <: nodes"}, inv = "vmState(v) = running --> host(v) : ns")
-public class Fence extends SatConstraint {
+public class Fence extends SimpleConstraint {
 
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms   the VMs to integrate
-     * @param nodes the hosts to disallow
-     * @return the associated list of constraints
-     */
-    public static List<Fence> newFence(Collection<VM> vms, Collection<Node> nodes) {
-        List<Fence> l = new ArrayList<>(vms.size());
-        for (VM v : vms) {
-            l.add(new Fence(v, nodes));
-        }
-        return l;
-    }
+    private VM vm;
+
+    private Collection<Node> nodes;
 
     /**
      * Make a new discrete constraint.
@@ -61,6 +48,16 @@ public class Fence extends SatConstraint {
     }
 
     /**
+     * Make a new discrete constraint.
+     *
+     * @param vm the involved VM
+     * @param n  the involved nodes
+     */
+    public Fence(VM vm, Node... n) {
+        this(vm, Arrays.asList(n), false);
+    }
+
+    /**
      * Make a new constraint.
      *
      * @param vm         the VM identifiers
@@ -68,17 +65,58 @@ public class Fence extends SatConstraint {
      * @param continuous {@code true} for a continuous constraint.
      */
     public Fence(VM vm, Collection<Node> nodes, boolean continuous) {
-        super(Collections.singleton(vm), nodes, continuous);
+        super(continuous);
+        this.vm = vm;
+        this.nodes = nodes;
     }
 
     @Override
     public String toString() {
-        return "fence(vm=" + getInvolvedVMs() + ", nodes=" + getInvolvedNodes() + ", " + restrictionToString() + ")";
+        return "fence(vm=" + vm + ", nodes=" + nodes + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override
-    public SatConstraintChecker<Fence> getChecker() {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Fence fence = (Fence) o;
+        return isContinuous() == fence.isContinuous() &&
+                Objects.equals(vm, fence.vm) &&
+                Objects.equals(nodes, fence.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vm, nodes, isContinuous());
+    }
+
+    @Override
+    public FenceChecker getChecker() {
         return new FenceChecker(this);
     }
 
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public Collection<VM> getInvolvedVMs() {
+        return Collections.singleton(vm);
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Fence> newFence(Collection<VM> vms, Collection<Node> nodes) {
+        return vms.stream().map(v -> new Fence(v, nodes)).collect(Collectors.toList());
+    }
 }

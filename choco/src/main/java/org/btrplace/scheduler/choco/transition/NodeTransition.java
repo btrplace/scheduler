@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import org.chocosolver.solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public interface NodeTransition extends Transition {
+public interface NodeTransition extends Transition<NodeState> {
 
     /**
      * Get the node manipulated by the action.

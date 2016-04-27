@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -163,7 +163,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
             case "substitutedVM":
                 return substitutedVMEventFromJSON(o);
             default:
-                throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
+                throw new JSONConverterException("Unsupported type of action '" + id + "'");
         }
     }
 
@@ -218,7 +218,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(BootNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootNode");
-        o.put("node", toJSON(a.getNode()));
+        o.put(NODE_LABEL, toJSON(a.getNode()));
         return o;
     }
 
@@ -421,9 +421,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public List<Action> listFromJSON(File path) throws IOException, JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+    public List<Action> listFromJSON(File path) throws JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
             return listFromJSON(in);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
 
     }
@@ -455,14 +457,20 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public void toJSON(Collection<Action> e, Appendable w) throws JSONConverterException, IOException {
-        toJSON(e).writeJSONString(w);
+    public void toJSON(Collection<Action> e, Appendable w) throws JSONConverterException {
+        try {
+            toJSON(e).writeJSONString(w);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
+        }
     }
 
     @Override
-    public void toJSON(Collection<Action> e, File path) throws JSONConverterException, IOException {
-        try (FileWriter out = new FileWriter(path)) {
+    public void toJSON(Collection<Action> e, File path) throws JSONConverterException {
+        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
             toJSON(e, out);
+        } catch (IOException ex) {
+            throw new JSONConverterException(ex);
         }
     }
 }

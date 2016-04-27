@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ package org.btrplace.btrpsl.element;
  *
  * @author Fabien Hermenier
  */
-public abstract class DefaultBtrpOperand implements BtrpOperand, Cloneable {
+public abstract class DefaultBtrpOperand implements BtrpOperand {
 
     private String label = null;
 
@@ -94,9 +94,6 @@ public abstract class DefaultBtrpOperand implements BtrpOperand, Cloneable {
         throw new UnsupportedOperationException("operator '>' unsupported");
     }
 
-    @Override
-    public abstract BtrpOperand clone();
-
     /**
      * Pretty textual representation of the element type.
      *
@@ -132,7 +129,7 @@ public abstract class DefaultBtrpOperand implements BtrpOperand, Cloneable {
         for (int i = degree; i > 0; i--) {
             b.append("set<");
         }
-        b.append(t);
+        b.append(t.toString().toLowerCase());
         for (int i = 0; i < degree; i++) {
             b.append(">");
         }

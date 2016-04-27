@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,10 +25,7 @@ import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link Ban}.
@@ -40,13 +37,14 @@ public class BanTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode()));
+        Set<Node> nodes = new HashSet<>(Collections.singletonList(mo.newNode()));
         VM v = mo.newVM();
         Ban b = new Ban(v, nodes);
         Assert.assertTrue(b.getInvolvedVMs().contains(v));
         Assert.assertEquals(nodes, b.getInvolvedNodes());
         Assert.assertFalse(b.toString().contains("null"));
         Assert.assertTrue(b.setContinuous(true));
+        Assert.assertTrue(b.isContinuous());
         Assert.assertNotNull(b.getChecker());
         System.out.println(b);
     }
@@ -65,7 +63,7 @@ public class BanTest {
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(1));
         map.addRunningVM(vms.get(2), ns.get(2));
-        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
+        Set<Node> nodes = new HashSet<>(Collections.singletonList(ns.get(0)));
 
         Ban b = new Ban(vms.get(2), nodes);
         Assert.assertEquals(b.isSatisfied(m), true);
@@ -92,5 +90,19 @@ public class BanTest {
         Assert.assertTrue(new Ban(v, nodes).equals(b));
         Assert.assertEquals(new Ban(v, nodes).hashCode(), b.hashCode());
         Assert.assertNotEquals(new Ban(m.newVM(), nodes), b);
+    }
+
+    @Test
+    public void testBans() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<Ban> c = Ban.newBan(vms, ns);
+        Assert.assertEquals(vms.size(), c.size());
+        c.stream().forEach((q) -> {
+            Assert.assertTrue(vms.containsAll(q.getInvolvedVMs()));
+            Assert.assertEquals(ns, q.getInvolvedNodes());
+            Assert.assertFalse(q.isContinuous());
+        });
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,9 +27,9 @@ import org.btrplace.model.constraint.SplitAmong;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 
@@ -41,7 +41,7 @@ import java.util.HashSet;
 public class SplitAmongConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException, IOException {
+    public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
@@ -50,7 +50,7 @@ public class SplitAmongConverterTest {
 
         Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Collection<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Collection<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
+        Collection<Node> p3 = new HashSet<>(Collections.singletonList(mo.newNode()));
         Collection<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         SplitAmong d = new SplitAmong(vgrps, pgrps, false);

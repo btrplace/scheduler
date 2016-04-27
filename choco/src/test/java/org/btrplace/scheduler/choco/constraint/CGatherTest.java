@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,15 +19,11 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.model.*;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.Gather;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,18 +45,16 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(g));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(g));
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 0);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().isReady(vm1));
-        //Assert.assertEquals(g.isSatisfied(res), SatConstraint.Sat.SATISFIED);
-        //Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
     }
 
     @Test
@@ -71,7 +65,7 @@ public class CGatherTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
 
@@ -93,15 +87,16 @@ public class CGatherTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         Gather g = new Gather(map.getAllVMs());
         CGather c = new CGather(g);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm1, n2);
-        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
 
         map.addRunningVM(vm1, n1);
-        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getAllVMs());
+        Assert.assertEquals(c.getMisPlacedVMs(i), map.getAllVMs());
     }
 
     @Test
@@ -111,7 +106,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = mo.getMapping().ready(vm1).on(n1, n2).run(n2, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -134,7 +129,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n2, vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1, n2).run(n2, vm1, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -154,7 +149,7 @@ public class CGatherTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1, vm2).get();
+        Mapping map = mo.getMapping().on(n1, n2).ready(vm1, vm2);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();

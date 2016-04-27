@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ public class AllowAllConstraintCheckerTest {
         when(cstr.getInvolvedNodes()).thenReturn(ns);
         when(cstr.getInvolvedVMs()).thenReturn(vms);
 
-        AllowAllConstraintChecker c = new AllowAllConstraintChecker(cstr) {
+        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
         };
         Assert.assertEquals(c.getConstraint(), cstr);
         Assert.assertEquals(c.getVMs(), vms);
@@ -58,7 +58,7 @@ public class AllowAllConstraintCheckerTest {
     @Test
     public void testAcceptance() {
         SatConstraint cstr = mock(SatConstraint.class);
-        AllowAllConstraintChecker c = mock(AllowAllConstraintChecker.class, CALLS_REAL_METHODS);
+        AllowAllConstraintChecker<?> c = mock(AllowAllConstraintChecker.class, CALLS_REAL_METHODS);
 
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
@@ -87,7 +87,7 @@ public class AllowAllConstraintCheckerTest {
 
         //do not use the mock as the constructor is important
         //while earlier, the mock was needed for the verify()
-        c = new AllowAllConstraintChecker(cstr) {
+        c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
         };
         Set<VM> allVMs = new HashSet<>();
         for (Node n : mo.getMapping().getOnlineNodes()) {
@@ -133,7 +133,7 @@ public class AllowAllConstraintCheckerTest {
         when(cstr.getInvolvedNodes()).thenReturn(ns);
         when(cstr.getInvolvedVMs()).thenReturn(vms);
 
-        AllowAllConstraintChecker c = new AllowAllConstraintChecker(cstr) {
+        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
         };
 
         //VM1 (one of the involved vms) has to be removed to be substituted by vms.get(0)0
@@ -151,7 +151,7 @@ public class AllowAllConstraintCheckerTest {
     @Test(dependsOnMethods = "testInstantiation")
     public void testAnyTracking() {
         SatConstraint cstr = mock(SatConstraint.class);
-        AllowAllConstraintChecker c = new AllowAllConstraintChecker(cstr) {
+        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
         };
 
         Model mo = new DefaultModel();

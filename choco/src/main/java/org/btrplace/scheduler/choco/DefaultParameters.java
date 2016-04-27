@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,14 +18,16 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.scheduler.choco.constraint.ConstraintMapper;
+import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.view.*;
+import org.btrplace.scheduler.choco.view.ChocoView;
+import org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives;
+import org.btrplace.scheduler.choco.view.DefaultCumulatives;
+import org.btrplace.scheduler.choco.view.VectorPacking;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default implementation of {@link Parameters}.
@@ -33,10 +35,9 @@ import java.util.Map;
  * <li>repair mode is disabled</li>
  * <li>no time limit</li>
  * <li>the transition factory comes from {@link org.btrplace.scheduler.choco.transition.TransitionFactory#newBundle()}</li>
- * <li>the view mapper comes from {@link org.btrplace.scheduler.choco.view.ModelViewMapper#newBundle()}</li>
  * <li>the duration evaluator is {@link org.btrplace.scheduler.choco.duration.DurationEvaluators#newBundle()}</li>
- * <li>the constraint mapper is {@link org.btrplace.scheduler.choco.constraint.ConstraintMapper#newBundle()}</li>
- * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.DefaultPacking}</li>
+ * <li>the api to choco element mapper is {@link ChocoMapper#newBundle()}</li>
+ * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.VectorPacking}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Cumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultCumulatives}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.AliasedCumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives}</li>
  * </ul>
@@ -45,14 +46,15 @@ import java.util.Map;
  */
 public class DefaultParameters implements Parameters {
 
-    private ModelViewMapper viewMapper;
-
-    private ConstraintMapper cstrMapper;
+    private ChocoMapper mapper;
 
     private TransitionFactory amf;
 
     private boolean optimize = false;
 
+    private long seed = 0;
+
+    private List<Class<? extends ChocoView>> views;
     /**
      * No time limit by default.
      */
@@ -66,26 +68,36 @@ public class DefaultParameters implements Parameters {
 
     private int verbosityLevel;
 
-    private Map<String, SolverViewBuilder> solverViewsBuilder;
-
     /**
      * New set of parameters.
      */
     public DefaultParameters() {
-        cstrMapper = ConstraintMapper.newBundle();
+        mapper = ChocoMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
-        viewMapper = ModelViewMapper.newBundle();
         amf = TransitionFactory.newBundle();
-        solverViewsBuilder = new HashMap<>();
         //Default solver views
-        solverViewsBuilder.put(Packing.VIEW_ID, new VectorPacking.Builder());
-        solverViewsBuilder.put(Cumulatives.VIEW_ID, new DefaultCumulatives.Builder());
-        solverViewsBuilder.put(AliasedCumulatives.VIEW_ID, new DefaultAliasedCumulatives.Builder());
+        views = new ArrayList<>();
+        views.add(VectorPacking.class);
+        views.add(DefaultCumulatives.class);
+        views.add(DefaultAliasedCumulatives.class);
+    }
 
+    public DefaultParameters(Parameters ps) {
+        seed = ps.getRandomSeed();
+        amf = ps.getTransitionFactory();
+        optimize = ps.doOptimize();
+        seed = ps.getRandomSeed();
+        timeLimit = ps.getTimeLimit();
+        repair = ps.doRepair();
+        durationEvaluators = ps.getDurationEvaluators();
+        maxEnd = ps.getMaxEnd();
+        verbosityLevel = ps.getVerbosity();
+        views = ps.getChocoViews();
+        mapper = ps.getMapper();
     }
 
     @Override
-    public Parameters doRepair(boolean b) {
+    public DefaultParameters doRepair(boolean b) {
         repair = b;
         return this;
     }
@@ -96,7 +108,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters doOptimize(boolean b) {
+    public DefaultParameters doOptimize(boolean b) {
         optimize = b;
         return this;
     }
@@ -107,18 +119,18 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public ModelViewMapper getViewMapper() {
-        return viewMapper;
-    }
-
-    @Override
-    public Parameters setViewMapper(ModelViewMapper m) {
-        viewMapper = m;
+    public DefaultParameters setRandomSeed(long s) {
+        seed = s;
         return this;
     }
 
     @Override
-    public Parameters setTimeLimit(int t) {
+    public long getRandomSeed() {
+        return seed;
+    }
+
+    @Override
+    public DefaultParameters setTimeLimit(int t) {
         timeLimit = t;
         return this;
     }
@@ -129,13 +141,13 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public ConstraintMapper getConstraintMapper() {
-        return cstrMapper;
+    public ChocoMapper getMapper() {
+        return mapper;
     }
 
     @Override
-    public Parameters setConstraintMapper(ConstraintMapper map) {
-        cstrMapper = map;
+    public DefaultParameters setMapper(ChocoMapper map) {
+        mapper = map;
         return this;
     }
 
@@ -145,13 +157,13 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setDurationEvaluators(DurationEvaluators dev) {
+    public DefaultParameters setDurationEvaluators(DurationEvaluators dev) {
         durationEvaluators = dev;
         return this;
     }
 
     @Override
-    public Parameters setMaxEnd(int end) {
+    public DefaultParameters setMaxEnd(int end) {
         maxEnd = end;
         return this;
     }
@@ -162,7 +174,7 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public Parameters setVerbosity(int lvl) {
+    public DefaultParameters setVerbosity(int lvl) {
         verbosityLevel = lvl;
         return this;
     }
@@ -173,8 +185,9 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public void setTransitionFactory(TransitionFactory f) {
+    public DefaultParameters setTransitionFactory(TransitionFactory f) {
         this.amf = f;
+        return this;
     }
 
     @Override
@@ -183,17 +196,22 @@ public class DefaultParameters implements Parameters {
     }
 
     @Override
-    public void addSolverViewBuilder(SolverViewBuilder b) {
-        solverViewsBuilder.put(b.getKey(), b);
+    public boolean addChocoView(Class<? extends ChocoView> c) {
+        try {
+            c.getDeclaredConstructor();
+            return views.add(c);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("No default constructor available for '" + c.getName() + "'", e);
+        }
     }
 
     @Override
-    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
-        return solverViewsBuilder.remove(b.getKey()) != null;
+    public boolean removeChocoView(Class<? extends ChocoView> v) {
+        return views.remove(v);
     }
 
     @Override
-    public Collection<SolverViewBuilder> getSolverViews() {
-        return solverViewsBuilder.values();
+    public List<Class<? extends ChocoView>> getChocoViews() {
+        return views;
     }
 }

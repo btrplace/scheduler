@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@ import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.MappingFiller;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -52,16 +51,16 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).get();
+                .sleep(n2, vm5);
         List<SatConstraint> l = new ArrayList<>();
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(plan.getSize(), 0);
     }
@@ -77,16 +76,16 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5);
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
         org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 4);
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 1);
@@ -104,9 +103,9 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4).ready(vm5).get();
+                .run(n2, vm3, vm4).ready(vm5);
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm5));
@@ -115,10 +114,8 @@ public class CCRunningCapacityTest {
         x.setContinuous(true);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        for (SatConstraint c : l) {
-            System.out.println(c);
-        }
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        l.forEach(System.out::println);
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);
@@ -135,11 +132,11 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        mo.getMapping().on(n1, n2, n3)
                 .ready(vm1)
                 .run(n1, vm2)
                 .run(n2, vm3, vm4)
-                .run(n3, vm5).get();
+                .run(n3, vm5);
         List<SatConstraint> l = new ArrayList<>();
 
         List<VM> seq = new ArrayList<>();
@@ -158,7 +155,7 @@ public class CCRunningCapacityTest {
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(5);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         System.out.println(plan);
         Assert.assertNull(plan);
@@ -175,16 +172,17 @@ public class CCRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        Mapping map = mo.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4).ready(vm5).get();
+                .run(n2, vm4).ready(vm5);
 
-        org.btrplace.model.constraint.RunningCapacity c = new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
+        RunningCapacity c = new RunningCapacity(map.getAllNodes(), 4);
         CRunningCapacity cc = new CRunningCapacity(c);
 
-        Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cc.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm5, n3);
-        Assert.assertEquals(cc.getMisPlacedVMs(mo), map.getAllVMs());
+        Assert.assertEquals(cc.getMisPlacedVMs(i), map.getAllVMs());
     }
 
     @Test
@@ -199,10 +197,10 @@ public class CCRunningCapacityTest {
         Node n2 = model.newNode();
         Node n3 = model.newNode();
 
-        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
+        Mapping map = model.getMapping().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
-                .run(n3, vm4).get();
+                .run(n3, vm4);
         Collection<SatConstraint> ctrs = new HashSet<>();
         ctrs.add(new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 2));
 
@@ -218,7 +216,7 @@ public class CCRunningCapacityTest {
         VM vm2 = mo.newVM();
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        mo.getMapping().on(n1).run(n1, vm1, vm2).ready(vm3);
 
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm1));
@@ -228,7 +226,7 @@ public class CCRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(2, plan.getSize());
     }
@@ -241,7 +239,7 @@ public class CCRunningCapacityTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
 
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        mo.getMapping().on(n1).run(n1, vm1, vm2).ready(vm3);
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm1));
         l.add(new Ready(vm2));
@@ -251,7 +249,7 @@ public class CCRunningCapacityTest {
         l.add(sc);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Iterator<Action> ite = plan.iterator();
@@ -270,13 +268,14 @@ public class CCRunningCapacityTest {
         VM vm2 = mo.newVM();
         VM vm4 = mo.newVM();
         Node n1 = mo.newNode();
-        Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm2, vm4).get();
+        Mapping m = mo.getMapping().on(n1).run(n1, vm1).ready(vm2, vm4);
 
         RunningCapacity c = new RunningCapacity(Collections.singleton(n1), 1);
         CRunningCapacity cc = new CRunningCapacity(c);
 
-        Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
+        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+        Assert.assertTrue(cc.getMisPlacedVMs(i).isEmpty());
         m.addRunningVM(vm4, n1);
-        Assert.assertEquals(m.getRunningVMs(n1), cc.getMisPlacedVMs(mo));
+        Assert.assertEquals(m.getRunningVMs(n1), cc.getMisPlacedVMs(i));
     }
 }

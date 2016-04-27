@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.chocosolver.memory.IStateInt;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -71,13 +71,11 @@ public class MovingVMs implements VariableSelector<IntVar> {
             if (!h.isInstantiated()) {
                 VM vm = actions.get(i).getVM();
                 Node nId = map.getVMLocation(vm);
-                if (nId != null) {
-                    //VM was running
                     if (!h.contains(rp.getNode(nId))) {
+                        //VM was running, otherwise -1 so not inside h
                         idx.set(i);
                         return true;
                     }
-                }
             }
             i++;
         }
@@ -86,6 +84,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     @Override
     public IntVar getVariable(IntVar[] scopes) {
-        return (setToNextMovingVM(scopes)) ? scopes[idx.get()] : null;
+        return setToNextMovingVM(scopes) ? scopes[idx.get()] : null;
     }
 }

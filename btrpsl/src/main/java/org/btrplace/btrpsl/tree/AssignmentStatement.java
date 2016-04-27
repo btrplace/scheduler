@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@ public class AssignmentStatement extends BtrPlaceTree {
         if (symbols.isImmutable(lbl)) {
             return ignoreError(lbl + " is an immutable variable. Assignment not permitted");
         }
-        BtrpOperand cpy = res.clone();
+        BtrpOperand cpy = res.copy();
         cpy.setLabel(lbl);
         symbols.declare(lbl, cpy);
         return IgnorableOperand.getInstance();
@@ -109,7 +109,7 @@ public class AssignmentStatement extends BtrPlaceTree {
                 return ignoreError("Unsupported decomposition");
             }
         } catch (UnsupportedOperationException e) {
-            return ignoreError(e.getMessage());
+            return ignoreError(e);
         }
         return IgnorableOperand.getInstance();
     }

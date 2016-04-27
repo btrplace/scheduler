@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,8 @@ import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Parser;
 import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.model.Element;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 /**
@@ -36,8 +38,8 @@ public class ElementTree extends BtrPlaceTree {
 
     private Script script;
 
-    private NamingService namingServiceNodes;
-    private NamingService namingServiceVMs;
+    private NamingService<Node> namingServiceNodes;
+    private NamingService<VM> namingServiceVMs;
 
     /**
      * Make a new parser.
@@ -45,7 +47,7 @@ public class ElementTree extends BtrPlaceTree {
      * @param t    the token to analyze
      * @param errs the errors to report
      */
-    public ElementTree(Token t, NamingService nsNodes, NamingService nsVMs, Script scr, ErrorReporter errs) {
+    public ElementTree(Token t, NamingService<Node> nsNodes, NamingService<VM> nsVMs, Script scr, ErrorReporter errs) {
         super(t, errs);
         this.script = scr;
         this.namingServiceNodes = nsNodes;
@@ -64,7 +66,7 @@ public class ElementTree extends BtrPlaceTree {
                 if (el == null) {
                     return ignoreError("Unknown node '" + ref + "'");
                 }
-                btrpEl = new BtrpElement(BtrpOperand.Type.node, lbl, el);
+                btrpEl = new BtrpElement(BtrpOperand.Type.NODE, lbl, el);
                 break;
             case ANTLRBtrplaceSL2Parser.IDENTIFIER:
                 /**

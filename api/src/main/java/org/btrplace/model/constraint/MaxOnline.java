@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,9 +19,8 @@
 package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.VM;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
@@ -40,12 +39,14 @@ import java.util.Set;
  * @author Tu Huynh Dang
  */
 @SideConstraint(args = {"ns <: nodes", "nb : int"}, inv = "card({i. i : ns , nodeState(i) = online}) <= nb")
-public class MaxOnline extends SatConstraint {
+public class MaxOnline extends SimpleConstraint {
 
     /**
      * number of reserved nodes
      */
     private final int qty;
+
+    private Set<Node> nodes;
 
     /**
      * Make a new constraint specifying restriction explicitly.
@@ -55,7 +56,8 @@ public class MaxOnline extends SatConstraint {
      * @param continuous {@code true} for continuous restriction
      */
     public MaxOnline(Set<Node> nodes, int n, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+        super(continuous);
+        this.nodes = nodes;
         qty = n;
     }
 
@@ -78,20 +80,11 @@ public class MaxOnline extends SatConstraint {
         return qty;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && qty == ((MaxOnline) o).qty;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), qty);
-    }
 
     @Override
     public String toString() {
-        return "maxOnline(" + "nodes=" + getInvolvedNodes() +
-                ", amount=" + qty + ", " + restrictionToString() + ')';
+        return "maxOnline(" + "nodes=" + nodes +
+                ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
     @Override
@@ -99,4 +92,28 @@ public class MaxOnline extends SatConstraint {
         return new MaxOnlineChecker(this);
     }
 
+
+    @Override
+    public Collection<Node> getInvolvedNodes() {
+        return nodes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MaxOnline maxOnline = (MaxOnline) o;
+        return qty == maxOnline.qty &&
+                isContinuous() == maxOnline.isContinuous() &&
+                Objects.equals(nodes, maxOnline.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(qty, nodes, isContinuous());
+    }
 }

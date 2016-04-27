@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,10 +21,7 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
@@ -42,7 +39,7 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"vs <<: vms", "part <<: nodes"}, inv = "(!(v : vs) Among(v, part)) & Split(vs)")
-public class SplitAmong extends SatConstraint {
+public class SplitAmong extends SimpleConstraint {
 
     /**
      * Set of set of vms.
@@ -73,7 +70,7 @@ public class SplitAmong extends SatConstraint {
      * @param continuous {@code true} for a continuous restriction
      */
     public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts, boolean continuous) {
-        super(null, null, continuous);
+        super(continuous);
         int cnt = 0;
         Set<Node> all = new HashSet<>();
         for (Collection<Node> s : pParts) {
@@ -91,18 +88,14 @@ public class SplitAmong extends SatConstraint {
     @Override
     public Set<VM> getInvolvedVMs() {
         Set<VM> s = new HashSet<>();
-        for (Collection<VM> x : vGroups) {
-            s.addAll(x);
-        }
+        vGroups.forEach(s::addAll);
         return s;
     }
 
     @Override
     public Set<Node> getInvolvedNodes() {
         Set<Node> s = new HashSet<>();
-        for (Collection<Node> x : pGroups) {
-            s.addAll(x);
-        }
+        pGroups.forEach(s::addAll);
         return s;
     }
 
@@ -128,7 +121,7 @@ public class SplitAmong extends SatConstraint {
      * Get the group of nodes associated to a given node.
      *
      * @param u the node
-     * @return the associated group of nodes if exists, {@code null} otherwise
+     * @return the associated group of nodes if exists. An empty set otherwise
      */
     public Collection<Node> getAssociatedPGroup(Node u) {
         for (Collection<Node> pGrp : pGroups) {
@@ -136,14 +129,14 @@ public class SplitAmong extends SatConstraint {
                 return pGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     /**
      * Get the group of VMs associated to a given VM.
      *
      * @param u the VM
-     * @return the associated group of VMs if exists, {@code null} otherwise
+     * @return the associated group of VMs if exists.  An empty set otherwise
      */
     public Collection<VM> getAssociatedVGroup(VM u) {
         for (Collection<VM> vGrp : vGroups) {
@@ -151,7 +144,7 @@ public class SplitAmong extends SatConstraint {
                 return vGrp;
             }
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -162,10 +155,10 @@ public class SplitAmong extends SatConstraint {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         SplitAmong that = (SplitAmong) o;
-
-        return pGroups.equals(that.pGroups) && vGroups.equals(that.vGroups) && this.isContinuous() == that.isContinuous();
+        return isContinuous() == that.isContinuous() &&
+                Objects.equals(vGroups, that.vGroups) &&
+                Objects.equals(pGroups, that.pGroups);
     }
 
     @Override
@@ -175,12 +168,12 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public String toString() {
-        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + restrictionToString() + ')';
+        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
     }
 
 
     @Override
-    public SatConstraintChecker<SplitAmong> getChecker() {
+    public SplitAmongChecker getChecker() {
         return new SplitAmongChecker(this);
     }
 

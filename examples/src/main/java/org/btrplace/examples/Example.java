@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,12 +23,12 @@ package org.btrplace.examples;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Example {
 
     /**
      * Run the example.
      *
-     * @return {@code true} iff the example was executed successfully.
      */
-    boolean run();
+    void run();
 }

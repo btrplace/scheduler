@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ public class SolverTuning implements Example {
     }
 
     @Override
-    public boolean run() {
+    public void run() {
 
         //Make a default model with 500 nodes hosting 3,000 VMs
         Model model = makeModel();
@@ -81,30 +81,33 @@ public class SolverTuning implements Example {
         cra.setTimeLimit(5);
         //We solve without the repair mode
         cra.doRepair(false);
-        solve(cra, model, constraints);
+        try {
+            solve(cra, model, constraints);
+        } catch (SchedulerException ex) {
+            //Just in case the testing environment is not performant enough
+            //It does not matter that much if there is no enough time to get a solution here
+        }
 
         //Re-solve using the repair mode to check for the improvement
         cra.doRepair(true);
         solve(cra, model, constraints);
-        return true;
     }
 
-    private void solve(ChocoScheduler cra, Model model, Set<SatConstraint> constraints) {
+    private static void solve(ChocoScheduler cra, Model model, Set<SatConstraint> constraints) {
         try {
             ReconfigurationPlan p = cra.solve(model, constraints);
             if (p != null) {
-                System.out.println("--- Solving using repair : " + cra.doRepair());
-                System.out.println(cra.getStatistics());
+                System.out.println("\nReconfiguration plan:");
+                System.out.println(p);
             }
-        } catch (SchedulerException e) {
-            System.err.println("--- Solving using repair : " + cra.doRepair() + "; Error: " + e.getMessage());
-            System.err.flush();
+        } finally {
+            System.out.println("--- Solving using repair : " + cra.doRepair());
+            System.out.println(cra.getStatistics());
         }
-        System.out.flush();
     }
 
     /**
-     * A default model with 100 nodes hosting 600 VMs.
+     * A default model with 500 nodes hosting 3000 VMs.
      * 6 VMs per node
      * Each node has a 10GB network interface and 32 GB RAM
      * Each VM consumes 1GB Bandwidth and between 1 to 5 GB RAM
@@ -113,7 +116,7 @@ public class SolverTuning implements Example {
         Model mo = new DefaultModel();
         Mapping mapping = mo.getMapping();
 
-        int nbNodes = 1000;
+        int nbNodes = 300;
         int nbVMs = 6 * nbNodes;
 
         //Memory usage/consumption in GB

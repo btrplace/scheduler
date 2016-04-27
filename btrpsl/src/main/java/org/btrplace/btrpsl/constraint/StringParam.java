@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -48,6 +48,6 @@ public class StringParam extends DefaultConstraintParam<String> {
 
     @Override
     public boolean isCompatibleWith(BtrPlaceTree t, BtrpOperand o) {
-        return o == IgnorableOperand.getInstance() || (o.type() == BtrpOperand.Type.string && o.degree() == 0);
+        return o == IgnorableOperand.getInstance() || (o.type() == BtrpOperand.Type.STRING && o.degree() == 0);
     }
 }

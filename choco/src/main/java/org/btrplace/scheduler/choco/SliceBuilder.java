@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
@@ -40,7 +41,9 @@ public class SliceBuilder {
 
     private ReconfigurationProblem rp;
 
-    private IntVar start = null, end = null, duration = null;
+    private IntVar start = null;
+    private IntVar end = null;
+    private IntVar duration = null;
 
     private IntVar hoster = null;
 
@@ -84,12 +87,12 @@ public class SliceBuilder {
         Solver s = rp.getSolver();
 
         //UB for the time variables
-        ticksSooner(s, start, end);
-        ticksSooner(s, end, end);
-        ticksSooner(s, duration, end);
-
         if (!start.isInstantiatedTo(0)) {
-            VF.task(start, duration, end);
+            //enforces start <= end, duration <= end, start + duration == end
+            new TaskMonitor(start, duration, end);
+        } else {
+            //start == 0 --> start <= end. No need to add ticksSooner
+            ticksSooner(s, duration, end);
         }
         return new Slice(vm, start, end, duration, hoster);
     }
@@ -101,7 +104,7 @@ public class SliceBuilder {
      * @param t1 first variable
      * @param t2 second variable
      */
-    private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
+    private static void ticksSooner(Solver s, IntVar t1, IntVar t2) {
         if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
             s.post(new Arithmetic(t1, Operator.LE, t2));
         }
@@ -117,9 +120,8 @@ public class SliceBuilder {
         } else if (start.isInstantiated()) {
             if (start.isInstantiatedTo(0)) {
                 return end;
-            } else {
-                return VF.offset(end, -start.getValue());
             }
+            return VF.offset(end, -start.getValue());
         }
         int inf = end.getLB() - start.getUB();
         if (inf < 0) {
