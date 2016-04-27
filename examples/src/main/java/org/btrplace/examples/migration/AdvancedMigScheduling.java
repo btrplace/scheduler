@@ -94,48 +94,48 @@ public class AdvancedMigScheduling implements Example {
         Model mo = makeModel();
 
         // Create, define, and attach CPU and Mem resource views for nodes and VMs
-        int mem_src = 8;
-        int cpu_src = 4;
-        int mem_dst = 16;
-        int cpu_dst = 8;
+        int memSrc = 8;
+        int cpuSrc = 4;
+        int memDst = 16;
+        int cpuDst = 8;
         ShareableResource rcMem = new ShareableResource("mem", 0, 8);
         ShareableResource rcCPU = new ShareableResource("cpu", 0, 4);
         // VMs resources consumption
         // Nodes resources capacity
-        rcMem.setCapacity(srcNode1, mem_src)
-                .setCapacity(srcNode2, mem_src)
-                .setCapacity(srcNode3, mem_src)
-                .setCapacity(srcNode4, mem_src)
-                .setCapacity(dstNode1, mem_dst)
-                .setCapacity(dstNode2, mem_dst);
-        rcCPU.setCapacity(srcNode1, cpu_src)
-                .setCapacity(srcNode2, cpu_src)
-                .setCapacity(srcNode3, cpu_src)
-                .setCapacity(srcNode4, cpu_src)
-                .setCapacity(dstNode1, cpu_dst)
-                .setCapacity(dstNode2, cpu_dst);
+        rcMem.setCapacity(srcNode1, memSrc)
+                .setCapacity(srcNode2, memSrc)
+                .setCapacity(srcNode3, memSrc)
+                .setCapacity(srcNode4, memSrc)
+                .setCapacity(dstNode1, memDst)
+                .setCapacity(dstNode2, memDst);
+        rcCPU.setCapacity(srcNode1, cpuSrc)
+                .setCapacity(srcNode2, cpuSrc)
+                .setCapacity(srcNode3, cpuSrc)
+                .setCapacity(srcNode4, cpuSrc)
+                .setCapacity(dstNode1, cpuDst)
+                .setCapacity(dstNode2, cpuDst);
         mo.attach(rcMem);
         mo.attach(rcCPU);
 
         // Set VM attributes 'hot dirty page size', 'hot dirty page duration', and 'cold dirty pages rate'
         // to simulate a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"
-        int vm_hds = 56;
-        int vm_hdd = 2;
-        double vm_cdr = 22.6;
+        int vmHds = 56;
+        int vmHdd = 2;
+        double vmCdr = 22.6;
         // vm0 is an 'idle' VM (with no special memory activity) but still consumes 2 GiB of memory
         mo.getAttributes().put(vm0, "memUsed", 2000);
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 4 GiB of memory
         mo.getAttributes().put(vm1, "memUsed", 3000);
         // vm2 consumes 4 GiB memory and has a memory intensive workload
         mo.getAttributes().put(vm2, "memUsed", 4000);
-        mo.getAttributes().put(vm2, "hotDirtySize", vm_hds);
-        mo.getAttributes().put(vm2, "hotDirtyDuration", vm_hdd);
-        mo.getAttributes().put(vm2, "coldDirtyRate", vm_cdr);
+        mo.getAttributes().put(vm2, "hotDirtySize", vmHds);
+        mo.getAttributes().put(vm2, "hotDirtyDuration", vmHdd);
+        mo.getAttributes().put(vm2, "coldDirtyRate", vmCdr);
         // vm3 consumes 6 GiB memory and has a memory intensive workload
         mo.getAttributes().put(vm3, "memUsed", 5000);
-        mo.getAttributes().put(vm3, "hotDirtySize", vm_hds);
-        mo.getAttributes().put(vm3, "hotDirtyDuration", vm_hdd);
-        mo.getAttributes().put(vm3, "coldDirtyRate", vm_cdr);
+        mo.getAttributes().put(vm3, "hotDirtySize", vmHds);
+        mo.getAttributes().put(vm3, "hotDirtyDuration", vmHdd);
+        mo.getAttributes().put(vm3, "coldDirtyRate", vmCdr);
 
         // Attach a network view
         Network net = new Network();
