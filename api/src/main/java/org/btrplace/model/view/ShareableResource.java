@@ -368,7 +368,6 @@ public class ShareableResource implements ModelView {
      * @param mo the model to look at
      * @return the view if attached. {@code null} otherwise
      */
-    @SuppressWarnings("unchecked")
     public static ShareableResource get(Model mo, String id) {
         return (ShareableResource) mo.getView(VIEW_ID_BASE + id);
     }

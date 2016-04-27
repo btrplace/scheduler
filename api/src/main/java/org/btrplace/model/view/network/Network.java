@@ -351,8 +351,7 @@ public class Network implements ModelView {
             for (Switch s : switches) {
                 for (Link l : getConnectedLinks(s)) {
                     if (!drawedLinks.contains(l)) {
-                        dot.append("switch").append(String.valueOf(s.id())).
-                                append(" -> ");
+                        dot.append("switch").append(String.valueOf(s.id())).append(" -> ");
                         if (l.getElement() instanceof Node) {
                             dot.append("node").append(String.valueOf(((Node) l.getElement()).id()));
                         } else {
@@ -490,7 +489,6 @@ public class Network implements ModelView {
      * @param mo the model to look at
      * @return the network view if attached. {@code null} otherwise
      */
-    @SuppressWarnings("unchecked")
     public static Network get(Model mo) {
         return (Network) mo.getView(VIEW_ID);
     }

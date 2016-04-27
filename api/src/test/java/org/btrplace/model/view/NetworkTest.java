@@ -45,8 +45,8 @@ public class NetworkTest {
         Model mo = new DefaultModel();
         Network net = new Network();
         Switch s = net.newSwitch(1000);
-        Node n1 = new Node(1);
-        Node n2 = new Node(2);
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         net.connect(2000, s, n1, n2);
         Assert.assertNull(Network.get(mo));
 
@@ -59,7 +59,7 @@ public class NetworkTest {
         Assert.assertTrue(net.getLinks().size() == 2);
         for (Link l : net.getLinks()) {
             Assert.assertTrue(l.getCapacity() == 2000);
-            Assert.assertTrue(l.getSwitch() == s || l.getElement() instanceof Switch);
+            Assert.assertTrue(l.getSwitch().equals(s) || l.getElement() instanceof Switch);
         }
 
         Assert.assertTrue(net.getRouting().getPath(n1, n2).size() == 2);
@@ -75,8 +75,8 @@ public class NetworkTest {
         Model mo = new DefaultModel();
         Network net = new Network(new StaticRouting());
         Switch s = net.newSwitch(1000);
-        Node n1 = new Node(1);
-        Node n2 = new Node(2);
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         net.connect(2000, s, n1, n2);
         ((StaticRouting) net.getRouting()).setStaticRoute(new StaticRouting.NodesMap(n1, n2), net.getLinks());
         mo.attach(net);

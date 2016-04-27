@@ -119,11 +119,11 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     public String toString() {
         List<Action> l = new ArrayList<>(actions);
         Collections.sort(l, sorter);
-        StringBuilder b = new StringBuilder();
+        StringJoiner joiner = new StringJoiner("\n");
         for (Action a : l) {
-            b.append(a.getStart()).append(':').append(a.getEnd()).append(' ').append(a.toString()).append('\n');
+            joiner.add(String.format("%d:%d %s", a.getStart(), a.getEnd(), a.toString()));
         }
-        return b.toString();
+        return joiner.toString();
     }
 
     @Override

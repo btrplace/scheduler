@@ -39,10 +39,7 @@ import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.constraints.LCF;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.search.solution.Solution;
-import org.chocosolver.solver.variables.BoolVar;
-import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
-import org.chocosolver.solver.variables.VariableFactory;
+import org.chocosolver.solver.variables.*;
 
 
 /**
@@ -82,6 +79,7 @@ public class RelocatableVM implements KeepRunningVM {
     private Node src;
     private boolean manageable = true;
     private boolean postCopy = false;
+    private Task migrationTask;
     /**
      * The relocation method. 0 for migration, 1 for relocation.
      */
@@ -217,8 +215,12 @@ public class RelocatableVM implements KeepRunningVM {
         s.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         s.post(new FastIFFEq(stay, duration, 0));
 
-        // Post the migration as a task in a 'default' cumulative constraint with a height of 1
-        VariableFactory.task(start, duration, end);
+        // Create the task ('default' cumulative constraint with a height of 1)
+        migrationTask = VariableFactory.task(start, duration, end);
+    }
+
+    public Task getMigrationTask() {
+        return migrationTask;
     }
 
     private static String prettyMethod(IntVar method) {
