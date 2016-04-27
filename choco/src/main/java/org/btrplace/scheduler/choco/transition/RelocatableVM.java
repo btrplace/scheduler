@@ -70,10 +70,15 @@ public class RelocatableVM implements KeepRunningVM {
     public static final String PREFIX = "relocatable(";
     public static final String PREFIX_STAY = "stayRunningOn(";
     private final VM vm;
-    private Slice cSlice, dSlice;
+    private Slice cSlice;
+    private Slice dSlice;
     private ReconfigurationProblem rp;
-    private BoolVar state, stay;
-    private IntVar duration, start, end, bandwidth;
+    private BoolVar state;
+    private BoolVar stay;
+    private IntVar duration;
+    private IntVar start;
+    private IntVar end;
+    private IntVar bandwidth;
     private Node src;
     private boolean manageable = true;
     private boolean postCopy = false;
@@ -126,7 +131,6 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // The VM can move (to re-instantiate or migrate) OR STAY to the same host
-        //stay = VariableFactory.zero(rp.getSolver());
         stay = VF.bool(vm + "stay", s);
         cSlice = new SliceBuilder(rp, vm, PREFIX, vm, ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)))
@@ -170,7 +174,6 @@ public class RelocatableVM implements KeepRunningVM {
         // No networking view, set the duration from the evaluator
         else {
             // The duration can still be 0 => the VM STAY !
-            //migrationDuration = VariableFactory.fixed(rp.makeVarLabel(PREFIX, vm, ").duration"), migrateDuration, s);
             migrationDuration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, vm, ").duration"),
                     new int[]{0, migrateDuration}, s);
             bandwidth = null;

@@ -47,7 +47,6 @@ import java.util.stream.Collectors;
  */
 public class Network implements ModelView {
 
-    private String viewId;
     private List<Switch> switches;
     private List<Link> links;
     private Routing routing;
@@ -128,7 +127,6 @@ public class Network implements ModelView {
      * @param lb        the link builder to use
      */
     public Network(Routing routing, SwitchBuilder sb, LinkBuilder lb) {
-        this.viewId = VIEW_ID;
         switches = new ArrayList<>();
         links = new ArrayList<>();
         swBuilder = sb;
@@ -458,7 +456,7 @@ public class Network implements ModelView {
 
     @Override
     public String getIdentifier() {
-        return viewId;
+        return VIEW_ID;
     }
 
     @Override
@@ -469,7 +467,7 @@ public class Network implements ModelView {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return this.viewId.equals(((Network) o).getIdentifier());
+        return this.VIEW_ID.equals(((Network) o).getIdentifier());
     }
 
     @Override
@@ -502,6 +500,6 @@ public class Network implements ModelView {
 
     @Override
     public int hashCode() {
-        return viewId.hashCode();
+        return VIEW_ID.hashCode();
     }
 }
