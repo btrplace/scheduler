@@ -21,6 +21,8 @@ package org.btrplace.json.model.view;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Element;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 import java.util.Map;
@@ -67,10 +69,10 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         NamingService ns;
         String type = requiredString(o, "type");
         switch (type) {
-            case NamingService.VM_ID:
+            case VM.TYPE:
                 ns = NamingService.newVMNS();
                 break;
-            case NamingService.NODE_ID:
+            case Node.TYPE:
                 ns = NamingService.newNodeNS();
                 break;
             default:
@@ -82,7 +84,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String n = e.getKey();
             int v = Integer.parseInt(e.getValue().toString());
-            Element el = NamingService.VM_ID.equals(type) ? getVM(v) : getNode(v);
+            Element el = VM.TYPE.equals(type) ? getVM(v) : getNode(v);
             if (!ns.register(el, n)) {
                 throw new JSONConverterException("Duplicated name '" + n + "'");
             }

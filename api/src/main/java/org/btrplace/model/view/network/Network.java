@@ -320,10 +320,8 @@ public class Network implements ModelView {
 
         // Try to retrieve naming services from the model, if provided
         NamingService<Node> nsNodes = null;
-        NamingService<Switch> nsSwitches = null;
         if (mo != null) {
             nsNodes = NamingService.getNodeNames(mo);
-            nsSwitches = (NamingService<Switch>) NamingService.get(mo, "switch");
         }
 
         try (BufferedWriter dot = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out), StandardCharsets.UTF_8))) {
@@ -344,7 +342,7 @@ public class Network implements ModelView {
                 dot.append("switch").
                         append(String.valueOf(s.id())).
                         append(" [shape=circle, color=blue, label=\"").
-                        append((nsSwitches==null)?"Switch "+String.valueOf(s.id()):nsSwitches.resolve(s)).
+                        append("Switch " + String.valueOf(s.id())).
                         append((s.getCapacity()>0)?"\\n["+bitsToString(s.getCapacity())+"/s"+"]":"");
                 dot.append("\"];\n");
             }

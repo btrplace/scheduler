@@ -34,6 +34,11 @@ public class Switch implements Element,PhysicalElement,NetworkElement {
     private int capacity;
 
     /**
+     * The element identifier.
+     */
+    public static final String TYPE = "switch";
+
+    /**
      * Make a new Switch.
      *
      * @param id    the switch identifier.
@@ -51,7 +56,7 @@ public class Switch implements Element,PhysicalElement,NetworkElement {
 
     @Override
     public String toString() {
-        return "switch#" + id;
+        return TYPE + "#" + id;
     }
 
     @Override

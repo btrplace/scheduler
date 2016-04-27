@@ -30,6 +30,11 @@ public class Node implements Element,PhysicalElement {
     private int id;
 
     /**
+     * The element identifier
+     */
+    public static final String TYPE = "node";
+
+    /**
      * Make a new node.
      *
      * @param i the node identifier.
@@ -45,7 +50,7 @@ public class Node implements Element,PhysicalElement {
 
     @Override
     public String toString() {
-        return "node#" + id;
+        return TYPE + "#" + id;
     }
 
     @Override

@@ -41,26 +41,16 @@ public final class NamingService<E extends Element> implements ModelView {
 
     /**
      * The root view identifier.
-     * Will be suffixed by either {@link #NODE_ID} or {@link #VM_ID}.
+     * Will be suffixed by either {@link Node#TYPE} or {@link VM#TYPE}.
      */
     public static final String ID = "btrpsl.ns.";
-
-    /**
-     * Identifier to be attached for the naming service for nodes.
-     */
-    public static final String NODE_ID = "node";
-
-    /**
-     * Identifier to be attached for the naming service for VMs.
-     */
-    public static final String VM_ID = "vm";
 
     private String elemId;
 
     /**
      * Make a new service.
      *
-     * @param eId {@link #VM_ID} or {@link #NODE_ID}
+     * @param eId {@link VM#TYPE} or {@link Node#TYPE}
      */
     private NamingService(String eId) {
         resolve = new HashMap<>();
@@ -76,7 +66,7 @@ public final class NamingService<E extends Element> implements ModelView {
     /**
      * Get the element identifier of this naming service
      *
-     * @return {@link #VM_ID} or {@link #NODE_ID} for a naming service dedicated to the VMs or the nodes respectively
+     * @return {@link VM#TYPE} or {@link Node#TYPE} for a naming service dedicated to the VMs or the nodes respectively
      */
     public String getElementIdentifier() {
         return elemId;
@@ -138,7 +128,7 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
-        if (VM_ID.equals(elemId)) {
+        if (VM.TYPE.equals(elemId)) {
             if (rev.containsKey(nextId)) {
                 //the new id already exists. It is a failure scenario.
                 return false;
@@ -205,7 +195,7 @@ public final class NamingService<E extends Element> implements ModelView {
      * @return a new naming service
      */
     public static NamingService<Node> newNodeNS() {
-        return new NamingService<>(NODE_ID);
+        return new NamingService<>(Node.TYPE);
     }
 
     /**
@@ -214,7 +204,7 @@ public final class NamingService<E extends Element> implements ModelView {
      * @return a new naming service
      */
     public static NamingService<VM> newVMNS() {
-        return new NamingService<>(VM_ID);
+        return new NamingService<>(VM.TYPE);
     }
 
     /**
@@ -225,7 +215,7 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     @SuppressWarnings("unchecked")
     public static NamingService<VM> getVMNames(Model mo) {
-        return (NamingService<VM>) mo.getView(ID + VM_ID);
+        return (NamingService<VM>) mo.getView(ID + VM.TYPE);
     }
 
     /**
@@ -236,18 +226,6 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     @SuppressWarnings("unchecked")
     public static NamingService<Node> getNodeNames(Model mo) {
-        return (NamingService<Node>) mo.getView(ID + NODE_ID);
-    }
-
-    /**
-     * Get the naming service for a given dimension.
-     *
-     * @param mo     the model to look at
-     * @param naming the naming dimension
-     * @return the view if attached. {@code null} otherwise
-     */
-    @SuppressWarnings("unchecked")
-    public static NamingService<? extends Element> get(Model mo, String naming) {
-        return (NamingService<? extends Element>) mo.getView(ID + naming);
+        return (NamingService<Node>) mo.getView(ID + Node.TYPE);
     }
 }
