@@ -20,10 +20,7 @@ package org.btrplace.model;
 
 import org.btrplace.model.view.ModelView;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Default implementation for a {@link Model}.
@@ -149,10 +146,11 @@ public class DefaultModel implements Model {
         b.append("\nAttributes:\n");
         b.append(getAttributes());
         b.append("\nViews:\n");
+        StringJoiner joiner = new StringJoiner("\n");
         for (Map.Entry<String, ModelView> entry : resources.entrySet()) {
-            b.append(entry.getKey()).append(": ");
-            b.append(entry.getValue()).append("\n");
+            joiner.add(String.format("%s: %s", entry.getKey(), entry.getValue()));
         }
+        b.append(joiner.toString());
         return b.toString();
     }
 

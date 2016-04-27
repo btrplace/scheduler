@@ -332,7 +332,7 @@ public class Network implements ModelView {
                 dot.append("node").
                         append(String.valueOf(n.id())).
                         append(" [shape=box, color=green, label=\"").
-                        append((nsNodes==null)?"Node "+String.valueOf(n.id()):nsNodes.resolve(n)).
+                        append((nsNodes == null) ? "Node " + String.valueOf(n.id()) : nsNodes.resolve(n)).
                         append("\"];\n");
             }
             // Draw switches
@@ -341,15 +341,14 @@ public class Network implements ModelView {
                         append(String.valueOf(s.id())).
                         append(" [shape=circle, color=blue, label=\"").
                         append("Switch " + String.valueOf(s.id())).
-                        append((s.getCapacity()>0)?"\\n["+bitsToString(s.getCapacity())+"/s"+"]":"");
+                        append((s.getCapacity() > 0) ? "\\n[" + bitsToString(s.getCapacity()) + "/s" + "]" : "");
                 dot.append("\"];\n");
             }
             // Draw links
             for (Switch s : switches) {
                 for (Link l : getConnectedLinks(s)) {
                     if (!drawedLinks.contains(l)) {
-                        dot.append("switch").append(String.valueOf(s.id())).
-                                append(" -> ");
+                        dot.append("switch").append(String.valueOf(s.id())).append(" -> ");
                         if (l.getElement() instanceof Node) {
                             dot.append("node").append(String.valueOf(((Node) l.getElement()).id()));
                         }
@@ -488,7 +487,6 @@ public class Network implements ModelView {
      * @param mo the model to look at
      * @return the network view if attached. {@code null} otherwise
      */
-    @SuppressWarnings("unchecked")
     public static Network get(Model mo) {
         return (Network) mo.getView(VIEW_ID);
     }

@@ -76,10 +76,11 @@ public class DefaultRouting extends Routing {
                 LinkedHashMap<Link, Boolean>  recall = getFirstPhysicalPath(
                         currentPath, l.getSwitch().equals(sw) ? (Switch) l.getElement() : l.getSwitch(), dst);
                 // Return the complete path if found
-                if (!recall.isEmpty()) return recall;
+                if (!recall.isEmpty()) {
+                    return recall;
+                }
             }
             // Wrong link, go back
-            //currentPath.remove(new ArrayList<>(currentPath.keySet()).get(currentPath.size()-1));//Use list to keep order
             currentPath.remove(l);
         }
         // No path found through this switch
@@ -102,7 +103,7 @@ public class DefaultRouting extends Routing {
         // Fill the cache if needed
         if (routingCache[n1.id()][n2.id()] == null) {
             // Get the first physical path found between the two nodes
-            LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<Link, Boolean>();
+            LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<>();
             // From element to switch => true : UpLink
             initialPath.put(net.getConnectedLinks(n1).get(0), true);
             routingCache[n1.id()][n2.id()] =
@@ -113,7 +114,7 @@ public class DefaultRouting extends Routing {
                     );
         }
 
-        return new ArrayList<Link>(routingCache[n1.id()][n2.id()].keySet());
+        return new ArrayList<>(routingCache[n1.id()][n2.id()].keySet());
     }
 
     @Override
@@ -131,7 +132,9 @@ public class DefaultRouting extends Routing {
         }
 
         // Link is not on route!
-        if (!routingCache[n1.id()][n2.id()].keySet().contains(l)) return null;
+        if (!routingCache[n1.id()][n2.id()].keySet().contains(l)) {
+            return null;
+        }
 
         // Return the direction
         return routingCache[n1.id()][n2.id()].get(l);

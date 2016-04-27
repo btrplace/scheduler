@@ -140,7 +140,7 @@ public class StaticRouting extends Routing {
         // Fill the cache if needed
         if (routingCache[n1.id()][n2.id()] == null) {
             // Get the first physical path found between the two nodes
-            LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<Link, Boolean>();
+            LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<>();
             // From element to switch => true : DownLink
             initialPath.put(net.getConnectedLinks(n1).get(0), true);
             routingCache[n1.id()][n2.id()] =
@@ -151,7 +151,7 @@ public class StaticRouting extends Routing {
                     );
         }
 
-        return new ArrayList<Link>(routingCache[n1.id()][n2.id()].keySet());
+        return new ArrayList<>(routingCache[n1.id()][n2.id()].keySet());
     }
 
     @Override
