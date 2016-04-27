@@ -95,4 +95,17 @@ public class NamingServiceTest {
         ns2.register(v, "vm0");
         Assert.assertNotEquals(ns, ns2);
     }
+
+    @Test
+    public void testGetViews() {
+        Model mo = new DefaultModel();
+        Assert.assertNull(NamingService.getVMNames(mo));
+        Assert.assertNull(NamingService.getNodeNames(mo));
+        NamingService<VM> vmNs = NamingService.newVMNS();
+        NamingService<Node> nodeNs = NamingService.newNodeNS();
+        mo.attach(vmNs);
+        mo.attach(nodeNs);
+        Assert.assertEquals(NamingService.getNodeNames(mo), nodeNs);
+        Assert.assertEquals(NamingService.getVMNames(mo), vmNs);
+    }
 }

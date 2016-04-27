@@ -19,6 +19,7 @@
 package org.btrplace.model.view;
 
 import org.btrplace.model.Element;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
@@ -59,7 +60,7 @@ public final class NamingService<E extends Element> implements ModelView {
     /**
      * Make a new service.
      *
-     * @param eId {@link #VM_ID} or {@link NODE_ID}
+     * @param eId {@link #VM_ID} or {@link #NODE_ID}
      */
     private NamingService(String eId) {
         resolve = new HashMap<>();
@@ -75,7 +76,7 @@ public final class NamingService<E extends Element> implements ModelView {
     /**
      * Get the element identifier of this naming service
      *
-     * @return {@link VM_ID} or {@link NODE_ID} for a naming service dedicated to the VMs or the nodes respectively
+     * @return {@link #VM_ID} or {@link #NODE_ID} for a naming service dedicated to the VMs or the nodes respectively
      */
     public String getElementIdentifier() {
         return elemId;
@@ -214,5 +215,27 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     public static NamingService<VM> newVMNS() {
         return new NamingService<>(VM_ID);
+    }
+
+    /**
+     * Get the naming service for the VMs associated to a model.
+     *
+     * @param mo the model to look at
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static NamingService<VM> getVMNames(Model mo) {
+        return (NamingService<VM>) mo.getView(ID + VM_ID);
+    }
+
+    /**
+     * Get the naming service for the nodes associated to a model.
+     *
+     * @param mo the model to look at
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static NamingService<Node> getNodeNames(Model mo) {
+        return (NamingService<Node>) mo.getView(ID + NODE_ID);
     }
 }

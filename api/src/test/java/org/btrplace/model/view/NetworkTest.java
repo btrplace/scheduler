@@ -48,8 +48,10 @@ public class NetworkTest {
         Node n1 = new Node(1);
         Node n2 = new Node(2);
         net.connect(2000, s, n1, n2);
-        mo.attach(net);
+        Assert.assertNull(Network.get(mo));
 
+        mo.attach(net);
+        Assert.assertEquals(Network.get(mo), net);
         Assert.assertTrue(net.getSwitches().size() == 1);
         Assert.assertEquals(net.getSwitches().get(0), s);
         Assert.assertTrue(s.getCapacity() == 1000);

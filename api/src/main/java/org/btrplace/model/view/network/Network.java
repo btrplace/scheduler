@@ -486,6 +486,17 @@ public class Network implements ModelView {
         return net;
     }
 
+    /**
+     * Get the network view associated to a model if exists.
+     *
+     * @param mo the model to look at
+     * @return the network view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static Network get(Model mo) {
+        return (Network) mo.getView(VIEW_ID);
+    }
+
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
         return false;

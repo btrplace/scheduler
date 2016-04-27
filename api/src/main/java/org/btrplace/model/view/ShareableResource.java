@@ -18,6 +18,7 @@
 
 package org.btrplace.model.view;
 
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
@@ -352,5 +353,16 @@ public class ShareableResource implements ModelView {
             }
         }
         return s;
+    }
+
+    /**
+     * Get the view associated to a model if exists
+     *
+     * @param mo the model to look at
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static ShareableResource get(Model mo, String id) {
+        return (ShareableResource) mo.getView(VIEW_ID_BASE + id);
     }
 }

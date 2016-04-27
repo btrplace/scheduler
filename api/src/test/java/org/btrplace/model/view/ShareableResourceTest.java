@@ -47,6 +47,21 @@ public class ShareableResourceTest {
 
         rc = new ShareableResource("bar", -7, 3);
         Assert.assertEquals(rc.getIdentifier(), "ShareableResource.bar");
+
+    }
+
+    @Test
+    public void testGet() {
+        Model mo = new DefaultModel();
+        Assert.assertNull(ShareableResource.get(mo, "cpu"));
+        ShareableResource cpu = new ShareableResource("cpu");
+        ShareableResource mem = new ShareableResource("mem");
+        mo.attach(cpu);
+        Assert.assertEquals(ShareableResource.get(mo, "cpu"), cpu);
+        Assert.assertNull(ShareableResource.get(mo, "mem"));
+        mo.attach(mem);
+        Assert.assertEquals(ShareableResource.get(mo, "cpu"), cpu);
+        Assert.assertEquals(ShareableResource.get(mo, "mem"), mem);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
