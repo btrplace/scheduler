@@ -79,7 +79,7 @@ public class CNoDelay implements ChocoConstraint {
 
                 d.getStart().instantiateTo(0, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().info("Unable to prevent any delay on '" + v + "'");
+                rp.getLogger().error("Unable to prevent any delay on '" + v + "'", ex);
                 return false;
             }
         } else {

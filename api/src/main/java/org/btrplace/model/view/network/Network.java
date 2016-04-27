@@ -467,7 +467,7 @@ public class Network implements ModelView {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return this.VIEW_ID.equals(((Network) o).getIdentifier());
+        return VIEW_ID.equals(((Network) o).getIdentifier());
     }
 
     @Override
