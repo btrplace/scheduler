@@ -76,7 +76,7 @@ public class AllocateEvent implements VMEvent {
 
     @Override
     public boolean apply(Model i) {
-        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rc);
+        ShareableResource r = ShareableResource.get(i, rc);
         if (r == null) {
             return false;
         }

@@ -156,7 +156,7 @@ public class RelocatableVM implements KeepRunningVM {
         reInstantiateDuration = forgeD; // Compliant with CMaxOnlineTest and others
         
         // Get the networking view if attached
-        Network network = (Network) mo.getView(Network.VIEW_ID);
+        Network network = Network.get(mo);
         IntVar migrationDuration;
         if (network != null) {
 

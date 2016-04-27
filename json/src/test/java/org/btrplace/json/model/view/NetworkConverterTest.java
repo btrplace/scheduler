@@ -59,7 +59,7 @@ public class NetworkConverterTest {
         JSONObject jo = mc.toJSON(mo);
         System.err.println(jo);
         Model mo2 = mc.fromJSON(jo);
-        Network net2 = (Network) mo2.getView(Network.VIEW_ID);
+        Network net2 = Network.get(mo2);
 
         Assert.assertTrue(net.getSwitches().equals(net2.getSwitches()));
         Assert.assertTrue(net.getLinks().equals(net2.getLinks()));
@@ -84,7 +84,7 @@ public class NetworkConverterTest {
         JSONObject jo = mc.toJSON(mo);
         System.err.println(jo);
         Model mo2 = mc.fromJSON(jo);
-        Network net2 = (Network) mo2.getView(Network.VIEW_ID);
+        Network net2 = Network.get(mo2);
 
         Assert.assertTrue(net.getSwitches().equals(net2.getSwitches()));
         Assert.assertTrue(net.getLinks().equals(net2.getLinks()));

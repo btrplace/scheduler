@@ -125,7 +125,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     @Override
     public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
         // If a network view is attached, ensure that all the migrations' destination node are defined
-        Network net = (Network) i.getView(Network.VIEW_ID);
+        Network net = Network.get(i);
         stages = null;
         if  (net != null) {
             stages = new StagedSolvingStatistics();

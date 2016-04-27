@@ -150,7 +150,7 @@ public class CResourceCapacity implements ChocoConstraint {
     public Set<VM> getMisPlacedVMs(Instance i) {
         if (cstr.getInvolvedNodes().size() > 1) {
             Mapping map = i.getModel().getMapping();
-            ShareableResource rc = (ShareableResource) i.getModel().getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
+            ShareableResource rc = ShareableResource.get(i.getModel(), cstr.getResource());
             if (rc == null) {
                 return map.getRunningVMs(cstr.getInvolvedNodes());
             }

@@ -342,8 +342,8 @@ public class IssuesTest {
         Instance i = ic.fromJSON(input);
         ChocoScheduler s = new DefaultChocoScheduler();
         s.setTimeLimit(-1);
-        i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "mem"));
-        i.getModel().detach(i.getModel().getView(ShareableResource.VIEW_ID_BASE + "cpu"));
+        i.getModel().detach(ShareableResource.get(i.getModel(), "mem"));
+        i.getModel().detach(ShareableResource.get(i.getModel(), "cpu"));
         List<SatConstraint> cstrs = new ArrayList<>();
         ReconfigurationPlan p = s.solve(i.getModel(), cstrs, i.getOptConstraint());
         System.out.println(p);

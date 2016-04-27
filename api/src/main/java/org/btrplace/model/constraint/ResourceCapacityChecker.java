@@ -104,7 +104,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
     @Override
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
-            rc = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
+            rc = ShareableResource.get(mo, getConstraint().getResource());
             free = getConstraint().getAmount();
             Mapping map = mo.getMapping();
             for (Node n : getNodes()) {
@@ -130,7 +130,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean endsWith(Model i) {
-        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
+        ShareableResource r = ShareableResource.get(i, getConstraint().getResource());
         if (r == null) {
             return false;
         }

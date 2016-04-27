@@ -238,4 +238,16 @@ public final class NamingService<E extends Element> implements ModelView {
     public static NamingService<Node> getNodeNames(Model mo) {
         return (NamingService<Node>) mo.getView(ID + NODE_ID);
     }
+
+    /**
+     * Get the naming service for a given dimension.
+     *
+     * @param mo     the model to look at
+     * @param naming the naming dimension
+     * @return the view if attached. {@code null} otherwise
+     */
+    @SuppressWarnings("unchecked")
+    public static NamingService<? extends Element> get(Model mo, String naming) {
+        return (NamingService<? extends Element>) mo.getView(ID + naming);
+    }
 }

@@ -50,7 +50,7 @@ public class OverbookChecker extends AllowAllConstraintChecker<Overbook> {
     @Override
     public boolean endsWith(Model i) {
         Mapping cfg = i.getMapping();
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + id);
+        ShareableResource rc = ShareableResource.get(i, id);
         if (rc == null) {
             return false;
         }

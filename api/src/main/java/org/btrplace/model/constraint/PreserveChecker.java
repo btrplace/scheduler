@@ -71,7 +71,7 @@ public class PreserveChecker extends AllowAllConstraintChecker<Preserve> {
 
     @Override
     public boolean endsWith(Model mo) {
-        ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + id);
+        ShareableResource r = ShareableResource.get(mo, id);
         if (r == null) {
             return false;
         }

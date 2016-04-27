@@ -67,7 +67,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
 
     @Override
     public int evaluate(Model mo, E e) {
-        ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
+        ShareableResource r = ShareableResource.get(mo, rc);
         if (r == null) {
             return -1;
         }

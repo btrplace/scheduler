@@ -58,7 +58,7 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
     @Override
     public Routing fromJSON(JSONObject o) throws JSONConverterException {
         Model mo = getModel();
-        Network v = (Network) mo.getView(Network.VIEW_ID);
+        Network v = Network.get(mo);
         Map<Integer, Link> idToLink = new HashMap<>();
         for (Link l : v.getLinks()) {
             idToLink.put(l.id(), l);

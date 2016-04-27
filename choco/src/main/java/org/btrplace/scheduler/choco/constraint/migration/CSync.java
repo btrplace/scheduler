@@ -94,7 +94,7 @@ public class CSync implements ChocoConstraint {
         }
 
         // Get the networking view if attached
-        Network net = (Network) mo.getView(Network.VIEW_ID);
+        Network net = Network.get(mo);
 
         for (int i=0 ; i < migrationList.size(); i++) {
             for (int j=i+1 ; j < migrationList.size(); j++) {

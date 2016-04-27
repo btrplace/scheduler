@@ -77,7 +77,7 @@ public class DependenciesExtractor implements ActionVisitor {
         //a consuming action. Otherwise, it's a freeing action
         String rcId = a.getResourceId();
         int newAmount = a.getAmount();
-        ShareableResource rc = (ShareableResource) origin.getView(ShareableResource.VIEW_ID_BASE + rcId);
+        ShareableResource rc = ShareableResource.get(origin, rcId);
         if (rc == null) {
             return false;
         }

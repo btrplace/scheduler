@@ -322,8 +322,8 @@ public class Network implements ModelView {
         NamingService<Node> nsNodes = null;
         NamingService<Switch> nsSwitches = null;
         if (mo != null) {
-            nsNodes = (NamingService<Node>) mo.getView(NamingService.ID + NamingService.NODE_ID);
-            nsSwitches = (NamingService<Switch>) mo.getView(NamingService.ID + "switch");
+            nsNodes = NamingService.getNodeNames(mo);
+            nsSwitches = (NamingService<Switch>) NamingService.get(mo, "switch");
         }
 
         try (BufferedWriter dot = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out), StandardCharsets.UTF_8))) {
@@ -451,8 +451,8 @@ public class Network implements ModelView {
             net.connect(bw, mainSwitch, n); // Connect all nodes with 1Gbit/s links
         }
         // Remove the current Network view if exists
-        if (mo.getView(VIEW_ID) != null) {
-            mo.detach(mo.getView(VIEW_ID));
+        if (get(mo) != null) {
+            mo.detach(get(mo));
         }
         mo.attach(net);
         return net;

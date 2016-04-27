@@ -80,7 +80,7 @@ public class TimeBasedPlanApplierTest {
         Mapping resMapping = res.getMapping();
         Assert.assertTrue(resMapping.isOffline(ns.get(0)));
         Assert.assertTrue(resMapping.isOnline(ns.get(3)));
-        ShareableResource rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "cpu");
+        ShareableResource rc = ShareableResource.get(res, "cpu");
         Assert.assertEquals(rc.getConsumption(vms.get(2)), 7);
         Assert.assertEquals(resMapping.getVMLocation(vms.get(0)), ns.get(3));
         Assert.assertEquals(resMapping.getVMLocation(vms.get(1)), ns.get(1));

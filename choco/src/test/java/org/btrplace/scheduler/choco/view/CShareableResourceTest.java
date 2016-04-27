@@ -119,7 +119,7 @@ public class CShareableResourceTest {
         ReconfigurationPlan p = s.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Model res = p.getResult();
-        rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "foo");
+        rc = (ShareableResource.get(res, "foo"));
         Assert.assertEquals(2, rc.getConsumption(vm1));//rcm.getVirtualUsage(0).isInstantiatedTo(2));
         Assert.assertEquals(3, rc.getConsumption(vm2));//rcm.getVirtualUsage(1).isInstantiatedTo(3));
     }
@@ -149,7 +149,7 @@ public class CShareableResourceTest {
 
         //And on the resulting plan.
         Model res = p.getResult();
-        ShareableResource resRc = (ShareableResource) res.getView(rc.getIdentifier());
+        ShareableResource resRc = ShareableResource.get(res, rc.getResourceIdentifier());
         Assert.assertEquals(resRc.getConsumption(vm1), 5);
         Assert.assertEquals(resRc.getConsumption(vm2), 7);
     }
