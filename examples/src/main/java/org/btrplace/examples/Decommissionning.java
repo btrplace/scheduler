@@ -27,7 +27,6 @@ import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
@@ -40,7 +39,7 @@ import java.util.List;
 public class Decommissionning implements Example {
 
     @Override
-    public boolean run() {
+    public void run() {
         int ratio = 1;
         int nbPCPUs = 4;
         int nbNodes = 2;
@@ -76,15 +75,9 @@ public class Decommissionning implements Example {
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setMaxEnd(3);
-        try {
-            cra.setVerbosity(1);
-            ReconfigurationPlan p = cra.solve(mo, cstrs);
-            System.out.println(p);
-            System.out.println(cra.getStatistics());
-        } catch (SchedulerException ex) {
-            System.err.println(ex.getMessage());
-            return false;
-        }
-        return true;
+        cra.setVerbosity(1);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        System.out.println(p);
+        System.out.println(cra.getStatistics());
     }
 }

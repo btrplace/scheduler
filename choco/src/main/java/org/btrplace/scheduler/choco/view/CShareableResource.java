@@ -513,7 +513,7 @@ public class CShareableResource implements ChocoView {
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
         for (SatConstraint c : i.getSatConstraints()) {
-            if (!(c instanceof ResourceRelated) || ((ResourceRelated) c).getResource().equals(rc.getResourceIdentifier())) {
+            if (!(c instanceof ResourceRelated && ((ResourceRelated) c).getResource().equals(rc.getResourceIdentifier()))) {
                 continue;
             }
             if (c instanceof Preserve) {

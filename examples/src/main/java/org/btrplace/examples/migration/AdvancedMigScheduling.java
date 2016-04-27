@@ -89,7 +89,7 @@ public class AdvancedMigScheduling implements Example {
     }
 
     @Override
-    public boolean run() {
+    public void run() {
 
         Model mo = makeModel();
 
@@ -153,9 +153,7 @@ public class AdvancedMigScheduling implements Example {
         cstrs.addAll(Offline.newOffline(Arrays.asList(srcNode1, srcNode2, srcNode3, srcNode4)));
 
         // Try to solve as is, and show the computed plan
-        if (!solve(mo, cstrs)) {
-            return false;
-        }
+        solve(mo, cstrs);
 
         /********* Add some migrations scheduling constraints *********/
 
@@ -164,7 +162,7 @@ public class AdvancedMigScheduling implements Example {
 
         // We want to serialize the migrations of vm1, vm2, and vm3
         cstrs.add(new Serialize(new HashSet<>(Arrays.asList(vm1, vm2, vm3))));
-        
+
         // We want vm0 migration terminate before vm2 start to migrate
         cstrs.add(new Precedence(vm1, vm2));
 
@@ -172,16 +170,12 @@ public class AdvancedMigScheduling implements Example {
         cstrs.add(new Deadline(vm3, "+0:0:10"));
 
         // Try to solve, and show the computed plan
-        return solve(mo, cstrs);
+        solve(mo, cstrs);
     }
 
-    private static boolean solve(Model mo, List<SatConstraint> cstrs) {
+    private static void solve(Model mo, List<SatConstraint> cstrs) {
         ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-        if (p == null) {
-            return false;
-        }
         System.out.println(p);
         System.out.flush();
-        return true;
     }
 }

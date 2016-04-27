@@ -25,7 +25,6 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ import java.util.List;
 public class NetworkAndMigrations implements Example {
 
     @Override
-    public boolean run() {
+    public void run() {
 
         // New default model
         Model mo = new DefaultModel();
@@ -50,7 +49,7 @@ public class NetworkAndMigrations implements Example {
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
         ma.addOnlineNode(dstNode);
-        
+
         // Create 4 VMs and host 2 VMs on each source node
         VM vm0 = mo.newVM();
         VM vm1 = mo.newVM();
@@ -74,39 +73,22 @@ public class NetworkAndMigrations implements Example {
         mo.getAttributes().put(vm2, "hotDirtySize", 56);
         mo.getAttributes().put(vm2, "hotDirtyDuration", 2);
         mo.getAttributes().put(vm2, "coldDirtyRate", 22.6);
-                
+
         // Add placement constraints: we want to shutdown the source nodes to force VMs migration to destination nodes
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Offline(srcNode1));
         cstrs.add(new Offline(srcNode2));
 
         // Try to solve as is and show the computed plan
-        try {
-            ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) {
-                return false;
-            }
-            System.out.println(p);
-            System.out.flush();
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return false;
-        }
-        
+        ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
+        System.out.println(p);
+
+
         // Set a default network view and try to solve again
         // connect nodes to a non-blocking switch using 1 Gbit/s links
         Network net = Network.createDefaultNetwork(mo);
-        try {
-            ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) {
-                return false;
-            }
-            System.out.println(p);
-            System.out.flush();
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return false;
-        }
+        p = new DefaultChocoScheduler().solve(mo, cstrs);
+        System.out.println(p);
 
         // Create and attach a custom network view and try to solve again
         mo.detach(net);
@@ -117,18 +99,8 @@ public class NetworkAndMigrations implements Example {
         net.connect(1000, swMain, srcNode1, srcNode2);
         net.connect(10000, swMain, dstNode);
         mo.attach(net);
-        try {
-            ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs);
-            if (p == null) {
-                return false;
-            }
-            System.out.println(p);
-            System.out.flush();
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        p = new DefaultChocoScheduler().solve(mo, cstrs);
+        System.out.println(p);
+        System.out.flush();
     }
 }

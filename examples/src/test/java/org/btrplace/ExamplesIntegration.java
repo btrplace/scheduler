@@ -21,7 +21,6 @@ package org.btrplace;
 import org.btrplace.examples.*;
 import org.btrplace.examples.migration.AdvancedMigScheduling;
 import org.btrplace.examples.migration.NetworkAndMigrations;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -34,36 +33,36 @@ public class ExamplesIntegration {
     @Test
     public void testGettingStarted() {
         Example ex = new GettingStarted();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+        ex.run();
     }
 
     @Test
     public void testSolvingTuning() {
         Example ex = new SolverTuning();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+        ex.run();
     }
 
     @Test
     public void testModelCustomization() {
         Example ex = new ModelCustomization();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+        ex.run();
     }
 
     @Test
     public void testDecommissioning() {
         Example ex = new Decommissionning();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+        ex.run();
     }
 
     @Test
     public void testNetworkAndMigrations() {
         Example ex = new NetworkAndMigrations();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+        ex.run();
     }
 
     @Test
     public void testAdvancedMigScheduling() {
         Example ex = new AdvancedMigScheduling();
-        Assert.assertTrue(ex.run(), "Example " + ex.toString() + " failed");
+        ex.run();
     }
 }
