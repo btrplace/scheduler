@@ -57,13 +57,9 @@ public class CNetwork implements ChocoView {
      * The view identifier.
      */
     public static final String VIEW_ID = "NetworkView";
-
     private Network net;
-
     private Solver solver;
     private Model source;
-    private List<Task> tasksList;
-    private List<IntVar> heightsList;
 
     /**
      * Make a new network view.
@@ -72,8 +68,6 @@ public class CNetwork implements ChocoView {
      */
     public CNetwork(Network n) throws SchedulerException {
         net = n;
-        tasksList = new ArrayList<>();
-        heightsList = new ArrayList<>();
     }
 
     @Override
@@ -207,6 +201,8 @@ public class CNetwork implements ChocoView {
         }
 
         // Links limitation
+        List<Task> tasksListUp = new ArrayList<>(), tasksListDown = new ArrayList<>();
+        List<IntVar> heightsListUp = new ArrayList<>(), heightsListDown = new ArrayList<>();
         for (Link l : net.getLinks()) {
 
             for (VM vm : rp.getVMs()) {
@@ -219,28 +215,68 @@ public class CNetwork implements ChocoView {
                     Node dst = rp.getNode(a.getDSlice().getHoster().getValue());
                     List<Link> path = net.getRouting().getPath(src, dst);
 
-                    // If the link is on migration path
+                    // Check first if the link is on migration path
                     if (path.contains(l)) {
-                        tasksList.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
-                        heightsList.add(((RelocatableVM) a).getBandwidth());
+                        // Get link direction
+                        Boolean upDown = net.getRouting().getLinkDirection(src, dst, l);
+                        // UpLink
+                        if (upDown) {
+                            //tasksListUp.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
+                            tasksListUp.add(((RelocatableVM) a).getMigrationTask());
+                            heightsListUp.add(((RelocatableVM) a).getBandwidth());
+                        }
+                        // DownLink
+                        else {
+                            //tasksListDown.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
+                            tasksListDown.add(((RelocatableVM) a).getMigrationTask());
+                            heightsListDown.add(((RelocatableVM) a).getBandwidth());
+                        }
                     }
                 }
             }
-            if (!tasksList.isEmpty()) {
+            if (!tasksListUp.isEmpty()) {
 
-                // Post the cumulative constraint for the current link
+                // Post the cumulative constraint for the current UpLink
+                /*solver.post(new Cumulative(
+                        tasksListUp.toArray(new Task[tasksListUp.size()]),
+                        heightsListUp.toArray(new IntVar[heightsListUp.size()]),
+                        VF.fixed(l.getCapacity(), solver),
+                        true,
+                        // Try to tune the filters to improve the constraint efficiency
+                        Cumulative.Filter.TIME,
+                        //Cumulative.Filter.SWEEP,
+                        //Cumulative.Filter.SWEEP_HEI_SORT,
+                        Cumulative.Filter.NRJ,
+                        Cumulative.Filter.HEIGHTS
+                ));*/
                 solver.post(ICF.cumulative(
-                        tasksList.toArray(new Task[tasksList.size()]),
-                        heightsList.toArray(new IntVar[heightsList.size()]),
+                        tasksListUp.toArray(new Task[tasksListUp.size()]),
+                        heightsListUp.toArray(new IntVar[heightsListUp.size()]),
                         VF.fixed(l.getCapacity(), solver),
                         true
                 ));
+
+                tasksListUp.clear();
+                heightsListUp.clear();
             }
-            tasksList.clear();
-            heightsList.clear();
+            if (!tasksListDown.isEmpty()) {
+
+                // Post the cumulative constraint for the current DownLink
+                solver.post(ICF.cumulative(
+                        tasksListDown.toArray(new Task[tasksListDown.size()]),
+                        heightsListDown.toArray(new IntVar[heightsListDown.size()]),
+                        VF.fixed(l.getCapacity(), solver),
+                        true
+                ));
+
+                tasksListDown.clear();
+                heightsListDown.clear();
+            }
         }
 
         // Switches capacity limitation
+        List<Task> tasksList = new ArrayList<>();
+        List<IntVar> heightsList = new ArrayList<>();
         for(Switch sw : net.getSwitches()) {
 
             // Only if the capacity is limited
@@ -268,16 +304,18 @@ public class CNetwork implements ChocoView {
                     }
                 }
 
-                // Post the cumulative constraint for the current switch
-                solver.post(ICF.cumulative(
-                        tasksList.toArray(new Task[tasksList.size()]),
-                        heightsList.toArray(new IntVar[heightsList.size()]),
-                        VF.fixed(sw.getCapacity(), solver),
-                        true
-                ));
+                if (!tasksListDown.isEmpty()) {
+                    // Post the cumulative constraint for the current switch
+                    solver.post(ICF.cumulative(
+                            tasksList.toArray(new Task[tasksList.size()]),
+                            heightsList.toArray(new IntVar[heightsList.size()]),
+                            VF.fixed(sw.getCapacity(), solver),
+                            true
+                    ));
 
-                tasksList.clear();
-                heightsList.clear();
+                    tasksList.clear();
+                    heightsList.clear();
+                }
             }
         }
 

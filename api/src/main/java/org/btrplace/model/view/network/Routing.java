@@ -22,6 +22,7 @@ import org.btrplace.Copyable;
 import org.btrplace.model.Node;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -37,7 +38,8 @@ import java.util.List;
 public abstract class Routing implements Copyable<Routing> {
 
     protected Network net;
-    
+    protected LinkedHashMap<Link, Boolean>[][] routingCache;
+
     /**
      * Set the network view (recursively).
      */
@@ -79,6 +81,16 @@ public abstract class Routing implements Copyable<Routing> {
         }
         return max;
     }
+
+    /**
+     * Get the direction of a crossed link between two given nodes
+     *
+     * @param n1    the source node
+     * @param n2    the destination node
+     * @param l     the link to check
+     * @return  null if *not* crossed, true for DownLink, false for UpLink
+     */
+    abstract public Boolean getLinkDirection(Node n1, Node n2, Link l);
 
     /**
      * Recursive method to get the first physical path found from a switch to a destination node.
