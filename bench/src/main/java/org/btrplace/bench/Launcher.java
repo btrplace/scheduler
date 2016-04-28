@@ -24,6 +24,8 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultParameters;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -49,6 +51,9 @@ public class Launcher {
     @Option(required = true, name = "-o", aliases = "--output", usage = "Output to this file")
     private String dst;
 
+    @Option(name = "-v", usage = "Set the verbosity level")
+    private int verbosity = 0; //silent by default
+
     public static void main(String[] args) throws IOException {
         new Launcher().parseArgs(args);
     }
@@ -70,19 +75,22 @@ public class Launcher {
             return;
         }
 
-        launch(repair, optimize, timeout, src, dst);
+        Parameters ps = new DefaultParameters();
+        ps.doRepair(repair)
+                .doOptimize(optimize)
+                .setTimeLimit(timeout)
+                .setVerbosity(verbosity);
+        launch(ps, src, dst);
     }
 
-    public static void launch(boolean repair, boolean optimize, int timeout, String src, String dst) throws IOException {
+    public static void launch(Parameters ps, String src, String dst) throws IOException {
 
         // Create and customize a scheduler
         ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = null;
 
         // Manage options behaviors
-        cra.doRepair(repair);
-        cra.doOptimize(optimize);
-        cra.setTimeLimit(timeout);
+        cra.setParameters(ps);
 
         Instance i = InstanceConverter.quickFromJSON(new File(src));
         // Try to solve

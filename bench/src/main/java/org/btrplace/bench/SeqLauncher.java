@@ -18,6 +18,8 @@
 
 package org.btrplace.bench;
 
+import org.btrplace.scheduler.choco.DefaultParameters;
+import org.btrplace.scheduler.choco.Parameters;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -33,6 +35,9 @@ import java.nio.charset.StandardCharsets;
 public class SeqLauncher {
 
     // Define options list
+    @Option(name = "-v", usage = "Set the verbosity level")
+    private int verbosity = 0; //silent by default
+
     @Option(name = "-r", aliases = "--repair", usage = "Enable the 'repair' feature")
     private boolean repair;
     @Option(name = "-m", aliases = "--optimize", usage = "Enable the 'optimize' feature")
@@ -63,11 +68,17 @@ public class SeqLauncher {
             return;
         }
 
+        Parameters ps = new DefaultParameters();
+        ps.doRepair(repair)
+                .doOptimize(optimize)
+                .setTimeLimit(timeout)
+                .setVerbosity(verbosity);
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), StandardCharsets.UTF_8))) {
             String strLine;
 
             while ((strLine = br.readLine()) != null) {
-                Launcher.launch(repair, optimize, timeout, strLine, stripExtension(strLine) + ".csv");
+                Launcher.launch(ps, strLine, stripExtension(strLine) + ".csv");
             }
 
         } catch (Exception e) {
