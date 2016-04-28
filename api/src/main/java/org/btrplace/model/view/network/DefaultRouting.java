@@ -38,11 +38,6 @@ import java.util.List;
 public class DefaultRouting extends Routing {
 
     /**
-     * Make a new default routing
-     */
-    public DefaultRouting() {}
-
-    /**
      * Recursive method to get the first physical path found from a switch to a destination node
      *
      * @param   currentPath the current or initial path containing the link(s) crossed

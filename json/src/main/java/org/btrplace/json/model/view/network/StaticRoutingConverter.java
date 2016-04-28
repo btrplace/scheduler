@@ -27,7 +27,9 @@ import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Routing;
 import org.btrplace.model.view.network.StaticRouting;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A converter to (un-)serialise a {@link StaticRouting}.
@@ -111,7 +113,7 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
         JSONObject o = new JSONObject();
         o.put("type", getJSONId());
         JSONArray a = new JSONArray();
-        Map<StaticRouting.NodesMap, LinkedHashMap<Link,Boolean>> routes = ((StaticRouting) routing).getStaticRoutes();
+        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = ((StaticRouting) routing).getStaticRoutes();
         for (StaticRouting.NodesMap nm : routes.keySet()) {
             JSONObject ao = new JSONObject();
             ao.put("nodes_map", nodesMapToJSON(nm));

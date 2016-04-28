@@ -27,6 +27,7 @@ import org.btrplace.model.Model;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface ActionDurationEvaluator<E extends Element> {
 
     /**

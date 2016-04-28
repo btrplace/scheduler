@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class StaticRouting extends Routing {
 
-    private Map<NodesMap, LinkedHashMap<Link,Boolean>> routes;
+    private Map<NodesMap, Map<Link, Boolean>> routes;
 
     /**
      * Make a new static routing.
@@ -47,11 +47,11 @@ public class StaticRouting extends Routing {
      * Get the static route between two given nodes.
      * 
      * @param nm    the nodes map
-     * @return  the static route, {@code null} if not found
+     * @return the static route. {@code null} if not found
      */
     public List<Link> getStaticRoute(NodesMap nm) {
 
-        LinkedHashMap<Link,Boolean> route = routes.get(nm);
+        Map<Link, Boolean> route = routes.get(nm);
         
         if (route == null) {
             return null;
@@ -65,7 +65,7 @@ public class StaticRouting extends Routing {
      *
      * @return  the static routes
      */
-    public Map<NodesMap, LinkedHashMap<Link,Boolean>> getStaticRoutes() {
+    public Map<NodesMap, Map<Link, Boolean>> getStaticRoutes() {
         return routes;
     }
 
@@ -75,7 +75,7 @@ public class StaticRouting extends Routing {
      * @param nm    a node mapping containing two nodes: the source and the destination node.
      * @param links an insert-ordered map of link<->direction representing the path between the two nodes.
      */
-    public void setStaticRoute(NodesMap nm, LinkedHashMap<Link,Boolean> links) {
+    public void setStaticRoute(NodesMap nm, Map<Link, Boolean> links) {
         routes.put(nm, links); // Only one route between two nodes (replace the old route)
     }
 
@@ -83,7 +83,7 @@ public class StaticRouting extends Routing {
     public List<Link> getPath(Node n1, Node n2) {
 
         // Check for a static route
-        LinkedHashMap<Link,Boolean> route = routes.get(new NodesMap(n1, n2));
+        Map<Link, Boolean> route = routes.get(new NodesMap(n1, n2));
         if (route == null) {
             return null;
         }
@@ -95,7 +95,7 @@ public class StaticRouting extends Routing {
     public Boolean getLinkDirection(Node n1, Node n2, Link l) {
 
         // Check for a static route
-        LinkedHashMap<Link,Boolean> route = routes.get(new NodesMap(n1, n2));
+        Map<Link, Boolean> route = routes.get(new NodesMap(n1, n2));
         if (route == null) {
             return null;
         }

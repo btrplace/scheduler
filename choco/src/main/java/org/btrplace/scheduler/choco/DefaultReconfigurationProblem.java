@@ -534,9 +534,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             StringBuilder b = new StringBuilder();
             for (Object s : lbl) {
                 if (s instanceof Object[]) {
-                    for (Object x : (Object[]) s) {
-                        b.append(x);
-                    }
+                    b.append(Arrays.toString((Object[]) s));
                 } else {
                     b.append(s);
                 }
@@ -648,7 +646,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public List<VMTransition> getVMActions(Collection<VM> ids) {
-        List<VMTransition> trans = new ArrayList<>(ids.size());//VMTransition[ids.size()];
+        List<VMTransition> trans = new ArrayList<>(ids.size());
         for (VM v : ids) {
             trans.add(getVMAction(v));
         }

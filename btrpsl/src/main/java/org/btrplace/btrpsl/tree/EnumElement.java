@@ -126,7 +126,6 @@ public class EnumElement extends BtrPlaceTree {
                 if (type == BtrpOperand.Type.NODE) {
                     //TODO: 'id' does not contains "@" in the scheduler NamingService
                     Element el = namingServiceNodes.resolve(id);
-                    //Element el = namingServiceNodes.resolve(id.substring(1));
                     if (el == null) {
                         //Should be fair as each getChild(i) is a range with at least on child. Prevent from a fake token
                         //with no line number

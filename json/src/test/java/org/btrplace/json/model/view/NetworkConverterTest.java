@@ -93,8 +93,8 @@ public class NetworkConverterTest {
         Assert.assertTrue(net.getLinks().equals(net2.getLinks()));
         Assert.assertTrue(net.getConnectedNodes().equals(net2.getConnectedNodes()));
 
-        Map<StaticRouting.NodesMap, LinkedHashMap<Link, Boolean>> routes = ((StaticRouting) net.getRouting()).getStaticRoutes();
-        Map<StaticRouting.NodesMap, LinkedHashMap<Link, Boolean>> routes2 = ((StaticRouting) net2.getRouting()).getStaticRoutes();
+        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = ((StaticRouting) net.getRouting()).getStaticRoutes();
+        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes2 = ((StaticRouting) net2.getRouting()).getStaticRoutes();
         for (StaticRouting.NodesMap nm : routes.keySet()) {
             for (StaticRouting.NodesMap nm2 : routes2.keySet()) {
                 Assert.assertTrue(nm.equals(nm2));

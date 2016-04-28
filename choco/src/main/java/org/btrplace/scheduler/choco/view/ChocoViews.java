@@ -29,6 +29,12 @@ import java.util.*;
 public class ChocoViews {
 
     /**
+     * Utility class. No instantiations.
+     */
+    private ChocoViews() {
+
+    }
+    /**
      * Flatten the views while considering their dependencies.
      * Operations over the views that respect the iteration order, satisfies the dependencies.
      *
