@@ -26,7 +26,7 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
 import org.btrplace.scheduler.choco.extensions.TaskScheduler;
 import org.btrplace.scheduler.choco.transition.KeepRunningVM;
-import org.btrplace.scheduler.choco.transition.TransitionUtils;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -121,8 +121,8 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             d++;
         }
         symmetryBreakingForStayingVMs(rp);
-        IntVar[] earlyStarts = TransitionUtils.getHostingStarts(rp.getNodeActions());
-        IntVar[] lastEnd = TransitionUtils.getHostingEnds(rp.getNodeActions());
+        IntVar[] earlyStarts = rp.getNodeActions().stream().map(NodeTransition::getHostingStart).toArray(IntVar[]::new);
+        IntVar[] lastEnd = rp.getNodeActions().stream().map(NodeTransition::getHostingEnd).toArray(IntVar[]::new);
         rp.getSolver().post(
                 new TaskScheduler(earlyStarts,
                         lastEnd,

@@ -25,12 +25,15 @@ import org.btrplace.model.constraint.migration.MinMTTRMig;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.SliceUtils;
+import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.mttr.MovementGraph;
 import org.btrplace.scheduler.choco.constraint.mttr.MyInputOrder;
 import org.btrplace.scheduler.choco.constraint.mttr.OnStableNodeFirst;
 import org.btrplace.scheduler.choco.constraint.mttr.StartOnLeafNodes;
-import org.btrplace.scheduler.choco.transition.*;
+import org.btrplace.scheduler.choco.transition.BootableNode;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
+import org.btrplace.scheduler.choco.transition.ShutdownableNode;
+import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -42,10 +45,8 @@ import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VariableFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * An objective that minimizes the time to repair a non-viable model involving a set of migrations.
@@ -132,10 +133,11 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(rp);
-        strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
-        strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
+        Stream<Slice> s = rp.getVMActions().stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
+        IntVar[] starts = s.map(Slice::getStart).toArray(IntVar[]::new);
 
-        //strategies.add(ISF.minDom_LB(TransitionUtils.getEnds(rp.getVMActions())));
+        strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
+        strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
         for (VMTransition a : rp.getVMActions()) {
             endVars.add(a.getEnd());

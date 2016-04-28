@@ -58,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 
 /**
@@ -304,7 +305,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void linkCardinalityWithSlices() {
-        IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
+        Stream<Slice> s = vmActions.stream().filter(Objects::nonNull)
+                .map(VMTransition::getDSlice);
+        IntVar[] ds = s.map(Slice::getHoster).toArray(IntVar[]::new);
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
