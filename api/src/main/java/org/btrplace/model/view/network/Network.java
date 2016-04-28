@@ -222,11 +222,11 @@ public class Network implements ModelView {
      * @return a list of links
      */
     public List<Link> connect(int bandwidth, Switch sw, PhysicalElement... pelts) {
-        List<Link> links = new ArrayList<>();
+        List<Link> l = new ArrayList<>();
         for (PhysicalElement pe : pelts) {
-            links.add(connect(bandwidth, sw, pe));
+            l.add(connect(bandwidth, sw, pe));
         }
-        return links;
+        return l;
     }
 
     /**
@@ -238,11 +238,11 @@ public class Network implements ModelView {
      * @return a list of links
      */
     public List<Link> connect(int bandwidth, Switch sw, Node... nodes) {
-        List<Link> links = new ArrayList<>();
+        List<Link> l = new ArrayList<>();
         for (Node n : nodes) {
-            links.add(connect(bandwidth, sw, n));
+            l.add(connect(bandwidth, sw, n));
         }
-        return links;
+        return l;
     }
 
     /**

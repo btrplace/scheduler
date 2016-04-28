@@ -87,7 +87,6 @@ public class CNetwork implements ChocoView {
     public boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
 
         Model mo = rp.getSourceModel();
-
         Attributes attrs = mo.getAttributes();
 
         // Pre-compute duration and bandwidth for each VM migration
@@ -126,7 +125,6 @@ public class CNetwork implements ChocoView {
                 }
             }
 
-
             // Get attribute vars
             int memUsed = attrs.get(vm, "memUsed", -1);
 
@@ -137,59 +135,31 @@ public class CNetwork implements ChocoView {
 
             // Get the maximal bandwidth available on the migration path
             int maxBW = net.getRouting().getMaxBW(src, dst);
-            // Enumerate different possible values for the bandwidth to allocate (< maxBW)
-            // MULTIPLE BW; eg.(step=maxBW/2) split the max BW in 2 and allow to migrate 2 migrations per link
-            // SINGLE BW: (step=maxBW) the bandwidth can not be reduced below maxBW (always migrate at max BW)
-                    /*int step = maxBW;
-                    List<Integer> bwEnum = new ArrayList<>();
-                    for (int i = step; i <= maxBW; i += step) {
-                        if (i > Math.round(hotDirtySize / hotDirtyDuration)) {
-                            bwEnum.add(i);
-                        }
-                    }*/
 
             // Compute the duration related to each enumerated bandwidth
             double durationMin;
             double durationColdPages;
             double durationHotPages;
             double durationTotal;
-                    /*List<Integer> durEnum = new ArrayList<>();
-                    for (Integer bw : bwEnum) {*/
 
             // Cheat a bit, real is less than theoretical (8->9)
-            double bandwidth_octet = maxBW / 9.0;
+            double bandwidthOctet = maxBW / 9.0;
 
             // Estimate the duration for the current bandwidth
-            durationMin = memUsed / bandwidth_octet;
+            durationMin = memUsed / bandwidthOctet;
             if (durationMin > hotDirtyDuration) {
 
                 durationColdPages = (hotDirtySize + (durationMin - hotDirtyDuration) * coldDirtyRate) /
-                        (bandwidth_octet - coldDirtyRate);
-                durationHotPages = (hotDirtySize / bandwidth_octet * ((hotDirtySize / hotDirtyDuration) /
-                        (bandwidth_octet - (hotDirtySize / hotDirtyDuration))));
+                        (bandwidthOctet - coldDirtyRate);
+                durationHotPages = (hotDirtySize / bandwidthOctet * ((hotDirtySize / hotDirtyDuration) /
+                        (bandwidthOctet - (hotDirtySize / hotDirtyDuration))));
                 durationTotal = durationMin + durationColdPages + durationHotPages;
             } else {
                 durationTotal = durationMin + (((hotDirtySize / hotDirtyDuration) * durationMin) /
-                        (bandwidth_octet - (hotDirtySize / hotDirtyDuration)));
+                        (bandwidthOctet - (hotDirtySize / hotDirtyDuration)));
             }
-                        /*durEnum.add((int) Math.round(durationTotal));
-                    }*/
 
-                    /*// USING MULTIPLE BW FOR EACH MIGRATION
-                    // Create the enumerated vars
-                    bandwidth = VF.enumerated("bandwidth_enum", bwEnum.stream().mapToInt(i -> i).toArray(), s);
-                    duration = VF.enumerated("duration_enum", durEnum.stream().mapToInt(i -> i).toArray(), s);
-
-                    // Associate vars using Tuples
-                    Tuples tpl = new Tuples(true);
-                    for (int i = 0; i < bwEnum.size(); i++) {
-                        tpl.add(bwEnum.get(i), durEnum.get(i));
-                    }
-                    
-                    // Post the table constraint
-                    s.post(ICF.table(bandwidth, duration, tpl, ""));*/
-
-            // USING A SINGLE BW PER MIGRATION
+            // Instantiate the computed bandwidth and duration
             try {
                 //prevent from a 0 duration when the memory usage is very low
                 int dd = (int) Math.max(1, Math.round(durationTotal));
@@ -202,9 +172,29 @@ public class CNetwork implements ChocoView {
             }
         }
 
+        // Add links and switches constraints
+        addLinkConstraints(rp);        
+        addSwitchConstraints(rp);
+
+        return true;
+    }
+
+    /**
+     * Add the cumulative constraints for each link.
+     *
+     * Full-duplex links are considered, two cumulative constraints are defined per link by looking at
+     * the migration direction for each link on the migration path.
+     *
+     * @param rp the reconfiguration problem
+     */
+    private void addLinkConstraints(ReconfigurationProblem rp) {
+
         // Links limitation
-        List<Task> tasksListUp = new ArrayList<>(), tasksListDown = new ArrayList<>();
-        List<IntVar> heightsListUp = new ArrayList<>(), heightsListDown = new ArrayList<>();
+        List<Task> tasksListUp = new ArrayList<>();
+        List<Task> tasksListDown = new ArrayList<>();
+        List<IntVar> heightsListUp = new ArrayList<>();
+        List<IntVar> heightsListDown = new ArrayList<>();
+        
         for (Link l : net.getLinks()) {
 
             for (VM vm : rp.getVMs()) {
@@ -239,18 +229,6 @@ public class CNetwork implements ChocoView {
             if (!tasksListUp.isEmpty()) {
 
                 // Post the cumulative constraint for the current UpLink
-                /*solver.post(new Cumulative(
-                        tasksListUp.toArray(new Task[tasksListUp.size()]),
-                        heightsListUp.toArray(new IntVar[heightsListUp.size()]),
-                        VF.fixed(l.getCapacity(), solver),
-                        true,
-                        // Try to tune the filters to improve the constraint efficiency
-                        Cumulative.Filter.TIME,
-                        //Cumulative.Filter.SWEEP,
-                        //Cumulative.Filter.SWEEP_HEI_SORT,
-                        Cumulative.Filter.NRJ,
-                        Cumulative.Filter.HEIGHTS
-                ));*/
                 solver.post(ICF.cumulative(
                         tasksListUp.toArray(new Task[tasksListUp.size()]),
                         heightsListUp.toArray(new IntVar[heightsListUp.size()]),
@@ -275,15 +253,22 @@ public class CNetwork implements ChocoView {
                 heightsListDown.clear();
             }
         }
-
+    }
+    /**
+     * Add the cumulative constraints for each blocking switch (having limited capacity)
+     *
+     * @param rp the reconfiguration problem
+     */
+    private void addSwitchConstraints(ReconfigurationProblem rp) {
+        
         // Switches capacity limitation
         List<Task> tasksList = new ArrayList<>();
         List<IntVar> heightsList = new ArrayList<>();
+        
         for(Switch sw : net.getSwitches()) {
 
 
             // Only if the capacity is limited
-            //TODO: should be > max usage in worst case
             if (sw.getCapacity() > 0) {
 
                 for (VM vm : rp.getVMs()) {
@@ -307,7 +292,7 @@ public class CNetwork implements ChocoView {
                     }
                 }
 
-                if (!tasksListDown.isEmpty()) {
+                if (!tasksList.isEmpty()) {
                     // Post the cumulative constraint for the current switch
                     solver.post(ICF.cumulative(
                             tasksList.toArray(new Task[tasksList.size()]),
@@ -321,7 +306,5 @@ public class CNetwork implements ChocoView {
                 }
             }
         }
-
-        return true;
     }
 }

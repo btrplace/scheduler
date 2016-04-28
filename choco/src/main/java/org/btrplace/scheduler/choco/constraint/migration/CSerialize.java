@@ -88,7 +88,7 @@ public class CSerialize implements ChocoConstraint {
         for (RelocatableVM mig : migrationList) {
             tasks.add(new Task(mig.getStart(), mig.getDuration(), mig.getEnd()));
         }
-        IntVar heights[] = new IntVar[tasks.size()];
+        IntVar[] heights = new IntVar[tasks.size()];
         Arrays.fill(heights, VF.fixed(1, s));
         s.post(ICF.cumulative(
                 tasks.toArray(new Task[tasks.size()]),

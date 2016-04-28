@@ -186,13 +186,13 @@ public class BtrpNumberTest {
         i.div(j);
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {ArithmeticException.class})
     public void testNonViableDivCauseZero() {
         BtrpNumber i = new BtrpNumber(5, BtrpNumber.Base.BASE_16);
         i.div(new BtrpNumber(0, BtrpNumber.Base.BASE_16));
     }
 
-    @Test(expectedExceptions = {IllegalArgumentException.class})
+    @Test(expectedExceptions = {ArithmeticException.class})
     public void testNonViableDivCauseRealZero() {
         BtrpNumber i = new BtrpNumber(5.7);
         i.div(new BtrpNumber(0.0));
@@ -286,12 +286,13 @@ public class BtrpNumberTest {
         Assert.assertEquals(i.not(), BtrpNumber.TRUE);
         i = new BtrpNumber(1, BtrpNumber.Base.BASE_16);
         Assert.assertEquals(i.not(), BtrpNumber.FALSE);
-        i = new BtrpNumber(5, BtrpNumber.Base.BASE_16);
-        Assert.assertEquals(i.not(), BtrpNumber.FALSE);
-        i = new BtrpNumber(2.5);
-        Assert.assertEquals(i.not(), BtrpNumber.FALSE);
     }
 
+    @Test(expectedExceptions = {UnsupportedOperationException.class})
+    public void testIncorrectNot() {
+        BtrpNumber i = new BtrpNumber(2.5);
+        i.not();
+    }
     public void testcopy() {
         BtrpNumber i = new BtrpNumber(0, BtrpNumber.Base.BASE_16);
         BtrpNumber j = i.copy();

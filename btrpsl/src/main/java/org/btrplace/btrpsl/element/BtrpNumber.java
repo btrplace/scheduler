@@ -163,8 +163,8 @@ public class BtrpNumber extends DefaultBtrpOperand {
     public BtrpNumber div(BtrpOperand other) {
         checkType(other);
         BtrpNumber x = (BtrpNumber) other;
-        if (x.dVal == 0.0) {
-            throw new IllegalArgumentException("Divisor is '0");
+        if (Double.doubleToRawLongBits(x.dVal) == 0) {
+            throw new ArithmeticException("Division by 0");
         }
         double res = dVal / x.dVal;
         return isInteger && x.isInteger ? new BtrpNumber((int) res, base) : new BtrpNumber(res);
@@ -196,7 +196,7 @@ public class BtrpNumber extends DefaultBtrpOperand {
         }
 
         BtrpNumber x = (BtrpNumber) o;
-        return dVal == x.dVal;
+        return Double.doubleToRawLongBits(dVal) == Double.doubleToRawLongBits(x.dVal);
     }
 
     @Override
@@ -255,7 +255,7 @@ public class BtrpNumber extends DefaultBtrpOperand {
     public BtrpNumber eq(BtrpOperand other) {
         checkType(other);
         BtrpNumber x = (BtrpNumber) other;
-        return dVal == x.dVal ? BtrpNumber.TRUE : BtrpNumber.FALSE;
+        return Double.doubleToRawLongBits(dVal) == Double.doubleToRawLongBits(x.dVal) ? BtrpNumber.TRUE : BtrpNumber.FALSE;
     }
 
     @Override
@@ -274,7 +274,12 @@ public class BtrpNumber extends DefaultBtrpOperand {
 
     @Override
     public BtrpNumber not() {
-        return dVal == 0.0 ? BtrpNumber.TRUE : BtrpNumber.FALSE;
+        if (TRUE.equals(this)) {
+            return FALSE;
+        } else if (FALSE.equals(this)) {
+            return TRUE;
+        }
+        throw new UnsupportedOperationException("Cannot negate a non-boolean");
     }
 
     @Override

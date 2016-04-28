@@ -25,10 +25,8 @@ import org.chocosolver.solver.variables.IntVar;
 
 /**
  * A model skeleton for a transition.
- * See {@link TransitionUtils} to extract components of Transitions.
  *
  * @author Fabien Hermenier
- * @see TransitionUtils
  */
 public interface Transition<E extends Enum<E>> {
 

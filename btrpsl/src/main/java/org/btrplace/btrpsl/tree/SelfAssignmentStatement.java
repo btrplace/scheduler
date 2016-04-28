@@ -83,6 +83,7 @@ public class SelfAssignmentStatement extends BtrPlaceTree {
             BtrpOperand e = getChild(0).go(parent);
             BtrpOperand r = getChild(1).go(this);
             BtrpOperand res;
+            try {
             switch (type) {
                 case PLUS_EQUALS:
                     res = e.plus(r);
@@ -101,6 +102,9 @@ public class SelfAssignmentStatement extends BtrPlaceTree {
                     break;
                 default:
                     return ignoreError("Unsupported operation: " + type);
+            }
+            } catch (ArithmeticException ex) {
+                return ignoreError(ex);
             }
             symbols.declare(lbl, res);
             res.setLabel(lbl);

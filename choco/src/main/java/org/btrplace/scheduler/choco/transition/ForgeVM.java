@@ -50,6 +50,12 @@ import org.chocosolver.solver.variables.VariableFactory;
  */
 public class ForgeVM implements VMTransition {
 
+    /**
+     * The prefix to use for the variables
+     */
+    public static final String VAR_PREFIX = "forge";
+
+
     private VM vm;
 
     private IntVar duration;
@@ -82,10 +88,10 @@ public class ForgeVM implements VMTransition {
          * We don't make any "real" d-slice cause it may impacts the TaskScheduler
          * so the hosting variable is set to -1 to be sure the VM is not hosted on a node
          */
-        dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(", e, ").dSlice"))
+        dSlice = new SliceBuilder(rp, e, rp.makeVarLabel(VAR_PREFIX, "(", e, ").dSlice"))
                 .setDuration(duration)
-                .setStart(rp.makeUnboundedDuration("forge(", e, ").start"))
-                .setEnd(rp.makeUnboundedDuration("forge(", e, ").stop"))
+                .setStart(rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").start"))
+                .setEnd(rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").stop"))
                 .setHoster(-1)
                 .build();
         s.post(IntConstraintFactory.arithm(dSlice.getDuration(), ">=", d));

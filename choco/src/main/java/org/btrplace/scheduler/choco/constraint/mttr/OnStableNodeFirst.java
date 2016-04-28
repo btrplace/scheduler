@@ -76,8 +76,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
         List<VMTransition> vmActions = rp.getVMActions();
 
-        List<IntVar> hosts = new ArrayList<>();
-        List<IntVar> starts = new ArrayList<>();
+        List<IntVar> tmpHosts = new ArrayList<>();
+        List<IntVar> tmpStarts = new ArrayList<>();
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
@@ -95,9 +95,9 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
             if (slice != null) {
                 IntVar h = slice.getHoster();
                 IntVar s = slice.getStart();
-                hosts.add(h);
+                tmpHosts.add(h);
                 if (s != rp.getEnd()) {
-                    starts.add(s);
+                    tmpStarts.add(s);
                 }
                 VM vm = action.getVM();
                 Node n = cfg.getVMLocation(vm);
@@ -111,8 +111,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                 j++;
             }
         }
-        this.hosts = hosts.toArray(new IntVar[hosts.size()]);
-        this.starts = starts.toArray(new IntVar[starts.size()]);
+        this.hosts = tmpHosts.toArray(new IntVar[tmpHosts.size()]);
+        this.starts = tmpStarts.toArray(new IntVar[tmpStarts.size()]);
     }
 
     /**

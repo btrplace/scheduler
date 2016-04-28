@@ -57,7 +57,6 @@ public class ScriptBuilderTest {
             BtrpNumber y = (BtrpNumber) v.getImportable("$y");
             BtrpNumber z = (BtrpNumber) v.getImportable("$z");
             BtrpNumber a = (BtrpNumber) v.getImportable("$a");
-            BtrpNumber b2 = (BtrpNumber) v.getImportable("$b");
             BtrpNumber c2 = (BtrpNumber) v.getImportable("$c");
             BtrpNumber toto = (BtrpNumber) v.getImportable("$toto");
             BtrpNumber titi = (BtrpNumber) v.getImportable("$titi");
@@ -82,9 +81,6 @@ public class ScriptBuilderTest {
 
             Assert.assertTrue(a.isInteger());
             Assert.assertEquals(a.getIntValue(), 2);
-
-            Assert.assertTrue(b2.isInteger());
-            Assert.assertEquals(b2.getIntValue(), 0);
 
             Assert.assertTrue(c2.isInteger());
             Assert.assertEquals(c2.getIntValue(), 1);

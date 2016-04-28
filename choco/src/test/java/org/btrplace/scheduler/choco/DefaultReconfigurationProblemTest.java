@@ -37,10 +37,8 @@ import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Unit tests for {@link DefaultReconfigurationProblem}.
@@ -683,7 +681,8 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
+        Stream<Slice> dSlices = rp.getVMActions().stream().filter(t -> t.getDSlice() != null).map(VMTransition::getDSlice);
+        IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
         s.post(ICF.atmost_nvalues(hosters, nbNodes, true));
 
         rp.setObjective(true, nbNodes);
@@ -693,83 +692,6 @@ public class DefaultReconfigurationProblemTest {
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }
-
-    /**
-     * Test a maximization problem: use the maximum number of nodes to host VMs
-     *
-     * @throws org.btrplace.scheduler.SchedulerException
-     * TODO: re-activate some day
-     */
-    /*@Test
-    public void testMaximization() throws SchedulerException {
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        Node n1 = mo.newNode();
-        map.addOnlineNode(n1);
-        for (int i = 0; i < 10; i++) {
-            Node n = mo.newNode();
-            VM vm = mo.newVM();
-            map.addOnlineNode(n);
-            map.addRunningVM(vm, n1);
-        }
-        Parameters ps = new DefaultParameters();
-        ps.setVerbosity(3);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
-        Solver s = rp.getSolver();
-        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getNbNodes(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
-        rp.setObjective(false, nbNodes);
-        //SMF.geometrical(s, 1, 1.5d, new BacktrackCounter(mo.getMapping().getNbVMs() * 2), Integer.MAX_VALUE);
-        ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNotNull(plan);
-        Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 10);
-        Assert.assertEquals(usedNodes(dst), 1);
-    }     */
-
-    /**
-     * Test a maximization problem: use the maximum number of nodes to host VMs
-     * For a faster optimisation process, the current objective is doubled at each solution
-     *
-     * @throws org.btrplace.scheduler.SchedulerException
-     * TODO: Re-activate some day
-     */
-    /*@Test
-    public void testMaximizationWithAlterer() throws SchedulerException {
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        Node n1 = mo.newNode();
-        map.addOnlineNode(n1);
-        for (int i = 0; i < 10; i++) {
-            Node n = mo.newNode();
-            VM vm = mo.newVM();
-            map.addOnlineNode(n);
-            map.addRunningVM(vm, n1);
-        }
-        final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        Solver s = rp.getSolver();
-        final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
-
-        rp.setObjective(false, nbNodes);
-
-        rp.setObjectiveAlterer(new ObjectiveAlterer() {
-            @Override
-            public int newBound(ReconfigurationProblem rp, int currentValue) {
-                return currentValue * 2;
-            }
-        });
-
-        ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNotNull(plan);
-        Mapping dst = plan.getResult().getMapping();
-
-        Assert.assertEquals(usedNodes(dst), 8);
-        //Note: the optimal value would be 10 but we loose the completeness due to the alterer
-        Assert.assertEquals(s.getMeasures().getSolutionCount(), 4);
-    }  */
 
     /**
      * Test an unsolvable optimisation problem with an alterer. No solution
@@ -789,7 +711,8 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
-        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
+        Stream<Slice> dSlices = rp.getVMActions().stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
+        IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
         s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = (rp1, currentValue) -> currentValue / 2;

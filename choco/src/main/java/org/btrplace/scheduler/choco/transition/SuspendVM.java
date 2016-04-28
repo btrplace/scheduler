@@ -46,6 +46,11 @@ import org.chocosolver.solver.variables.VariableFactory;
  */
 public class SuspendVM implements VMTransition {
 
+    /**
+     * The prefix to use for the variables
+     */
+    public static final String VAR_PREFIX = "suspendVM";
+
     private Slice cSlice;
 
     private IntVar start;
@@ -71,9 +76,9 @@ public class SuspendVM implements VMTransition {
 
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.SuspendVM.class, e);
 
-        duration = p.makeDuration(d, d, "suspendVM(", e, ").duration");
-        this.cSlice = new SliceBuilder(p, e, "suspendVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
-                .setEnd(p.makeDuration(p.getEnd().getUB(), d, "suspendVM(", e, ").cSlice_end"))
+        duration = p.makeDuration(d, d, VAR_PREFIX, "(", e, ").duration");
+        this.cSlice = new SliceBuilder(p, e, VAR_PREFIX, "(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
+                .setEnd(p.makeDuration(p.getEnd().getUB(), d, VAR_PREFIX, "(", e, ").cSlice_end"))
                 .build();
         start = VariableFactory.offset(cSlice.getEnd(), -d);
         state = VariableFactory.zero(rp.getSolver());

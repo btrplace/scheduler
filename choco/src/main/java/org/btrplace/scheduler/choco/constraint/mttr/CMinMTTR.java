@@ -26,10 +26,10 @@ import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.SliceUtils;
+import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
-import org.btrplace.scheduler.choco.transition.TransitionUtils;
+import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
@@ -45,6 +45,7 @@ import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * An objective that minimizes the time to repair a non-viable model.
@@ -128,7 +129,8 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
                     actions.add(p.getVMAction(vm));
                 }
             }
-            IntVar[] scopes = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
+
+            IntVar[] scopes = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
 
             strategies.add(new IntStrategy(scopes, new MovingVMs(p, map, actions), new RandomVMPlacement(p, pla, true, ps.getRandomSeed())));
         }
@@ -147,15 +149,18 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
 
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
-            strategies.add(new IntStrategy(TransitionUtils.getStarts(p.getNodeActions()), new MyInputOrder<>(s), new IntDomainMin()));
+            IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
+            strategies.add(new IntStrategy(starts, new MyInputOrder<>(s), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
-        strategies.add(new IntStrategy(SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions())), new StartOnLeafNodes(rp, gr), new IntDomainMin()));
+        IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).toArray(IntVar[]::new);
+        strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
-        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), TransitionUtils.getEnds(rp.getVMActions())));
+        IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).toArray(IntVar[]::new);
+        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), ends));
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
 
@@ -168,7 +173,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
     private void placeVMs(Parameters ps, List<AbstractStrategy<?>> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
         if (!actions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
+            IntVar[] hosts = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
             if (hosts.length > 0) {
                 strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
             }
@@ -189,11 +194,14 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            Solver s = rp.getSolver();
-            costConstraints.forEach(s::post);
+            costConstraints.forEach(rp.getSolver()::post);
         }
     }
 
+
+    private static Stream<Slice> dSlices(List<VMTransition> l) {
+        return l.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
+    }
 
     @Override
     public String toString() {

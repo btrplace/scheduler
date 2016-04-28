@@ -49,6 +49,11 @@ import java.util.EnumSet;
  */
 public class BootVM implements VMTransition {
 
+    /**
+     * The prefix to use for the variables
+     */
+    public static final String VAR_PREFIX = "bootVM";
+
     private Slice dSlice;
 
     private IntVar end;
@@ -75,11 +80,11 @@ public class BootVM implements VMTransition {
 
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.BootVM.class, e);
         this.rp = p;
-        start = p.makeDuration(p.getEnd().getUB() - d, 0, "bootVM(", e, ").start");
+        start = p.makeDuration(p.getEnd().getUB() - d, 0, VAR_PREFIX, "(", e, ").start");
         end = VariableFactory.offset(start, d);
-        duration = p.makeDuration(d, d, "bootVM.duration(", e, ')');
-        dSlice = new SliceBuilder(p, e, "bootVM(", e, ").dSlice").setStart(start)
-                .setDuration(p.makeDuration(p.getEnd().getUB(), d, "bootVM(", e, ").dSlice_duration"))
+        duration = p.makeDuration(d, d, VAR_PREFIX, "(", e, ").duration");
+        dSlice = new SliceBuilder(p, e, VAR_PREFIX, "(", e, ").dSlice").setStart(start)
+                .setDuration(p.makeDuration(p.getEnd().getUB(), d, VAR_PREFIX, "(", e, ").dSlice_duration"))
                 .build();
         Solver s = p.getSolver();
         s.post(IntConstraintFactory.arithm(start, "<=", p.getEnd()));

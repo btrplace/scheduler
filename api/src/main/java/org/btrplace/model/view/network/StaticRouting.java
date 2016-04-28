@@ -23,9 +23,10 @@ import org.btrplace.model.Node;
 import java.util.*;
 
 /**
- * Specific implementation of {@link Routing}.
- * If a specific path is not found from static routing rules, it automatically looks for physical connections.
- * <p>
+ * Statical implementation of {@link Routing}.
+ * Requires to specify routes manually, along with each link direction for full-duplex purpose,
+ * see {@link #setStaticRoute(NodesMap, LinkedHashMap)}.
+ *
  * If instantiated manually, it should be first attached to an existing network view, see {@link #setNetwork(Network)}.
  *
  * @author Vincent Kherbache
@@ -33,7 +34,7 @@ import java.util.*;
  */
 public class StaticRouting extends Routing {
 
-    private Map<NodesMap, List<Link>> routes;
+    private Map<NodesMap, Map<Link, Boolean>> routes;
 
     /**
      * Make a new static routing.
@@ -45,11 +46,18 @@ public class StaticRouting extends Routing {
     /**
      * Get the static route between two given nodes.
      *
-     * @param nm the nodes map
-     * @return the static route
+     * @param nm    the nodes map
+     * @return the static route. {@code null} if not found
      */
     public List<Link> getStaticRoute(NodesMap nm) {
-        return routes.get(nm);
+
+        Map<Link, Boolean> route = routes.get(nm);
+        
+        if (route == null) {
+            return null;
+        }
+        
+        return new ArrayList<>(route.keySet());
     }
 
     /**
@@ -57,130 +65,50 @@ public class StaticRouting extends Routing {
      *
      * @return the static routes
      */
-    public Map<NodesMap, List<Link>> getStaticRoutes() {
+    public Map<NodesMap, Map<Link, Boolean>> getStaticRoutes() {
         return routes;
     }
 
     /**
      * Manually add a static route between two nodes.
-     * TODO: add routes between 2 PhysicalElements and check for an optimal path between nodes using this global mapping
      *
      * @param nm    a node mapping containing two nodes: the source and the destination node.
-     * @param links an ordered list of links representing the path between the two nodes.
+     * @param links an insert-ordered map of link<->direction representing the path between the two nodes.
      */
-    public void setStaticRoute(NodesMap nm, List<Link> links) {
+    public void setStaticRoute(NodesMap nm, Map<Link, Boolean> links) {
         routes.put(nm, links); // Only one route between two nodes (replace the old route)
-    }
-
-    /**
-     * Recursive method to get the first physical path found from a switch to a destination node
-     *
-     * @param   currentPath the current or initial path containing the link(s) crossed
-     * @param   sw the current switch to browse
-     * @param   dst the destination node to reach
-     * @return  the ordered list of links that make the path to dst
-     */
-    private LinkedHashMap<Link, Boolean> getFirstPhysicalPath(LinkedHashMap<Link, Boolean> currentPath, Switch sw, Node dst) {
-
-        // Iterate through the current switch's links
-        for (Link l : net.getConnectedLinks(sw)) {
-            // Wrong link
-            if (currentPath.keySet().contains(l)) continue;
-            // Go through the link and track the direction for full-duplex purpose
-            if (l.getSwitch().equals(sw)) {
-                // From switch to element => false : UpLink
-                currentPath.put(l, false);
-            }
-            else {
-                // From element to switch => true : DownLink
-                currentPath.put(l, true);
-            }
-
-            // Check what is after
-            if (l.getElement() instanceof Node) {
-                // Node found, path complete
-                if (l.getElement().equals(dst)) return currentPath;
-            }
-            else {
-                // Go to the next switch
-                LinkedHashMap<Link, Boolean>  recall = getFirstPhysicalPath(
-                        currentPath, l.getSwitch().equals(sw) ? (Switch) l.getElement() : l.getSwitch(), dst);
-                // Return the complete path if found
-                if (!recall.isEmpty()) return recall;
-            }
-            // Wrong link, go back
-            List<Link> tmpListToRemove = new ArrayList<>(currentPath.keySet()); // Use a list to keep insert order
-            currentPath.remove(tmpListToRemove.get(tmpListToRemove.size()-1));
-        }
-        // No path found through this switch
-        return new LinkedHashMap<>();
     }
 
     @Override
     public List<Link> getPath(Node n1, Node n2) {
 
-        NodesMap nodesMap = new NodesMap(n1, n2);
-
         // Check for a static route
-        List<Link> l = routes.get(nodesMap);
-        if (l != null) {
-            return l;
+        Map<Link, Boolean> route = routes.get(new NodesMap(n1, n2));
+        if (route == null) {
+            return null;
         }
-
-        // If not found, return the first physical path found
-
-        if (net == null) { return Collections.emptyList(); }
-
-        // Initialize the cache
-        if (routingCache == null) {
-            int cacheSize = net.getConnectedNodes().size();
-            routingCache = new LinkedHashMap[cacheSize][cacheSize]; // OK for the warning
-        }
-
-        // Fill the cache if needed
-        if (routingCache[n1.id()][n2.id()] == null) {
-            // Get the first physical path found between the two nodes
-            LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<>();
-            // From element to switch => true : DownLink
-            initialPath.put(net.getConnectedLinks(n1).get(0), true);
-            routingCache[n1.id()][n2.id()] =
-                    getFirstPhysicalPath(
-                            initialPath, // Only one link per node
-                            net.getConnectedLinks(n1).get(0).getSwitch(), // A node is always connected to a switch
-                            n2
-                    );
-        }
-
-        return new ArrayList<>(routingCache[n1.id()][n2.id()].keySet());
+        // Return the list of links
+        return new ArrayList<>(route.keySet());
     }
 
     @Override
     public Boolean getLinkDirection(Node n1, Node n2, Link l) {
 
-        // Initialize the cache (should be already known)
-        if (routingCache == null) {
-            int cacheSize = net.getConnectedNodes().size();
-            routingCache = new LinkedHashMap[cacheSize][cacheSize]; // OK for the warning
+        // Check for a static route
+        Map<Link, Boolean> route = routes.get(new NodesMap(n1, n2));
+        if (route == null) {
+            return null;
         }
-
-        // Fill the needed cache entry from getPath method
-        if (routingCache[n1.id()][n2.id()] == null) {
-            getPath(n1, n2);
-        }
-
-        // Link is not on route!
-        if (!routingCache[n1.id()][n2.id()].keySet().contains(l)) return null;
-
-        // Return the direction
-        return routingCache[n1.id()][n2.id()].get(l);
+        // Return the direction if the given link is on path
+        return route.containsKey(l) ? route.get(l) : null;
     }
 
     @Override
     public Routing copy() {
-        StaticRouting srouting = new StaticRouting();
-        srouting.net = net; // Do not associate view->routing, only routing->view
-        srouting.routes.putAll(routes);
-        return srouting;
+        StaticRouting clone = new StaticRouting();
+        clone.net = net; // Do not associate view->routing, only routing->view
+        clone.routes.putAll(routes);
+        return clone;
     }
 
     /**

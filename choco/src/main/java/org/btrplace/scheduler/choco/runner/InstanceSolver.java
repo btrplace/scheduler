@@ -22,8 +22,6 @@ import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Interface to specify an instance solver.
@@ -31,8 +29,6 @@ import org.slf4j.LoggerFactory;
  * @author Fabien Hermenier
  */
 public interface InstanceSolver {
-
-    Logger LOGGER = LoggerFactory.getLogger("StaticPartitioning");
 
     /**
      * Solve an instance.
