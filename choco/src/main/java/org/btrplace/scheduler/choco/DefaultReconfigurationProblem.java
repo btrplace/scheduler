@@ -25,6 +25,7 @@ import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
+import org.btrplace.scheduler.choco.extensions.MyFirstFail;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
@@ -41,7 +42,6 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
@@ -261,7 +261,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void appendNaiveBranchHeuristic() {
         StrategiesSequencer seq;
 
-        IntStrategy strat = ISF.custom(new FirstFail(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
+        IntStrategy strat = ISF.custom(new MyFirstFail(solver), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(strat);
         } else {
