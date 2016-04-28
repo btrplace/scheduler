@@ -18,6 +18,9 @@
 
 package org.btrplace.fuzzer.generator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Fabien Hermenier
  */
@@ -26,6 +29,8 @@ public class DefaultModelParams implements ModelParams {
     private int nbVMs = 3;
 
     private int nbNodes = 3;
+
+    private List<ModelViewFuzzer> views = new ArrayList<>();
 
     @Override
     public int vms() {
@@ -47,5 +52,15 @@ public class DefaultModelParams implements ModelParams {
     public ModelParams nodes(int nb) {
         nbNodes = nb;
         return this;
+    }
+
+    @Override
+    public ModelParams with(ModelViewFuzzer f) {
+        views.add(f);
+        return this;
+    }
+
+    public List<ModelViewFuzzer> views() {
+        return views;
     }
 }

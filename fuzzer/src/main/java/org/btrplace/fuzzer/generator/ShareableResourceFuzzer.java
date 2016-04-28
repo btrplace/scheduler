@@ -18,6 +18,7 @@
 
 package org.btrplace.fuzzer.generator;
 
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
@@ -28,7 +29,7 @@ import java.util.Random;
 /**
  * @author Fabien Hermenier
  */
-public class ShareableResourceFuzzer implements ModelViewFuzzer<ShareableResource> {
+public class ShareableResourceFuzzer implements ModelViewFuzzer {
 
     private String id;
 
@@ -46,18 +47,18 @@ public class ShareableResourceFuzzer implements ModelViewFuzzer<ShareableResourc
     }
 
     @Override
-    public void decorate(ReconfigurationPlan p) {
+    public void decorate(Model mo) {
         ShareableResource rc = new ShareableResource(id);
-        for (VM v : p.getOrigin().getMapping().getAllVMs()) {
+        for (VM v : mo.getMapping().getAllVMs()) {
             int c = rnd.nextInt(maxCons - minCons + 1) + minCons;
             rc.setConsumption(v, c);
         }
 
-        for (Node n : p.getOrigin().getMapping().getAllNodes()) {
+        for (Node n : mo.getMapping().getAllNodes()) {
             int c = rnd.nextInt(maxCapa - minCapa + 1) + minCapa;
             rc.setCapacity(n, c);
         }
 
-        p.getOrigin().attach(rc);
+        mo.attach(rc);
     }
 }

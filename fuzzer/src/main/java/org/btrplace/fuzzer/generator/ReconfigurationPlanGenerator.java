@@ -32,13 +32,8 @@ import java.util.*;
  */
 public class ReconfigurationPlanGenerator {
 
-    private int min, max;
-
-    public ReconfigurationPlanGenerator() {
-        min = 1;
-        max = 4;
-    }
-
+    private int min= 1;
+    private int max = 4;
 
     public ReconfigurationPlan build(Model mo) {
         Random rnd = new Random();

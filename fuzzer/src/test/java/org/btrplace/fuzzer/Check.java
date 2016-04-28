@@ -19,9 +19,13 @@
 package org.btrplace.fuzzer;
 
 import org.btrplace.fuzzer.generator.InstanceGenerator;
+import org.btrplace.fuzzer.generator.ShareableResourceFuzzer;
+import org.btrplace.model.Instance;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,11 +35,14 @@ import java.util.stream.Stream;
  */
 public class Check {
 
+    public static NumberFormat df = new DecimalFormat("#0.00");
+
+
     @Test
-    public void run() {
+    public void runCore() {
         FuzzTesting tester = new FuzzTesting();
         InstanceGenerator source = new InstanceGenerator();
-        List<Result> l = Stream.generate(source).limit(10000)
+        List<Result> l = Stream.generate(source).limit(1000000)
                 .map(tester::crashTest).filter(r -> !r.succeed())
                 .collect(Collectors.toList());
         for (Result r : l) {
@@ -43,5 +50,49 @@ public class Check {
             System.out.println(r);
         }
         Assert.assertEquals(l.size(), 0);
+    }
+
+    @Test
+    public void runResource() {
+        FuzzTesting tester = new FuzzTesting();
+        InstanceGenerator source = new InstanceGenerator().with(new ShareableResourceFuzzer("cpu", 1, 4, 48, 64)).vms(60).nodes(5);
+
+        int count = 100;
+        long st = System.currentTimeMillis();
+        List<Result> l = Stream.generate(source).limit(count)
+                .map(tester::crashTest).filter(r -> !r.succeed())
+                .collect(Collectors.toList());
+        for (Result r : l) {
+            System.out.println("---");
+            System.out.println(r);
+        }
+        long ed = System.currentTimeMillis();
+        long duration = ed - st;
+        double speed = count / duration;
+        System.out.println(count + " test(s); " + (ed - st) + " ms; " + df.format(speed * 1000) + " test(s) / sec.");
+
+        Assert.assertEquals(l.size(), 0);
+    }
+
+    @Test
+    public void bench() {
+
+        FuzzTesting tester = new FuzzTesting();
+        for (int i = 0; i < 10; i++) {
+            InstanceGenerator source = new InstanceGenerator()
+                    .with(new ShareableResourceFuzzer("cpu", 1, 4, 48, 64));
+
+            long st = System.currentTimeMillis();
+
+            double count = Stream.generate(source)
+                    .limit(10000)
+                    .map(tester::crashTest)
+                    .count();
+            long ed = System.currentTimeMillis();
+            long duration = ed - st;
+            double speed = count / duration;
+            System.out.println(count + " test(s); " + (ed - st) + " ms; " + df.format(speed * 1000) + " test(s) / sec.");
+        }
+
     }
 }

@@ -127,7 +127,7 @@ public class CShareableResource implements ChocoView {
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation.add(VariableFactory.fixed(p.makeVarLabel("cste -- " + "vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0, s));
+                vmAllocation.add(VariableFactory.fixed(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0, s));
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
@@ -424,6 +424,8 @@ public class CShareableResource implements ChocoView {
             for (VM vm : rp.getSourceModel().getMapping().getRunningVMs(n)) {
                 usage += getSourceResource().getConsumption(vm);
                 if (usage > capa) {
+                    //Here, the problem is not feasible but we consider an exception
+                    //because such a situation does not physically makes sense (one cannot run at 110%)
                     throw new SchedulerException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
                 }
             }

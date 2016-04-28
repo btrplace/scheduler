@@ -18,14 +18,15 @@
 
 package org.btrplace.fuzzer.generator;
 
+import org.btrplace.model.Model;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 
 /**
  * @author Fabien Hermenier
  */
-public interface ModelViewFuzzer<E extends ModelView> {
+public interface ModelViewFuzzer {
 
-    void decorate(ReconfigurationPlan p);
+    void decorate(Model mo);
 
 }

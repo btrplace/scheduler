@@ -51,6 +51,12 @@ public class ModelGenerator implements ModelParams {
     }
 
     @Override
+    public ModelGenerator with(ModelViewFuzzer f) {
+        ps.with(f);
+        return this;
+    }
+
+    @Override
     public int vms() {
         return ps.vms();
     }

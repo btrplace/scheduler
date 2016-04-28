@@ -28,13 +28,8 @@ import org.btrplace.scheduler.choco.DefaultChocoScheduler;
  */
 public class FuzzTesting {
 
-    private ChocoScheduler sched;
-
-    public FuzzTesting() {
-        sched = new DefaultChocoScheduler();
-    }
-
     public Result crashTest(Instance i) {
+        ChocoScheduler sched = new DefaultChocoScheduler();
         ReconfigurationPlan plan = null;
         Exception res = null;
         try {

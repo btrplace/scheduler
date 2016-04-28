@@ -30,4 +30,6 @@ public interface ModelParams {
     ModelParams vms(int nb);
 
     ModelParams nodes(int nb);
+
+    ModelParams with(ModelViewFuzzer f);
 }

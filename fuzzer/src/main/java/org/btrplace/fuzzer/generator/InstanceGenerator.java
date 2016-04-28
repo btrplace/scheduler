@@ -23,6 +23,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
+import org.btrplace.model.view.ModelView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class InstanceGenerator implements ModelParams, Supplier<Instance> {
     public Instance get() {
         ModelGenerator gen = new ModelGenerator().setParams(ps);
         Model mo = gen.build();
+        for (ModelViewFuzzer v : ps.views()) {
+            v.decorate(mo);
+        }
         return new Instance(mo, states(mo), new MinMTTR());
     }
 
@@ -61,14 +65,20 @@ public class InstanceGenerator implements ModelParams, Supplier<Instance> {
     }
 
     @Override
-    public ModelParams vms(int nb) {
+    public InstanceGenerator vms(int nb) {
         ps.vms(nb);
         return this;
     }
 
     @Override
-    public ModelParams nodes(int nb) {
+    public InstanceGenerator nodes(int nb) {
         ps.nodes(nb);
+        return this;
+    }
+
+    @Override
+    public InstanceGenerator with(ModelViewFuzzer f) {
+        ps.with(f);
         return this;
     }
 
