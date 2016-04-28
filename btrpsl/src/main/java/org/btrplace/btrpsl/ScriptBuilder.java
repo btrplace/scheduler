@@ -71,6 +71,7 @@ public class ScriptBuilder {
 
     private Model model;
 
+    public static final String EXTENSION = "btrp";
     /**
      * The builder to use to make ErrorReporter.
      */
@@ -207,40 +208,24 @@ public class ScriptBuilder {
 
         try {
             BtrPlaceTree tree = (BtrPlaceTree) parser.script_decl().getTree();
-            //First pass, expand range
             if (tree != null) {
                 if (tree.token != null) {
-                    try {
                         tree.go(tree); //Single instruction
-                    } catch (UnsupportedOperationException e) {
-                        errorReporter.append(0, 0, e.getMessage());
-                    }
                 } else {
                     for (int i = 0; i < tree.getChildCount(); i++) {
-                        try {
                             tree.getChild(i).go(tree);
-                        } catch (UnsupportedOperationException e) {
-                            errorReporter.append(0, 0, e.getMessage());
                         }
                     }
-                }
             }
         } catch (RecognitionException e) {
             throw new ScriptBuilderException(e.getMessage(), e);
+        } catch (UnsupportedOperationException e) {
+            errorReporter.append(0, 0, e.getMessage());
         }
         if (!errorReporter.getErrors().isEmpty()) {
             throw new ScriptBuilderException(errorReporter);
         }
         return v;
-    }
-
-    /**
-     * Get the file extension for the script.
-     *
-     * @return ".btrp"
-     */
-    public String getAssociatedExtension() {
-        return "btrp";
     }
 
     /**

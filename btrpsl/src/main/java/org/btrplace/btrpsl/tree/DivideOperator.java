@@ -45,7 +45,11 @@ public class DivideOperator extends BtrPlaceTree {
         BtrpOperand l = getChild(0).go(this);
         BtrpOperand r = getChild(1).go(this);
         if (l != IgnorableOperand.getInstance() && r != IgnorableOperand.getInstance()) {
-            return l.div(r);
+            try {
+                return l.div(r);
+            } catch (ArithmeticException e) {
+                return ignoreError(e);
+            }
         }
         return IgnorableOperand.getInstance();
     }

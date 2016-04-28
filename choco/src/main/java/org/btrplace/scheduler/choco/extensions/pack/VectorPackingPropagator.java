@@ -168,7 +168,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      *
      * @return false if the total size of the items assigned to a bin exceeds the bin load upper bound, true otherwise
      */
-    public ESat isConsistent() {
+    private ESat isConsistent() {
         int[][] l = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
             if (bins[i].isInstantiated()) {

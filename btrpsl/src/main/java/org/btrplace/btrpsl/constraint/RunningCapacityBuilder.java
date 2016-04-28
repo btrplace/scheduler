@@ -18,6 +18,7 @@
 
 package org.btrplace.btrpsl.constraint;
 
+import org.btrplace.btrpsl.element.BtrpNumber;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
@@ -48,19 +49,19 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
         List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
-        Number v = (Number) params[1].transform(this, t, args.get(1));
-        if (v == null || v.doubleValue() < 0) {
+        BtrpNumber n = (BtrpNumber) args.get(1);
+        if (!n.isInteger()) {
+            t.ignoreError("Parameter '" + params[1].getName() + "' expects an integer");
+            return Collections.emptyList();
+        }
+        int v = n.getIntValue();
+        if (v < 0) {
             t.ignoreError("Parameter '" + params[1].getName() + "' expects a positive integer (" + v + " given)");
             return Collections.emptyList();
         }
 
-        if (Math.rint(v.doubleValue()) != v.doubleValue()) {
-            t.ignoreError("Parameter '" + params[1].getName() + "' expects an integer, not a real number (" + v + " given)");
-            return Collections.emptyList();
-        }
-
         return ns != null ?
-                Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v.intValue())) :
+                Collections.singletonList(new RunningCapacity(new HashSet<>(ns), v)) :
                 Collections.emptyList();
     }
 }
