@@ -32,7 +32,7 @@ import org.btrplace.model.view.network.Switch;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -77,7 +77,10 @@ public class NetworkConverterTest {
         mo.getMapping().addOnlineNode(n1);
         mo.getMapping().addOnlineNode(n2);
         net.connect(1000, s, n1, n2);
-        ((StaticRouting) net.getRouting()).setStaticRoute(new StaticRouting.NodesMap(n1, n2), net.getLinks());
+        LinkedHashMap<Link, Boolean> route = new LinkedHashMap<>();
+        route.put(net.getConnectedLinks(n1).get(0), true);
+        route.put(net.getConnectedLinks(n2).get(0), false);
+        ((StaticRouting) net.getRouting()).setStaticRoute(new StaticRouting.NodesMap(n1, n2), route);
         mo.attach(net);
 
         ModelConverter mc = new ModelConverter();
@@ -90,8 +93,8 @@ public class NetworkConverterTest {
         Assert.assertTrue(net.getLinks().equals(net2.getLinks()));
         Assert.assertTrue(net.getConnectedNodes().equals(net2.getConnectedNodes()));
 
-        Map<StaticRouting.NodesMap, List<Link>> routes = ((StaticRouting) net.getRouting()).getStaticRoutes();
-        Map<StaticRouting.NodesMap, List<Link>> routes2 = ((StaticRouting) net2.getRouting()).getStaticRoutes();
+        Map<StaticRouting.NodesMap, LinkedHashMap<Link, Boolean>> routes = ((StaticRouting) net.getRouting()).getStaticRoutes();
+        Map<StaticRouting.NodesMap, LinkedHashMap<Link, Boolean>> routes2 = ((StaticRouting) net2.getRouting()).getStaticRoutes();
         for (StaticRouting.NodesMap nm : routes.keySet()) {
             for (StaticRouting.NodesMap nm2 : routes2.keySet()) {
                 Assert.assertTrue(nm.equals(nm2));
