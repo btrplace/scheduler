@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -16,36 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.fuzzer;
+package org.btrplace.fuzzer;
 
-import org.btrplace.safeplace.util.AllTuplesGenerator;
+import org.btrplace.fuzzer.generator.InstanceGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Fabien Hermenier
  */
-public class AllTuplesGeneratorTest {
+public class Check {
 
     @Test
-    public void test() {
-        List<List<Integer>> l = new ArrayList<>();
-        List<Integer> cnt = new ArrayList<>();
-        for (int i = 0; i < 300; i++) {
-            cnt.add(i);
+    public void run() {
+        FuzzTesting tester = new FuzzTesting();
+        InstanceGenerator source = new InstanceGenerator();
+        List<Result> l = Stream.generate(source).limit(10000)
+                .map(tester::crashTest).filter(r -> !r.succeed())
+                .collect(Collectors.toList());
+        for (Result r : l) {
+            System.out.println("---");
+            System.out.println(r);
         }
-        l.add(cnt);
-        l.add(cnt);
-        l.add(cnt);
-        double nb = 0;
-        AllTuplesGenerator<Integer> tg = new AllTuplesGenerator<>(Integer.class, l);
-        for (Integer[] t : tg) {
-            //System.out.println(t);
-            nb++;
-        }
-        Assert.assertEquals(nb, Math.pow(cnt.size(), l.size()));
+        Assert.assertEquals(l.size(), 0);
     }
 }

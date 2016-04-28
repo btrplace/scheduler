@@ -1,4 +1,22 @@
-package org.btrplace.safeplace.fuzzer;
+/*
+ * Copyright (c) 2016 University Nice Sophia Antipolis
+ *
+ * This file is part of btrplace.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.btrplace.fuzzer.generator;
 
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
@@ -11,38 +29,41 @@ import java.util.Random;
 /**
  * Created by fhermeni on 07/09/2015.
  */
-public class ModelGenerator {
+public class ModelGenerator implements ModelParams {
 
-    private int nbVMs, nbNodes;
+    private ModelParams ps;
 
     public ModelGenerator() {
-        nbNodes = 1;
-        nbVMs = 1;
+        ps = new DefaultModelParams();
     }
 
 
+    @Override
     public ModelGenerator vms(int n) {
-        nbVMs = n;
+        ps.vms(n);
         return this;
     }
 
+    @Override
     public ModelGenerator nodes(int n) {
-        nbNodes = n;
+        ps.nodes(n);
         return this;
     }
 
+    @Override
     public int vms() {
-        return nbVMs;
+        return ps.vms();
     }
 
+    @Override
     public int nodes() {
-        return nbNodes;
+        return ps.nodes();
     }
 
     public Model build() {
         Random rnd = new Random();
         Model mo = new DefaultModel();
-        for (int i = 0; i < nbNodes; i++) {
+        for (int i = 0; i < ps.nodes(); i++) {
             Node n = mo.newNode();
 
             //if (rnd.nextBoolean()) {
@@ -52,7 +73,7 @@ public class ModelGenerator {
             }*/
         }
 
-        for (int i = 0; i < nbVMs; i++) {
+        for (int i = 0; i < ps.vms(); i++) {
             VM v = mo.newVM();
             /*switch (rnd.nextInt(3)) {
                 case 0:
@@ -67,6 +88,11 @@ public class ModelGenerator {
             }*/
         }
         return mo;
+    }
+
+    public ModelGenerator setParams(ModelParams ps) {
+        this.ps = ps;
+        return this;
     }
 
     private Node oneOf(Random rnd, Collection<Node> nodes) {

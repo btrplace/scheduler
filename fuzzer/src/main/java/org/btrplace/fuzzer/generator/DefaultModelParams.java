@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -16,21 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.fuzzer;
-
-import org.testng.annotations.Test;
-
-import java.io.FileReader;
+package org.btrplace.fuzzer.generator;
 
 /**
  * @author Fabien Hermenier
  */
-public class TransitionTableTest {
+public class DefaultModelParams implements ModelParams {
 
-    @Test
-    public void test() throws Exception {
-        String file = "vm_transitions";
-        TransitionTable trans = new TransitionTable(new FileReader(file));
-        System.out.println(trans);
+    private int nbVMs = 3;
+
+    private int nbNodes = 3;
+
+    @Override
+    public int vms() {
+        return nbVMs;
+    }
+
+    @Override
+    public int nodes() {
+        return nbNodes;
+    }
+
+    @Override
+    public ModelParams vms(int nb) {
+        nbVMs = nb;
+        return this;
+    }
+
+    @Override
+    public ModelParams nodes(int nb) {
+        nbNodes = nb;
+        return this;
     }
 }

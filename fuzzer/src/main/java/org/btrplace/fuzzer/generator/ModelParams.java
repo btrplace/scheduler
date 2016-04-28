@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -16,16 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.fuzzer;
-
-import org.btrplace.model.view.ModelView;
-import org.btrplace.plan.ReconfigurationPlan;
+package org.btrplace.fuzzer.generator;
 
 /**
  * @author Fabien Hermenier
  */
-public interface ModelViewFuzzer<E extends ModelView> {
+public interface ModelParams {
 
-    void decorate(ReconfigurationPlan p);
+    int vms();
 
+    int nodes();
+
+    ModelParams vms(int nb);
+
+    ModelParams nodes(int nb);
 }
