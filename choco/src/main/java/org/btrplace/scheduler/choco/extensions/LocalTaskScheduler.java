@@ -44,6 +44,9 @@ public class LocalTaskScheduler {
      * out[i] = true <=> the consuming slice i will leave me.
      */
     private BitSet out;
+
+    //The indexes of the slices that will leave me
+    int[] outIdx;
     /**
      * The moment the consuming slices ends. Same order as the hosting variables.
      */
@@ -119,6 +122,11 @@ public class LocalTaskScheduler {
         this.out = outs;
         this.associateDTask = associateDTask;
 
+        outIdx = new int[out.cardinality()];
+        int x = 0;
+        for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
+            outIdx[x++] = ct;
+        }
 
         //The amount of free resources at startup
 
@@ -134,7 +142,7 @@ public class LocalTaskScheduler {
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
-        for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
+        for (int ct : outIdx) {
             for (int d = 0; d < nbDims; d++) {
                 startupFree[d] -= cUsages[ct][d];
             }
@@ -190,11 +198,16 @@ public class LocalTaskScheduler {
         allinstantiated &= insertDSlices();
 
         //Now transforms into an absolute profile
-        sortedMinProfile = null;
+        absoluteValues();
+
+        summary();
+        return allinstantiated;
+    }
+
+    private void absoluteValues() {
         sortedMinProfile = profilesMin[0].keys();
         Arrays.sort(sortedMinProfile);
 
-        sortedMaxProfile = null;
         sortedMaxProfile = profilesMax[0].keys();
 
         Arrays.sort(sortedMaxProfile);
@@ -203,9 +216,6 @@ public class LocalTaskScheduler {
             toAbsoluteFreeResources(profilesMin[d], sortedMinProfile);
             toAbsoluteFreeResources(profilesMax[d], sortedMaxProfile);
         }
-
-        summary();
-        return allinstantiated;
     }
 
     private boolean insertDSlices() throws ContradictionException {
@@ -237,7 +247,7 @@ public class LocalTaskScheduler {
         boolean allinstantiated = true;
         // the cTasks
         int lastInf = 0;
-        for (int ct = out.nextSetBit(0); ct >= 0; ct = out.nextSetBit(ct + 1)) {
+        for (int ct : outIdx) {
 
             cEnds[ct].updateUpperBound(last.getUB(), aCause);
             allinstantiated &= cEnds[ct].isInstantiated() || associatedToDSliceOnCurrentNode(ct);
@@ -250,13 +260,14 @@ public class LocalTaskScheduler {
             boolean increasing = associatedToDSliceOnCurrentNode(ct) && increase(ct, associateDTask[ct]);
 
             for (int d = 0; d < nbDims; d++) {
+                int diff = cUsages[ct][d];
                 if (increasing) {
-                    profilesMax[d].put(tl, profilesMax[d].get(tl) - cUsages[ct][d]);
-                    profilesMin[d].put(tu, profilesMin[d].get(tu) - cUsages[ct][d]);
+                    profilesMax[d].put(tl, profilesMax[d].get(tl) - diff);
+                    profilesMin[d].put(tu, profilesMin[d].get(tu) - diff);
                 } else {
                     //the cTask free resources (by migration or decreasing demand on dimensions
-                    profilesMin[d].put(tl, profilesMin[d].get(tl) - cUsages[ct][d]);
-                    profilesMax[d].put(tu, profilesMax[d].get(tu) - cUsages[ct][d]);
+                    profilesMin[d].put(tl, profilesMin[d].get(tl) - diff);
+                    profilesMax[d].put(tu, profilesMax[d].get(tu) - diff);
                 }
             }
         }
@@ -286,7 +297,7 @@ public class LocalTaskScheduler {
                 LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages[i]));
             }
 
-            for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+            for (int i : outIdx) {
                 LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages[i]));
             }
 
@@ -399,7 +410,7 @@ public class LocalTaskScheduler {
     }
 
     private void updateCEndsSup(BitSet watchHosts) throws ContradictionException {
-        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+        for (int i : outIdx) {
             if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
                 int lastT = -1;
