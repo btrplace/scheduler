@@ -194,8 +194,7 @@ public class CMinMTTR implements org.btrplace.scheduler.choco.constraint.CObject
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            Solver s = rp.getSolver();
-            costConstraints.forEach(s::post);
+            costConstraints.forEach(rp.getSolver()::post);
         }
     }
 
