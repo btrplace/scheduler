@@ -143,14 +143,24 @@ public class DefaultModel implements Model {
         StringBuilder b = new StringBuilder();
         b.append("Mapping:\n");
         b.append(getMapping());
-        b.append("\nAttributes:\n");
-        b.append(getAttributes());
-        b.append("\nViews:\n");
-        StringJoiner joiner = new StringJoiner("\n");
-        for (Map.Entry<String, ModelView> entry : resources.entrySet()) {
-            joiner.add(String.format("%s: %s", entry.getKey(), entry.getValue()));
+        b.append("\nAttributes:");
+        if (!getAttributes().getDefined().isEmpty()) {
+            b.append("\n");
+            b.append(getAttributes());
+        } else {
+            b.append(" -");
         }
-        b.append(joiner.toString());
+        b.append("\nViews:");
+        if (resources.isEmpty()) {
+            b.append(" -");
+        } else {
+            b.append("\n");
+            StringJoiner joiner = new StringJoiner("\n");
+            for (Map.Entry<String, ModelView> entry : resources.entrySet()) {
+                joiner.add(String.format("%s: %s", entry.getKey(), entry.getValue()));
+            }
+            b.append(joiner.toString());
+        }
         return b.toString();
     }
 
