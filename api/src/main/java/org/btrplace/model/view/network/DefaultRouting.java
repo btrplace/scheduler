@@ -55,21 +55,23 @@ public class DefaultRouting extends Routing {
         // Iterate through the current switch's links
         for (Link l : net.getConnectedLinks(sw)) {
             // Wrong link
-            if (currentPath.keySet().contains(l)) continue;
-            // Go through the link and track the direction for full-duplex purpose
-            if (l.getSwitch().equals(sw)) {
-                // From switch to element => false : DownLink
-                currentPath.put(l, false);
+            if (currentPath.keySet().contains(l)) {
+                continue;
             }
-            else {
-                // From element to switch => true : UpLink
-                currentPath.put(l, true);
-            }
+            
+            /* 
+             * Go through the link and track the direction for full-duplex purpose
+             * From switch to element => false : DownLink
+             * From element to switch => true : UpLink
+             */
+            currentPath.put(l, !l.getSwitch().equals(sw));
 
             // Check what is after
             if (l.getElement() instanceof Node) {
                 // Node found, path complete
-                if (l.getElement().equals(dst)) return currentPath;
+                if (l.getElement().equals(dst)) {
+                    return currentPath;
+                }
             }
             else {
                 // Go to the next switch
@@ -90,7 +92,7 @@ public class DefaultRouting extends Routing {
     @Override
     public List<Link> getPath(Node n1, Node n2) {
 
-        if (net == null) {
+        if (net == null || n1.equals(n2)) {
             return Collections.emptyList();
         }
 
@@ -102,10 +104,10 @@ public class DefaultRouting extends Routing {
 
         // Fill the cache if needed
         if (routingCache[n1.id()][n2.id()] == null) {
-            // Get the first physical path found between the two nodes
+            // Create an initial path from the node to its switch => true : UpLink
             LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<>();
-            // From element to switch => true : UpLink
             initialPath.put(net.getConnectedLinks(n1).get(0), true);
+            // Get the first physical path found between the two nodes
             routingCache[n1.id()][n2.id()] =
                     getFirstPhysicalPath(
                             initialPath, // Only one link per node
@@ -119,25 +121,29 @@ public class DefaultRouting extends Routing {
 
     @Override
     public Boolean getLinkDirection(Node n1, Node n2, Link l) {
+        
+        if (n1.equals(n2)) {
+            return null;
+        }
 
         // Initialize the cache (should be already done)
         if (routingCache == null) {
             int cacheSize = net.getConnectedNodes().size();
             routingCache = new LinkedHashMap[cacheSize][cacheSize]; // OK for the warning
         }
-
-        // Fill the needed cache entry from getPath method
+        
+        // Fill the appropriate cache entry from getPath method if needed
         if (routingCache[n1.id()][n2.id()] == null) {
             getPath(n1, n2);
         }
 
         // Link is not on route!
-        if (!routingCache[n1.id()][n2.id()].keySet().contains(l)) {
+        if (!routingCache[n1.id()][n2.id()].containsKey(l)) {
             return null;
         }
 
-        // Return the direction
-        return routingCache[n1.id()][n2.id()].get(l);
+        // Return the direction if the given link in on path
+        return routingCache[n1.id()][n2.id()].containsKey(l) ? routingCache[n1.id()][n2.id()].get(l) : null;
     }
 
     @Override
