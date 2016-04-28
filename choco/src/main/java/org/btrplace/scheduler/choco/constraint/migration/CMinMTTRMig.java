@@ -112,7 +112,6 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
         // Init a list of vars
         List<IntVar> endVars = new ArrayList<>();
         
-        // Generic heuristic
         // Boot nodes
         for (Node n : rp.getNodes()) {
             if (rp.getNodeAction(n) instanceof BootableNode) {
@@ -130,15 +129,14 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
         endVars.clear();
 
         // Migrate VMs
-        ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(rp);
         Stream<Slice> s = rp.getVMActions().stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
         IntVar[] starts = s.map(Slice::getStart).toArray(IntVar[]::new);
-
         strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
+        // Add remaining VMs actions
         for (VMTransition a : rp.getVMActions()) {
             endVars.add(a.getEnd());
         }
@@ -167,43 +165,6 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
             ));
         }
 
-        /* Symmetric decommissioning heuristic
-        for (Node n : rp.getNodes()) {
-            endVars.clear();
-
-            if (rp.getNodeAction(n) instanceof ShutdownableNode) {
-
-                for (VMTransition a : rp.getVMActions()) {
-
-                    if (rp.getNode(n) == (a.getCSlice().getHoster().getValue())) {
-
-                        // Boot dst node (if known)
-                        if (a.getDSlice().getHoster().isInstantiated()) {
-                            if (!endVars.contains(rp.getNodeAction(rp.getNode(a.getDSlice().getHoster().getValue())).getEnd())) {
-                                endVars.add(rp.getNodeAction(rp.getNode(a.getDSlice().getHoster().getValue())).getEnd());
-                            }
-                        }
-
-                        // Migrate all
-                        endVars.add(a.getEnd());
-                    }
-                }
-
-                // Shutdown src node
-                endVars.add(rp.getNodeAction(n).getEnd());
-            }
-
-            if (!endVars.isEmpty()) {
-                strategies.add(ISF.custom(
-                        ISF.minDomainSize_var_selector(),
-                        ISF.min_value_selector(),
-                        ISF.split(), // Split from max
-                        endVars.toArray(new IntVar[endVars.size()])
-                ));
-                //strategies.add(ISF.minDom_LB(endVars.toArray(new IntVar[endVars.size()])));
-            }
-        }*/
-
         // Set the strategies in the correct order (as added before)
         strategies.add(new IntStrategy(new IntVar[]{rp.getEnd(), cost}, new MyInputOrder<>(rp.getSolver(), this), new IntDomainMin()));
 
@@ -214,7 +175,6 @@ public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObj
                         strategies.toArray(new AbstractStrategy[strategies.size()])
                 )
         );
-        //s.set(strategies.toArray(new AbstractStrategy[strategies.size()]));
     }
 
     @Override
