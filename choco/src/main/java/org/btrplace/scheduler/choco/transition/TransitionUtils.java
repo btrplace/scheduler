@@ -21,9 +21,9 @@ package org.btrplace.scheduler.choco.transition;
 import org.btrplace.scheduler.choco.Slice;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Utility class to extract members of a collection of {@link Transition}.
@@ -42,14 +42,9 @@ public final class TransitionUtils {
      * @return a list of d-slices that may be empty
      */
     public static List<Slice> getDSlices(Collection<VMTransition> l) {
-        List<Slice> slices = new ArrayList<>();
-        for (VMTransition m : l) {
-            if (m.getDSlice() != null) {
-                slices.add(m.getDSlice());
-            }
-        }
-        return slices;
-
+        return l.stream()
+                .filter(t -> t.getDSlice() != null)
+                .map(VMTransition::getDSlice).collect(Collectors.toList());
     }
 
 
@@ -60,13 +55,9 @@ public final class TransitionUtils {
      * @return a list of c-slices that may be empty
      */
     public static List<Slice> getCSlices(Collection<VMTransition> l) {
-        List<Slice> slices = new ArrayList<>();
-        for (VMTransition m : l) {
-            if (m.getCSlice() != null) {
-                slices.add(m.getCSlice());
-            }
-        }
-        return slices;
+        return l.stream()
+                .filter(t -> t.getCSlice() != null)
+                .map(VMTransition::getCSlice).collect(Collectors.toList());
     }
 
     /**
@@ -76,11 +67,7 @@ public final class TransitionUtils {
      * @return an array of variable
      */
     public static IntVar[] getStarts(List<? extends Transition<?>> actions) {
-        IntVar[] starts = new IntVar[actions.size()];
-        for (int i = 0; i < actions.size(); i++) {
-            starts[i] = actions.get(i).getStart();
-        }
-        return starts;
+        return actions.stream().map(Transition::getStart).toArray(IntVar[]::new);
     }
 
     /**
@@ -90,11 +77,7 @@ public final class TransitionUtils {
      * @return an array of variable
      */
     public static IntVar[] getHostingEnds(List<NodeTransition> actions) {
-        IntVar[] starts = new IntVar[actions.size()];
-        for (int i = 0; i < actions.size(); i++) {
-            starts[i] = actions.get(i).getHostingEnd();
-        }
-        return starts;
+        return actions.stream().map(NodeTransition::getHostingEnd).toArray(IntVar[]::new);
     }
 
     /**
@@ -104,11 +87,7 @@ public final class TransitionUtils {
      * @return an array of variable
      */
     public static IntVar[] getHostingStarts(List<NodeTransition> actions) {
-        IntVar[] starts = new IntVar[actions.size()];
-        for (int i = 0; i < actions.size(); i++) {
-            starts[i] = actions.get(i).getHostingStart();
-        }
-        return starts;
+        return actions.stream().map(NodeTransition::getHostingStart).toArray(IntVar[]::new);
     }
 
     /**
@@ -118,11 +97,7 @@ public final class TransitionUtils {
      * @return an array of variable
      */
     public static IntVar[] getEnds(List<? extends Transition<?>> actions) {
-        IntVar[] starts = new IntVar[actions.size()];
-        for (int i = 0; i < actions.size(); i++) {
-            starts[i] = actions.get(i).getEnd();
-        }
-        return starts;
+        return actions.stream().map(Transition::getEnd).toArray(IntVar[]::new);
     }
 
     /**
@@ -132,10 +107,6 @@ public final class TransitionUtils {
      * @return an array of variable
      */
     public static IntVar[] getDurations(List<? extends Transition<?>> actions) {
-        IntVar[] starts = new IntVar[actions.size()];
-        for (int i = 0; i < actions.size(); i++) {
-            starts[i] = actions.get(i).getDuration();
-        }
-        return starts;
+        return actions.stream().map(Transition::getDuration).toArray(IntVar[]::new);
     }
 }
