@@ -305,8 +305,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void linkCardinalityWithSlices() {
-        Stream<Slice> s = vmActions.stream().filter(Objects::nonNull)
-                .map(VMTransition::getDSlice);
+        Stream<Slice> s = vmActions.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
         IntVar[] ds = s.map(Slice::getHoster).toArray(IntVar[]::new);
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
