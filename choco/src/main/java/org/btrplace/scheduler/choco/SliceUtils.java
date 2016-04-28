@@ -43,12 +43,7 @@ public final class SliceUtils {
      * @return an array containing every hosting variable
      */
     public static IntVar[] extractHoster(List<Slice> slices) {
-        IntVar[] vs = new IntVar[slices.size()];
-        int i = 0;
-        for (Slice s : slices) {
-            vs[i++] = s.getHoster();
-        }
-        return vs;
+        return slices.stream().map(Slice::getHoster).toArray(IntVar[]::new);
     }
 
     /**
@@ -58,12 +53,7 @@ public final class SliceUtils {
      * @return an array containing every consume variable
      */
     public static IntVar[] extractStarts(List<Slice> slices) {
-        IntVar[] vs = new IntVar[slices.size()];
-        int i = 0;
-        for (Slice s : slices) {
-            vs[i++] = s.getStart();
-        }
-        return vs;
+        return slices.stream().map(Slice::getStart).toArray(IntVar[]::new);
     }
 
     /**
@@ -73,12 +63,7 @@ public final class SliceUtils {
      * @return an array containing every end variable
      */
     public static IntVar[] extractEnds(List<Slice> slices) {
-        IntVar[] vs = new IntVar[slices.size()];
-        int i = 0;
-        for (Slice s : slices) {
-            vs[i++] = s.getEnd();
-        }
-        return vs;
+        return slices.stream().map(Slice::getEnd).toArray(IntVar[]::new);
     }
 
     /**
@@ -88,11 +73,6 @@ public final class SliceUtils {
      * @return an array containing every variable
      */
     public static IntVar[] extractDurations(List<Slice> slices) {
-        IntVar[] vs = new IntVar[slices.size()];
-        int i = 0;
-        for (Slice s : slices) {
-            vs[i++] = s.getDuration();
-        }
-        return vs;
+        return slices.stream().map(Slice::getDuration).toArray(IntVar[]::new);
     }
 }
