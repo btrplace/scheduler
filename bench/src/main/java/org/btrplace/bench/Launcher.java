@@ -29,10 +29,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -87,11 +84,11 @@ public class Launcher {
         cra.doOptimize(optimize);
         cra.setTimeLimit(timeout);
 
-        Instance i = InstanceConverter.quickFromJSON(src);
+        Instance i = InstanceConverter.quickFromJSON(new File(src));
         // Try to solve
         try {
             // For debug purpose
-            cra.setVerbosity(2);
+            cra.setVerbosity(0);
             plan = cra.solve(i.getModel(), i.getSatConstraints());
         } finally {
             System.out.println(cra.getStatistics());
