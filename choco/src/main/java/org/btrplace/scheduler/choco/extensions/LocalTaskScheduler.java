@@ -100,24 +100,24 @@ public class LocalTaskScheduler {
         this.early = early;
         this.last = last;
         this.aCause = iCause;
-        this.associateCTask = associateCTask.clone();
+        this.associateCTask = associateCTask;
         this.me = me;
-        this.cEnds = Arrays.copyOf(cEnds, cEnds.length);
-        this.cHosters = Arrays.copyOf(cHosters, cHosters.length);
+        this.cEnds = cEnds;
+        this.cHosters = cHosters;
 
-        this.capacities = capacities.clone();
-        this.cUsages = cUsages.clone();
-        this.dUsages = dUsages.clone();
+        this.capacities = capacities;
+        this.cUsages = cUsages;
+        this.dUsages = dUsages;
 
         this.nbDims = capacities[0].length;
         assert this.cUsages.length == 0 || this.cUsages[0].length == nbDims;
         assert this.dUsages.length == 0 || this.dUsages[0].length == nbDims;
 
-        this.dStarts = Arrays.copyOf(dStarts, dStarts.length);
-        this.dHosters = Arrays.copyOf(dHosters, dHosters.length);
+        this.dStarts = dStarts;
+        this.dHosters = dHosters;
         this.vIn = vIn;
         this.out = outs;
-        this.associateDTask = associateDTask.clone();
+        this.associateDTask = associateDTask;
 
 
         //The amount of free resources at startup
