@@ -18,8 +18,6 @@
 
 package org.btrplace.bench;
 
-import org.testng.annotations.Test;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -29,7 +27,7 @@ import java.io.IOException;
 public class LauncherTest {
 
 
-    @Test
+    //    @Test
     public void test() throws IOException {
 
         String path = new File("").getAbsolutePath() + "/bench/src/test/resources/";
