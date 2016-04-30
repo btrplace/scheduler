@@ -18,6 +18,8 @@
 
 package org.btrplace.bench;
 
+import org.testng.annotations.Test;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -27,7 +29,7 @@ import java.io.IOException;
 public class LauncherTest {
 
 
-    // @Test
+    @Test
     public void test() throws IOException {
 
         String path = new File("").getAbsolutePath() + "/bench/src/test/resources/";
@@ -35,8 +37,8 @@ public class LauncherTest {
         Launcher.main(new String[]{
                 "--repair",
                 "--timeout", "300",
-                "-i", path + "wkld-tdsc/li/r6/p5000/c0/1.gz",
-                "-o", path + "li-r6-p5000-c66-1.csv"
+                "-i", path + "wkld-tdsc/nr/r6/p5000/c0/1.gz",
+                "-o", path + "nr-r6-p5000-c66-1.csv"
         });
         System.err.flush();
         System.out.flush();

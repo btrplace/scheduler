@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.extensions;
 
 
 import gnu.trove.map.hash.TIntIntHashMap;
+import org.chocosolver.memory.IStateBool;
 import org.chocosolver.memory.IStateIntVector;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -84,6 +85,8 @@ public class LocalTaskScheduler {
     private IntVar last;
 
     private Propagator<?> aCause;
+
+    private IStateBool entailed;
 
     public LocalTaskScheduler(int me,
                               IntVar early,
@@ -156,6 +159,8 @@ public class LocalTaskScheduler {
                 lastSup = s;
             }
         }
+
+        entailed = early.getSolver().getEnvironment().makeBool(false);
     }
 
     /**
@@ -174,14 +179,21 @@ public class LocalTaskScheduler {
         }
     }
 
+
     public void propagate(BitSet watchHosts) throws ContradictionException {
         if (vIn.size() == 0 && out.length() == 0) {
+            return;
+        }
+
+        if (entailed.get()) {
+            //System.out.println("entailed but active");
             return;
         }
         boolean allInstantiated = computeProfiles();
 
         checkInvariant();
         if (allInstantiated) {
+            entailed.set(true);
             return;
         }
 
@@ -190,6 +202,9 @@ public class LocalTaskScheduler {
         updateDStartsSup(watchHosts);
     }
 
+    public boolean isEntailed() {
+        return entailed.get();
+    }
     private boolean computeProfiles() throws ContradictionException {
 
         initProfile();
