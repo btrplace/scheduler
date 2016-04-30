@@ -186,7 +186,6 @@ public class LocalTaskScheduler {
         }
 
         if (entailed.get()) {
-            //System.out.println("entailed but active");
             return;
         }
         boolean allInstantiated = computeProfiles();
