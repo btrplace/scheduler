@@ -363,6 +363,11 @@ public class SubMapping extends AbstractMapping {
 
     @Override
     public int getNbVMs() {
-        throw new UnsupportedOperationException();
+        int nb = ready.size();
+        for (Node n : scope) {
+            nb += getRunningVMs(n).size();
+            nb += getSleepingVMs(n).size();
+        }
+        return nb;
     }
 }

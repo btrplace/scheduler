@@ -18,9 +18,11 @@
 
 package org.btrplace.scheduler.runner.disjoint;
 
+import org.btrplace.model.Instance;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
+import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,87 +36,89 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
     private List<SolvingStatistics> partResults;
 
-    private int nbNodes;
-    private int nbVMs;
-    private int nbConstraints;
-    private int nbManaged;
-    private int coreRPDuration;
-    private int speRPDuration;
-
     private int nbWorkers;
-    private int nbSearchNodes;
-    private int nbBacktracks;
     private int nbPartitions;
-
     private long splitDuration;
-    private long duration;
-    private long start;
+    private int managed = 0;
 
-    private boolean hitTimeout;
-
+    private Instance instance;
     private Parameters params;
+    private long start;
+    private boolean completed = false;
+
+    private long core = -1;
+    private long spe = -1;
+
+    private IMeasures status;
+
 
     /**
      * Make the statistics.
      *
-     * @param ps      the standard parameters for the solving process
-     * @param n       the number of nodes in the model
-     * @param v       the number of VMs in the model
-     * @param c       the number of satisfaction-oriented constraints.
-     * @param st      the moment the computation started, epoch format
-     * @param sd      the duration of the splitting process in milliseconds
-     * @param d       the solving process duration in milliseconds
+     * @param ps the scheduler parameters
+     * @param i the instance to solve;
+     * @param st      the moment the computation starts (epoch format)
      * @param w       the number of workers to solve the partitions in parallel
-     * @param nbParts the number of partitions to compute
      */
-    public StaticPartitioningStatistics(Parameters ps, int n, int v, int c,
-                                        long st, long sd, long d, int w, int nbParts) {
-        partResults = new ArrayList<>();
-        this.start = st;
-        this.nbNodes = n;
-        this.nbVMs = v;
-        this.nbConstraints = c;
-        this.duration = d;
-        nbSearchNodes = 0;
-        nbBacktracks = 0;
-        nbManaged = 0;
-        coreRPDuration = 0;
-        speRPDuration = 0;
-        hitTimeout = false;
-        this.nbWorkers = w;
+    public StaticPartitioningStatistics(Parameters ps, Instance i, long st, int w) {
+        instance = i;
         params = ps;
-        this.splitDuration = sd;
-        this.nbPartitions = nbParts;
+        start = st;
+        this.nbWorkers = w;
+        this.splitDuration = -1;
+        this.nbPartitions = -1;
+        partResults = new ArrayList<>();
+    }
+
+    /**
+     * Set statistics about the splitting process.
+     *
+     * @param nbParts the number of
+     * @param d
+     */
+    public void setSplittingStatistics(int nbParts, long d) {
+        splitDuration = d;
+        nbPartitions = nbParts;
     }
 
     @Override
-    public long getSolvingDuration() {
-        return duration;
+    public Instance getInstance() {
+        return instance;
     }
 
     @Override
-    public long getCoreRPBuildDuration() {
-        return coreRPDuration;
+    public long getCoreBuildDuration() {
+        return core;
     }
 
     @Override
-    public long getSpeRPDuration() {
-        return speRPDuration;
+    public long getSpecializationDuration() {
+        return spe;
     }
 
     @Override
-    public long getNbSearchNodes() {
-        return nbSearchNodes;
+    public long getStart() {
+        return start;
     }
 
     @Override
-    public long getNbBacktracks() {
-        return nbBacktracks;
+    public int getNbManagedVMs() {
+        return managed;
     }
 
     @Override
-    public boolean hitTimeout() {
-        return hitTimeout;
+    public Parameters getParameters() {
+        return params;
+    }
+
+    @Override
+    public IMeasures getMeasures() {
+        return null;
+    }
+
+    @Override
+    public boolean completed() {
+        return completed;
     }
 
     /**
@@ -130,7 +134,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
         //Check for the first solution that concatenate all the first solutions.
         List<SolutionStatistics> solutions = new ArrayList<>();
-
+/*
         int firstN = 0;
         int firstB = 0;
         int firstOptValue = 0;
@@ -175,33 +179,8 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         solutions.add(new SolutionStatistics(firstN, firstB, endFirst - start, firstOptValue));
         if (multipleSolution) {
             solutions.add(new SolutionStatistics(lastN, lastB, endLast - start, lastOptValue));
-        }
+        }*/
         return solutions;
-    }
-
-    @Override
-    public int getNbVMs() {
-        return nbVMs;
-    }
-
-    @Override
-    public int getNbNodes() {
-        return nbNodes;
-    }
-
-    @Override
-    public int getNbManagedVMs() {
-        return nbManaged;
-    }
-
-    @Override
-    public Parameters getParameters() {
-        return params;
-    }
-
-    @Override
-    public int getNbConstraints() {
-        return nbConstraints;
     }
 
     /**
@@ -228,12 +207,14 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      * @param stats the partition statistics.
      */
     public void addPartitionStatistics(SolvingStatistics stats) {
+        /*
         nbBacktracks += stats.getNbBacktracks();
         nbSearchNodes += stats.getNbSearchNodes();
         nbManaged += stats.getNbManagedVMs();
         hitTimeout |= stats.hitTimeout();
-        coreRPDuration = (int) Math.max(coreRPDuration, stats.getCoreRPBuildDuration());
-        speRPDuration = (int) Math.max(speRPDuration, stats.getSpeRPDuration());
+        coreRPDuration = (int) Math.max(coreRPDuration, stats.getCoreBuildDuration());
+        speRPDuration = (int) Math.max(speRPDuration, stats.getSpecializationDuration());
+        */
         partResults.add(stats);
     }
 
@@ -246,15 +227,11 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         return splitDuration;
     }
 
-    @Override
-    public long getStart() {
-        return start;
-    }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-
+/*
         List<SolutionStatistics> stats = getSolutions();
 
         buildHeader(b, stats);
@@ -290,11 +267,11 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
                 }
             }
             b.append(": ").append(nbSolved).append('/').append(nbPartitions).append(" solved partition(s)");
-        }
+        }*/
         return b.toString();
     }
 
-    private void buildHeader(StringBuilder b, List<SolutionStatistics> stats) {
+    /*private void buildHeader(StringBuilder b, List<SolutionStatistics> stats) {
         b.append(nbNodes).append(" node(s)")
                 .append("; ").append(nbVMs).append(" VM(s)");
         if (getNbManagedVMs() != nbVMs) {
@@ -309,18 +286,18 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         if (params.getTimeLimit() > 0) {
             b.append("; timeout: ").append(params.getTimeLimit()).append("s");
         }
-        b.append("\nmax. building duration: ").append(getCoreRPBuildDuration()).append("ms (core-RP) + ")
-                .append(getSpeRPDuration()).append("ms (specialization)");
+        b.append("\nmax. building duration: ").append(getCoreBuildDuration()).append("ms (core-RP) + ")
+                .append(getSpecializationDuration()).append("ms (specialization)");
         b.append("\nAfter ").append(getSolvingDuration()).append("ms of search");
-        if (hitTimeout()) {
-            b.append(" (timeout)");
-        } else {
+        if (completed()) {
             b.append(" (terminated)");
+        } else {
+            b.append(" (timeout)");
         }
         b.append(": ")
                 .append(nbSearchNodes).append(" opened search node(s), ")
                 .append(nbBacktracks).append(" backtrack(s), ")
                 .append(stats.size()).append(" solution(s)");
 
-    }
+    }*/
 }

@@ -18,7 +18,9 @@
 
 package org.btrplace.scheduler.choco.runner;
 
+import org.btrplace.model.Instance;
 import org.btrplace.scheduler.choco.Parameters;
+import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,29 +64,14 @@ public class StagedSolvingStatistics implements SolvingStatistics {
         return stages.get(st);
     }
 
-    @Override
-    public int getNbConstraints() {
-        return last().getNbConstraints();
-    }
-
-    /**
-     * Return the aggregated solving duration.
-     *
-     * @return a long
-     */
-    @Override
-    public long getSolvingDuration() {
-        return stages.stream().mapToLong(SolvingStatistics::getSolvingDuration).sum();
-    }
-
     /**
      * Return the aggregated core problem build duration.
      *
      * @return a long
      */
     @Override
-    public long getCoreRPBuildDuration() {
-        return stages.stream().mapToLong(SolvingStatistics::getCoreRPBuildDuration).sum();
+    public long getCoreBuildDuration() {
+        return stages.stream().mapToLong(SolvingStatistics::getCoreBuildDuration).sum();
     }
 
     /**
@@ -93,8 +80,8 @@ public class StagedSolvingStatistics implements SolvingStatistics {
      * @return a long
      */
     @Override
-    public long getSpeRPDuration() {
-        return stages.stream().mapToLong(SolvingStatistics::getSpeRPDuration).sum();
+    public long getSpecializationDuration() {
+        return stages.stream().mapToLong(SolvingStatistics::getSpecializationDuration).sum();
     }
 
     /**
@@ -108,34 +95,6 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     }
 
     /**
-     * Return the aggregated number of search nodes.
-     *
-     * @return a long
-     */
-    @Override
-    public long getNbSearchNodes() {
-        return stages.stream().mapToLong(SolvingStatistics::getNbSearchNodes).sum();
-    }
-
-    /**
-     * Return the aggregated number of backtracks.
-     *
-     * @return a long
-     */
-    @Override
-    public long getNbBacktracks() {
-        return stages.stream().mapToLong(SolvingStatistics::getNbBacktracks).sum();
-    }
-
-    /**
-     * Return the status of the last stage.
-     */
-    @Override
-    public boolean hitTimeout() {
-        return last().hitTimeout();
-    }
-
-    /**
      * Return all the statistics.
      *
      * @return a list that might be empty
@@ -146,18 +105,8 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     }
 
     @Override
-    public int getNbVMs() {
-        return last().getNbConstraints();
-    }
-
-    @Override
-    public int getNbNodes() {
-        return last().getNbConstraints();
-    }
-
-    @Override
     public int getNbManagedVMs() {
-        return last().getNbConstraints();
+        return last().getNbManagedVMs();
     }
 
     @Override
@@ -180,5 +129,20 @@ public class StagedSolvingStatistics implements SolvingStatistics {
             i++;
         }
         return b.toString();
+    }
+
+    @Override
+    public IMeasures getMeasures() {
+        return last().getMeasures();
+    }
+
+    @Override
+    public Instance getInstance() {
+        return first().getInstance();
+    }
+
+    @Override
+    public boolean completed() {
+        return last().completed();
     }
 }

@@ -18,7 +18,9 @@
 
 package org.btrplace.scheduler.choco.runner;
 
+import org.btrplace.model.Instance;
 import org.btrplace.scheduler.choco.Parameters;
+import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.List;
 
@@ -30,32 +32,23 @@ import java.util.List;
 public interface SolvingStatistics {
 
     /**
-     * Get the number of constraints to satisfy
-     *
-     * @return a positive number
+     * Get the solved instance.
+     * @return the instance
      */
-    int getNbConstraints();
-
-    /**
-     * Get the time since the beginning of the solving process.
-     *
-     * @return a duration in milliseconds
-     */
-    long getSolvingDuration();
-
+    Instance getInstance();
     /**
      * Get the time that was necessary to build the core-RP.
      *
      * @return a duration in milliseconds
      */
-    long getCoreRPBuildDuration();
+    long getCoreBuildDuration();
 
     /**
      * Get the time that was necessary to specialize the core-CP.
      *
      * @return a duration in milliseconds
      */
-    long getSpeRPDuration();
+    long getSpecializationDuration();
 
     /**
      * Get the moment the computation starts.
@@ -65,46 +58,11 @@ public interface SolvingStatistics {
     long getStart();
 
     /**
-     * Get the number of opened nodes.
-     *
-     * @return a positive number
-     */
-    long getNbSearchNodes();
-
-    /**
-     * Get the number of backtracks.
-     *
-     * @return a positive number
-     */
-    long getNbBacktracks();
-
-    /**
-     * Indicates if the solver hit a timeout.
-     *
-     * @return {@code true} iff the solver hit a timeout
-     */
-    boolean hitTimeout();
-
-    /**
      * Get all the computed solutions ordered by time.
      *
      * @return a list of solutions that may be empty
      */
     List<SolutionStatistics> getSolutions();
-
-    /**
-     * Get the number of VMs in the model.
-     *
-     * @return a positive integer
-     */
-    int getNbVMs();
-
-    /**
-     * Get the number of nodes in the model.
-     *
-     * @return a positive integer
-     */
-    int getNbNodes();
 
     /**
      * Get the number of VMs managed by the algorithm.
@@ -119,4 +77,19 @@ public interface SolvingStatistics {
      * @return a set of parameters
      */
     Parameters getParameters();
+
+    /**
+     * Get the measures related to the solver.
+     *
+     * @return measures. {@code null} if the solver did not run
+     */
+    IMeasures getMeasures();
+
+    /**
+     * Check if the solver completed the search.
+     *
+     * @return {@code true} indicates the solver proved the optimality of the computed solution or that the problem is
+     * not feasible (if no solution were computed)
+     */
+    boolean completed();
 }

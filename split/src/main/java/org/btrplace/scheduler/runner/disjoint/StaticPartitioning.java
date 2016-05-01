@@ -50,7 +50,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
     private int workersCount;
 
-    private SolvingStatistics stats;
+    private StaticPartitioningStatistics stats;
 
     /**
      * Make a new partitioning algorithm.
@@ -81,16 +81,16 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
     @Override
     public ReconfigurationPlan solve(Parameters cra, Instance orig) throws SchedulerException {
-        long start = System.currentTimeMillis();
-        long splitDuration = -System.currentTimeMillis();
+        stats = new StaticPartitioningStatistics(cra, orig, System.currentTimeMillis(), workersCount);
+        long d = -System.currentTimeMillis();
         List<Instance> partitions = split(cra, orig);
-        splitDuration += System.currentTimeMillis();
+        d += System.currentTimeMillis();
 
+        stats.setSplittingStatistics(partitions.size(), d);
         ExecutorService exe = Executors.newFixedThreadPool(this.workersCount);
         CompletionService<InstanceResult> completionService = new ExecutorCompletionService<>(exe);
         List<InstanceResult> results = new ArrayList<>(partitions.size());
 
-        int nbConstraints = orig.getSatConstraints().size();
 
         long duration = -System.currentTimeMillis();
         for (Instance partition : partitions) {
@@ -116,21 +116,11 @@ public abstract class StaticPartitioning implements InstanceSolver {
             }
         }
         duration += System.currentTimeMillis();
-        stats = new StaticPartitioningStatistics(cra, orig.getModel().getMapping().getNbNodes(),
-                orig.getModel().getMapping().getNbVMs(),
-                nbConstraints,
-                start,
-                splitDuration,
-                duration,
-                workersCount,
-                partitions.size()
-        );
 
         exe.shutdown();
 
         InstanceResult res = new InstanceResult(solved ? new DefaultReconfigurationPlan(orig.getModel()) : null, stats);
         merge(res, results);
-        stats = res.getStatistics();
         return res.getPlan();
     }
 
@@ -152,7 +142,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     @Override
-    public SolvingStatistics getStatistics() {
+    public StaticPartitioningStatistics getStatistics() {
         return stats;
     }
 
