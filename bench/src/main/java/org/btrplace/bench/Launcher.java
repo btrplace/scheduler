@@ -69,7 +69,6 @@ public class Launcher {
                 throw new IllegalArgumentException("Timeout can not be < 0 !");
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("benchLauncher [-r] [-m] [-t n_sec] -i file_name -o file_name");
             cmdParser.printUsage(System.err);
             System.err.println();
             return;
