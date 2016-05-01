@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.runner;
 
 import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
 import org.chocosolver.solver.search.measure.IMeasures;
 
@@ -92,4 +93,11 @@ public interface SolvingStatistics {
      * not feasible (if no solution were computed)
      */
     boolean completed();
+
+    /**
+     * Get the last computed reconfiguration plan.
+     *
+     * @return a plan. {@code null} if there was no solution
+     */
+    ReconfigurationPlan lastSolution();
 }

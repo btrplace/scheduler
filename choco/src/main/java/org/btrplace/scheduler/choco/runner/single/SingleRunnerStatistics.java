@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.runner.single;
 
 import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
@@ -198,6 +199,14 @@ public class SingleRunnerStatistics implements SolvingStatistics {
             i++;
         }
         return b.toString();
+    }
+
+    @Override
+    public ReconfigurationPlan lastSolution() {
+        if (solutions.isEmpty()) {
+            return null;
+        }
+        return solutions.get(solutions.size() - 1).getReconfigurationPlan();
     }
 
     @Override

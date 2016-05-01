@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.runner;
 
 import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
 import org.chocosolver.solver.search.measure.IMeasures;
 
@@ -144,5 +145,10 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     @Override
     public boolean completed() {
         return last().completed();
+    }
+
+    @Override
+    public ReconfigurationPlan lastSolution() {
+        return last().lastSolution();
     }
 }

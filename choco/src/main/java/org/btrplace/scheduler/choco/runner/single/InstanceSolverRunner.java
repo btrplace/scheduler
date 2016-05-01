@@ -30,8 +30,8 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.ChocoViews;
 import org.chocosolver.solver.Cause;
@@ -50,7 +50,7 @@ import java.util.concurrent.Callable;
  *
  * @author Fabien Hermenier
  */
-public class InstanceSolverRunner implements Callable<InstanceResult> {
+public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
     private Parameters params;
 
@@ -87,7 +87,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     }
 
     @Override
-    public InstanceResult call() throws SchedulerException {
+    public SolvingStatistics call() throws SchedulerException {
         stats = new SingleRunnerStatistics(params, instance, System.currentTimeMillis());
         rp = null;
 
@@ -102,7 +102,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         d = -System.currentTimeMillis();
         if (!specialise()) {
             stats.setSpecialisationDuration(d);
-            return new InstanceResult(null, getStatistics());
+            return getStatistics();
         }
         d += System.currentTimeMillis();
         stats.setSpecialisationDuration(d);
@@ -115,24 +115,19 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp.getSolver().plugMonitor((IMonitorSolution) () -> {
             Solution solution = new Solution();
             solution.record(rp.getSolver());
-            IMeasures m = rp.getSolver().getMeasures().duplicate();
 
             ReconfigurationPlan plan = rp.buildReconfigurationPlan(solution, origin);
             views.forEach(v -> v.insertActions(rp, solution, plan));
 
-            SolutionStatistics sol = new SolutionStatistics(m, plan);
-            stats.addSolution(sol);
+            IMeasures m = rp.getSolver().getMeasures().duplicate();
+            stats.addSolution(new SolutionStatistics(m, plan));
         });
 
         setVerbosity();
 
         //The actual solving process
-        ReconfigurationPlan plan = rp.solve(params.getTimeLimit(), params.doOptimize());
-        List<SolutionStatistics> sols = stats.getSolutions();
-        if (plan == null) {
-            return new InstanceResult(null, getStatistics());
-        }
-        return new InstanceResult(sols.get(sols.size() - 1).getReconfigurationPlan(), getStatistics());
+        rp.solve(params.getTimeLimit(), params.doOptimize());
+        return getStatistics();
     }
 
 

@@ -24,7 +24,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.runner.single.InstanceSolverRunner;
@@ -88,8 +87,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
         stats.setSplittingStatistics(partitions.size(), d);
         ExecutorService exe = Executors.newFixedThreadPool(this.workersCount);
-        CompletionService<InstanceResult> completionService = new ExecutorCompletionService<>(exe);
-        List<InstanceResult> results = new ArrayList<>(partitions.size());
+        CompletionService<SolvingStatistics> completionService = new ExecutorCompletionService<>(exe);
+        List<SolvingStatistics> results = new ArrayList<>(partitions.size());
 
 
         long duration = -System.currentTimeMillis();
@@ -100,8 +99,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
         boolean solved = true;
         for (int i = 0; i < partitions.size(); i++) {
             try {
-                InstanceResult res = completionService.take().get();
-                if (res.getPlan() == null) {
+                SolvingStatistics res = completionService.take().get();
+                if (res.getSolutions().isEmpty()) {
                     solved = false;
                 }
                 results.add(res);
@@ -119,26 +118,26 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
         exe.shutdown();
 
-        InstanceResult res = new InstanceResult(solved ? new DefaultReconfigurationPlan(orig.getModel()) : null, stats);
-        merge(res, results);
-        return res.getPlan();
+        return merge(orig, results);
     }
 
-    private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SchedulerException {
-        ReconfigurationPlan plan = merged.getPlan();
+    private ReconfigurationPlan merge(Instance i, Collection<SolvingStatistics> results) throws SchedulerException {
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(i.getModel());
         //Only if there is a solution
-        for (InstanceResult result : results) {
-            if (result.getPlan() != null && plan != null) {
-                for (Action a : result.getPlan()) {
+        for (SolvingStatistics result : results) {
+            getStatistics().addPartitionStatistics(result);
+            ReconfigurationPlan p = result.lastSolution();
+            if (p == null) {
+                return null;
+            }
+            for (Action a : p) {
                     if (!plan.add(a)) {
-                        throw new SchedulerException(merged.getPlan().getOrigin(),
+                        throw new SchedulerException(plan.getOrigin(),
                                 "Unable to add action '" + a + "' while merging the sub-plans");
                     }
                 }
-            }
-            SolvingStatistics st = result.getStatistics();
-            ((StaticPartitioningStatistics) merged.getStatistics()).addPartitionStatistics(st);
         }
+        return plan;
     }
 
     @Override
