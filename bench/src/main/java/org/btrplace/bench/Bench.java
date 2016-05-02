@@ -21,35 +21,37 @@ package org.btrplace.bench;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 
 /**
+ * Simple benching tool.
  * @author Fabien Hermenier
  */
 public class Bench {
 
+    /**
+     * The CSV file that will contains the output statistics.
+     */
     public static final String SCHEDULER_STATS = "scheduler.csv";
 
     public static void main(String[] args) throws IOException, JSONConverterException {
@@ -71,25 +73,30 @@ public class Bench {
 
         File output = opts.output();
         List<LabelledInstance> instances = opts.instances();
+        int v = opts.verbosity();
         for (LabelledInstance i : instances) {
-            if (opts.progress() == 2) {
-                System.out.println("----- " + i.label + " -----");
-            }
+
             s.solve(i);
-            SolvingStatistics stats = s.getStatistics();
-            if (opts.progress() == 1) {
-                System.out.println(i.label + " OK");
-            } else if (opts.progress() == 2) {
-                System.out.println(stats);
-                System.out.println();
+            if (opts.single()) {
+                System.out.println(s.getStatistics());
+            } else {
+                SolvingStatistics stats = s.getStatistics();
+                if (v == 0) {
+                    System.out.println(i.label + ": OK");
+                } else if (v > 0) {
+                    System.out.println("----- " + i.label + " -----");
+                    System.out.println(stats);
+                    System.out.println();
+                }
+                store(i, stats, output);
             }
-            store(i, stats, output);
         }
 
     }
 
     private static void store(LabelledInstance i, SolvingStatistics stats, File base) throws IOException, JSONConverterException {
 
+        Files.createDirectories(base.toPath());
         //Stats about the solving process
         Path p = Paths.get(base.getAbsolutePath(), SCHEDULER_STATS);
         Files.write(p, Collections.singletonList(i.label + ";" + stats.toCSV()), UTF_8, CREATE, APPEND);
@@ -99,9 +106,10 @@ public class Bench {
         if (best != null) {
             ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
             String path = base.getAbsolutePath() + File.separator + i.label + "-plan.json.gz";
-            Appendable out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(path)), UTF_8);
+            System.out.println(path);
+            OutputStreamWriter out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(path)), UTF_8);
             c.toJSON(best, out);
+            out.close();
         }
-
     }
 }

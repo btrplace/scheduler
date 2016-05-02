@@ -21,12 +21,22 @@ package org.btrplace.bench;
 import org.btrplace.model.Instance;
 
 /**
+ * An instance with a label.
  * @author Fabien Hermenier
  */
 public class LabelledInstance extends Instance {
 
+    /**
+     * The instance label.
+     */
     public final String label;
 
+    /**
+     * Make a new instance.
+     *
+     * @param label the instance label
+     * @param i     the underlying instance
+     */
     public LabelledInstance(String label, Instance i) {
         super(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         this.label = label;

@@ -1,0 +1,128 @@
+/*
+ * Copyright (c) 2016 University Nice Sophia Antipolis
+ *
+ * This file is part of btrplace.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.btrplace.bench;
+
+import org.btrplace.json.model.InstanceConverter;
+import org.btrplace.json.plan.ReconfigurationPlanConverter;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
+import org.btrplace.plan.ReconfigurationPlan;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+/**
+ * @author Fabien Hermenier
+ */
+public class BenchTest {
+
+    public static Instance instance() {
+        Model mo = new DefaultModel();
+        VM v1 = mo.newVM();
+        VM v2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        mo.getMapping().on(n1, n2, n3).run(n1, v1).run(n2, v2).off(n3);
+        Set<VM> s = new HashSet<>();
+        s.add(v1);
+        s.add(v2);
+        List<SatConstraint> cstrs = Arrays.asList(
+                new Spread(s, true),
+                new Fence(v1, n2),
+                new Offline(n1)
+        );
+        return new Instance(mo, cstrs, new MinMTTR());
+    }
+
+    public static File store(Instance i) throws Exception {
+        File f = File.createTempFile("foo", ".gz");
+        f.deleteOnExit();
+        InstanceConverter c = new InstanceConverter();
+        OutputStreamWriter out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(f)), UTF_8);
+        c.toJSON(i, out);
+        out.flush();
+        out.close();
+        return f;
+    }
+
+    /**
+     * Create an instance file, solve it using the bench
+     */
+    @Test
+    public void testSingle() throws Exception {
+        Instance i = instance();
+        File f = store(i);
+        Bench.main(new String[]{
+                "-i", f.getAbsolutePath(),
+                "-v", "3"
+        });
+    }
+
+    /**
+     * Create a liste, solve each instance. Check for the CSV file
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testList() throws Exception {
+        List<String> files = new ArrayList<>();
+        for (int x = 0; x < 5; x++) {
+            Instance i = instance();
+            File f = store(i);
+            files.add(f.getPath());
+        }
+        //Instance list
+        File list = File.createTempFile("foo", "");
+        list.deleteOnExit();
+
+        //Output directory
+        Path output = Files.createTempDirectory("instances");
+
+        Files.write(list.toPath(), files, UTF_8);
+        Bench.main(new String[]{
+                "-l", list.getAbsolutePath(),
+                "-o", output.toString(),
+                "-v", "1"
+        });
+
+        //Read the output CSV file
+        File csv = new File(output.toString() + File.separator + Bench.SCHEDULER_STATS);
+        Assert.assertTrue(csv.isFile());
+        ReconfigurationPlanConverter pc = new ReconfigurationPlanConverter();
+
+        for (String line : Files.readAllLines(csv.toPath(), UTF_8)) {
+            String file = line.split(";")[0];
+            File plan = new File(output.toString() + File.separator + file + "-plan.json.gz");
+            System.out.println(plan.getAbsolutePath());
+            Assert.assertTrue(plan.isFile());
+            InputStreamReader in = new InputStreamReader(new GZIPInputStream(new FileInputStream(plan)), UTF_8);
+            ReconfigurationPlan p = pc.fromJSON(in);
+            System.out.println(p);
+        }
+    }
+}

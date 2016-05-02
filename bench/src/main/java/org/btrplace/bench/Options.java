@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,11 +34,12 @@ import java.util.stream.Collectors;
 import static org.btrplace.json.model.InstanceConverter.quickFromJSON;
 
 /**
+ * CLI options to indicate instances and the solver tuning.
+ *
  * @author Fabien Hermenier
  */
 public class Options {
 
-    // Define options list
     @Option(name = "-r", aliases = "--repair", usage = "Enable the 'repair' feature")
     private boolean repair;
 
@@ -49,50 +49,74 @@ public class Options {
     @Option(name = "-t", aliases = "--timeout", usage = "Set a timeout (in sec)")
     private int timeout = 0;
 
-    @Option(required = true, name = "-i", aliases = "--input", usage = "An instance  ('.json' or '.json.gz') or a list of instances (one instance per line)")
-    private String input;
+    @Option(name = "-i", aliases = "--instance", usage = "An instance  ('.json' or '.json.gz')", forbids = {"-l"})
+    private String instance;
 
-    @Option(name = "-o", aliases = "--output", usage = "Output to this file")
+    @Option(name = "-l", aliases = "--list", usage = "a list of instance files (one path per line)", forbids = {"-i"})
+    private String instances;
+
+    @Option(name = "-o", aliases = "--output", usage = "Output folder where the CSV and the plans are stored", depends = {"-l"})
     private String output = "./";
 
-    @Option(name = "-p", aliases = "--progress", usage = "Show the progress")
-    private int progress = 0; //0 silent, 1: id and status (solved or not), 2: statistics
-
-    @Option(name = "-v", usage = "Set the verbosity level for the scheduler")
+    @Option(name = "-v", usage = "Set the verbosity level. With '-i' it controls the solver verbosity. With '-l' the bench progress")
     private int verbosity = 0;
 
+    /**
+     * Get the parameters from the options.
+     *
+     * @return the resulting parameters
+     */
     public Parameters parameters() {
-        return new DefaultParameters()
+        Parameters ps = new DefaultParameters()
                 .setTimeLimit(timeout)
-                .setVerbosity(verbosity)
                 .doRepair(repair)
                 .doOptimize(optimize);
-    }
 
-    public List<LabelledInstance> instances() throws IOException {
-        File f = new File(input);
-
-        if (f.isFile()) {
-            if (f.getName().endsWith(".json") || f.getName().endsWith(".gz")) {
-                //We assume it is an instance
-                return Collections.singletonList(instance(f));
-            } else {
-                //We assume it is a list of instance files
-                return Files.lines(Paths.get(input), StandardCharsets.UTF_8)
-                        .map(s -> instance(new File(s)))
-                        .collect(Collectors.toList());
-            }
-        } else if (f.isDirectory()) {
-            //We assume all the files in are instances
-            File[] files = f.listFiles();
-            if (files == null) {
-                throw new IllegalArgumentException(input + " should be a folder");
-            }
-            return Arrays.asList(files).stream().map(Options::instance).collect(Collectors.toList());
+        if (single()) {
+            ps.setVerbosity(verbosity);
         }
-        throw new IllegalArgumentException(input + " should be a file or a folder");
+        return ps;
     }
 
+    /**
+     * Get the verbosity
+     *
+     * @return the verbosity level
+     */
+    public int verbosity() {
+        return verbosity;
+    }
+
+    /**
+     * Check if there is only one instance to solver
+     *
+     * @return {@code true} if there is one instance to solve ontly
+     */
+    public boolean single() {
+        return instance != null;
+    }
+
+    /**
+     * List all the instances to solve.
+     * @return a list of instances
+     * @throws IOException if it was not possible to get all the instances
+     */
+    public List<LabelledInstance> instances() throws IOException {
+        if (single()) {
+            return Collections.singletonList(instance(new File(instance)));
+        }
+
+        //We assume it is a list of instance files
+        return Files.lines(Paths.get(instances), StandardCharsets.UTF_8)
+                .map(s -> instance(new File(s)))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the output directory.
+     * @return an existing output directory
+     * @throws IOException if the directory does not exists or was not created
+     */
     public File output() throws IOException {
         File o = new File(output);
         if (!o.exists() && !o.mkdirs()) {
@@ -101,13 +125,15 @@ public class Options {
         return o;
     }
 
-    public static LabelledInstance instance(File f) {
-        String path = f.getPath();
-        String lbl = path.substring(0, path.indexOf('.'));
-        return new LabelledInstance(lbl, quickFromJSON(new File(path)));
-    }
 
-    public int progress() {
-        return progress;
+    /**
+     * Make an instance.
+     * @param f the file that store the instance
+     * @return the parsed instance. The instance label is the file name
+     */
+    public static LabelledInstance instance(File f) {
+        String path = f.getName();
+        String lbl = path.substring(0, path.indexOf('.'));
+        return new LabelledInstance(lbl, quickFromJSON(f));
     }
 }
