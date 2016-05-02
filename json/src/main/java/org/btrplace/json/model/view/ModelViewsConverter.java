@@ -20,15 +20,12 @@ package org.btrplace.json.model.view;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.view.network.NetworkConverter;
 import org.btrplace.model.view.ModelView;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -141,60 +138,4 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         }
         return arr;
     }
-
-    @Override
-    public List<ModelView> listFromJSON(File path) throws JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
-            return listFromJSON(in);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-
-    }
-
-    @Override
-    public List<ModelView> listFromJSON(String buf) throws JSONConverterException {
-        try (StringReader in = new StringReader(buf)) {
-            return listFromJSON(in);
-        }
-    }
-
-    @Override
-    public List<ModelView> listFromJSON(Reader r) throws JSONConverterException {
-        try {
-            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-            Object o = p.parse(r);
-            if (!(o instanceof JSONArray)) {
-                throw new JSONConverterException("Unable to parse a JSONArray");
-            }
-            return listFromJSON((JSONArray) o);
-        } catch (ParseException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public String toJSONString(Collection<ModelView> o) throws JSONConverterException {
-        return toJSON(o).toJSONString();
-    }
-
-    @Override
-    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException {
-        try {
-            toJSON(e).writeJSONString(w);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException {
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
-            toJSON(e, out);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-
 }

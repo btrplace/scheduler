@@ -26,9 +26,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 
 /**
@@ -134,29 +132,5 @@ public class ConstraintsConverterTest {
         ConstraintsConverter c = new ConstraintsConverter();
         Assert.assertNull(c.register(new MockConstraintConverter()));
         c.fromJSON(ob);
-    }
-
-    @Test
-    public void testWithMultipleViews() throws JSONConverterException {
-        ConstraintsConverter c = new ConstraintsConverter();
-        org.testng.Assert.assertNull(c.register(new MockConstraintConverter()));
-        List<SatConstraint> l = new ArrayList<>();
-        l.add(new MockSatConstraint("foo"));
-        l.add(new MockSatConstraint("bar"));
-        String o = c.toJSONString(l);
-        List<SatConstraint> l2 = c.listFromJSON(o);
-        org.testng.Assert.assertEquals(l2.size(), l.size());
-        int j = 0;
-        for (int i = 0; i < l2.size(); i++) {
-            MockSatConstraint v = (MockSatConstraint) l2.get(i);
-            if (v.str.equals("foo")) {
-                j++;
-            } else if (v.str.equals("bar")) {
-                j--;
-            } else {
-                org.testng.Assert.fail("Unexpected identifier: " + v.str);
-            }
-        }
-        org.testng.Assert.assertEquals(j, 0);
     }
 }

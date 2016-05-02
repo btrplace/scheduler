@@ -20,14 +20,11 @@ package org.btrplace.json.plan;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.plan.event.*;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -418,59 +415,5 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
             arr.add(toJSON(a));
         }
         return arr;
-    }
-
-    @Override
-    public List<Action> listFromJSON(File path) throws JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
-            return listFromJSON(in);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-
-    }
-
-    @Override
-    public List<Action> listFromJSON(String buf) throws JSONConverterException {
-        try (StringReader in = new StringReader(buf)) {
-            return listFromJSON(in);
-        }
-    }
-
-    @Override
-    public List<Action> listFromJSON(Reader r) throws JSONConverterException {
-        try {
-            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-            Object o = p.parse(r);
-            if (!(o instanceof JSONArray)) {
-                throw new JSONConverterException("Unable to parse a JSONArray");
-            }
-            return listFromJSON((JSONArray) o);
-        } catch (ParseException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public String toJSONString(Collection<Action> o) throws JSONConverterException {
-        return toJSON(o).toJSONString();
-    }
-
-    @Override
-    public void toJSON(Collection<Action> e, Appendable w) throws JSONConverterException {
-        try {
-            toJSON(e).writeJSONString(w);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public void toJSON(Collection<Action> e, File path) throws JSONConverterException {
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
-            toJSON(e, out);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
     }
 }

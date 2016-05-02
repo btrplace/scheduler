@@ -27,9 +27,6 @@ import org.btrplace.plan.event.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Unit tests for {@link ActionConverter}.
  *
@@ -160,23 +157,8 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
-        //System.out.println(o);
-        //System.out.println(a);
-        //System.out.println(ac.fromJSON(o));
         System.out.flush();
         Action a2 = ac.fromJSON(o);
         Assert.assertEquals(a, a2);
-    }
-
-    @Test
-    public void testListSerialization() throws JSONConverterException {
-        ActionConverter ac = new ActionConverter();
-        ac.setModel(mo);
-        List<Action> l = new ArrayList<>();
-        l.add(new BootVM(vm1, n1, 0, 5));
-        l.add(new ShutdownNode(n2, 0, 5));
-        String jo = ac.toJSONString(l);
-        List<Action> l2 = ac.listFromJSON(jo);
-        Assert.assertTrue(l2.containsAll(l) && l2.size() == l.size());
     }
 }

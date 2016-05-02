@@ -20,8 +20,6 @@ package org.btrplace.json;
 
 import net.minidev.json.JSONArray;
 
-import java.io.File;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,59 +47,4 @@ public interface JSONArrayConverter<E> {
      * @throws JSONConverterException if an error occurred while converting the collection
      */
     JSONArray toJSON(Collection<E> e) throws JSONConverterException;
-
-    /**
-     * Un-serialize a collection from a file.
-     *
-     * @param path the file path
-     * @return the resulting collection
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    List<E> listFromJSON(File path) throws JSONConverterException;
-
-    /**
-     * Un-serialize a collection from a string.
-     *
-     * @param buf the string to parse
-     * @return the resulting collection
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    List<E> listFromJSON(String buf) throws JSONConverterException;
-
-    /**
-     * Un-serialize a collection from a stream.
-     * The stream must be close afterward
-     *
-     * @param r the stream to read
-     * @return the resulting collection
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    List<E> listFromJSON(Reader r) throws JSONConverterException;
-
-    /**
-     * Serialize a collection to a string.
-     *
-     * @param o the collection to serialize
-     * @return the JSON message
-     * @throws JSONConverterException if an error occurred while converting the collection
-     */
-    String toJSONString(Collection<E> o) throws JSONConverterException;
-
-    /**
-     * Serialize a collection to an appendable stream.
-     *
-     * @param e the collection to serialize
-     * @param w the stream to append to
-     * @throws JSONConverterException if an error occurred while converting the collection
-     */
-    void toJSON(Collection<E> e, Appendable w) throws JSONConverterException;
-
-    /**
-     * Serialize a collection to a file.
-     *
-     * @param e    the collection
-     * @param path the path name
-     * @throws JSONConverterException if an error occurred while converting the collection
-     */
-    void toJSON(Collection<E> e, File path) throws JSONConverterException;
 }
