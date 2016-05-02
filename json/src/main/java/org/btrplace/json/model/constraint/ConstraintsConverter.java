@@ -21,7 +21,6 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.AbstractJSONObjectConverter;
-import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
 import org.btrplace.model.constraint.Constraint;
@@ -34,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint> implements JSONArrayConverter<SatConstraint> {
+public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint> {
 
     private Map<Class<? extends Constraint>, ConstraintConverter<? extends Constraint>> java2json;
     private Map<String, ConstraintConverter<? extends Constraint>> json2java;
@@ -137,7 +136,6 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         return c.toJSON(o);
     }
 
-    @Override
     public List<SatConstraint> listFromJSON(JSONArray in) throws JSONConverterException {
         List<SatConstraint> l = new ArrayList<>(in.size());
         for (Object o : in) {
@@ -149,7 +147,6 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         return l;
     }
 
-    @Override
     public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
         for (Constraint cstr : e) {

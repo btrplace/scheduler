@@ -21,12 +21,10 @@ package org.btrplace.json.plan;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.AbstractJSONObjectConverter;
-import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.plan.event.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +33,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class ActionConverter extends AbstractJSONObjectConverter<Action> implements ActionVisitor, JSONArrayConverter<Action> {
+public class ActionConverter extends AbstractJSONObjectConverter<Action> implements ActionVisitor {
 
     /**
      * Key that indicates the beginning an action.
@@ -396,7 +394,6 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         return (JSONObject) e.visit(this);
     }
 
-    @Override
     public List<Action> listFromJSON(JSONArray in) throws JSONConverterException {
         List<Action> l = new ArrayList<>(in.size());
         for (Object o : in) {
@@ -406,14 +403,5 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
             l.add(fromJSON((JSONObject) o));
         }
         return l;
-    }
-
-    @Override
-    public JSONArray toJSON(Collection<Action> e) throws JSONConverterException {
-        JSONArray arr = new JSONArray();
-        for (Action a : e) {
-            arr.add(toJSON(a));
-        }
-        return arr;
     }
 }

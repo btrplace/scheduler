@@ -18,22 +18,22 @@
 
 package org.btrplace.json.model.view;
 
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.AbstractJSONObjectConverter;
-import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.view.network.NetworkConverter;
 import org.btrplace.model.view.ModelView;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Extensible converter for {@link org.btrplace.model.view.ModelView}.
  *
  * @author Fabien Hermenier
  */
-public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> implements JSONArrayConverter<ModelView> {
+public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> {
 
     private Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
     private Map<String, ModelViewConverter<? extends ModelView>> json2java;
@@ -116,26 +116,5 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
             throw new JSONConverterException("No converter available for a view with the '" + o.getClass() + "' className");
         }
         return c.toJSON(o);
-    }
-
-    @Override
-    public List<ModelView> listFromJSON(JSONArray in) throws JSONConverterException {
-        List<ModelView> l = new ArrayList<>(in.size());
-        for (Object o : in) {
-            if (!(o instanceof JSONObject)) {
-                throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
-            }
-            l.add(fromJSON((JSONObject) o));
-        }
-        return l;
-    }
-
-    @Override
-    public JSONArray toJSON(Collection<ModelView> e) throws JSONConverterException {
-        JSONArray arr = new JSONArray();
-        for (ModelView cstr : e) {
-            arr.add(toJSON(cstr));
-        }
-        return arr;
     }
 }
