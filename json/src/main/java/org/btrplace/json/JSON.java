@@ -24,9 +24,10 @@ import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Utility class to ease the serialisation and the deserialisation of the main btrplace entities.
@@ -40,16 +41,16 @@ public class JSON {
 
     private static InputStreamReader makeIn(File f) throws IOException {
         if (f.getName().endsWith(".gz")) {
-            return new InputStreamReader(new GZIPInputStream(new FileInputStream(f)), StandardCharsets.UTF_8);
+            return new InputStreamReader(new GZIPInputStream(new FileInputStream(f)), UTF_8);
         }
-        return new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
+        return new InputStreamReader(new FileInputStream(f), UTF_8);
     }
 
     private static OutputStreamWriter makeOut(File f) throws IOException {
         if (f.getName().endsWith(".gz")) {
-            return new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(f)), StandardCharsets.UTF_8);
+            return new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(f)), UTF_8);
         }
-        return new OutputStreamWriter(new FileOutputStream(f), StandardCharsets.UTF_8);
+        return new OutputStreamWriter(new FileOutputStream(f), UTF_8);
     }
 
     /**

@@ -20,15 +20,11 @@ package org.btrplace.json;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
 import org.btrplace.model.Element;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -338,27 +334,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
-    @Override
-    public E fromJSON(String buf) throws JSONConverterException {
-        try (StringReader in = new StringReader(buf)) {
-            return fromJSON(in);
-        }
-    }
-
-    @Override
-    public E fromJSON(Reader r) throws JSONConverterException {
-        try {
-            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-            Object o = p.parse(r);
-            if (!(o instanceof JSONObject)) {
-                throw new JSONConverterException("Unable to parse a JSON object");
-            }
-            return fromJSON((JSONObject) o);
-        } catch (ParseException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
     /**
      * Get a VM from its identifier.
      * The VM is already a part of the model.
@@ -367,7 +342,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @return the resulting VM
      * @throws JSONConverterException if there is no model, or if the VM is unknown.
      */
-
     public VM getVM(int vmID) throws JSONConverterException {
         if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
@@ -396,11 +370,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
             throw new JSONConverterException("Undeclared node '" + nodeID + "'");
         }
         return n;
-    }
-
-    @Override
-    public String toJSONString(E o) throws JSONConverterException {
-        return toJSON(o).toJSONString();
     }
 
     /**
