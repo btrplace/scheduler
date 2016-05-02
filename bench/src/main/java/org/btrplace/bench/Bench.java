@@ -18,8 +18,8 @@
 
 package org.btrplace.bench;
 
+import org.btrplace.json.JSON;
 import org.btrplace.json.JSONConverterException;
-import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
@@ -29,15 +29,12 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -104,12 +101,9 @@ public class Bench {
 
         //The resulting plan
         if (best != null) {
-            ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
             String path = base.getAbsolutePath() + File.separator + i.label + "-plan.json.gz";
-            System.out.println(path);
-            OutputStreamWriter out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(path)), UTF_8);
-            c.toJSON(best, out);
-            out.close();
+            File f = new File(path);
+            JSON.write(best, f);
         }
     }
 }

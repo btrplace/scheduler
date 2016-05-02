@@ -18,7 +18,7 @@
 
 package org.btrplace.bench;
 
-import org.btrplace.json.model.InstanceConverter;
+import org.btrplace.json.JSON;
 import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
@@ -26,12 +26,10 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -62,11 +60,7 @@ public class BenchTest {
     public static File store(Instance i) throws Exception {
         File f = File.createTempFile("foo", ".gz");
         f.deleteOnExit();
-        InstanceConverter c = new InstanceConverter();
-        OutputStreamWriter out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(f)), UTF_8);
-        c.toJSON(i, out);
-        out.flush();
-        out.close();
+        JSON.write(i, f);
         return f;
     }
 
@@ -118,10 +112,10 @@ public class BenchTest {
         for (String line : Files.readAllLines(csv.toPath(), UTF_8)) {
             String file = line.split(";")[0];
             File plan = new File(output.toString() + File.separator + file + "-plan.json.gz");
+
             System.out.println(plan.getAbsolutePath());
             Assert.assertTrue(plan.isFile());
-            InputStreamReader in = new InputStreamReader(new GZIPInputStream(new FileInputStream(plan)), UTF_8);
-            ReconfigurationPlan p = pc.fromJSON(in);
+            ReconfigurationPlan p = JSON.readReconfigurationPlan(plan);
             System.out.println(p);
         }
     }

@@ -19,7 +19,6 @@
 package org.btrplace.scheduler.choco;
 
 import org.btrplace.json.JSON;
-import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
@@ -340,8 +339,7 @@ public class IssuesTest {
     @Test
     public void issue72() throws Exception {
         String input = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":70,\"17\":0,\"18\":60,\"19\":0,\"0\":100,\"1\":0,\"2\":0,\"3\":0,\"4\":0,\"5\":0,\"6\":0,\"7\":0,\"8\":90,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
-        InstanceConverter ic = new InstanceConverter();
-        Instance i = ic.fromJSON(input);
+        Instance i = JSON.readInstance(new StringReader(input));
         ChocoScheduler s = new DefaultChocoScheduler();
         s.setTimeLimit(-1);
         i.getModel().detach(ShareableResource.get(i.getModel(), "mem"));

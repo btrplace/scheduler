@@ -20,7 +20,6 @@ package org.btrplace.json;
 
 import net.minidev.json.JSONObject;
 
-import java.io.File;
 import java.io.Reader;
 
 /**
@@ -49,15 +48,6 @@ public interface JSONObjectConverter<E> {
     JSONObject toJSON(E e) throws JSONConverterException;
 
     /**
-     * Un-serialize an object from a file.
-     *
-     * @param path the file path
-     * @return the resulting object
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    E fromJSON(File path) throws JSONConverterException;
-
-    /**
      * Un-serialize an object from a string.
      *
      * @param buf the string to parse
@@ -84,22 +74,4 @@ public interface JSONObjectConverter<E> {
      * @throws JSONConverterException if an error occurred while converting the object
      */
     String toJSONString(E o) throws JSONConverterException;
-
-    /**
-     * Serialize an object to an appendable stream.
-     *
-     * @param e the object to serialize
-     * @param w the stream to append to
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    void toJSON(E e, Appendable w) throws JSONConverterException;
-
-    /**
-     * Serialize an object to a file.
-     *
-     * @param e    the object
-     * @param path the path name
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    void toJSON(E e, File path) throws JSONConverterException;
 }

@@ -27,7 +27,8 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.io.*;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -338,20 +339,10 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public E fromJSON(File path) throws JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), charset))) {
-            return fromJSON(in);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
     public E fromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return fromJSON(in);
         }
-
     }
 
     @Override
@@ -410,24 +401,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     @Override
     public String toJSONString(E o) throws JSONConverterException {
         return toJSON(o).toJSONString();
-    }
-
-    @Override
-    public void toJSON(E e, Appendable w) throws JSONConverterException {
-        try {
-            toJSON(e).writeJSONString(w);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public void toJSON(E e, File path) throws JSONConverterException {
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), charset))) {
-            toJSON(e, out);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
     }
 
     /**

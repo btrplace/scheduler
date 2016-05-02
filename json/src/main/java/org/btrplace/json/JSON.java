@@ -110,8 +110,8 @@ public class JSON {
     public static void write(Instance instance, Appendable a) {
         try {
             InstanceConverter c = new InstanceConverter();
-            c.toJSON(instance, a);
-        } catch (JSONConverterException e) {
+            c.toJSON(instance).writeJSONString(a);
+        } catch (IOException | JSONConverterException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -175,8 +175,8 @@ public class JSON {
     public static void write(ReconfigurationPlan plan, Appendable a) {
         try {
             ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
-            c.toJSON(plan, a);
-        } catch (JSONConverterException e) {
+            c.toJSON(plan).writeJSONString(a);
+        } catch (IOException | JSONConverterException e) {
             throw new IllegalArgumentException(e);
         }
     }
