@@ -18,6 +18,10 @@
 
 package org.btrplace.bench;
 
+import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.plan.ReconfigurationPlanConverter;
+import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.Parameters;
@@ -26,16 +30,29 @@ import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.*;
 
 /**
  * @author Fabien Hermenier
  */
 public class Bench {
 
-    public static void main(String[] args) throws IOException {
+    public static final String SCHEDULER_STATS = "scheduler.csv";
+
+    public static void main(String[] args) throws IOException, JSONConverterException {
         Options opts = new Options();
 
         // Parse the cmdline arguments
@@ -53,22 +70,38 @@ public class Bench {
         ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
 
         File output = opts.output();
-        int nb = 0;
         List<LabelledInstance> instances = opts.instances();
         for (LabelledInstance i : instances) {
-            s.solve(i);
-            if (opts.showProgress()) {
-                System.out.println("------ " + nb + "/" + instances.size() + ": " + i.label + " ------");
-                System.out.println(s.getStatistics());
+            if (opts.progress() == 2) {
+                System.out.println("----- " + i.label + " -----");
             }
-            store(i, s.getStatistics(), output);
+            s.solve(i);
+            SolvingStatistics stats = s.getStatistics();
+            if (opts.progress() == 1) {
+                System.out.println(i.label + " OK");
+            } else if (opts.progress() == 2) {
+                System.out.println(stats);
+                System.out.println();
+            }
+            store(i, stats, output);
         }
 
     }
 
-    private static void store(LabelledInstance i, SolvingStatistics stats, File output) {
-        for (SolutionStatistics sol : stats.getSolutions()) {
-            //id,nbNodes,nbVMs,nbManagedVMs,nbConstraints,int_vars,cstr,bool_vars,cstrs,core,spe,dur,search_nodes,backtracks,opt
+    private static void store(LabelledInstance i, SolvingStatistics stats, File base) throws IOException, JSONConverterException {
+
+        //Stats about the solving process
+        Path p = Paths.get(base.getAbsolutePath(), SCHEDULER_STATS);
+        Files.write(p, Collections.singletonList(i.label + ";" + stats.toCSV()), UTF_8, CREATE, APPEND);
+        ReconfigurationPlan best = stats.lastSolution();
+
+        //The resulting plan
+        if (best != null) {
+            ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
+            String path = base.getAbsolutePath() + File.separator + i.label + "-plan.json.gz";
+            Appendable out = new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(path)), UTF_8);
+            c.toJSON(best, out);
         }
+
     }
 }

@@ -100,4 +100,10 @@ public interface SolvingStatistics {
      * @return a plan. {@code null} if there was no solution
      */
     ReconfigurationPlan lastSolution();
+
+    /**
+     * Summarizes as a CSV data
+     * @return a CSV formatted line.
+     */
+    String toCSV();
 }

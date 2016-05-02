@@ -288,6 +288,11 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         return b.toString();
     }
 
+    @Override
+    public String toCSV() {
+        throw new UnsupportedOperationException();
+    }
+
     public void setSolvingDuration(long solvingDuration) {
         this.solvingDuration = solvingDuration;
     }

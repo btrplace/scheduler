@@ -47,19 +47,19 @@ public class Options {
     private boolean optimize;
 
     @Option(name = "-t", aliases = "--timeout", usage = "Set a timeout (in sec)")
-    private int timeout = 0; //5min by default
+    private int timeout = 0;
 
-    @Option(required = true, name = "-i", aliases = "--input-json", usage = "the json instance file to read (can be a .gz)")
+    @Option(required = true, name = "-i", aliases = "--input", usage = "An instance  ('.json' or '.json.gz') or a list of instances (one instance per line)")
     private String input;
 
     @Option(name = "-o", aliases = "--output", usage = "Output to this file")
     private String output = "./";
 
     @Option(name = "-p", aliases = "--progress", usage = "Show the progress")
-    private boolean progress = false;
+    private int progress = 0; //0 silent, 1: id and status (solved or not), 2: statistics
 
-    @Option(name = "-v", usage = "Set the verbosity level")
-    private int verbosity = 0; //silent by default
+    @Option(name = "-v", usage = "Set the verbosity level for the scheduler")
+    private int verbosity = 0;
 
     public Parameters parameters() {
         return new DefaultParameters()
@@ -88,7 +88,7 @@ public class Options {
             if (files == null) {
                 throw new IllegalArgumentException(input + " should be a folder");
             }
-            return Arrays.asList(files).stream().map(x -> instance(x)).collect(Collectors.toList());
+            return Arrays.asList(files).stream().map(Options::instance).collect(Collectors.toList());
         }
         throw new IllegalArgumentException(input + " should be a file or a folder");
     }
@@ -102,17 +102,12 @@ public class Options {
     }
 
     public static LabelledInstance instance(File f) {
-        String path = f.getAbsolutePath();
+        String path = f.getPath();
         String lbl = path.substring(0, path.indexOf('.'));
         return new LabelledInstance(lbl, quickFromJSON(new File(path)));
     }
 
-    public boolean showProgress() {
+    public int progress() {
         return progress;
     }
-
-    public static String strip(final String s) {
-        return s != null && s.lastIndexOf(".") > 0 ? s.substring(0, s.lastIndexOf(".")) : s;
-    }
-
 }

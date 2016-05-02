@@ -240,6 +240,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
      *
      * @return a CSV formatted string
      */
+    @Override
     public String toCSV() {
         long d = (long) (getMeasures().getTimeCount() * 1000);
         return String.format("%d;%d;%d;%d;%d", nbManagedVMs,

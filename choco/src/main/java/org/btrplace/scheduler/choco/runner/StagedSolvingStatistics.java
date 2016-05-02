@@ -151,4 +151,9 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     public ReconfigurationPlan lastSolution() {
         return last().lastSolution();
     }
+
+    @Override
+    public String toCSV() {
+        throw new UnsupportedOperationException();
+    }
 }
