@@ -43,24 +43,24 @@ public class MyFirstFail implements VariableSelector<IntVar>, VariableEvaluator<
 
     @Override
     public IntVar getVariable(IntVar[] variables) {
-        int small_idx = -1;
-        int small_dsize = Integer.MAX_VALUE;
+        int idx = -1;
+        int dsize = Integer.MAX_VALUE;
         boolean got = false;
-        for (int idx = last.get(); idx < variables.length; idx++) {
-            if (!got && !variables[idx].isInstantiated()) {
-                last.set(idx);
+        for (int i = last.get(); i < variables.length; i++) {
+            if (!got && !variables[i].isInstantiated()) {
+                last.set(i);
                 got = true;
             }
-            int dsize = variables[idx].getDomainSize();
-            if (dsize > 1 && dsize < small_dsize) {
-                small_dsize = dsize;
-                small_idx = idx;
+            int d = variables[i].getDomainSize();
+            if (d > 1 && d < dsize) {
+                dsize = d;
+                idx = i;
             }
-            if (small_dsize == 2) {
+            if (d == 2) {
                 break;
             }
         }
-        return small_idx > -1 ? variables[small_idx] : null;
+        return idx > -1 ? variables[idx] : null;
     }
 
     @Override
