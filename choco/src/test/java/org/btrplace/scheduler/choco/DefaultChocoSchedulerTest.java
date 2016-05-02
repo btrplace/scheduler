@@ -82,8 +82,7 @@ public class DefaultChocoSchedulerTest {
             Assert.assertNotNull(stats);
             System.out.println(stats);
             Assert.assertTrue(stats.getSolutions().isEmpty());
-            Assert.assertEquals(stats.getNbNodes(), 1000);
-            Assert.assertEquals(stats.getNbVMs(), 10000);
+            Assert.assertEquals(stats.getInstance().getModel(), mo);
             throw e;
         }
     }
@@ -102,9 +101,7 @@ public class DefaultChocoSchedulerTest {
             SolvingStatistics stats = cra.getStatistics();
             Assert.assertNotNull(stats);
             Assert.assertTrue(stats.getSolutions().isEmpty());
-            Assert.assertEquals(stats.getNbNodes(), 1);
-            Assert.assertEquals(stats.getNbVMs(), 1);
-            Assert.assertFalse(stats.hitTimeout());
+        //       Assert.assertFalse(stats.hitTimeout());
     }
 
     /*@Test

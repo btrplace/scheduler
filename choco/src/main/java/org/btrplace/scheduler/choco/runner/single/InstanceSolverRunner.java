@@ -30,16 +30,14 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
-import org.btrplace.scheduler.choco.runner.InstanceResult;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.ChocoViews;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.measure.IMeasures;
-import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
-import org.chocosolver.solver.search.solution.ISolutionRecorder;
 import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.trace.Chatterbox;
 
@@ -52,7 +50,7 @@ import java.util.concurrent.Callable;
  *
  * @author Fabien Hermenier
  */
-public class InstanceSolverRunner implements Callable<InstanceResult> {
+public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
     private Parameters params;
 
@@ -66,21 +64,14 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private Instance instance;
 
-    private long coreRPDuration;
-
-    private long speRPDuration;
-
-    private long start;
-
-    private List<SolutionStatistics> measures;
-    private ISolutionRecorder solutions;
-
+    private SingleRunnerStatistics stats;
     /**
      * Choco version of the constraints.
      */
     private List<ChocoConstraint> cConstraints;
 
     private List<ChocoView> views;
+
     /**
      * Make a new runner.
      *
@@ -96,59 +87,47 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     }
 
     @Override
-    public InstanceResult call() throws SchedulerException {
+    public SolvingStatistics call() throws SchedulerException {
+        stats = new SingleRunnerStatistics(params, instance, System.currentTimeMillis());
         rp = null;
-        start = System.currentTimeMillis();
-        measures = new ArrayList<>();
 
         //Build the core problem
-        coreRPDuration = -System.currentTimeMillis();
+        long d = -System.currentTimeMillis();
         rp = buildRP();
-        coreRPDuration += System.currentTimeMillis();
+        d += System.currentTimeMillis();
+        stats.setCoreBuildDuration(d);
+        stats.setNbManagedVMs(rp.getManageableVMs().size());
 
         //Customize the core problem
-        speRPDuration = -System.currentTimeMillis();
+        d = -System.currentTimeMillis();
         if (!specialise()) {
-            return new InstanceResult(null, getStatistics());
+            stats.setSpecialisationDuration(d);
+            return getStatistics();
         }
-        speRPDuration += System.currentTimeMillis();
+        d += System.currentTimeMillis();
+        stats.setSpecialisationDuration(d);
 
         //statistics
-        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speRPDuration);
-        rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().size(), rp.getVMs().size(), cstrs.size());
-        rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
+        stats.setMeasures(rp.getSolver().getMeasures().duplicate());
+        rp.getLogger().debug(stats.toString());
 
         //The solution monitor to store the measures at each solution
-        solutions = new AllSolutionsRecorder(rp.getSolver());
         rp.getSolver().plugMonitor((IMonitorSolution) () -> {
-            IMeasures m = rp.getSolver().getMeasures();
-            SolutionStatistics sol;
-            if (m.hasObjective()) {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                        m.getBackTrackCount(),
-                        (long) (m.getTimeCount() * 1000),
-                        m.getBestSolutionValue().intValue());
-            } else {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                        m.getBackTrackCount(),
-                        (long) (m.getTimeCount() * 1000));
-            }
-            measures.add(sol);
+            Solution solution = new Solution();
+            solution.record(rp.getSolver());
+
+            ReconfigurationPlan plan = rp.buildReconfigurationPlan(solution, origin);
+            views.forEach(v -> v.insertActions(rp, solution, plan));
+
+            IMeasures m = rp.getSolver().getMeasures().duplicate();
+            stats.addSolution(new SolutionStatistics(m, plan));
         });
 
         setVerbosity();
 
         //The actual solving process
-        ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
-        return buildResult(p);
-    }
-
-    private InstanceResult buildResult(ReconfigurationPlan p) {
-        if (p != null) {
-            Solution s = solutions.getLastSolution();
-            views.forEach(v -> v.insertActions(rp, s, p));
-        }
-        return new InstanceResult(p, getStatistics());
+        rp.solve(params.getTimeLimit(), params.doOptimize());
+        return getStatistics();
     }
 
 
@@ -289,32 +268,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    public SingleRunnerStatistics getStatistics() throws SchedulerException {
-        if (rp == null) {
-            return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
-        }
-
-        IMeasures m2 = rp.getSolver().getMeasures();
-        SingleRunnerStatistics st = new SingleRunnerStatistics(
-                params,
-                rp.getNodes().size(),
-                rp.getVMs().size(),
-                cstrs.size(),
-                rp.getManageableVMs().size(),
-                start,
-                (long) (m2.getTimeCount() * 1000),
-                m2.getNodeCount(),
-                m2.getBackTrackCount(),
-                rp.getSolver().hasReachedLimit(), //assumed timeout is the only limit
-                coreRPDuration,
-                speRPDuration);
-        int i = 0;
-        //Merge the statistics with the solution.
-        for (SolutionStatistics m : measures) {
-            m.setReconfigurationPlan(rp.buildReconfigurationPlan(solutions.getSolutions().get(i), rp.getSourceModel()));
-            st.addSolution(m);
-            i++;
-        }
-        return st;
+    /**
+     * Get the statistics about the solving process.
+     *
+     * @return the statistics
+     */
+    public SingleRunnerStatistics getStatistics() {
+        IMeasures m = rp.getSolver().getMeasures().duplicate();
+        stats.setMeasures(m);
+        stats.setCompleted(!rp.getSolver().hasReachedLimit());
+        return stats;
     }
 }

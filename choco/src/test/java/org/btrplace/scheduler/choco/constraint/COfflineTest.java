@@ -27,6 +27,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -111,5 +112,8 @@ public class COfflineTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNull(plan);
+        SolvingStatistics stats = cra.getStatistics();
+        System.out.println(stats);
+        Assert.assertTrue(stats.completed());
     }
 }

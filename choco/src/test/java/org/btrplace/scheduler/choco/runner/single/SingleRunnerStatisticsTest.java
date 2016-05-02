@@ -18,13 +18,23 @@
 
 package org.btrplace.scheduler.choco.runner.single;
 
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Model;
+import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.plan.DefaultReconfigurationPlan;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.measure.MeasuresRecorder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit tests for {@link org.btrplace.scheduler.choco.runner.single.SingleRunnerStatistics}.
@@ -35,42 +45,36 @@ public class SingleRunnerStatisticsTest {
 
     @Test
     public void testInstantiate() {
-        Parameters params = new DefaultParameters();
-        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 12, 100, 1, 2, false, 7, 34);
-        Assert.assertEquals(st.getNbNodes(), 10);
-        Assert.assertEquals(st.getNbVMs(), 20);
-        Assert.assertEquals(st.getNbConstraints(), 44);
-        Assert.assertEquals(st.getParameters(), params);
-        Assert.assertEquals(st.getNbManagedVMs(), 40);
-        Assert.assertEquals(st.getStart(), 12);
-        Assert.assertEquals(st.getSolvingDuration(), 100);
-        Assert.assertEquals(st.getNbSearchNodes(), 1);
-        Assert.assertEquals(st.getNbBacktracks(), 2);
-        Assert.assertFalse(st.hitTimeout());
-        Assert.assertEquals(st.getCoreRPBuildDuration(), 7);
-        Assert.assertEquals(st.getSpeRPDuration(), 34);
-        System.out.println(st);
-    }
+        Parameters ps = new DefaultParameters();
+        Model mo = new DefaultModel();
+        long st = System.currentTimeMillis();
+        List<SatConstraint> cstrs = new ArrayList<>();
+        Instance i = new Instance(mo, cstrs, new MinMTTR());
+        SingleRunnerStatistics stats = new SingleRunnerStatistics(ps, i, st);
+        Assert.assertEquals(stats.getStart(), st);
+        Assert.assertEquals(stats.getCoreBuildDuration(), -1);
+        Assert.assertEquals(stats.getSpecializationDuration(), -1);
+        Assert.assertEquals(stats.getInstance(), i);
+        Assert.assertEquals(stats.getNbManagedVMs(), -1);
+        Assert.assertEquals(stats.getParameters(), ps);
+        Assert.assertEquals(stats.getSolutions().size(), 0);
+        Assert.assertEquals(stats.completed(), false);
+        Assert.assertEquals(stats.getMeasures(), null);
 
-    @Test(dependsOnMethods = {"testInstantiate"})
-    public void testAddSolution() {
-        Parameters params = new DefaultParameters();
-        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 12, 100, 1, 2, false, 7, 34);
-        SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
-        SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);
-        SolutionStatistics s2 = new SolutionStatistics(2, 3, 4, 3);
-        SolutionStatistics s3 = new SolutionStatistics(2, 4, 5, 2);
-        st.addSolution(s1);
-        st.addSolution(s2);
-        st.addSolution(s3);
-        st.addSolution(s0);
-        Assert.assertNotNull(st.toString());
-        Assert.assertEquals(st.getSolutions().size(), 4);
-        Iterator<SolutionStatistics> ite = st.getSolutions().iterator();
-        Assert.assertEquals(ite.next(), s1);
-        Assert.assertEquals(ite.next(), s2);
-        Assert.assertEquals(ite.next(), s3);
-        Assert.assertEquals(ite.next(), s0);
+        stats.setCoreBuildDuration(12);
+        stats.setSpecialisationDuration(17);
+        stats.setNbManagedVMs(18);
+        stats.setCompleted(true);
 
+        Assert.assertEquals(stats.getCoreBuildDuration(), 12);
+        Assert.assertEquals(stats.getSpecializationDuration(), 17);
+        Assert.assertEquals(stats.getNbManagedVMs(), 18);
+        Assert.assertEquals(stats.completed(), true);
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        SolutionStatistics sol = new SolutionStatistics(new MeasuresRecorder(new Solver()), plan);
+        stats.addSolution(sol);
+        Assert.assertEquals(stats.getSolutions().size(), 1);
+        Assert.assertEquals(stats.getSolutions().get(0), sol);
     }
 }

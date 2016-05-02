@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.runner;
 
 import org.btrplace.plan.ReconfigurationPlan;
+import org.chocosolver.solver.search.measure.IMeasures;
 
 /**
  * Store statistics about a solution.
@@ -27,64 +28,20 @@ import org.btrplace.plan.ReconfigurationPlan;
  */
 public class SolutionStatistics {
 
-    /**
-     * The number of opened nodes at this point.
-     */
-    private long nbNodes;
-
-    /**
-     * The number of backtracks at this point.
-     */
-    private long nbBacktracks;
-
-    /**
-     * The time since the beginning of the solving process.
-     */
-    private long time;
-
-    /**
-     * The objective value if an objective was designed.
-     */
-    private int optValue;
 
     private ReconfigurationPlan solution = null;
 
-    private boolean hasObjective = true;
+    private IMeasures measures;
 
     /**
      * Make a new statistics.
      *
-     * @param nbN the number of opened nodes
-     * @param nbB the number of backtracks
-     * @param t   the time in milliseconds
+     * @param m the solver measures at the moment of the solution
+     * @param  plan the resulting plan. {@code null} indicates the solver stated their is no solution
      */
-    public SolutionStatistics(long nbN, long nbB, long t) {
-        this(nbN, nbB, t, -1);
-        hasObjective = false;
-    }
-
-    /**
-     * Make a new statistics.
-     *
-     * @param nbN the number of opened nodes
-     * @param nbB the number of backtracks
-     * @param t   the time in milliseconds
-     * @param o   the value of the optimization variable
-     */
-    public SolutionStatistics(long nbN, long nbB, long t, int o) {
-        nbNodes = nbN;
-        nbBacktracks = nbB;
-        time = t;
-        optValue = o;
-    }
-
-    /**
-     * Get the number of opened nodes.
-     *
-     * @return a positive number
-     */
-    public long getNbNodes() {
-        return nbNodes;
+    public SolutionStatistics(IMeasures m, ReconfigurationPlan plan) {
+        measures = m;
+        solution = plan;
     }
 
     /**
@@ -96,58 +53,23 @@ public class SolutionStatistics {
     }
 
     /**
-     * Attach the solution that was computed.
-     * @param p the computed solution
+     * Return the solver measures at the moment the solution was computed.
+     * @return solver measurement
      */
-    public void setReconfigurationPlan(ReconfigurationPlan p) {
-        solution = p;
-    }
-
-    /**
-     * Get the number of backtracks.
-     *
-     * @return a positive number
-     */
-    public long getNbBacktracks() {
-        return nbBacktracks;
-    }
-
-    /**
-     * Get the time since the beginning of the solving process.
-     *
-     * @return a time in milliseconds
-     */
-    public long getTime() {
-        return time;
-    }
-
-    /**
-     * Get the value of the optimization variable.
-     *
-     * @return an integer
-     */
-    public int getOptValue() {
-        return optValue;
-    }
-
-    /**
-     * Indicates the presence of an optimization variable.
-     *
-     * @return {@code true} if there is an optimization variable
-     */
-    public boolean hasObjective() {
-        return hasObjective;
+    public IMeasures getMeasures() {
+        return measures;
     }
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder()
-                .append(" at ").append(getTime()).append("ms: ")
-                .append(getNbNodes()).append(" node(s), ")
-                .append(getNbBacktracks()).append(" backtrack(s)");
-        if (hasObjective()) {
-            b.append(", objective: ").append(getOptValue());
+        String res = String.format("at %dms, %d node(s), %d backtrack(s)",
+                (int) (measures.getTimeCount() * 1000),
+                measures.getNodeCount(),
+                measures.getBackTrackCount());
+
+        if (measures.hasObjective()) {
+            res = String.join("", res, ", objective: ", measures.getBestSolutionValue().toString());
         }
-        return b.toString();
+        return res;
     }
 }

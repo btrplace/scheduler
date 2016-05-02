@@ -18,9 +18,12 @@
 
 package org.btrplace.scheduler.choco.runner.single;
 
+import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
+import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,38 +37,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
 
     private Parameters params;
 
-    /**
-     * The number of VMs actually managed by the problem.
-     */
-    private int nbManagedVMs;
-
-    /**
-     * The total duration of the solving process in milliseconds.
-     */
-    private long time;
-
-    /**
-     * The total number of opened nodes.
-     */
-    private long nbSearchNodes;
-
-    /**
-     * The total number of backtracks.
-     */
-    private long nbBacktracks;
-
-    /**
-     * Indicates whether or not the solver hits the timeout.
-     */
-    private boolean timeout;
-
-    private int nbVMs;
-
-    private int nbNodes;
-
-    private List<SolutionStatistics> solutions;
-
-    private int nbConstraints;
+    private Instance instance;
 
     private long coreRPBuildDuration;
 
@@ -73,72 +45,63 @@ public class SingleRunnerStatistics implements SolvingStatistics {
 
     private long start;
 
+    private boolean completed;
+
+    /**
+     * The number of VMs actually managed by the problem.
+     */
+    private int nbManagedVMs;
+
+    private List<SolutionStatistics> solutions;
+
+
+    private IMeasures status;
+
     /**
      * Make new statistics.
      *
-     * @param n          the number of nodes in the model
-     * @param v          the number of VMs in the model
-     * @param c          the number of constraints
-     * @param managedVMs the number of VMs managed by the algorithm.
+     * @param ps the scheduler parameters
+     * @param i the instance to solve;
      * @param st         the moment the computation starts (epoch format)
-     * @param t          the solving duration in milliseconds
-     * @param nbN        the number of opened nodes at the moment
-     * @param nbB        the number of backtracks at the moment
-     * @param to         {@code true} to indicate the solver hit a timeout
-     * @param cd         the duration of the core-RP building process
-     * @param sd         the duration of the core-RP specialization process
      */
-    public SingleRunnerStatistics(Parameters ps, int n, int v, int c, int managedVMs, long st,
-                                  long t, long nbN, long nbB, boolean to, long cd, long sd) {
-        nbManagedVMs = managedVMs;
+    public SingleRunnerStatistics(Parameters ps, Instance i, long st) {
         this.params = ps;
-        this.nbNodes = n;
-        this.nbVMs = v;
-        this.nbConstraints = c;
-        time = t;
         this.start = st;
-        nbSearchNodes = nbN;
-        nbBacktracks = nbB;
-        this.timeout = to;
         solutions = new ArrayList<>();
-        this.coreRPBuildDuration = cd;
-        this.speRPDuration = sd;
+        this.nbManagedVMs = -1;
+        this.coreRPBuildDuration = -1;
+        this.speRPDuration = -1;
+        this.instance = i;
+        status = null;
+        completed = false;
     }
 
     @Override
-    public int getNbConstraints() {
-        return nbConstraints;
-    }
-
-    @Override
-    public long getSolvingDuration() {
-        return time;
-    }
-
-
-    @Override
-    public long getCoreRPBuildDuration() {
+    public long getCoreBuildDuration() {
         return coreRPBuildDuration;
     }
 
+    /**
+     * Set the scheduler generation duration.
+     *
+     * @param d an amount in milliseconds
+     */
+    public void setCoreBuildDuration(long d) {
+        coreRPBuildDuration = d;
+    }
+
+    /**
+     * Set the scheduler specialisation duration.
+     *
+     * @param d an amount in milliseconds
+     */
+    public void setSpecialisationDuration(long d) {
+        speRPDuration = d;
+    }
+
     @Override
-    public long getSpeRPDuration() {
+    public long getSpecializationDuration() {
         return speRPDuration;
-    }
-
-    @Override
-    public long getNbSearchNodes() {
-        return nbSearchNodes;
-    }
-
-    @Override
-    public long getNbBacktracks() {
-        return nbBacktracks;
-    }
-
-    @Override
-    public boolean hitTimeout() {
-        return timeout;
     }
 
     /**
@@ -151,23 +114,36 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
+    public IMeasures getMeasures() {
+        return this.status;
+    }
+
+    /**
+     * Set the solver measures.
+     *
+     * @param m the measures
+     */
+    public void setMeasures(IMeasures m) {
+        this.status = m;
+    }
+
+    @Override
     public List<SolutionStatistics> getSolutions() {
         return solutions;
     }
 
     @Override
-    public int getNbVMs() {
-        return nbVMs;
-    }
-
-    @Override
-    public int getNbNodes() {
-        return nbNodes;
-    }
-
-    @Override
     public int getNbManagedVMs() {
         return nbManagedVMs;
+    }
+
+    /**
+     * Set the number of VMs that are manageable by the scheduler
+     *
+     * @param nb a positive amount
+     */
+    public void setNbManagedVMs(int nb) {
+        nbManagedVMs = nb;
     }
 
     @Override
@@ -176,8 +152,16 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
+    public Instance getInstance() {
+        return instance;
+    }
+
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+        int nbNodes = instance.getModel().getMapping().getNbNodes();
+        int nbVMs = instance.getModel().getMapping().getNbVMs();
+        int nbConstraints = instance.getSatConstraints().size();
         b.append(nbNodes).append(" node(s)")
                 .append("; ").append(nbVMs).append(" VM(s)");
         if (nbManagedVMs != nbVMs) {
@@ -191,16 +175,18 @@ public class SingleRunnerStatistics implements SolvingStatistics {
         if (params.getTimeLimit() > 0) {
             b.append("; timeout: ").append(params.getTimeLimit()).append("s");
         }
-        b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core-RP) + ").append(speRPDuration).append("ms (specialization)");
-        b.append("\nAfter ").append(time).append("ms of search");
-        if (timeout) {
-            b.append(" (timeout)");
-        } else {
+        b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core) + ").append(speRPDuration).append("ms (specialization)");
+        b.append("\nAfter ").append((long) (status.getTimeCount() * 1000)).append("ms of search");
+
+        if (completed) {
             b.append(" (terminated)");
+        } else {
+            b.append(" (timeout)");
         }
+
         b.append(": ")
-                .append(nbSearchNodes).append(" opened search node(s), ")
-                .append(nbBacktracks).append(" backtrack(s), ")
+                .append(status.getNodeCount()).append(" opened search node(s), ")
+                .append(status.getBackTrackCount()).append(" backtrack(s), ")
                 .append(solutions.size()).append(" solution(s)");
         if (!solutions.isEmpty()) {
             b.append(":\n");
@@ -216,7 +202,52 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
+    public ReconfigurationPlan lastSolution() {
+        if (solutions.isEmpty()) {
+            return null;
+        }
+        return solutions.get(solutions.size() - 1).getReconfigurationPlan();
+    }
+
+    @Override
     public Parameters getParameters() {
         return params;
     }
+
+    /**
+     * Set the completion status.
+     *
+     * @param b {@code true} iff the search completed
+     */
+    public void setCompleted(boolean b) {
+        completed = b;
+    }
+
+    @Override
+    public boolean completed() {
+        return completed;
+    }
+
+    /**
+     * Print the statistics as a CSV line.
+     * Fields are separated by a ';' and ordered this way:
+     * - getNbManagedVMs()
+     * - getCoreBuildDuration()
+     * - getSpecializationDuration()
+     * - getMeasures().getTimeCount() * 1000 (so in milliseconds)
+     * - solutions.size()
+     * - completed ? 1 : 0
+     *
+     * @return a CSV formatted string
+     */
+    public String toCSV() {
+        long d = (long) (getMeasures().getTimeCount() * 1000);
+        return String.format("%d;%d;%d;%d;%d", nbManagedVMs,
+                coreRPBuildDuration,
+                speRPDuration,
+                d,
+                solutions.size(),
+                completed ? 1 : 0);
+    }
 }
+

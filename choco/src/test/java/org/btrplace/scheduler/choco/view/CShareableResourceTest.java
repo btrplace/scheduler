@@ -230,7 +230,7 @@ public class CShareableResourceTest {
             Assert.assertNull(s.solve(mo, new ArrayList<>()));
             Assert.fail("Should have thrown an exception");
         } catch (SchedulerException e) {
-            Assert.assertEquals(s.getStatistics().getNbBacktracks(), 0);
+            Assert.assertEquals(s.getStatistics().getMeasures().getBackTrackCount(), 0);
         }
     }
 

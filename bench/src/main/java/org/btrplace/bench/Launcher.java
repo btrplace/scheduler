@@ -155,26 +155,26 @@ public class Launcher {
                         .append(';')
                         .append(String.valueOf(stats.getSolutions().size()));
                 if (!stats.getSolutions().isEmpty()) {
-                    writer.append(String.valueOf(stats.getSolutions().get(0).getTime()))
+                    writer.append(String.valueOf(stats.getSolutions().get(0).getMeasures().getTimeCount()))
                             .append(';');
                 }
-                writer.append(String.valueOf(stats.getCoreRPBuildDuration()))
+                writer.append(String.valueOf(stats.getCoreBuildDuration()))
                         .append(';')
-                        .append(String.valueOf(stats.getSpeRPDuration()))
+                        .append(String.valueOf(stats.getSpecializationDuration()))
                         .append(';')
-                        .append(String.valueOf(stats.getSolvingDuration()))
+                        .append(String.valueOf(stats.getMeasures().getTimeCount()))
                         .append(';')
-                        .append(String.valueOf(stats.getNbBacktracks()))
+                        .append(String.valueOf(stats.getMeasures().getBackTrackCount()))
                         .append(';')
-                        .append(String.valueOf(stats.getNbConstraints()))
+                        .append(String.valueOf(stats.getInstance().getSatConstraints().size()))
                         .append(';')
                         .append(String.valueOf(stats.getNbManagedVMs()))
                         .append(';')
-                        .append(String.valueOf(stats.getNbNodes()))
+                        .append(String.valueOf(stats.getInstance().getModel().getMapping().getNbNodes()))
                         .append(';')
-                        .append(String.valueOf(stats.getNbSearchNodes()))
+                        .append(String.valueOf(stats.getMeasures().getNodeCount()))
                         .append(';')
-                        .append(String.valueOf(stats.getNbVMs()))
+                        .append(String.valueOf(stats.getInstance().getModel().getMapping().getNbVMs()))
                         .append('\n');
             }
         }
