@@ -92,7 +92,6 @@ public class JSON {
      * @throws IllegalArgumentException if an error occurred while writing the json
      */
     public static void write(Instance instance, File f) {
-        InstanceConverter c = new InstanceConverter();
         try (OutputStreamWriter out = makeOut(f)) {
             write(instance, out);
         } catch (IOException e) {
@@ -125,7 +124,6 @@ public class JSON {
      * @throws IllegalArgumentException if an error occurred while reading the file
      */
     public static ReconfigurationPlan readReconfigurationPlan(File f) {
-        ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
         try (Reader in = makeIn(f)) {
             return readReconfigurationPlan(in);
         } catch (IOException e) {
@@ -157,7 +155,6 @@ public class JSON {
      * @throws IllegalArgumentException if an error occurred while writing the json
      */
     public static void write(ReconfigurationPlan plan, File f) {
-        ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
         try (OutputStreamWriter out = makeOut(f)) {
             write(plan, out);
         } catch (IOException e) {

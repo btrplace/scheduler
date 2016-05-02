@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * CLI options to indicate instances and the solver tuning.
@@ -106,10 +107,11 @@ public class Options {
         }
 
         //We assume it is a list of instance files
-        return Files.lines(Paths.get(instances), StandardCharsets.UTF_8)
-                .map(s -> instance(new File(s)))
-                .collect(Collectors.toList());
+        try (Stream<String> s = Files.lines(Paths.get(instances), StandardCharsets.UTF_8)) {
+            return s.map(x -> instance(new File(x))).collect(Collectors.toList());
+        }
     }
+
 
     /**
      * Get the output directory.
