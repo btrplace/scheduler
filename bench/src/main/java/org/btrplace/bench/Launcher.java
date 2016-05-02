@@ -18,7 +18,7 @@
 
 package org.btrplace.bench;
 
-import org.btrplace.json.model.InstanceConverter;
+import org.btrplace.json.JSON;
 import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -91,7 +91,7 @@ public class Launcher {
         // Manage options behaviors
         cra.setParameters(ps);
 
-        Instance i = InstanceConverter.quickFromJSON(new File(src));
+        Instance i = JSON.readInstance(new File(src));
         // Try to solve
         try {
             // For debug purpose

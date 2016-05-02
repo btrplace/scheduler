@@ -18,6 +18,7 @@
 
 package org.btrplace.bench;
 
+import org.btrplace.json.JSON;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
 import org.kohsuke.args4j.Option;
@@ -30,8 +31,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.btrplace.json.model.InstanceConverter.quickFromJSON;
 
 /**
  * CLI options to indicate instances and the solver tuning.
@@ -134,6 +133,6 @@ public class Options {
     public static LabelledInstance instance(File f) {
         String path = f.getName();
         String lbl = path.substring(0, path.indexOf('.'));
-        return new LabelledInstance(lbl, quickFromJSON(f));
+        return new LabelledInstance(lbl, JSON.readInstance(f));
     }
 }

@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco;
 
+import org.btrplace.json.JSON;
 import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
@@ -41,6 +42,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -378,7 +380,7 @@ public class IssuesTest {
     @Test
     public void issue72c() throws Exception {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
-        Instance i = InstanceConverter.quickFromJSON(buf);
+        Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
         System.out.println(i.getModel());
         s.doOptimize(false);
@@ -394,7 +396,7 @@ public class IssuesTest {
     @Test
     public void issue72d() throws Exception {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
-        Instance i = InstanceConverter.quickFromJSON(buf);
+        Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
         System.out.println(i.getModel());
         s.doOptimize(true);
@@ -438,7 +440,7 @@ public class IssuesTest {
     @Test
     public void issue87() throws Exception {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[3,2],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[4]},\"3\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[]},\"constraints\":[{\"vm\":0,\"continuous\":false,\"id\":\"running\"},{\"vm\":1,\"continuous\":false,\"id\":\"running\"},{\"vm\":2,\"continuous\":false,\"id\":\"running\"},{\"vm\":3,\"continuous\":false,\"id\":\"running\"},{\"vm\":4,\"continuous\":false,\"id\":\"running\"},{\"amount\":1,\"nodes\":[0],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":1,\"nodes\":[1],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":1,\"nodes\":[2],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":2,\"nodes\":[3],\"continuous\":false,\"id\":\"runningCapacity\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
-        Instance i = InstanceConverter.quickFromJSON(buf);
+        Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
@@ -513,9 +515,9 @@ public class IssuesTest {
     }
 
     @Test
-    public void testIssue93() {
+    public void testIssue93() throws Exception {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[2]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{\"0\":{\"memUsed\":204},\"1\":{\"memUsed\":204},\"2\":{\"memUsed\":204}}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":8,\"1\":10,\"2\":10},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{\"0\":8,\"1\":1,\"2\":1}},{\"routing\":{\"type\":\"default\"},\"switches\":[{\"id\":0,\"capacity\":-1}],\"links\":[{\"physicalElement\":{\"id\":2,\"type\":\"node\"},\"id\":0,\"capacity\":1000,\"switch\":0},{\"physicalElement\":{\"id\":1,\"type\":\"node\"},\"id\":1,\"capacity\":1000,\"switch\":0},{\"physicalElement\":{\"id\":0,\"type\":\"node\"},\"id\":2,\"capacity\":1000,\"switch\":0}],\"id\":\"net\"}]},\"constraints\":[{\"rc\":\"cpu\",\"amount\":6,\"nodes\":[0],\"continuous\":false,\"id\":\"resourceCapacity\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
-        Instance i = InstanceConverter.quickFromJSON(buf);
+        Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
@@ -525,8 +527,8 @@ public class IssuesTest {
     }
 
     @Test
-    public void testIssue100() {
-        Instance i = InstanceConverter.quickFromJSON(new File("src/test/resources/issue-100.json"));
+    public void testIssue100() throws Exception {
+        Instance i = JSON.readInstance(new File("src/test/resources/issue-100.json"));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
@@ -535,8 +537,8 @@ public class IssuesTest {
     }
 
     @Test
-    public void testIssue101() {
-        Instance i = InstanceConverter.quickFromJSON(new File("src/test/resources/issue-101.json"));
+    public void testIssue101() throws Exception {
+        Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json"));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
