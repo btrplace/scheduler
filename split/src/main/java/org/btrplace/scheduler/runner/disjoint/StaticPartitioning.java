@@ -96,14 +96,9 @@ public abstract class StaticPartitioning implements InstanceSolver {
             completionService.submit(new InstanceSolverRunner(cra, partition));
         }
 
-        boolean solved = true;
         for (int i = 0; i < partitions.size(); i++) {
             try {
-                SolvingStatistics res = completionService.take().get();
-                if (res.getSolutions().isEmpty()) {
-                    solved = false;
-                }
-                results.add(res);
+                results.add(completionService.take().get());
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
@@ -115,7 +110,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
             }
         }
         duration += System.currentTimeMillis();
-
+        stats.setSolvingDuration(duration);
         exe.shutdown();
 
         return merge(orig, results);

@@ -40,6 +40,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     private int nbWorkers;
     private int nbPartitions;
     private long splitDuration;
+    private long solvingDuration;
     private int managed = 0;
 
     private Instance instance;
@@ -68,6 +69,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         this.nbWorkers = w;
         this.splitDuration = -1;
         this.nbPartitions = -1;
+        solvingDuration = -1;
         partResults = new ArrayList<>();
     }
 
@@ -125,6 +127,15 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     @Override
     public ReconfigurationPlan lastSolution() {
         return null;
+    }
+
+    /**
+     * Get the solving duration in milliseconds
+     *
+     * @return a positive number. {@code -1} if the solving process did not start
+     */
+    public long getSolvingDuration() {
+        return solvingDuration;
     }
 
     /**
@@ -275,6 +286,10 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
             b.append(": ").append(nbSolved).append('/').append(nbPartitions).append(" solved partition(s)");
         }*/
         return b.toString();
+    }
+
+    public void setSolvingDuration(long solvingDuration) {
+        this.solvingDuration = solvingDuration;
     }
 
     /*private void buildHeader(StringBuilder b, List<SolutionStatistics> stats) {
