@@ -58,10 +58,28 @@ public interface ConstraintConverter<E extends Constraint> {
         }
     }
 
+    /**
+     * Convert a json-encoded constraint.
+     *
+     * @param mo the model to rely on
+     * @param o  the constraint to decode
+     * @return the resulting constraint
+     * @throws JSONConverterException if the conversion failed
+     */
     E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
 
+    /**
+     * Serialise a constraint.
+     * @param o the constraint
+     * @return the resulting encoded constraint
+     */
     JSONObject toJSON(E o);
 
+    /**
+     * Serialise a constraint.
+     * @param d the constraint to serialise
+     * @return the JSON-encoded constraint
+     */
     default String toJSONString(E d) {
         return toJSON(d).toJSONString();
     }

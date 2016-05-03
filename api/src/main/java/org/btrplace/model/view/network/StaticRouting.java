@@ -25,7 +25,7 @@ import java.util.*;
 /**
  * Statical implementation of {@link Routing}.
  * Requires to specify routes manually, along with each link direction for full-duplex purpose,
- * see {@link #setStaticRoute(NodesMap, LinkedHashMap)}.
+ * see {@link #setStaticRoute(NodesMap, Map)}.
  *
  * If instantiated manually, it should be first attached to an existing network view, see {@link #setNetwork(Network)}.
  *

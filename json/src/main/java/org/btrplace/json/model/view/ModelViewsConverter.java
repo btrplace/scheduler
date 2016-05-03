@@ -97,6 +97,14 @@ public class ModelViewsConverter {
         return json2java.keySet();
     }
 
+    /**
+     * Convert a json-encoded view.
+     *
+     * @param mo the model to rely on
+     * @param in the view to decode
+     * @return the resulting view
+     * @throws JSONConverterException if the conversion failed
+     */
     public ModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkKeys(in, "id");
         Object id = in.get("id");
@@ -107,6 +115,11 @@ public class ModelViewsConverter {
         return c.fromJSON(mo, in);
     }
 
+    /**
+     * Serialise a view.
+     * @param o the view
+     * @return the resulting encoded view
+     */
     public JSONObject toJSON(ModelView o) throws JSONConverterException {
         ModelViewConverter c = java2json.get(o.getClass());
         if (c == null) {

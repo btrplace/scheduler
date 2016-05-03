@@ -59,8 +59,22 @@ public interface RoutingConverter<E extends Routing> {
         }
     }
 
+    /**
+     * Decode a routing.
+     *
+     * @param mo the model to rely on
+     * @param o  the routing to decode
+     * @return the conversion result
+     * @throws JSONConverterException if an error occurred while decoding the routing
+     */
     E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
 
+    /**
+     * Serialize a routing.
+     *
+     * @param o the routing to serialize
+     * @return the conversion result
+     */
     JSONObject toJSON(E o);
 
 }

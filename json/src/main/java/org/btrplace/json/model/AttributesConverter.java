@@ -59,6 +59,14 @@ public class AttributesConverter {
         }
     }
 
+    /**
+     * Decode attributes
+     *
+     * @param mo the model to rely on
+     * @param o  the encoded attributes
+     * @return the resulting attributes
+     * @throws JSONConverterException if the conversion failed
+     */
     public static Attributes fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
         try {
@@ -88,6 +96,11 @@ public class AttributesConverter {
         return attrs;
     }
 
+    /**
+     * Serialise attributes.
+     * @param attributes the attributes
+     * @return the resulting encoded attributes
+     */
     public static JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
         JSONObject vms = new JSONObject();

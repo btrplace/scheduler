@@ -115,6 +115,14 @@ public class ConstraintsConverter {
         return json2java.keySet();
     }
 
+    /**
+     * Convert a json-encoded constraint.
+     *
+     * @param mo the model to rely on
+     * @param in the constraint to decode
+     * @return the resulting constraint
+     * @throws JSONConverterException if the conversion failed
+     */
     public Constraint fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkKeys(in, "id");
         Object id = in.get("id");
@@ -125,6 +133,12 @@ public class ConstraintsConverter {
         return c.fromJSON(mo, in);
     }
 
+    /**
+     * Serialise a constraint.
+     * @param o the constraint
+     * @return the resulting encoded constraint
+     * @throws JSONConverterException if the conversion failed
+     */
     public JSONObject toJSON(Constraint o) throws JSONConverterException {
         ConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
@@ -133,6 +147,13 @@ public class ConstraintsConverter {
         return c.toJSON(o);
     }
 
+    /**
+     * Convert a list of json-encoded sat-constraints.
+     * @param mo the model to rely on
+     * @param in the constraints to decode
+     * @return the constraint list. Might be empty
+     * @throws JSONConverterException if the conversion failed
+     */
     public List<SatConstraint> listFromJSON(Model mo, JSONArray in) throws JSONConverterException {
         List<SatConstraint> l = new ArrayList<>(in.size());
         for (Object o : in) {
@@ -144,6 +165,12 @@ public class ConstraintsConverter {
         return l;
     }
 
+    /**
+     * Serialise a list of sat-constraints.
+     * @param e the list to serialise
+     * @return the resulting encoded list
+     * @throws JSONConverterException if the conversion failed
+     */
     public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
         for (Constraint cstr : e) {

@@ -44,8 +44,21 @@ public interface ModelViewConverter<E extends ModelView> {
      */
     String getJSONId();
 
+    /**
+     * Convert a json-encoded view.
+     *
+     * @param mo the model to rely on
+     * @param o  the view to decode
+     * @return the resulting view
+     * @throws JSONConverterException if the conversion failed
+     */
     E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
 
+    /**
+     * Serialise a view.
+     * @param o the view
+     * @return the resulting encoded view
+     */
     JSONObject toJSON(E o) throws JSONConverterException;
 
 }

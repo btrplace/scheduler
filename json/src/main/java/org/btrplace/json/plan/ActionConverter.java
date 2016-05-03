@@ -91,11 +91,21 @@ public class ActionConverter implements ActionVisitor {
 
     private Model mo;
 
+    /**
+     * A new converter
+     *
+     * @param mo the model to rely on.
+     */
     public ActionConverter(Model mo) {
         this.mo = mo;
     }
 
-
+    /**
+     * decode a json-encoded action.
+     * @param in the action to decode
+     * @return the resulting action
+     * @throws JSONConverterException if the conversion failed
+     */
     public Action fromJSON(JSONObject in) throws JSONConverterException {
         String id = requiredString(in, ACTION_ID_LABEL);
         Action a;
@@ -377,6 +387,12 @@ public class ActionConverter implements ActionVisitor {
                 requiredVM(mo, o, "newVm"));
     }
 
+    /**
+     * Serialise an action.
+     * @param a the action
+     * @return the resulting encoded action
+     * @throws JSONConverterException if the conversion exploded
+     */
     public JSONObject toJSON(Action a) throws JSONConverterException {
         return (JSONObject) a.visit(this);
     }
@@ -403,10 +419,17 @@ public class ActionConverter implements ActionVisitor {
         return o;
     }
 
+
     private JSONObject toJSON(Event e) {
         return (JSONObject) e.visit(this);
     }
 
+    /**
+     * Convert a list of json-encoded actions.
+     * @param in the list to decode
+     * @return the action list. Might be empty
+     * @throws JSONConverterException if the conversion failed
+     */
     public List<Action> listFromJSON(JSONArray in) throws JSONConverterException {
         List<Action> l = new ArrayList<>(in.size());
         for (Object o : in) {
