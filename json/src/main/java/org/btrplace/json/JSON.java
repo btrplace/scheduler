@@ -117,6 +117,22 @@ public class JSON {
     }
 
     /**
+     * Serialise a instance.
+     *
+     * @param instance the instance to write
+     * @throws IllegalArgumentException if an error occurred while writing the json
+     */
+    public String toString(Instance instance) {
+        try {
+            InstanceConverter c = new InstanceConverter();
+            return c.toJSON(instance).toJSONString();
+        } catch (JSONConverterException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+
+    /**
      * Read a reconfiguration plan from a file.
      * A file ending with '.gz' is uncompressed first
      *
@@ -175,6 +191,21 @@ public class JSON {
             ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
             c.toJSON(plan).writeJSONString(a);
         } catch (IOException | JSONConverterException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Serialise a reconfiguration plan.
+     *
+     * @param plan the plan to write
+     * @throws IllegalArgumentException if an error occurred while writing the json
+     */
+    public static String toString(ReconfigurationPlan plan) {
+        try {
+            ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
+            return c.toJSON(plan).toJSONString();
+        } catch (JSONConverterException e) {
             throw new IllegalArgumentException(e);
         }
     }
