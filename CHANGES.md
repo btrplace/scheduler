@@ -5,8 +5,15 @@ version 0.46 - soon come
 ----------------------
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)
 
+This version provides better performance when solving large instances.
+The codebase has also been reduced significantly.
+
 - API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
-- API change: The code to split problems and solve them in parallel moved to its own module named 'split'
+- API change: The code to split problems and solve them in parallel moved
+  to its own module named 'split'
+- API change: The JSON package has been refactored for simplificy. There
+  is now a single entry point for JSON (de-)serialisation with the class
+  JSON.
 
 
 version 0.45 - 22 Apr 2016
@@ -26,8 +33,8 @@ version 0.44 - 17 Jan 2016
 ----------------------
 See milestone [0.44](https://github.com/btrplace/scheduler/milestones/0.44)
 
-A maintenance release but on a critical heisenbug bug that prevented migrations to
-be added to plans.
+A maintenance release but on a critical heisenbug bug that prevented migrations
+to be added to plans.
 
 - bug fixes: #91
 
@@ -37,8 +44,8 @@ version 0.43 - 12 Jan 2016
 See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
 
 This release proposes significant performance improvement in both placement
-oriented problems and migration oriented problems. It also simplifies the code
-that map choco objects to their api-side equivalent.
+oriented problems and migration oriented problems. It also simplifies the
+code that map choco objects to their api-side equivalent.
 
 - Improved scalability of the Network model
 - Improved the scalability of the placement model (#67)
