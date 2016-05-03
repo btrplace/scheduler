@@ -37,9 +37,9 @@ public class SerializeConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         SerializeConverter conv = new SerializeConverter();
-        conv.setModel(mo);
+
         Serialize serial = new Serialize(mo.newVM(), mo.newVM());
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(serial)).toString(), serial.toString());
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(serial)).toString(), serial.toString());
         System.out.println(conv.toJSONString(serial));
     }
 }

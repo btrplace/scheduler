@@ -21,12 +21,15 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Split;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.btrplace.json.AbstractJSONObjectConverter.*;
 
 
 /**
@@ -47,7 +50,7 @@ public class SplitConverter extends ConstraintConverter<Split> {
     }
 
     @Override
-    public Split fromJSON(JSONObject o) throws JSONConverterException {
+    public Split fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
         Set<Collection<VM>> vms = new HashSet<>();
         Object x = o.get("parts");
@@ -55,7 +58,7 @@ public class SplitConverter extends ConstraintConverter<Split> {
             throw new JSONConverterException("Set of identifiers sets expected at key 'parts'");
         }
         for (Object obj : (JSONArray) x) {
-            vms.add(vmsFromJSON((JSONArray) obj));
+            vms.add(vmsFromJSON(mo, (JSONArray) obj));
         }
 
         return new Split(vms, requiredBoolean(o, "continuous"));

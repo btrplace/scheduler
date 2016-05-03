@@ -38,12 +38,12 @@ public class SeqConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         SeqConverter conv = new SeqConverter();
-        conv.setModel(mo);
+
         Seq d = new Seq(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Seq c = new Seq(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

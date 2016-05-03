@@ -19,9 +19,13 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
+import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Running;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.requiredBoolean;
+import static org.btrplace.json.AbstractJSONObjectConverter.requiredVM;
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.Running}.
  *
@@ -41,16 +45,16 @@ public class RunningConverter extends ConstraintConverter<Running> {
     }
 
     @Override
-    public Running fromJSON(JSONObject o) throws JSONConverterException {
+    public Running fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Running(requiredVM(o, "vm"), requiredBoolean(o, "continuous"));
+        return new Running(requiredVM(mo, o, "vm"), requiredBoolean(o, "continuous"));
     }
 
     @Override
     public JSONObject toJSON(Running o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", AbstractJSONObjectConverter.toJSON(o.getInvolvedVMs().iterator().next()));
         c.put("continuous", o.isContinuous());
         return c;
     }

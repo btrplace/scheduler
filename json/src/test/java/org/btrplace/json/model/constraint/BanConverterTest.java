@@ -39,11 +39,11 @@ public class BanConverterTest {
     public void testViables() throws JSONConverterException {
         BanConverter conv = new BanConverter();
         Model mo = new DefaultModel();
-        conv.setModel(mo);
+
         Ban d = new Ban(mo.newVM(),
                 new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())));
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

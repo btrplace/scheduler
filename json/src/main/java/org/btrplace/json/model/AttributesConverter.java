@@ -19,11 +19,13 @@
 package org.btrplace.json.model;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.*;
 
 import java.util.Map;
+
+import static org.btrplace.json.AbstractJSONObjectConverter.getNode;
+import static org.btrplace.json.AbstractJSONObjectConverter.getVM;
 
 
 /**
@@ -34,7 +36,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
+public class AttributesConverter {
 
     private static void putAttributes(Attributes attrs, Element e, JSONObject entries) {
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
@@ -54,8 +56,8 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
         }
     }
 
-    @Override
-    public Attributes fromJSON(JSONObject o) throws JSONConverterException {
+    //@Override
+    public Attributes fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
         try {
 
@@ -63,7 +65,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             if (vms != null) {
                 for (Map.Entry<String, Object> e : vms.entrySet()) {
                     String el = e.getKey();
-                    VM vm = getVM(Integer.parseInt(el));
+                    VM vm = getVM(mo, Integer.parseInt(el));
                     JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, vm, entries);
                 }
@@ -73,7 +75,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             if (nodes != null) {
                 for (Map.Entry<String, Object> e : nodes.entrySet()) {
                     String el = e.getKey();
-                    Node n = getNode(Integer.parseInt(el));
+                    Node n = getNode(mo, Integer.parseInt(el));
                     JSONObject entries = (JSONObject) e.getValue();
                     putAttributes(attrs, n, entries);
                 }
@@ -84,7 +86,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
         return attrs;
     }
 
-    @Override
+    //@Override
     public JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
         JSONObject vms = new JSONObject();

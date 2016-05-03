@@ -21,7 +21,11 @@ package org.btrplace.json.model.constraint.migration;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.ConstraintConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Serialize;
+
+import static org.btrplace.json.AbstractJSONObjectConverter.requiredVMs;
+import static org.btrplace.json.AbstractJSONObjectConverter.vmsToJSON;
 
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.migration.Serialize}.
@@ -42,13 +46,13 @@ public class SerializeConverter extends ConstraintConverter<Serialize> {
     }
 
     @Override
-    public Serialize fromJSON(JSONObject in) throws JSONConverterException {
+    public Serialize fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkId(in);
-        return new Serialize(requiredVMs(in, "vms"));
+        return new Serialize(requiredVMs(mo, in, "vms"));
     }
 
     @Override
-    public JSONObject toJSON(Serialize serialize) throws JSONConverterException {
+    public JSONObject toJSON(Serialize serialize) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("vms", vmsToJSON(serialize.getInvolvedVMs()));

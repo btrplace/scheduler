@@ -21,12 +21,15 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Seq;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.getVM;
+import static org.btrplace.json.AbstractJSONObjectConverter.vmsToJSON;
 
 /**
  * JSON converter for the {@link org.btrplace.model.constraint.Seq} constraint.
@@ -46,11 +49,11 @@ public class SeqConverter extends ConstraintConverter<Seq> {
     }
 
     @Override
-    public Seq fromJSON(JSONObject o) throws JSONConverterException {
+    public Seq fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
         List<VM> s = new ArrayList<>();
         for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(getVM((Integer) ob));
+            s.add(getVM(mo, (Integer) ob));
         }
         return new Seq(s);
     }

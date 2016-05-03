@@ -40,9 +40,8 @@ public class InstanceConverter implements JSONObjectConverter<Instance> {
         ModelConverter moc = new ModelConverter();
         ConstraintsConverter cConverter = ConstraintsConverter.newBundle();
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
-        cConverter.setModel(mo);
-        return new Instance(mo, cConverter.listFromJSON((JSONArray) in.get("constraints")),
-                (OptConstraint) cConverter.fromJSON((JSONObject) in.get("objective")));
+        return new Instance(mo, cConverter.listFromJSON(mo, (JSONArray) in.get("constraints")),
+                (OptConstraint) cConverter.fromJSON(mo, (JSONObject) in.get("objective")));
     }
 
     @Override

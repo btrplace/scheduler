@@ -21,7 +21,11 @@ package org.btrplace.json.model.constraint.migration;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.ConstraintConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Sync;
+
+import static org.btrplace.json.AbstractJSONObjectConverter.requiredVMs;
+import static org.btrplace.json.AbstractJSONObjectConverter.vmsToJSON;
 
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.migration.Sync}.
@@ -42,13 +46,13 @@ public class SyncConverter extends ConstraintConverter<Sync> {
     }
 
     @Override
-    public Sync fromJSON(JSONObject in) throws JSONConverterException {
+    public Sync fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkId(in);
-        return new Sync(requiredVMs(in, "vms"));
+        return new Sync(requiredVMs(mo, in, "vms"));
     }
 
     @Override
-    public JSONObject toJSON(Sync sync) throws JSONConverterException {
+    public JSONObject toJSON(Sync sync) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("vms", vmsToJSON(sync.getInvolvedVMs()));

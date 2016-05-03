@@ -37,9 +37,9 @@ public class PrecedenceConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         PrecedenceConverter conv = new PrecedenceConverter();
-        conv.setModel(mo);
-        Precedence prec = new Precedence(mo.newVM(), mo.newVM());
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(prec)), prec);
-        System.out.println(conv.toJSONString(prec));
+
+        Precedence d = new Precedence(mo.newVM(), mo.newVM());
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

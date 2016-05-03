@@ -21,6 +21,7 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SplitAmong;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.*;
 
 /**
  * JSON converter for the {@link SplitAmong} constraint.
@@ -48,7 +50,7 @@ public class SplitAmongConverter extends ConstraintConverter<SplitAmong> {
     }
 
     @Override
-    public SplitAmong fromJSON(JSONObject o) throws JSONConverterException {
+    public SplitAmong fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
 
         Set<Collection<Node>> nodes = new HashSet<>();
@@ -57,7 +59,7 @@ public class SplitAmongConverter extends ConstraintConverter<SplitAmong> {
             throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
         }
         for (Object obj : (JSONArray) x) {
-            nodes.add(nodesFromJSON((JSONArray) obj));
+            nodes.add(nodesFromJSON(mo, (JSONArray) obj));
         }
 
         Set<Collection<VM>> vms = new HashSet<>();
@@ -66,7 +68,7 @@ public class SplitAmongConverter extends ConstraintConverter<SplitAmong> {
             throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
         }
         for (Object obj : (JSONArray) x) {
-            vms.add(vmsFromJSON((JSONArray) obj));
+            vms.add(vmsFromJSON(mo, (JSONArray) obj));
         }
 
         return new SplitAmong(vms, nodes, requiredBoolean(o, "continuous"));

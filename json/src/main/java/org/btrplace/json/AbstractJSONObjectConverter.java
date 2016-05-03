@@ -25,7 +25,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,10 +32,9 @@ import java.util.Set;
 /**
  * Basic abstract scheduler-API/JSON objects converter.
  *
- * By default, the charset used to encode and decode string is {@link StandardCharsets#UTF_8}.
  * @author Fabien Hermenier
  */
-public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
+public abstract class AbstractJSONObjectConverter<E> {
 
     private Model mo;
 
@@ -159,33 +157,16 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
-     * Get the model used to generate VM and nodes from identifiers
-     *
-     * @return a model, may be {@code null} if no identifiers have to be generated
-     */
-    public Model getModel() {
-        return mo;
-    }
-
-    /**
-     * Set the model to use to generate VMs and nodes from identifiers.
-     *
-     * @param m the model to use
-     */
-    public void setModel(Model m) {
-        mo = m;
-    }
-
-    /**
      * Convert an array of VM identifiers to a set of VMs.
      *
+     * @param mo the associated model to browse
      * @param a the json array
      * @return the set of VMs
      */
-    public Set<VM> vmsFromJSON(JSONArray a) throws JSONConverterException {
+    public static Set<VM> vmsFromJSON(Model mo, JSONArray a) throws JSONConverterException {
         Set<VM> s = new HashSet<>(a.size());
         for (Object o : a) {
-            s.add(getVM((int) o));
+            s.add(getVM(mo, (int) o));
         }
         return s;
     }
@@ -193,13 +174,14 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     /**
      * Convert an array of VM identifiers to a set of VMs.
      *
+     * @param mo the associated model to browse
      * @param a the json array
      * @return the set of nodes
      */
-    public Set<Node> nodesFromJSON(JSONArray a) throws JSONConverterException {
+    public static Set<Node> nodesFromJSON(Model mo, JSONArray a) throws JSONConverterException {
         Set<Node> s = new HashSet<>(a.size());
         for (Object o : a) {
-            s.add(getNode((int) o));
+            s.add(getNode(mo, (int) o));
         }
         return s;
     }
@@ -235,12 +217,13 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     /**
      * Read an expected set of VMs.
      *
+     * @param mo the associated model to browse
      * @param o  the object to parse
      * @param id the key in the map that points to the set
      * @return the parsed set
      * @throws JSONConverterException if the key does not point to a set of VM identifiers
      */
-    public Set<VM> requiredVMs(JSONObject o, String id) throws JSONConverterException {
+    public static Set<VM> requiredVMs(Model mo, JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
@@ -248,7 +231,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
         Set<VM> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
-            VM v = getVM((Integer) i);
+            VM v = getVM(mo, (Integer) i);
             s.add(v);
         }
         return s;
@@ -257,12 +240,13 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     /**
      * Read an expected set of nodes.
      *
+     * @param mo the associated model to browse
      * @param o  the object to parse
      * @param id the key in the map that points to the set
      * @return the parsed set
      * @throws JSONConverterException if the key does not point to a set of nodes identifiers
      */
-    public Set<Node> requiredNodes(JSONObject o, String id) throws JSONConverterException {
+    public static Set<Node> requiredNodes(Model mo, JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
@@ -270,7 +254,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
         Set<Node> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
-            s.add(getNode((Integer) i));
+            s.add(getNode(mo, (Integer) i));
         }
         return s;
 
@@ -279,15 +263,16 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     /**
      * Read an expected VM.
      *
+     * @param mo the associated model to browse
      * @param o  the object to parse
      * @param id the key in the map that points to the VM identifier
      * @return the VM
      * @throws JSONConverterException if the key does not point to a VM identifier
      */
-    public VM requiredVM(JSONObject o, String id) throws JSONConverterException {
+    public static VM requiredVM(Model mo, JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         try {
-            return getVM((Integer) o.get(id));
+            return getVM(mo, (Integer) o.get(id));
         } catch (ClassCastException e) {
             throw new JSONConverterException("Unable to read a VM identifier from string at key '" + id + "'", e);
         }
@@ -296,15 +281,17 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     /**
      * Read an expected node.
      *
+     *
+     * @param mo the associated model to browse
      * @param o  the object to parse
      * @param id the key in the map that points to the node identifier
      * @return the node
      * @throws JSONConverterException if the key does not point to a node identifier
      */
-    public Node requiredNode(JSONObject o, String id) throws JSONConverterException {
+    public static Node requiredNode(Model mo, JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         try {
-            return getNode((Integer) o.get(id));
+            return getNode(mo, (Integer) o.get(id));
         } catch (ClassCastException e) {
             throw new JSONConverterException("Unable to read a Node identifier from string at key '" + id + "'", e);
         }
@@ -314,14 +301,13 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * Get a VM from its identifier.
      * The VM is already a part of the model.
      *
+     *
+     * @param mo the associated model to browse
      * @param vmID the node identifier
      * @return the resulting VM
      * @throws JSONConverterException if there is no model, or if the VM is unknown.
      */
-    public VM getVM(int vmID) throws JSONConverterException {
-        if (mo == null) {
-            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
-        }
+    public static VM getVM(Model mo, int vmID) throws JSONConverterException {
         VM vm = new VM(vmID);
         if (!mo.contains(vm)) {
             throw new JSONConverterException("Undeclared vm '" + vmID + "'");
@@ -333,14 +319,13 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * Get a node from its identifier.
      * The node is already a part of the model
      *
+     *
+     * @param mo the associated model to browse
      * @param nodeID the node identifier
      * @return the resulting node
      * @throws JSONConverterException if there is no model, or if the node is unknown.
      */
-    public Node getNode(int nodeID) throws JSONConverterException {
-        if (mo == null) {
-            throw new JSONConverterException("Unable to extract Nodes without a model to use as a reference");
-        }
+    public static Node getNode(Model mo, int nodeID) throws JSONConverterException {
         Node n = new Node(nodeID);
         if (!mo.contains(n)) {
             throw new JSONConverterException("Undeclared node '" + nodeID + "'");

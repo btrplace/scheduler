@@ -21,6 +21,7 @@ package org.btrplace.json.model.constraint.migration;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.ConstraintConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.MinMTTRMig;
 
 /**
@@ -43,7 +44,7 @@ public class MinMTTRMigConverter extends ConstraintConverter<MinMTTRMig> {
 
 
     @Override
-    public MinMTTRMig fromJSON(JSONObject o) throws JSONConverterException {
+    public MinMTTRMig fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
         return new MinMTTRMig();
     }

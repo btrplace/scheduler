@@ -39,12 +39,12 @@ public class ResourceCapacityConverterTest {
     public void testViables() throws JSONConverterException {
         ResourceCapacityConverter conv = new ResourceCapacityConverter();
         Model mo = new DefaultModel();
-        conv.setModel(mo);
+
         ResourceCapacity d = new ResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
         ResourceCapacity c = new ResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), "mem", 5, true);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

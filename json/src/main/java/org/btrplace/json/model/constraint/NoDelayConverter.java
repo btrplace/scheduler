@@ -19,9 +19,12 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
+import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.NoDelay;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.requiredVM;
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.NoDelay}.
  *
@@ -41,16 +44,16 @@ public class NoDelayConverter extends ConstraintConverter<NoDelay> {
     }
 
     @Override
-    public NoDelay fromJSON(JSONObject in) throws JSONConverterException {
+    public NoDelay fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkId(in);
-        return new NoDelay(requiredVM(in, "vm"));
+        return new NoDelay(requiredVM(mo, in, "vm"));
     }
 
     @Override
-    public JSONObject toJSON(NoDelay noDelay) throws JSONConverterException {
+    public JSONObject toJSON(NoDelay noDelay) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", toJSON(noDelay.getInvolvedVMs().iterator().next()));
+        c.put("vm", AbstractJSONObjectConverter.toJSON(noDelay.getInvolvedVMs().iterator().next()));
         c.put("continuous", noDelay.isContinuous());
         return c;
     }

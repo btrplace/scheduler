@@ -36,10 +36,10 @@ public class RunningConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         RunningConverter conv = new RunningConverter();
-        conv.setModel(mo);
+
         Running d = new Running(mo.newVM());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

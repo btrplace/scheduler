@@ -23,6 +23,7 @@ import net.minidev.json.JSONObject;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 
@@ -113,8 +114,8 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         return json2java.keySet();
     }
 
-    @Override
-    public Constraint fromJSON(JSONObject in) throws JSONConverterException {
+    //@Override
+    public Constraint fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         Object id = in.get("id");
         if (id == null) {
             throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
@@ -123,11 +124,10 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
         }
-        c.setModel(getModel());
-        return c.fromJSON(in);
+        return c.fromJSON(mo, in);
     }
 
-    @Override
+    //@Override
     public JSONObject toJSON(Constraint o) throws JSONConverterException {
         ConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
@@ -136,13 +136,13 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         return c.toJSON(o);
     }
 
-    public List<SatConstraint> listFromJSON(JSONArray in) throws JSONConverterException {
+    public List<SatConstraint> listFromJSON(Model mo, JSONArray in) throws JSONConverterException {
         List<SatConstraint> l = new ArrayList<>(in.size());
         for (Object o : in) {
             if (!(o instanceof JSONObject)) {
                 throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
             }
-            l.add((SatConstraint) fromJSON((JSONObject) o));
+            l.add((SatConstraint) fromJSON(mo, (JSONObject) o));
         }
         return l;
     }

@@ -19,8 +19,8 @@
 package org.btrplace.json.model.view.network;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.view.network.Routing;
 
@@ -29,7 +29,7 @@ import org.btrplace.model.view.network.Routing;
  *
  * @author Fabien Hermenier
  */
-public abstract class RoutingConverter<E extends Routing> extends AbstractJSONObjectConverter<Routing> {
+public abstract class RoutingConverter<E extends Routing> {
 
     /**
      * Get the name of the constraint that is supported by the converter.
@@ -57,6 +57,10 @@ public abstract class RoutingConverter<E extends Routing> extends AbstractJSONOb
         if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a routing id '" + id + "'");
         }
-
     }
+
+    public abstract E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+
+    public abstract JSONObject toJSON(E o);
+
 }

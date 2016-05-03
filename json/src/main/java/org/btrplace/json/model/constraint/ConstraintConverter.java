@@ -19,8 +19,8 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 
 /**
@@ -28,7 +28,7 @@ import org.btrplace.model.constraint.Constraint;
  *
  * @author Fabien Hermenier
  */
-public abstract class ConstraintConverter<E extends Constraint> extends AbstractJSONObjectConverter<E> {
+public abstract class ConstraintConverter<E extends Constraint> {
 
     /**
      * Get the name of the constraint that is supported by the converter.
@@ -56,6 +56,13 @@ public abstract class ConstraintConverter<E extends Constraint> extends Abstract
         if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a constraint id '" + id + "'");
         }
+    }
 
+    public abstract E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+
+    public abstract JSONObject toJSON(E o);
+
+    public String toJSONString(E d) {
+        return toJSON(d).toJSONString();
     }
 }

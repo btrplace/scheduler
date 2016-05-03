@@ -43,8 +43,7 @@ public class ShareableResourceConverterTest {
         rc.setCapacity(mo.newNode(), 5);
         rc.setCapacity(mo.newNode(), 6);
         ShareableResourceConverter s = new ShareableResourceConverter();
-        s.setModel(mo);
-        ShareableResource rc2 = s.fromJSON(s.toJSONString(rc));
+        ShareableResource rc2 = s.fromJSON(mo, s.toJSON(rc));
         Assert.assertEquals(rc, rc2);
 /*        Assert.assertEquals(rc.getIdentifier(), rc2.getIdentifier());
         Assert.assertEquals(rc.getResourceIdentifier(), rc2.getResourceIdentifier());
@@ -66,15 +65,14 @@ public class ShareableResourceConverterTest {
         VM vm2 = mo.newVM();
         Node n1 = mo.newNode();
         ShareableResourceConverter s = new ShareableResourceConverter();
-        s.setModel(mo);
         ShareableResource rc = new ShareableResource("foo");
         rc.setConsumption(vm1, 3).setConsumption(vm2, 4).setCapacity(n1, 5);
-        ShareableResource rcBis = s.fromJSON(s.toJSONString(rc));
+        ShareableResource rcBis = s.fromJSON(mo, s.toJSON(rc));
 
         ShareableResource rc2 = new ShareableResource("bar");
         rc2.setConsumption(vm1, 3).setConsumption(vm2, 4).setCapacity(n1, 5);
 
-        ShareableResource rc2Bis = s.fromJSON(s.toJSONString(rc2));
+        ShareableResource rc2Bis = s.fromJSON(mo, s.toJSON(rc2));
         Assert.assertFalse(rcBis.equals(rc2Bis));
 
     }

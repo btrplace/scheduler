@@ -20,8 +20,10 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Gather;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.*;
 /**
  * JSON converter for the {@link Gather} constraint.
  *
@@ -41,9 +43,9 @@ public class GatherConverter extends ConstraintConverter<Gather> {
 
 
     @Override
-    public Gather fromJSON(JSONObject o) throws JSONConverterException {
+    public Gather fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Gather(requiredVMs(o, "vms"), requiredBoolean(o, "continuous"));
+        return new Gather(requiredVMs(mo, o, "vms"), requiredBoolean(o, "continuous"));
     }
 
     @Override

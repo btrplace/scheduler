@@ -36,10 +36,10 @@ public class PreserveConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         PreserveConverter conv = new PreserveConverter();
-        conv.setModel(mo);
+
         Preserve d = new Preserve(mo.newVM(), "cpu", 5);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

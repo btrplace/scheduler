@@ -40,7 +40,6 @@ public class AmongConverterTest {
     public void testViables() throws JSONConverterException {
         AmongConverter conv = new AmongConverter();
         Model mo = new DefaultModel();
-        conv.setModel(mo);
         Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
@@ -50,8 +49,8 @@ public class AmongConverterTest {
 
         Among d = new Among(s1, pgrps, false);
         Among c = new Among(s1, pgrps, true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

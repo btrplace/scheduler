@@ -43,10 +43,9 @@ public class NamingServiceConverterTest {
             ns.register(v, "VM " + i);
         }
         NamingServiceConverter nsc = new NamingServiceConverter();
-        nsc.setModel(mo);
         JSONObject o = nsc.toJSON(ns);
         System.out.println(o);
-        NamingService<VM> ns2 = nsc.fromJSON(o.toJSONString());
+        NamingService<VM> ns2 = (NamingService<VM>) nsc.fromJSON(mo, o);
         Assert.assertEquals(ns, ns2);
     }
 }

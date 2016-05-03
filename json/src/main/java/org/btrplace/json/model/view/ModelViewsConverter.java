@@ -22,6 +22,7 @@ import net.minidev.json.JSONObject;
 import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.view.network.NetworkConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.view.ModelView;
 
 import java.util.HashMap;
@@ -95,8 +96,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         return json2java.keySet();
     }
 
-    @Override
-    public ModelView fromJSON(JSONObject in) throws JSONConverterException {
+    public ModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         Object id = in.get("id");
         if (id == null) {
             throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
@@ -105,11 +105,9 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         if (c == null) {
             throw new JSONConverterException("No converter available for a view having id '" + id + "'");
         }
-        c.setModel(getModel());
-        return c.fromJSON(in);
+        return c.fromJSON(mo, in);
     }
 
-    @Override
     public JSONObject toJSON(ModelView o) throws JSONConverterException {
         ModelViewConverter c = java2json.get(o.getClass());
         if (c == null) {

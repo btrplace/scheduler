@@ -20,8 +20,8 @@ package org.btrplace.json.plan;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONObjectConverter;
 import org.btrplace.json.model.ModelConverter;
 import org.btrplace.model.Model;
 import org.btrplace.plan.DefaultReconfigurationPlan;
@@ -33,7 +33,7 @@ import org.btrplace.plan.event.Action;
  *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<ReconfigurationPlan> {
+public class ReconfigurationPlanConverter implements JSONObjectConverter<ReconfigurationPlan> {
 
     private ModelConverter mc;
 
@@ -53,7 +53,7 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
         this(new ModelConverter());
     }
 
-    @Override
+    //@Override
     public ReconfigurationPlan fromJSON(JSONObject ob) throws JSONConverterException {
 
         if (!ob.containsKey("origin")) {
@@ -66,9 +66,8 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
 
         ActionConverter ac = new ActionConverter();
         Model m = mc.fromJSON((JSONObject) ob.get("origin"));
-        ac.setModel(m);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
-        for (Action a : ac.listFromJSON((JSONArray) ob.get("actions"))) {
+        for (Action a : ac.listFromJSON(m, (JSONArray) ob.get("actions"))) {
             plan.add(a);
         }
         return plan;
@@ -83,9 +82,8 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
         return mc;
     }
 
-    @Override
+    //@Override
     public JSONObject toJSON(ReconfigurationPlan plan) throws JSONConverterException {
-        setModel(plan.getOrigin());
         JSONObject ob = new JSONObject();
         ActionConverter ac = new ActionConverter();
         Model src = plan.getOrigin();

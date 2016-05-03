@@ -20,8 +20,10 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.MaxOnline;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.*;
 /**
  * JSON Converter for the constraint {@link MaxOnlineConverter}.
  *
@@ -39,14 +41,14 @@ public class MaxOnlineConverter extends ConstraintConverter<MaxOnline> {
     }
 
     @Override
-    public MaxOnline fromJSON(JSONObject in) throws JSONConverterException {
+    public MaxOnline fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkId(in);
-        return new MaxOnline(requiredNodes(in, "nodes"), requiredInt(in, "amount"),
+        return new MaxOnline(requiredNodes(mo, in, "nodes"), requiredInt(in, "amount"),
                 requiredBoolean(in, "continuous"));
     }
 
     @Override
-    public JSONObject toJSON(MaxOnline maxOnline) throws JSONConverterException {
+    public JSONObject toJSON(MaxOnline maxOnline) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", nodesToJSON(maxOnline.getInvolvedNodes()));

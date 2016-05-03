@@ -24,13 +24,13 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
-import org.btrplace.model.view.network.Routing;
 import org.btrplace.model.view.network.StaticRouting;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.*;
 /**
  * A converter to (un-)serialise a {@link StaticRouting}.
  *
@@ -55,8 +55,7 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
     }
 
     @Override
-    public Routing fromJSON(JSONObject o) throws JSONConverterException {
-        Model mo = getModel();
+    public StaticRouting fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         Network v = Network.get(mo);
         Map<Integer, Link> idToLink = new HashMap<>();
         for (Link l : v.getLinks()) {
@@ -66,7 +65,7 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
         checkKeys(o, "routes");
         JSONArray a = (JSONArray) o.get("routes");
         for (Object ao : a) {
-            StaticRouting.NodesMap nm = nodesMapFromJSON((JSONObject) ((JSONObject) ao).get("nodes_map"));
+            StaticRouting.NodesMap nm = nodesMapFromJSON(mo, (JSONObject) ((JSONObject) ao).get("nodes_map"));
             LinkedHashMap<Link, Boolean> links = new LinkedHashMap<>();
             JSONArray aoa = (JSONArray) ((JSONObject) ao).get("links");
             for (Object aoao : aoa) {
@@ -84,8 +83,8 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
      * @param o the JSON object to convert
      * @return the nodes map
      */
-    public StaticRouting.NodesMap nodesMapFromJSON(JSONObject o) throws JSONConverterException {
-        return new StaticRouting.NodesMap(requiredNode(o, "src"), requiredNode(o, "dst"));
+    public StaticRouting.NodesMap nodesMapFromJSON(Model mo, JSONObject o) throws JSONConverterException {
+        return new StaticRouting.NodesMap(requiredNode(mo, o, "src"), requiredNode(mo, o, "dst"));
     }
 
     /**
@@ -109,11 +108,11 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
      * @throws JSONConverterException if the Routing implementation is not known
      */
     @Override
-    public JSONObject toJSON(Routing routing) throws JSONConverterException {
+    public JSONObject toJSON(StaticRouting routing) {
         JSONObject o = new JSONObject();
         o.put("type", getJSONId());
         JSONArray a = new JSONArray();
-        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = ((StaticRouting) routing).getStaticRoutes();
+        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = routing.getStaticRoutes();
         for (StaticRouting.NodesMap nm : routes.keySet()) {
             JSONObject ao = new JSONObject();
             ao.put("nodes_map", nodesMapToJSON(nm));

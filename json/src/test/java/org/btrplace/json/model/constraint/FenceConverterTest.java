@@ -39,11 +39,11 @@ public class FenceConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         FenceConverter conv = new FenceConverter();
-        conv.setModel(mo);
+
         Fence d = new Fence(mo.newVM(),
                 new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())));
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

@@ -37,9 +37,9 @@ public class DeadlineConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         DeadlineConverter conv = new DeadlineConverter();
-        conv.setModel(mo);
-        Deadline dead = new Deadline(mo.newVM(), "+00:00:15");
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(dead)), dead);
-        System.out.println(conv.toJSONString(dead));
+
+        Deadline d = new Deadline(mo.newVM(), "+00:00:15");
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

@@ -19,9 +19,12 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
+import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Root;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.requiredVM;
 /**
  * JSON converter for the {@link org.btrplace.model.constraint.Root} constraint.
  *
@@ -41,16 +44,16 @@ public class RootConverter extends ConstraintConverter<Root> {
     }
 
     @Override
-    public Root fromJSON(JSONObject o) throws JSONConverterException {
+    public Root fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Root(requiredVM(o, "vm"));
+        return new Root(requiredVM(mo, o, "vm"));
     }
 
     @Override
     public JSONObject toJSON(Root o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", AbstractJSONObjectConverter.toJSON(o.getInvolvedVMs().iterator().next()));
         return c;
     }
 }

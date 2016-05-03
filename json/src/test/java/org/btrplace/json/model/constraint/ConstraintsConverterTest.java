@@ -20,6 +20,7 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
@@ -78,7 +79,7 @@ public class ConstraintsConverterTest {
         }
 
         @Override
-        public MockSatConstraint fromJSON(JSONObject in) throws JSONConverterException {
+        public MockSatConstraint fromJSON(Model mo, JSONObject in) throws JSONConverterException {
             return new MockSatConstraint(in.get("value").toString());
         }
 
@@ -105,7 +106,7 @@ public class ConstraintsConverterTest {
         Assert.assertNull(c.register(new MockConstraintConverter()));
         MockSatConstraint m = new MockSatConstraint("bar");
         JSONObject o = c.toJSON(m);
-        MockSatConstraint m2 = (MockSatConstraint) c.fromJSON(o);
+        MockSatConstraint m2 = (MockSatConstraint) c.fromJSON(null, o);
         Assert.assertEquals(m.str, m2.str);
     }
 
@@ -122,7 +123,7 @@ public class ConstraintsConverterTest {
         ob.put("id", "mock");
         ob.put("value", "val");
         ConstraintsConverter c = new ConstraintsConverter();
-        c.fromJSON(ob);
+        c.fromJSON(null, ob);
     }
 
     @Test(dependsOnMethods = {"testRegister"}, expectedExceptions = {JSONConverterException.class})
@@ -131,6 +132,6 @@ public class ConstraintsConverterTest {
         ob.put("value", "val");
         ConstraintsConverter c = new ConstraintsConverter();
         Assert.assertNull(c.register(new MockConstraintConverter()));
-        c.fromJSON(ob);
+        c.fromJSON(null, ob);
     }
 }

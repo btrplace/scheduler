@@ -20,6 +20,7 @@ package org.btrplace.json.model.view;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ModelView;
 import org.testng.Assert;
@@ -77,7 +78,7 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public MockModelView fromJSON(JSONObject in) throws JSONConverterException {
+        public MockModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
             return new MockModelView(in.get("value").toString());
         }
     }
@@ -95,8 +96,8 @@ public class ModelViewsConverterTest {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         MockModelView m = new MockModelView("bar");
-        String o = c.toJSONString(m);
-        MockModelView m2 = (MockModelView) c.fromJSON(o);
+        JSONObject o = c.toJSON(m);
+        MockModelView m2 = (MockModelView) c.fromJSON(null, o);
         Assert.assertEquals(m.value, m2.value);
     }
 
@@ -113,7 +114,7 @@ public class ModelViewsConverterTest {
         ob.put("id", "mockView");
         ob.put("value", "val");
         ModelViewsConverter c = new ModelViewsConverter();
-        c.fromJSON(ob);
+        c.fromJSON(null, ob);
     }
 
     @Test(dependsOnMethods = {"testRegister"}, expectedExceptions = {JSONConverterException.class})
@@ -122,6 +123,6 @@ public class ModelViewsConverterTest {
         ob.put("value", "val");
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
-        c.fromJSON(ob);
+        c.fromJSON(null, ob);
     }
 }

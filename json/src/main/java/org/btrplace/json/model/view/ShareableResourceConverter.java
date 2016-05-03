@@ -20,6 +20,7 @@ package org.btrplace.json.model.view;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
@@ -27,6 +28,7 @@ import org.btrplace.model.view.ShareableResource;
 import java.util.Map;
 import java.util.Set;
 
+import static org.btrplace.json.AbstractJSONObjectConverter.*;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.ShareableResource}.
@@ -81,7 +83,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     }
 
     @Override
-    public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
+    public ShareableResource fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkKeys(o, "vms", "nodes", DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
 
         String id = requiredString(o, "id");
@@ -103,19 +105,19 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
 
         ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
 
-        parseVMs(rc, o.get("vms"));
-        parseNodes(rc, o.get("nodes"));
+        parseVMs(mo, rc, o.get("vms"));
+        parseNodes(mo, rc, o.get("nodes"));
 
         return rc;
     }
 
-    private void parseVMs(ShareableResource rc, Object o) throws JSONConverterException {
+    private void parseVMs(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
                 for (Map.Entry<String, Object> e : values.entrySet()) {
                     String k = e.getKey();
-                    VM u = getVM(Integer.parseInt(k));
+                    VM u = getVM(mo, Integer.parseInt(k));
                     int v = Integer.parseInt(e.getValue().toString());
                     rc.setConsumption(u, v);
                 }
@@ -125,13 +127,13 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
     }
 
-    private void parseNodes(ShareableResource rc, Object o) throws JSONConverterException {
+    private void parseNodes(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
                 for (Map.Entry<String, Object> e : values.entrySet()) {
                     String k = e.getKey();
-                    Node u = getNode(Integer.parseInt(k));
+                    Node u = getNode(mo, Integer.parseInt(k));
                     int v = Integer.parseInt(e.getValue().toString());
                     rc.setCapacity(u, v);
                 }

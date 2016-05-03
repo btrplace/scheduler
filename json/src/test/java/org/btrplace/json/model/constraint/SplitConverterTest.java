@@ -47,10 +47,10 @@ public class SplitConverterTest {
         Split c = new Split(vgrps, true);
 
         SplitConverter conv = new SplitConverter();
-        conv.setModel(mo);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

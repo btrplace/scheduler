@@ -18,7 +18,9 @@
 
 package org.btrplace.json.model.view;
 
-import org.btrplace.json.AbstractJSONObjectConverter;
+import net.minidev.json.JSONObject;
+import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.view.ModelView;
 
 /**
@@ -26,7 +28,7 @@ import org.btrplace.model.view.ModelView;
  *
  * @author Fabien Hermenier
  */
-public abstract class ModelViewConverter<E extends ModelView> extends AbstractJSONObjectConverter<E> {
+public abstract class ModelViewConverter<E extends ModelView> {
 
     /**
      * Get the className of the view that is supported by the converter.
@@ -41,4 +43,9 @@ public abstract class ModelViewConverter<E extends ModelView> extends AbstractJS
      * @return a non-empty string
      */
     public abstract String getJSONId();
+
+    public abstract E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+
+    public abstract JSONObject toJSON(E o) throws JSONConverterException;
+
 }
