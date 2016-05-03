@@ -28,7 +28,7 @@ import org.btrplace.model.view.ShareableResource;
 import java.util.Map;
 import java.util.Set;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.ShareableResource}.

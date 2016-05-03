@@ -19,12 +19,12 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Overbook;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link OverbookConverter}.
  *
@@ -55,7 +55,7 @@ public class OverbookConverter extends ConstraintConverter<Overbook> {
     public JSONObject toJSON(Overbook o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("node", AbstractJSONObjectConverter.toJSON(o.getInvolvedNodes().iterator().next()));
+        c.put("node", JSONs.toJSON(o.getInvolvedNodes().iterator().next()));
         c.put("rc", o.getResource());
         c.put("ratio", o.getRatio());
         c.put("continuous", o.isContinuous());

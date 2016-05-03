@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 /**
  * Class to serialize/unSerialize a model using the JSON format.
  * By default, it embeds converters for the views bundle in {@link org.btrplace.json.model.view.ModelViewsConverter#newBundle()}

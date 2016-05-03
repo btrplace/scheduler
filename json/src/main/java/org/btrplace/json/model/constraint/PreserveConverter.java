@@ -19,12 +19,12 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Preserve;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link PreserveConverter}.
  *
@@ -54,7 +54,7 @@ public class PreserveConverter extends ConstraintConverter<Preserve> {
     public JSONObject toJSON(Preserve o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", AbstractJSONObjectConverter.toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.toJSON(o.getInvolvedVMs().iterator().next()));
         c.put("rc", o.getResource());
         c.put("amount", o.getAmount());
         return c;

@@ -19,14 +19,14 @@
 package org.btrplace.json.model.constraint.migration;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
 import org.btrplace.json.model.constraint.ConstraintConverter;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Deadline;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.requiredString;
-import static org.btrplace.json.AbstractJSONObjectConverter.requiredVM;
+import static org.btrplace.json.JSONs.requiredString;
+import static org.btrplace.json.JSONs.requiredVM;
 
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.migration.Deadline}.
@@ -56,7 +56,7 @@ public class DeadlineConverter extends ConstraintConverter<Deadline> {
     public JSONObject toJSON(Deadline deadline) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", AbstractJSONObjectConverter.toJSON(deadline.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.toJSON(deadline.getInvolvedVMs().iterator().next()));
         c.put("timestamp", deadline.getTimestamp());
         c.put("continuous", deadline.isContinuous());
         return c;

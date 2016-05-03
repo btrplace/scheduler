@@ -19,12 +19,12 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Quarantine;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.requiredNode;
+import static org.btrplace.json.JSONs.requiredNode;
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.Quarantine}.
  *
@@ -53,7 +53,7 @@ public class QuarantineConverter extends ConstraintConverter<Quarantine> {
     public JSONObject toJSON(Quarantine o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("node", AbstractJSONObjectConverter.toJSON(o.getInvolvedNodes().iterator().next()));
+        c.put("node", JSONs.toJSON(o.getInvolvedNodes().iterator().next()));
         return c;
     }
 }

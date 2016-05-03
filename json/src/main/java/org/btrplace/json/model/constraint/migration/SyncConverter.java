@@ -24,8 +24,8 @@ import org.btrplace.json.model.constraint.ConstraintConverter;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Sync;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.requiredVMs;
-import static org.btrplace.json.AbstractJSONObjectConverter.vmsToJSON;
+import static org.btrplace.json.JSONs.requiredVMs;
+import static org.btrplace.json.JSONs.vmsToJSON;
 
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.migration.Sync}.

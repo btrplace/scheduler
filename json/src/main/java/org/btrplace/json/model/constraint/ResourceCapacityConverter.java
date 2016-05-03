@@ -23,7 +23,7 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.ResourceCapacity;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link ResourceCapacityConverter}.
  *

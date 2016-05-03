@@ -24,8 +24,8 @@ import org.btrplace.model.*;
 
 import java.util.Map;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.getNode;
-import static org.btrplace.json.AbstractJSONObjectConverter.getVM;
+import static org.btrplace.json.JSONs.getNode;
+import static org.btrplace.json.JSONs.getVM;
 
 
 /**

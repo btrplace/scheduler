@@ -64,10 +64,10 @@ public class ReconfigurationPlanConverter implements JSONObjectConverter<Reconfi
             throw new JSONConverterException("Key 'actions' is expected to extract the list of actions from the plan");
         }
 
-        ActionConverter ac = new ActionConverter();
         Model m = mc.fromJSON((JSONObject) ob.get("origin"));
+        ActionConverter ac = new ActionConverter(m);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
-        for (Action a : ac.listFromJSON(m, (JSONArray) ob.get("actions"))) {
+        for (Action a : ac.listFromJSON((JSONArray) ob.get("actions"))) {
             plan.add(a);
         }
         return plan;
@@ -85,8 +85,8 @@ public class ReconfigurationPlanConverter implements JSONObjectConverter<Reconfi
     //@Override
     public JSONObject toJSON(ReconfigurationPlan plan) throws JSONConverterException {
         JSONObject ob = new JSONObject();
-        ActionConverter ac = new ActionConverter();
         Model src = plan.getOrigin();
+        ActionConverter ac = new ActionConverter(src);
         ob.put("origin", mc.toJSON(src));
 
         JSONArray actions = new JSONArray();

@@ -19,13 +19,13 @@
 package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Sleeping;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.requiredBoolean;
-import static org.btrplace.json.AbstractJSONObjectConverter.requiredVM;
+import static org.btrplace.json.JSONs.requiredBoolean;
+import static org.btrplace.json.JSONs.requiredVM;
 /**
  * JSON Converter for the constraint {@link Sleeping}.
  *
@@ -54,7 +54,7 @@ public class SleepingConverter extends ConstraintConverter<Sleeping> {
     public JSONObject toJSON(Sleeping o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", AbstractJSONObjectConverter.toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.toJSON(o.getInvolvedVMs().iterator().next()));
         c.put("continuous", o.isContinuous());
         return c;
     }

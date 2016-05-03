@@ -20,8 +20,8 @@ package org.btrplace.json.plan;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.plan.event.*;
 
@@ -29,12 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.btrplace.json.JSONs.*;
+
 /**
  * JSON converter for {@link Action}.
  *
  * @author Fabien Hermenier
  */
-public class ActionConverter extends AbstractJSONObjectConverter<Action> implements ActionVisitor {
+public class ActionConverter implements ActionVisitor {
 
     /**
      * Key that indicates the beginning an action.
@@ -82,59 +84,63 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
      */
     public static final String RC_AMOUNT_LABEL = "amount";
 
+    private Model mo;
+
+    public ActionConverter(Model mo) {
+        this.mo = mo;
+    }
     //@Override
-    public Action fromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    public Action fromJSON(JSONObject in) throws JSONConverterException {
         String id = requiredString(in, ACTION_ID_LABEL);
         Action a;
 
         switch (id) {
             case "bootVM":
-                a = bootVMFromJSON(mo, in);
+                a = bootVMFromJSON(in);
                 break;
             case "shutdownVM":
-                a = shutdownVMFromJSON(mo, in);
+                a = shutdownVMFromJSON(in);
                 break;
             case "shutdownNode":
-                a = shutdownNodeFromJSON(mo, in);
+                a = shutdownNodeFromJSON(in);
                 break;
             case "bootNode":
-                a = bootNodeFromJSON(mo, in);
+                a = bootNodeFromJSON(in);
                 break;
             case "forgeVM":
-                a = forgeVMFromJSON(mo, in);
+                a = forgeVMFromJSON(in);
                 break;
             case "killVM":
-                a = killVMFromJSON(mo, in);
+                a = killVMFromJSON(in);
                 break;
             case "migrateVM":
-                a = migrateVMFromJSON(mo, in);
+                a = migrateVMFromJSON(in);
                 break;
             case "resumeVM":
-                a = resumeVMFromJSON(mo, in);
+                a = resumeVMFromJSON(in);
                 break;
             case "suspendVM":
-                a = suspendVMFromJSON(mo, in);
+                a = suspendVMFromJSON(in);
                 break;
             case "allocate":
-                a = allocateFromJSON(mo, in);
+                a = allocateFromJSON(in);
                 break;
             default:
                 throw new JSONConverterException("Unsupported action '" + id + "'");
         }
 
-        attachEvents(mo, a, in);
+        attachEvents(a, in);
         return a;
     }
 
     /**
      * Decorate the action with optional events.
      *
-     * @param mo the associated model
      * @param a  the action to decorate
      * @param in the JSON message containing the event at the "hook" key
      * @throws JSONConverterException in case of error
      */
-    private void attachEvents(Model mo, Action a, JSONObject in) throws JSONConverterException {
+    private void attachEvents(Action a, JSONObject in) throws JSONConverterException {
         if (in.containsKey("hooks")) {
             JSONObject hooks = (JSONObject) in.get("hooks");
             for (Map.Entry<String, Object> e : hooks.entrySet()) {
@@ -142,7 +148,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
                 try {
                     Action.Hook h = Action.Hook.valueOf(k.toUpperCase());
                     for (Object o : (JSONArray) e.getValue()) {
-                        a.addEvent(h, eventFromJSON(mo, (JSONObject) o));
+                        a.addEvent(h, eventFromJSON((JSONObject) o));
                     }
                 } catch (IllegalArgumentException ex) {
                     throw new JSONConverterException("Unsupported hook type '" + k + "'", ex);
@@ -151,14 +157,14 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         }
     }
 
-    private Event eventFromJSON(Model mo, JSONObject o) throws JSONConverterException {
+    private Event eventFromJSON(JSONObject o) throws JSONConverterException {
         String id = requiredString(o, ACTION_ID_LABEL);
 
         switch (id) {
             case "allocate":
-                return allocateEventFromJSON(mo, o);
+                return allocateEventFromJSON(o);
             case "substitutedVM":
-                return substitutedVMEventFromJSON(mo, o);
+                return substitutedVMEventFromJSON(o);
             default:
                 throw new JSONConverterException("Unsupported type of action '" + id + "'");
         }
@@ -169,12 +175,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(BootVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
         return o;
     }
 
-    private BootVM bootVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private BootVM bootVMFromJSON(JSONObject in) throws JSONConverterException {
         return new BootVM(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, VM_DESTINATION_LABEL),
                 requiredInt(in, START_LABEL),
@@ -185,12 +191,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ShutdownVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put(ON_LABEL, toJSON(a.getNode()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(ON_LABEL, JSONs.toJSON(a.getNode()));
         return o;
     }
 
-    private ShutdownVM shutdownVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private ShutdownVM shutdownVMFromJSON(JSONObject in) throws JSONConverterException {
         return new ShutdownVM(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, ON_LABEL),
                 requiredInt(in, START_LABEL),
@@ -201,11 +207,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ShutdownNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownNode");
-        o.put(NODE_LABEL, toJSON(a.getNode()));
+        o.put(NODE_LABEL, JSONs.toJSON(a.getNode()));
         return o;
     }
 
-    private ShutdownNode shutdownNodeFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private ShutdownNode shutdownNodeFromJSON(JSONObject in) throws JSONConverterException {
         return new ShutdownNode(requiredNode(mo, in, NODE_LABEL),
                 requiredInt(in, START_LABEL),
                 requiredInt(in, END_LABEL));
@@ -215,11 +221,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(BootNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootNode");
-        o.put(NODE_LABEL, toJSON(a.getNode()));
+        o.put(NODE_LABEL, JSONs.toJSON(a.getNode()));
         return o;
     }
 
-    private BootNode bootNodeFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private BootNode bootNodeFromJSON(JSONObject in) throws JSONConverterException {
         return new BootNode(requiredNode(mo, in, NODE_LABEL),
                 requiredInt(in, START_LABEL),
                 requiredInt(in, END_LABEL));
@@ -229,15 +235,15 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(MigrateVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "migrateVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
-        o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, JSONs.toJSON(a.getSourceNode()));
         o.put(BANDWIDTH, a.getBandwidth());
         return o;
     }
 
 
-    private MigrateVM migrateVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private MigrateVM migrateVMFromJSON(JSONObject in) throws JSONConverterException {
         return new MigrateVM(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, VM_LOCATION_LABEL),
                 requiredNode(mo, in, VM_DESTINATION_LABEL),
@@ -251,13 +257,13 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(SuspendVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "suspendVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
-        o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, JSONs.toJSON(a.getSourceNode()));
         return o;
     }
 
-    private SuspendVM suspendVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private SuspendVM suspendVMFromJSON(JSONObject in) throws JSONConverterException {
         return new SuspendVM(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, VM_LOCATION_LABEL),
                 requiredNode(mo, in, VM_DESTINATION_LABEL),
@@ -269,13 +275,13 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ResumeVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "resumeVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
-        o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, JSONs.toJSON(a.getSourceNode()));
         return o;
     }
 
-    private ResumeVM resumeVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private ResumeVM resumeVMFromJSON(JSONObject in) throws JSONConverterException {
         return new ResumeVM(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, VM_LOCATION_LABEL),
                 requiredNode(mo, in, VM_DESTINATION_LABEL),
@@ -287,12 +293,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(KillVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "killVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put(ON_LABEL, toJSON(a.getNode()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(ON_LABEL, JSONs.toJSON(a.getNode()));
         return o;
     }
 
-    private KillVM killVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private KillVM killVMFromJSON(JSONObject in) throws JSONConverterException {
         return new KillVM(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, ON_LABEL),
                 requiredInt(in, START_LABEL),
@@ -304,12 +310,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ForgeVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "forgeVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
         return o;
 
     }
 
-    private ForgeVM forgeVMFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private ForgeVM forgeVMFromJSON(JSONObject in) throws JSONConverterException {
         return new ForgeVM(requiredVM(mo, in, VM_LABEL),
                 requiredInt(in, START_LABEL),
                 requiredInt(in, END_LABEL));
@@ -319,14 +325,14 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(Allocate a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "allocate");
-        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
         o.put(RC_LABEL, a.getResourceId());
         o.put(RC_AMOUNT_LABEL, a.getAmount());
-        o.put(ON_LABEL, toJSON(a.getHost()));
+        o.put(ON_LABEL, JSONs.toJSON(a.getHost()));
         return o;
     }
 
-    private Allocate allocateFromJSON(Model mo, JSONObject in) throws JSONConverterException {
+    private Allocate allocateFromJSON(JSONObject in) throws JSONConverterException {
         return new Allocate(requiredVM(mo, in, VM_LABEL),
                 requiredNode(mo, in, ON_LABEL),
                 requiredString(in, RC_LABEL),
@@ -340,12 +346,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "allocate");
         o.put(RC_LABEL, a.getResourceId());
-        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
         o.put(RC_AMOUNT_LABEL, a.getAmount());
         return o;
     }
 
-    private AllocateEvent allocateEventFromJSON(Model mo, JSONObject o) throws JSONConverterException {
+    private AllocateEvent allocateEventFromJSON(JSONObject o) throws JSONConverterException {
         return new AllocateEvent(requiredVM(mo, o, VM_LABEL),
                 requiredString(o, RC_LABEL),
                 requiredInt(o, RC_AMOUNT_LABEL));
@@ -355,12 +361,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public Object visit(SubstitutedVMEvent a) {
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "substitutedVM");
-        o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put("newVm", toJSON(a.getNewVM()));
+        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put("newVm", JSONs.toJSON(a.getNewVM()));
         return o;
     }
 
-    private SubstitutedVMEvent substitutedVMEventFromJSON(Model mo, JSONObject o) throws JSONConverterException {
+    private SubstitutedVMEvent substitutedVMEventFromJSON(JSONObject o) throws JSONConverterException {
         return new SubstitutedVMEvent(requiredVM(mo, o, VM_LABEL),
                 requiredVM(mo, o, "newVm"));
     }
@@ -396,13 +402,13 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         return (JSONObject) e.visit(this);
     }
 
-    public List<Action> listFromJSON(Model mo, JSONArray in) throws JSONConverterException {
+    public List<Action> listFromJSON(JSONArray in) throws JSONConverterException {
         List<Action> l = new ArrayList<>(in.size());
         for (Object o : in) {
             if (!(o instanceof JSONObject)) {
                 throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
             }
-            l.add(fromJSON(mo, (JSONObject) o));
+            l.add(fromJSON((JSONObject) o));
         }
         return l;
     }

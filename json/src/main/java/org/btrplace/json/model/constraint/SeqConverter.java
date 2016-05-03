@@ -28,8 +28,8 @@ import org.btrplace.model.constraint.Seq;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.getVM;
-import static org.btrplace.json.AbstractJSONObjectConverter.vmsToJSON;
+import static org.btrplace.json.JSONs.getVM;
+import static org.btrplace.json.JSONs.vmsToJSON;
 
 /**
  * JSON converter for the {@link org.btrplace.model.constraint.Seq} constraint.

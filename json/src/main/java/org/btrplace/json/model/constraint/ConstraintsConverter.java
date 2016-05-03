@@ -20,7 +20,6 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
 import org.btrplace.model.Model;
@@ -34,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint> {
+public class ConstraintsConverter {
 
     private Map<Class<? extends Constraint>, ConstraintConverter<? extends Constraint>> java2json;
     private Map<String, ConstraintConverter<? extends Constraint>> json2java;

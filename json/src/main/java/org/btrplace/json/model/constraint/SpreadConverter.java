@@ -23,7 +23,7 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Spread;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 
 /**
  * JSON converter for the {@link Spread} constraint.

@@ -30,30 +30,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Basic abstract scheduler-API/JSON objects converter.
+ * A helper class to ease JSON conversion.
  *
  * @author Fabien Hermenier
  */
-public abstract class AbstractJSONObjectConverter<E> {
+public class JSONs {
 
-    private Model mo;
-
-    /**
-     * New converters without any model as
-     * a backend to get VMs and nodes identifiers.
-     */
-    public AbstractJSONObjectConverter() {
-        this(null);
-    }
-
-    /**
-     * New converter that rely on a given model
-     * to access VMs and nodes identifiers.
-     *
-     * @param m the model to use
-     */
-    public AbstractJSONObjectConverter(Model m) {
-        this.mo = m;
+    private JSONs() {
     }
 
     /**
@@ -281,7 +264,6 @@ public abstract class AbstractJSONObjectConverter<E> {
     /**
      * Read an expected node.
      *
-     *
      * @param mo the associated model to browse
      * @param o  the object to parse
      * @param id the key in the map that points to the node identifier
@@ -301,7 +283,6 @@ public abstract class AbstractJSONObjectConverter<E> {
      * Get a VM from its identifier.
      * The VM is already a part of the model.
      *
-     *
      * @param mo the associated model to browse
      * @param vmID the node identifier
      * @return the resulting VM
@@ -318,7 +299,6 @@ public abstract class AbstractJSONObjectConverter<E> {
     /**
      * Get a node from its identifier.
      * The node is already a part of the model
-     *
      *
      * @param mo the associated model to browse
      * @param nodeID the node identifier

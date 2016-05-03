@@ -28,7 +28,7 @@ import org.btrplace.model.view.NamingService;
 
 import java.util.Map;
 
-import static org.btrplace.json.AbstractJSONObjectConverter.*;
+import static org.btrplace.json.JSONs.*;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.NamingService}.

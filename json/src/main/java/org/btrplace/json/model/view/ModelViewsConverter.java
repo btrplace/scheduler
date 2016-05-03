@@ -19,7 +19,6 @@
 package org.btrplace.json.model.view;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.view.network.NetworkConverter;
 import org.btrplace.model.Model;
@@ -34,7 +33,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> {
+public class ModelViewsConverter {
 
     private Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
     private Map<String, ModelViewConverter<? extends ModelView>> json2java;
