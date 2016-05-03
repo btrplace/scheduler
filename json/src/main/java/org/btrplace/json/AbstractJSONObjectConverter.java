@@ -210,7 +210,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @param s the VMs
      * @return a json formatted array of integers
      */
-    public JSONArray vmsToJSON(Collection<VM> s) {
+    public static JSONArray vmsToJSON(Collection<VM> s) {
         JSONArray a = new JSONArray();
         for (Element e : s) {
             a.add(e.id());
@@ -224,7 +224,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @param s the VMs
      * @return a json formatted array of integers
      */
-    public JSONArray nodesToJSON(Collection<Node> s) {
+    public static JSONArray nodesToJSON(Collection<Node> s) {
         JSONArray a = new JSONArray();
         for (Element e : s) {
             a.add(e.id());
@@ -354,7 +354,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @param e the element
      * @return its identifier
      */
-    public Integer toJSON(Element e) {
+    public static Integer toJSON(Element e) {
         return e.id();
     }
 }
