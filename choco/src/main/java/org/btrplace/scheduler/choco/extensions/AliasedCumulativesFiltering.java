@@ -104,8 +104,8 @@ public class AliasedCumulativesFiltering {
                                        int[] revAssocs,
                                        ICause aCause) {
 
-        this.associations = assocs.clone();
-        this.cEnds = Arrays.copyOf(cEnds, cEnds.length);
+        this.associations = assocs;
+        this.cEnds = cEnds;
         this.aCause = aCause;
         this.capacities = capacities.clone();
         this.nbDims = capacities.length;
@@ -366,11 +366,10 @@ public class AliasedCumulativesFiltering {
     private void updateDStartsSup() throws ContradictionException {
 
 
-        int[] myCapacity = capacities;
         int lastSup = -1;
         for (int i = sortedMaxProfile.length - 1; i >= 0; i--) {
             int t = sortedMaxProfile[i];
-            if (!exceedCapacity(profilesMax, t, myCapacity)) {
+            if (!exceedCapacity(profilesMax, t, capacities)) {
                 lastSup = t;
             } else {
                 break;
