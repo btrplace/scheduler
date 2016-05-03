@@ -46,13 +46,13 @@ import static java.nio.file.StandardOpenOption.CREATE;
  */
 public class Bench {
 
-    private Bench() {
-    }
-
     /**
      * The CSV file that will contains the output statistics.
      */
     public static final String SCHEDULER_STATS = "scheduler.csv";
+
+    private Bench() {
+    }
 
     public static void main(String[] args) throws IOException, JSONConverterException {
         Options opts = new Options();

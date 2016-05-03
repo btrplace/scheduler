@@ -25,7 +25,6 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,11 +39,6 @@ import java.util.Set;
 public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
 
     private Model mo;
-
-    /**
-     * The charset to use by default.
-     */
-    private Charset charset = StandardCharsets.UTF_8;
 
     /**
      * New converters without any model as
@@ -79,24 +73,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         } catch (Exception e) {
             throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
         }
-    }
-
-    /**
-     * Get the associated charset.
-     *
-     * @return the current charset
-     */
-    public Charset getCharset() {
-        return charset;
-    }
-
-    /**
-     * Set the charset to use to encode/decode streams
-     *
-     * @param c the charset to use
-     */
-    public void setCharset(Charset c) {
-        this.charset = c;
     }
 
     /**

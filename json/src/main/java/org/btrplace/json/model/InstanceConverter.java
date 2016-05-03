@@ -20,8 +20,8 @@ package org.btrplace.json.model;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONObjectConverter;
 import org.btrplace.json.model.constraint.ConstraintsConverter;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
@@ -33,14 +33,12 @@ import org.btrplace.model.constraint.OptConstraint;
  * @author Fabien Hermenier
  */
 
-public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
+public class InstanceConverter implements JSONObjectConverter<Instance> {
 
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
-        moc.setCharset(getCharset());
         ConstraintsConverter cConverter = ConstraintsConverter.newBundle();
-        cConverter.setCharset(getCharset());
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
         cConverter.setModel(mo);
         return new Instance(mo, cConverter.listFromJSON((JSONArray) in.get("constraints")),
@@ -50,9 +48,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     @Override
     public JSONObject toJSON(Instance instance) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
-        moc.setCharset(getCharset());
         ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
-        cstrc.setCharset(getCharset());
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
         ob.put("constraints", cstrc.toJSON(instance.getSatConstraints()));
