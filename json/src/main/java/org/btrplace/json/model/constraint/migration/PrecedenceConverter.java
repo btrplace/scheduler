@@ -36,7 +36,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  * @author Vincent Kherbache
  * @see org.btrplace.model.constraint.migration.Precedence
  */
-public class PrecedenceConverter extends ConstraintConverter<Precedence> {
+public class PrecedenceConverter implements ConstraintConverter<Precedence> {
 
     @Override
     public Class<Precedence> getSupportedConstraint() {

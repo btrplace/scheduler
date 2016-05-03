@@ -33,7 +33,7 @@ import static org.btrplace.json.JSONs.vmsToJSON;
  * @author Vincent Kherbache
  * @see org.btrplace.model.constraint.migration.Serialize
  */
-public class SerializeConverter extends ConstraintConverter<Serialize> {
+public class SerializeConverter implements ConstraintConverter<Serialize> {
 
     @Override
     public Class<Serialize> getSupportedConstraint() {

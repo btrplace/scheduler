@@ -31,7 +31,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  *
  * @author Fabien Hermenier
  */
-public class RunningConverter extends ConstraintConverter<Running> {
+public class RunningConverter implements ConstraintConverter<Running> {
 
 
     @Override

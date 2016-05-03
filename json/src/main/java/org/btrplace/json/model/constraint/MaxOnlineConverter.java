@@ -29,7 +29,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Tu Huynh Dang
  */
-public class MaxOnlineConverter extends ConstraintConverter<MaxOnline> {
+public class MaxOnlineConverter implements ConstraintConverter<MaxOnline> {
     @Override
     public Class<MaxOnline> getSupportedConstraint() {
         return MaxOnline.class;

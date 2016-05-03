@@ -30,7 +30,7 @@ import org.btrplace.model.constraint.migration.MinMTTRMig;
  * @author Vincent Kherbache
  * @see org.btrplace.model.constraint.migration.MinMTTRMig
  */
-public class MinMTTRMigConverter extends ConstraintConverter<MinMTTRMig> {
+public class MinMTTRMigConverter implements ConstraintConverter<MinMTTRMig> {
 
     @Override
     public Class<MinMTTRMig> getSupportedConstraint() {

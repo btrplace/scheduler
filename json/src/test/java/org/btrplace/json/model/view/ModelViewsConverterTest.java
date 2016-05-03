@@ -57,7 +57,7 @@ public class ModelViewsConverterTest {
         }
     }
 
-    public static class MockModelViewConverter extends ModelViewConverter<MockModelView> {
+    public static class MockModelViewConverter implements ModelViewConverter<MockModelView> {
 
         @Override
         public Class<MockModelView> getSupportedView() {

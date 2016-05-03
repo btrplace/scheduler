@@ -37,7 +37,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitConverter extends ConstraintConverter<Split> {
+public class SplitConverter implements ConstraintConverter<Split> {
 
     @Override
     public Class<Split> getSupportedConstraint() {

@@ -31,7 +31,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  * @author Vincent Kherbache
  * @see org.btrplace.model.constraint.NoDelay
  */
-public class NoDelayConverter extends ConstraintConverter<NoDelay> {
+public class NoDelayConverter implements ConstraintConverter<NoDelay> {
 
     @Override
     public Class<NoDelay> getSupportedConstraint() {

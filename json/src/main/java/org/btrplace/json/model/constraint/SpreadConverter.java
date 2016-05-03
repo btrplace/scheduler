@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class SpreadConverter extends ConstraintConverter<Spread> {
+public class SpreadConverter implements ConstraintConverter<Spread> {
 
     @Override
     public Class<Spread> getSupportedConstraint() {

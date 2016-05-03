@@ -36,7 +36,7 @@ import static org.btrplace.json.JSONs.vmsToJSON;
  *
  * @author Fabien Hermenier
  */
-public class SeqConverter extends ConstraintConverter<Seq> {
+public class SeqConverter implements ConstraintConverter<Seq> {
 
     @Override
     public Class<Seq> getSupportedConstraint() {

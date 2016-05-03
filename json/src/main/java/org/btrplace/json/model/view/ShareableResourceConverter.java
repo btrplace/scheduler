@@ -35,7 +35,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResourceConverter extends ModelViewConverter<ShareableResource> {
+public class ShareableResourceConverter implements ModelViewConverter<ShareableResource> {
 
     /**
      * JSON label for default VM consumption.
@@ -92,16 +92,8 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
 
         String rcId = requiredString(o, "rcId");
-        Object dc = o.get(DEFAULT_CONSUMPTION);
-        if (!(dc instanceof Integer)) {
-            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CONSUMPTION + "' but got '" + dc.getClass().getName() + "'");
-        }
-        int defConsumption = (Integer) o.get(DEFAULT_CONSUMPTION);
-        dc = o.get(DEFAULT_CAPACITY);
-        if (!(dc instanceof Integer)) {
-            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CAPACITY + "' but got '" + dc.getClass().getName() + "'");
-        }
-        int defCapacity = (Integer) o.get(DEFAULT_CAPACITY);
+        int defConsumption = requiredInt(o, DEFAULT_CONSUMPTION);
+        int defCapacity = requiredInt(o, DEFAULT_CAPACITY);
 
         ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
 

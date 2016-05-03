@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.btrplace.json.JSONs.checkKeys;
+
 /**
  * Extensible converter for {@link org.btrplace.model.view.ModelView}.
  *
@@ -96,10 +98,8 @@ public class ModelViewsConverter {
     }
 
     public ModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
+        checkKeys(in, "id");
         Object id = in.get("id");
-        if (id == null) {
-            throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
-        }
         ModelViewConverter<? extends ModelView> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a view having id '" + id + "'");

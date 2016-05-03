@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class PreserveConverter extends ConstraintConverter<Preserve> {
+public class PreserveConverter implements ConstraintConverter<Preserve> {
 
     @Override
     public Class<Preserve> getSupportedConstraint() {

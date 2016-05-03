@@ -66,7 +66,7 @@ public class ConstraintsConverterTest {
         }
     }
 
-    public static class MockConstraintConverter extends ConstraintConverter<MockSatConstraint> {
+    public static class MockConstraintConverter implements ConstraintConverter<MockSatConstraint> {
 
         @Override
         public Class<MockSatConstraint> getSupportedConstraint() {

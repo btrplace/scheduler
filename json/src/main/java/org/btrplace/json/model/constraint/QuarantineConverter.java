@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.requiredNode;
  *
  * @author Fabien Hermenier
  */
-public class QuarantineConverter extends ConstraintConverter<Quarantine> {
+public class QuarantineConverter implements ConstraintConverter<Quarantine> {
 
 
     @Override

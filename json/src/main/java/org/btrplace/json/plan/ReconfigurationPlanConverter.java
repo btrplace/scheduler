@@ -28,6 +28,8 @@ import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 
+import static org.btrplace.json.JSONs.checkKeys;
+
 /**
  * JSON converter for {@link ReconfigurationPlan}.
  *
@@ -36,6 +38,16 @@ import org.btrplace.plan.event.Action;
 public class ReconfigurationPlanConverter implements JSONObjectConverter<ReconfigurationPlan> {
 
     private ModelConverter mc;
+
+    /**
+     * Key that indicates the origin model.
+     */
+    public static final String ORIGIN_LABEL = "origin";
+
+    /**
+     * Key that indicates the actions.
+     */
+    public static final String ACTIONS_LABEL = "actions";
 
     /**
      * Make a new converter that relies on a given ModelConverter
@@ -53,21 +65,13 @@ public class ReconfigurationPlanConverter implements JSONObjectConverter<Reconfi
         this(new ModelConverter());
     }
 
-    //@Override
+    @Override
     public ReconfigurationPlan fromJSON(JSONObject ob) throws JSONConverterException {
-
-        if (!ob.containsKey("origin")) {
-            throw new JSONConverterException("Key 'origin' is expected to extract the source model from the plan");
-        }
-
-        if (!ob.containsKey("actions")) {
-            throw new JSONConverterException("Key 'actions' is expected to extract the list of actions from the plan");
-        }
-
-        Model m = mc.fromJSON((JSONObject) ob.get("origin"));
+        checkKeys(ob, ORIGIN_LABEL, ACTIONS_LABEL);
+        Model m = mc.fromJSON((JSONObject) ob.get(ORIGIN_LABEL));
         ActionConverter ac = new ActionConverter(m);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
-        for (Action a : ac.listFromJSON((JSONArray) ob.get("actions"))) {
+        for (Action a : ac.listFromJSON((JSONArray) ob.get(ACTIONS_LABEL))) {
             plan.add(a);
         }
         return plan;
@@ -82,18 +86,18 @@ public class ReconfigurationPlanConverter implements JSONObjectConverter<Reconfi
         return mc;
     }
 
-    //@Override
+    @Override
     public JSONObject toJSON(ReconfigurationPlan plan) throws JSONConverterException {
         JSONObject ob = new JSONObject();
         Model src = plan.getOrigin();
         ActionConverter ac = new ActionConverter(src);
-        ob.put("origin", mc.toJSON(src));
+        ob.put(ORIGIN_LABEL, mc.toJSON(src));
 
         JSONArray actions = new JSONArray();
         for (Action a : plan.getActions()) {
             actions.add(ac.toJSON(a));
         }
-        ob.put("actions", actions);
+        ob.put(ACTIONS_LABEL, actions);
         return ob;
     }
 

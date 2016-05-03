@@ -31,7 +31,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class BanConverter extends ConstraintConverter<Ban> {
+public class BanConverter implements ConstraintConverter<Ban> {
 
     @Override
     public Class<Ban> getSupportedConstraint() {

@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  *
  * @author Fabien Hermenier
  */
-public class RootConverter extends ConstraintConverter<Root> {
+public class RootConverter implements ConstraintConverter<Root> {
 
 
     @Override

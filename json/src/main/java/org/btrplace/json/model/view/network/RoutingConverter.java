@@ -29,21 +29,21 @@ import org.btrplace.model.view.network.Routing;
  *
  * @author Fabien Hermenier
  */
-public abstract class RoutingConverter<E extends Routing> {
+public interface RoutingConverter<E extends Routing> {
 
     /**
      * Get the name of the constraint that is supported by the converter.
      *
      * @return The constraint class
      */
-    public abstract Class<E> getSupportedRouting();
+    Class<E> getSupportedRouting();
 
     /**
      * Get the JSON identifier for the constraint.
      *
      * @return a non-empty string
      */
-    public abstract String getJSONId();
+    String getJSONId();
 
     /**
      * Check if the JSON object can be converted using this converter.
@@ -52,15 +52,15 @@ public abstract class RoutingConverter<E extends Routing> {
      * @param o the object to test
      * @throws JSONConverterException if the object is not compatible
      */
-    public void checkId(JSONObject o) throws JSONConverterException {
+    default void checkId(JSONObject o) throws JSONConverterException {
         Object id = o.get("id");
         if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a routing id '" + id + "'");
         }
     }
 
-    public abstract E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+    E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
 
-    public abstract JSONObject toJSON(E o);
+    JSONObject toJSON(E o);
 
 }

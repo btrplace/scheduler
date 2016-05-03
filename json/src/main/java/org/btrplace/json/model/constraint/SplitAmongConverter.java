@@ -37,7 +37,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmongConverter extends ConstraintConverter<SplitAmong> {
+public class SplitAmongConverter implements ConstraintConverter<SplitAmong> {
 
     @Override
     public Class<SplitAmong> getSupportedConstraint() {

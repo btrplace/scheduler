@@ -28,6 +28,8 @@ import org.btrplace.model.constraint.SatConstraint;
 
 import java.util.*;
 
+import static org.btrplace.json.JSONs.checkKeys;
+
 /**
  * Extensible converter for {@link org.btrplace.model.constraint.Constraint}.
  *
@@ -113,12 +115,9 @@ public class ConstraintsConverter {
         return json2java.keySet();
     }
 
-    //@Override
     public Constraint fromJSON(Model mo, JSONObject in) throws JSONConverterException {
+        checkKeys(in, "id");
         Object id = in.get("id");
-        if (id == null) {
-            throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
-        }
         ConstraintConverter<? extends Constraint> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
@@ -126,7 +125,6 @@ public class ConstraintsConverter {
         return c.fromJSON(mo, in);
     }
 
-    //@Override
     public JSONObject toJSON(Constraint o) throws JSONConverterException {
         ConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {

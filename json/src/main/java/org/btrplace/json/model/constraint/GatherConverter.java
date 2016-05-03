@@ -29,7 +29,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class GatherConverter extends ConstraintConverter<Gather> {
+public class GatherConverter implements ConstraintConverter<Gather> {
 
     @Override
     public Class<Gather> getSupportedConstraint() {

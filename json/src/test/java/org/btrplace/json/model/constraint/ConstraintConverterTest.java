@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  */
 public class ConstraintConverterTest {
 
-    private class Mock<E extends Constraint> extends ConstraintConverter<E> {
+    private class Mock<E extends Constraint> implements ConstraintConverter<E> {
 
         private String id;
 

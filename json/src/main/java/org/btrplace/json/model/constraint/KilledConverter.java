@@ -32,7 +32,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  *
  * @author Fabien Hermenier
  */
-public class KilledConverter extends ConstraintConverter<Killed> {
+public class KilledConverter implements ConstraintConverter<Killed> {
 
     @Override
     public Class<Killed> getSupportedConstraint() {

@@ -35,7 +35,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class NamingServiceConverter extends ModelViewConverter<NamingService> {
+public class NamingServiceConverter implements ModelViewConverter<NamingService> {
 
     @Override
     public Class<NamingService> getSupportedView() {

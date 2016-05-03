@@ -29,7 +29,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class LonelyConverter extends ConstraintConverter<Lonely> {
+public class LonelyConverter implements ConstraintConverter<Lonely> {
 
     @Override
     public Class<Lonely> getSupportedConstraint() {

@@ -48,10 +48,9 @@ public class AttributesConverterTest {
         attrs.put(vm3, "clone", true);
         attrs.put(vm3, "foo", 1.3);
 
-        AttributesConverter json = new AttributesConverter();
-        JSONObject o = json.toJSON(attrs);
+        JSONObject o = AttributesConverter.toJSON(attrs);
         System.out.println(o);
-        Attributes attrs2 = json.fromJSON(mo, o);
+        Attributes attrs2 = AttributesConverter.fromJSON(mo, o);
         Assert.assertTrue(attrs.equals(attrs2));
     }
 }

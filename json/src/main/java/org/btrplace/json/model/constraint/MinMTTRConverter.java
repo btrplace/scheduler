@@ -26,7 +26,7 @@ import org.btrplace.model.constraint.MinMTTR;
 /**
  * @author Fabien Hermenier
  */
-public class MinMTTRConverter extends ConstraintConverter<MinMTTR> {
+public class MinMTTRConverter implements ConstraintConverter<MinMTTR> {
 
     @Override
     public Class<MinMTTR> getSupportedConstraint() {

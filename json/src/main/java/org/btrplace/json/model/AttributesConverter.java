@@ -38,6 +38,9 @@ import static org.btrplace.json.JSONs.getVM;
  */
 public class AttributesConverter {
 
+    private AttributesConverter() {
+    }
+
     private static void putAttributes(Attributes attrs, Element e, JSONObject entries) {
         for (Map.Entry<String, Object> entry : entries.entrySet()) {
             String key = entry.getKey();
@@ -56,8 +59,7 @@ public class AttributesConverter {
         }
     }
 
-    //@Override
-    public Attributes fromJSON(Model mo, JSONObject o) throws JSONConverterException {
+    public static Attributes fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
         try {
 
@@ -86,8 +88,7 @@ public class AttributesConverter {
         return attrs;
     }
 
-    //@Override
-    public JSONObject toJSON(Attributes attributes) {
+    public static JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
         JSONObject vms = new JSONObject();
         JSONObject nodes = new JSONObject();

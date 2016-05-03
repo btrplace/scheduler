@@ -29,7 +29,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class ResourceCapacityConverter extends ConstraintConverter<ResourceCapacity> {
+public class ResourceCapacityConverter implements ConstraintConverter<ResourceCapacity> {
 
     @Override
     public Class<ResourceCapacity> getSupportedConstraint() {

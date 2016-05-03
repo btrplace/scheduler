@@ -39,7 +39,20 @@ import static org.btrplace.json.JSONs.*;
  */
 public class ModelConverter implements JSONObjectConverter<Model> {
 
-    private AttributesConverter attrsParser;
+    /**
+     * Key to indicate the mapping.
+     */
+    public static final String MAPPING_LABEL = "mapping";
+
+    /**
+     * Key to indicate the views.
+     */
+    public static final String VIEWS_LABEL = "views";
+
+    /**
+     * Key to indicate the attributes.
+     */
+    public static final String ATTRS_LABEL = "attributes";
 
     private ModelViewsConverter viewsConverter;
 
@@ -47,7 +60,6 @@ public class ModelConverter implements JSONObjectConverter<Model> {
      * Make a new converter.
      */
     public ModelConverter() {
-        attrsParser = new AttributesConverter();
         viewsConverter = ModelViewsConverter.newBundle();
     }
 
@@ -77,30 +89,25 @@ public class ModelConverter implements JSONObjectConverter<Model> {
         }
 
         JSONObject o = new JSONObject();
-        o.put("mapping", toJSON(i.getMapping()));
-        o.put("attributes", attrsParser.toJSON(i.getAttributes()));
-        o.put("views", rcs);
+        o.put(MAPPING_LABEL, toJSON(i.getMapping()));
+        o.put(ATTRS_LABEL, AttributesConverter.toJSON(i.getAttributes()));
+        o.put(VIEWS_LABEL, rcs);
         return o;
     }
 
     @Override
     public Model fromJSON(JSONObject o) throws JSONConverterException {
-        if (!o.containsKey("mapping")) {
-            throw new JSONConverterException("Missing required mapping as a value of the key 'mapping'");
-        }
+        checkKeys(o, MAPPING_LABEL, ATTRS_LABEL, VIEWS_LABEL);
+
         Model i = new DefaultModel();
-        fillMapping(i, (JSONObject) o.get("mapping"));
+        fillMapping(i, (JSONObject) o.get(MAPPING_LABEL));
 
-        if (o.containsKey("attributes")) {
+        i.setAttributes(AttributesConverter.fromJSON(i, (JSONObject) o.get(ATTRS_LABEL)));
 
-            i.setAttributes(attrsParser.fromJSON(i, (JSONObject) o.get("attributes")));
+        for (Object view : (JSONArray) o.get(VIEWS_LABEL)) {
+            i.attach(viewsConverter.fromJSON(i, (JSONObject) view));
         }
 
-        if (o.containsKey("views")) {
-            for (Object view : (JSONArray) o.get("views")) {
-                i.attach(viewsConverter.fromJSON(i, (JSONObject) view));
-            }
-        }
         return i;
     }
 
@@ -134,9 +141,6 @@ public class ModelConverter implements JSONObjectConverter<Model> {
      * @throws JSONConverterException
      */
     public void fillMapping(Model mo, JSONObject o) throws JSONConverterException {
-        if (mo == null) {
-            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
-        }
         Mapping c = mo.getMapping();
         for (Node u : newNodes(mo, o, "offlineNodes")) {
             c.addOfflineNode(u);

@@ -36,7 +36,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class AmongConverter extends ConstraintConverter<Among> {
+public class AmongConverter implements ConstraintConverter<Among> {
 
     @Override
     public Class<Among> getSupportedConstraint() {

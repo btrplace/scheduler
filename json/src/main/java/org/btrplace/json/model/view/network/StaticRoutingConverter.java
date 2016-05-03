@@ -37,7 +37,7 @@ import static org.btrplace.json.JSONs.*;
  * All the routes are serialized.
  * @author Fabien Hermenier
  */
-public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
+public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
 
     @Override
     public Class<StaticRouting> getSupportedRouting() {
@@ -105,7 +105,6 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
      *
      * @param routing the routing implementation to convert
      * @return the JSON formatted routing object
-     * @throws JSONConverterException if the Routing implementation is not known
      */
     @Override
     public JSONObject toJSON(StaticRouting routing) {

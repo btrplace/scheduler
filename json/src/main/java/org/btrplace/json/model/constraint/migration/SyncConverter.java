@@ -33,7 +33,7 @@ import static org.btrplace.json.JSONs.vmsToJSON;
  * @author Vincent Kherbache
  * @see org.btrplace.model.constraint.migration.Sync
  */
-public class SyncConverter extends ConstraintConverter<Sync> {
+public class SyncConverter implements ConstraintConverter<Sync> {
 
     @Override
     public Class<Sync> getSupportedConstraint() {

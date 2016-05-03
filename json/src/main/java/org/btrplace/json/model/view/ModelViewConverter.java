@@ -28,24 +28,24 @@ import org.btrplace.model.view.ModelView;
  *
  * @author Fabien Hermenier
  */
-public abstract class ModelViewConverter<E extends ModelView> {
+public interface ModelViewConverter<E extends ModelView> {
 
     /**
      * Get the className of the view that is supported by the converter.
      *
      * @return The view class
      */
-    public abstract Class<E> getSupportedView();
+    Class<E> getSupportedView();
 
     /**
      * Get the JSON identifier for the view.
      *
      * @return a non-empty string
      */
-    public abstract String getJSONId();
+    String getJSONId();
 
-    public abstract E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+    E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
 
-    public abstract JSONObject toJSON(E o) throws JSONConverterException;
+    JSONObject toJSON(E o) throws JSONConverterException;
 
 }

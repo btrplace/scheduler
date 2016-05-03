@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class FenceConverter extends ConstraintConverter<Fence> {
+public class FenceConverter implements ConstraintConverter<Fence> {
 
     @Override
     public Class<Fence> getSupportedConstraint() {

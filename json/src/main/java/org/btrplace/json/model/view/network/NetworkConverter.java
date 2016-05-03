@@ -42,7 +42,7 @@ import static org.btrplace.json.JSONs.*;
  * By default, it also registers a {@link DefaultRoutingConverter} and a {@link StaticRoutingConverter}.
  * @author Vincent Kherbache
  */
-public class NetworkConverter extends ModelViewConverter<Network> {
+public class NetworkConverter implements ModelViewConverter<Network> {
 
     private Map<Class<? extends Routing>, RoutingConverter<? extends Routing>> java2json;
     private Map<String, RoutingConverter<? extends Routing>> json2java;

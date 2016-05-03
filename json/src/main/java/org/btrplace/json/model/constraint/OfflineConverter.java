@@ -31,7 +31,7 @@ import static org.btrplace.json.JSONs.requiredNode;
  *
  * @author Fabien Hermenier
  */
-public class OfflineConverter extends ConstraintConverter<Offline> {
+public class OfflineConverter implements ConstraintConverter<Offline> {
 
 
     @Override

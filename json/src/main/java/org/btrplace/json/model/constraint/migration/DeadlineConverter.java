@@ -34,7 +34,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  * @author Vincent Kherbache
  * @see org.btrplace.model.constraint.migration.Deadline
  */
-public class DeadlineConverter extends ConstraintConverter<Deadline> {
+public class DeadlineConverter implements ConstraintConverter<Deadline> {
 
     @Override
     public Class<Deadline> getSupportedConstraint() {

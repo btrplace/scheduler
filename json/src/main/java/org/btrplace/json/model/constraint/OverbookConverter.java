@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class OverbookConverter extends ConstraintConverter<Overbook> {
+public class OverbookConverter implements ConstraintConverter<Overbook> {
 
     @Override
     public Class<Overbook> getSupportedConstraint() {

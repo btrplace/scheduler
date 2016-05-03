@@ -31,7 +31,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  *
  * @author Fabien Hermenier
  */
-public class ReadyConverter extends ConstraintConverter<Ready> {
+public class ReadyConverter implements ConstraintConverter<Ready> {
 
 
     @Override

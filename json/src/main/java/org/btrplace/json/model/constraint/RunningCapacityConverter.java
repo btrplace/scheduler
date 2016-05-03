@@ -30,7 +30,7 @@ import static org.btrplace.json.JSONs.*;
  *
  * @author Fabien Hermenier
  */
-public class RunningCapacityConverter extends ConstraintConverter<RunningCapacity> {
+public class RunningCapacityConverter implements ConstraintConverter<RunningCapacity> {
 
     @Override
     public Class<RunningCapacity> getSupportedConstraint() {

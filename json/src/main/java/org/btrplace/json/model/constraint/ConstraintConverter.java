@@ -28,21 +28,21 @@ import org.btrplace.model.constraint.Constraint;
  *
  * @author Fabien Hermenier
  */
-public abstract class ConstraintConverter<E extends Constraint> {
+public interface ConstraintConverter<E extends Constraint> {
 
     /**
      * Get the name of the constraint that is supported by the converter.
      *
      * @return The constraint class
      */
-    public abstract Class<E> getSupportedConstraint();
+    Class<E> getSupportedConstraint();
 
     /**
      * Get the JSON identifier for the constraint.
      *
      * @return a non-empty string
      */
-    public abstract String getJSONId();
+    String getJSONId();
 
     /**
      * Check if the JSON object can be converted using this converter.
@@ -51,18 +51,18 @@ public abstract class ConstraintConverter<E extends Constraint> {
      * @param o the object to test
      * @throws JSONConverterException if the object is not compatible
      */
-    public void checkId(JSONObject o) throws JSONConverterException {
+    default void checkId(JSONObject o) throws JSONConverterException {
         Object id = o.get("id");
         if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a constraint id '" + id + "'");
         }
     }
 
-    public abstract E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+    E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
 
-    public abstract JSONObject toJSON(E o);
+    JSONObject toJSON(E o);
 
-    public String toJSONString(E d) {
+    default String toJSONString(E d) {
         return toJSON(d).toJSONString();
     }
 }

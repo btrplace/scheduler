@@ -64,6 +64,11 @@ public class ActionConverter implements ActionVisitor {
     public static final String ON_LABEL = "on";
 
     /**
+     * Ket that indicates the hooks.
+     */
+    public static final String HOOK_LABEL = "hooks";
+
+    /**
      * Key that indicate the action identifier
      */
     public static final String ACTION_ID_LABEL = "id";
@@ -89,7 +94,8 @@ public class ActionConverter implements ActionVisitor {
     public ActionConverter(Model mo) {
         this.mo = mo;
     }
-    //@Override
+
+
     public Action fromJSON(JSONObject in) throws JSONConverterException {
         String id = requiredString(in, ACTION_ID_LABEL);
         Action a;
@@ -141,8 +147,8 @@ public class ActionConverter implements ActionVisitor {
      * @throws JSONConverterException in case of error
      */
     private void attachEvents(Action a, JSONObject in) throws JSONConverterException {
-        if (in.containsKey("hooks")) {
-            JSONObject hooks = (JSONObject) in.get("hooks");
+        if (in.containsKey(HOOK_LABEL)) {
+            JSONObject hooks = (JSONObject) in.get(HOOK_LABEL);
             for (Map.Entry<String, Object> e : hooks.entrySet()) {
                 String k = e.getKey();
                 try {
@@ -371,7 +377,6 @@ public class ActionConverter implements ActionVisitor {
                 requiredVM(mo, o, "newVm"));
     }
 
-    //@Override
     public JSONObject toJSON(Action a) throws JSONConverterException {
         return (JSONObject) a.visit(this);
     }
@@ -394,7 +399,7 @@ public class ActionConverter implements ActionVisitor {
             }
             hooks.put(k.toString(), arr);
         }
-        o.put("hooks", hooks);
+        o.put(HOOK_LABEL, hooks);
         return o;
     }
 

@@ -31,7 +31,7 @@ import static org.btrplace.json.JSONs.requiredVM;
  *
  * @author Fabien Hermenier
  */
-public class SleepingConverter extends ConstraintConverter<Sleeping> {
+public class SleepingConverter implements ConstraintConverter<Sleeping> {
 
 
     @Override
