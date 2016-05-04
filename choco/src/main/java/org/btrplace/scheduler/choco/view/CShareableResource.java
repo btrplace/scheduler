@@ -404,13 +404,13 @@ public class CShareableResource implements ChocoView {
     }
 
     private boolean linkVirtualToPhysicalUsage() throws SchedulerException {
+        int min = Integer.MAX_VALUE;
+        for (IntVar v : vmAllocation) {
+            min = Math.min(v.getLB(), min);
+        }
         for (int nIdx = 0; nIdx < ratios.size(); nIdx++) {
             if (!linkVirtualToPhysicalUsage(nIdx)) {
                 return false;
-            }
-            int min = Integer.MAX_VALUE;
-            for (IntVar v : vmAllocation) {
-                min = Math.min(v.getLB(), min);
             }
             if (!capHosting(nIdx, min)) {
                 return false;
