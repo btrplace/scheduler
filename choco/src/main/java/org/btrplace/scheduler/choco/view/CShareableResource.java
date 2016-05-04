@@ -382,9 +382,37 @@ public class CShareableResource implements ChocoView {
         return false;
     }
 
+    /**
+     * Reduce the cardinality wrt. the worst case scenario.
+     *
+     * @param nIdx the node index
+     * @param min  the min consumption for a VM
+     * @return {@code false} if the problem no longer has a solution
+     */
+    private boolean capHosting(int nIdx, int min) {
+        Node n = rp.getNode(nIdx);
+        double capa = getSourceResource().getCapacity(n) * getOverbookRatio(nIdx).getLB();
+        int card = (int) (capa / min + 1);
+        try {
+            //Restrict the hosting capacity.
+            rp.getNbRunningVMs().get(nIdx).updateUpperBound(card, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to cap the hosting capacity of '" + n + " ' to " + card, ex);
+            return false;
+        }
+        return true;
+    }
+
     private boolean linkVirtualToPhysicalUsage() throws SchedulerException {
         for (int nIdx = 0; nIdx < ratios.size(); nIdx++) {
             if (!linkVirtualToPhysicalUsage(nIdx)) {
+                return false;
+            }
+            int min = Integer.MAX_VALUE;
+            for (IntVar v : vmAllocation) {
+                min = Math.min(v.getLB(), min);
+            }
+            if (!capHosting(nIdx, min)) {
                 return false;
             }
         }

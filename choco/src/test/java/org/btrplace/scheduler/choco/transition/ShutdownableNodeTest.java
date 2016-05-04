@@ -226,7 +226,6 @@ public class ShutdownableNodeTest {
         rp.getEnd().updateUpperBound(10, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
-        System.out.println(p);
     }
 
     @Test

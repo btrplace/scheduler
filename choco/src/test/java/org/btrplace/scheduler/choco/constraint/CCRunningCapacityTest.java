@@ -157,7 +157,6 @@ public class CCRunningCapacityTest {
         cra.setMaxEnd(5);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
-        System.out.println(plan);
         Assert.assertNull(plan);
     }
 
