@@ -18,8 +18,6 @@
 
 package org.btrplace.plan;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.event.Action;
 import org.mockito.Mockito;
@@ -35,7 +33,6 @@ public class ContinuousViolationExceptionTest {
     public void test() {
         SatConstraint c = Mockito.mock(SatConstraint.class);
         Action a = Mockito.mock(Action.class);
-        Model m = new DefaultModel();
         ContinuousViolationException ex = new ContinuousViolationException(c, a);
         Assert.assertEquals(ex.getAction(), a);
         Assert.assertEquals(ex.getConstraint(), c);

@@ -11,7 +11,7 @@ The codebase has also been reduced significantly.
 - API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
 - API change: The code to split problems and solve them in parallel moved
   to its own module named 'split'
-- API change: The JSON package has been refactored for simplificy. There
+- API change: The JSON package has been refactored for simplifity. There
   is now a single entry point for JSON (de-)serialisation with the class
   JSON.
 

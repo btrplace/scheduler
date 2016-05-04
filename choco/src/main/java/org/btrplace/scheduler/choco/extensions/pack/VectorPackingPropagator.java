@@ -123,8 +123,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         this.loads = l;
         this.nbBins = l[0].length;
         this.nbDims = l.length;
-        this.bins = Arrays.copyOf(b, b.length);
-        this.iSizes = s.clone();
+        this.bins = b;
+        this.iSizes = s;
         this.remProc = new RemProc(this);
         this.deltaMonitor = new IIntDeltaMonitor[b.length];
         for (int i = 0; i < deltaMonitor.length; i++) {

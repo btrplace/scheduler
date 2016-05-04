@@ -117,7 +117,7 @@ public class ModelConverter implements JSONObjectConverter<Model> {
      * @param c the mapping
      * @return the resulting JSONObject
      */
-    private JSONObject toJSON(Mapping c) {
+    private static JSONObject toJSON(Mapping c) {
         JSONObject o = new JSONObject();
         o.put("offlineNodes", nodesToJSON(c.getOfflineNodes()));
         o.put("readyVMs", vmsToJSON(c.getReadyVMs()));

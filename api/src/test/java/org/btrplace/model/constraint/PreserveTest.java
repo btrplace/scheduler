@@ -29,10 +29,7 @@ import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link Preserve}.
@@ -85,7 +82,6 @@ public class PreserveTest {
         map.addSleepingVM(vms.get(1), ns.get(0));
         map.addRunningVM(vms.get(2), ns.get(0));
         m.attach(rc);
-        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
         Preserve p = new Preserve(vms.get(0), "cpu", 3);
         rc.setConsumption(vms.get(0), 3);
         rc.setConsumption(vms.get(1), 1); //Not running so we don't care

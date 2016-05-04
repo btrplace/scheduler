@@ -393,7 +393,7 @@ public class ActionConverter implements ActionVisitor {
      * @return the resulting encoded action
      * @throws JSONConverterException if the conversion exploded
      */
-    public JSONObject toJSON(Action a) throws JSONConverterException {
+    public JSONObject toJSON(Action a) {
         return (JSONObject) a.visit(this);
     }
 

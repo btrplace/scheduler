@@ -107,15 +107,15 @@ public class AliasedCumulativesFiltering {
         this.associations = assocs;
         this.cEnds = cEnds;
         this.aCause = aCause;
-        this.capacities = capacities.clone();
+        this.capacities = capacities;
         this.nbDims = capacities.length;
-        this.cUsages = cUsages.clone();
-        this.dUsages = dUsages.clone();
+        this.cUsages = cUsages;
+        this.dUsages = dUsages;
 
-        this.dStarts = Arrays.copyOf(dStarts, dStarts.length);
+        this.dStarts = dStarts;
         this.vIn = vIn;
         this.out = outs;
-        revAssociations = revAssocs.clone();
+        revAssociations = revAssocs;
 
         //The amount of free resources at startup
 

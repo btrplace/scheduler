@@ -243,7 +243,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     @Override
     public String toCSV() {
         long d = (long) (getMeasures().getTimeCount() * 1000);
-        return String.format("%d;%d;%d;%d;%d", nbManagedVMs,
+        return String.format("%d;%d;%d;%d;%d;%d", nbManagedVMs,
                 coreRPBuildDuration,
                 speRPDuration,
                 d,

@@ -19,7 +19,6 @@
 package org.btrplace.bench;
 
 import org.btrplace.json.JSON;
-import org.btrplace.json.JSONConverterException;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
@@ -54,7 +53,7 @@ public class Bench {
     private Bench() {
     }
 
-    public static void main(String[] args) throws IOException, JSONConverterException {
+    public static void main(String[] args) throws IOException {
         Options opts = new Options();
 
         // Parse the cmdline arguments
@@ -94,8 +93,7 @@ public class Bench {
 
     }
 
-    private static void store(LabelledInstance i, SolvingStatistics stats, File base) throws IOException, JSONConverterException {
-
+    private static void store(LabelledInstance i, SolvingStatistics stats, File base) throws IOException {
         Files.createDirectories(base.toPath());
         //Stats about the solving process
         Path p = Paths.get(base.getAbsolutePath(), SCHEDULER_STATS);
