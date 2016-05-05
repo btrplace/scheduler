@@ -53,8 +53,8 @@ public class DefaultRouting extends Routing {
             if (currentPath.keySet().contains(l)) {
                 continue;
             }
-            
-            /* 
+
+            /*
              * Go through the link and track the direction for full-duplex purpose
              * From switch to element => false : DownLink
              * From element to switch => true : UpLink
@@ -86,7 +86,6 @@ public class DefaultRouting extends Routing {
 
     @Override
     public List<Link> getPath(Node n1, Node n2) {
-
         if (net == null || n1.equals(n2)) {
             return Collections.emptyList();
         }
@@ -115,10 +114,9 @@ public class DefaultRouting extends Routing {
     }
 
     @Override
-    public Boolean getLinkDirection(Node n1, Node n2, Link l) {
-        
+    public LinkDirection getLinkDirection(Node n1, Node n2, Link l) {
         if (n1.equals(n2)) {
-            return null;
+            return LinkDirection.NONE;
         }
 
         // Initialize the cache (should be already done)
@@ -126,7 +124,7 @@ public class DefaultRouting extends Routing {
             int cacheSize = net.getConnectedNodes().size();
             routingCache = new LinkedHashMap[cacheSize][cacheSize]; // OK for the warning
         }
-        
+
         // Fill the appropriate cache entry from getPath method if needed
         if (routingCache[n1.id()][n2.id()] == null) {
             getPath(n1, n2);
@@ -134,11 +132,15 @@ public class DefaultRouting extends Routing {
 
         // Link is not on route!
         if (!routingCache[n1.id()][n2.id()].containsKey(l)) {
-            return null;
+            return LinkDirection.NONE;
         }
 
         // Return the direction if the given link in on path
-        return routingCache[n1.id()][n2.id()].containsKey(l) ? routingCache[n1.id()][n2.id()].get(l) : null;
+        if (routingCache[n1.id()][n2.id()].containsKey(l)) {
+            return routingCache[n1.id()][n2.id()].get(l) ?
+                    LinkDirection.DOWNLINK : LinkDirection.UPLINK;
+        }
+        return LinkDirection.NONE;
     }
 
     @Override

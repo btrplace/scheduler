@@ -24,6 +24,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
+import org.btrplace.model.view.network.Routing.LinkDirection;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -192,7 +193,7 @@ public class CNetwork implements ChocoView {
         List<Task> tasksListDown = new ArrayList<>();
         List<IntVar> heightsListUp = new ArrayList<>();
         List<IntVar> heightsListDown = new ArrayList<>();
-        
+
         for (Link l : net.getLinks()) {
 
             for (VM vm : rp.getVMs()) {
@@ -208,9 +209,9 @@ public class CNetwork implements ChocoView {
                     // Check first if the link is on migration path
                     if (path.contains(l)) {
                         // Get link direction
-                        Boolean upDown = net.getRouting().getLinkDirection(src, dst, l);
+                        LinkDirection linkDirection = net.getRouting().getLinkDirection(src, dst, l);
                         // UpLink
-                        if (upDown) {
+                        if (linkDirection == LinkDirection.UPLINK) {
                             //tasksListUp.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
                             tasksListUp.add(((RelocatableVM) a).getMigrationTask());
                             heightsListUp.add(((RelocatableVM) a).getBandwidth());

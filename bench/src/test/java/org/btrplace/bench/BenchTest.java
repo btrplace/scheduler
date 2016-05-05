@@ -19,7 +19,6 @@
 package org.btrplace.bench;
 
 import org.btrplace.json.JSON;
-import org.btrplace.json.plan.ReconfigurationPlanConverter;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -107,7 +106,6 @@ public class BenchTest {
         //Read the output CSV file
         File csv = new File(output.toString() + File.separator + Bench.SCHEDULER_STATS);
         Assert.assertTrue(csv.isFile());
-        ReconfigurationPlanConverter pc = new ReconfigurationPlanConverter();
 
         for (String line : Files.readAllLines(csv.toPath(), UTF_8)) {
             String file = line.split(";")[0];

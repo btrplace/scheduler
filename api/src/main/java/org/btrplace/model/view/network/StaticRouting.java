@@ -52,11 +52,11 @@ public class StaticRouting extends Routing {
     public List<Link> getStaticRoute(NodesMap nm) {
 
         Map<Link, Boolean> route = routes.get(nm);
-        
+
         if (route == null) {
             return null;
         }
-        
+
         return new ArrayList<>(route.keySet());
     }
 
@@ -92,15 +92,19 @@ public class StaticRouting extends Routing {
     }
 
     @Override
-    public Boolean getLinkDirection(Node n1, Node n2, Link l) {
+    public LinkDirection getLinkDirection(Node n1, Node n2, Link l) {
 
         // Check for a static route
         Map<Link, Boolean> route = routes.get(new NodesMap(n1, n2));
         if (route == null) {
-            return null;
+            return LinkDirection.NONE;
         }
+
         // Return the direction if the given link is on path
-        return route.containsKey(l) ? route.get(l) : null;
+        if (route.containsKey(l)) {
+            return route.get(l) ? LinkDirection.DOWNLINK : LinkDirection.UPLINK;
+        }
+        return LinkDirection.NONE;
     }
 
     @Override

@@ -37,6 +37,23 @@ import java.util.List;
  */
 public abstract class Routing implements Copyable<Routing> {
 
+    public enum LinkDirection {
+        /**
+         * Link does not cross.
+         */
+        NONE,
+
+        /**
+         * Link is an uplink.
+         */
+        UPLINK,
+
+        /**
+         * Link is a downlink.
+         */
+        DOWNLINK
+    }
+
     protected Network net;
     protected LinkedHashMap<Link, Boolean>[][] routingCache;
 
@@ -49,7 +66,7 @@ public abstract class Routing implements Copyable<Routing> {
             net.setRouting(this);
         }
     }
-    
+
     /**
      * Get the path between two nodes.
      *
@@ -88,9 +105,9 @@ public abstract class Routing implements Copyable<Routing> {
      * @param n1    the source node
      * @param n2    the destination node
      * @param l     the link to check
-     * @return  null if *not* crossed, true for DownLink, false for UpLink
+     * @return direction specifying type of link
      */
-    public abstract Boolean getLinkDirection(Node n1, Node n2, Link l);
+    public abstract LinkDirection getLinkDirection(Node n1, Node n2, Link l);
 
     /**
      * Recursive method to get the first physical path found from a switch to a destination node.
