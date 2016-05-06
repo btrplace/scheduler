@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +61,9 @@ public class Options {
 
     @Option(name = "-v", usage = "Set the verbosity level. With '-i' it controls the solver verbosity. With '-l' the bench progress")
     private int verbosity = 0;
+
+    @Option(name = "-n", usage = "The numbers of repetitions per instance.")
+    private int count = 1;
 
     /**
      * Get the parameters from the options.
@@ -102,14 +106,23 @@ public class Options {
      * @throws IOException if it was not possible to get all the instances
      */
     public List<LabelledInstance> instances() throws IOException {
+        List<LabelledInstance> res;
         if (single()) {
-            return Collections.singletonList(instance(new File(instance)));
+            res = Collections.singletonList(instance(new File(instance)));
+        } else {
+            try (Stream<String> s = Files.lines(Paths.get(instances), StandardCharsets.UTF_8)) {
+                res = s.map(x -> instance(new File(x))).collect(Collectors.toList());
+            }
         }
+        return repeat(res);
+    }
 
-        //We assume it is a list of instance files
-        try (Stream<String> s = Files.lines(Paths.get(instances), StandardCharsets.UTF_8)) {
-            return s.map(x -> instance(new File(x))).collect(Collectors.toList());
+    private List<LabelledInstance> repeat(List<LabelledInstance> res) {
+        List<LabelledInstance> l = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            l.addAll(res);
         }
+        return l;
     }
 
 
