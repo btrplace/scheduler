@@ -526,7 +526,7 @@ public class IssuesTest {
 
     @Test
     public void testIssue100() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-100.json"));
+        Instance i = JSON.readInstance(new File("src/test/resources/issue-100.json.gz"));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
@@ -536,7 +536,7 @@ public class IssuesTest {
 
     @Test
     public void testIssue101() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json"));
+        Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json.gz"));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();

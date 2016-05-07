@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
+import org.btrplace.json.JSON;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -31,14 +32,16 @@ import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.StringReader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Unit tests for {@link CRunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CCRunningCapacityTest {
+public class CRunningCapacityTest {
 
     @Test
     public void testWithSatisfiedConstraint() throws SchedulerException {
@@ -243,13 +246,14 @@ public class CCRunningCapacityTest {
         l.add(new Running(vm1));
         l.add(new Ready(vm2));
         l.add(new Running(vm3));
-        RunningCapacity sc = new RunningCapacity(Collections.singleton(n1), 2);
+        RunningCapacity sc = new RunningCapacity(Collections.singleton(n1), 2, true);
         sc.setContinuous(true);
         l.add(sc);
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
+        System.out.println(plan);
         Assert.assertNotNull(plan);
         Iterator<Action> ite = plan.iterator();
         Assert.assertEquals(2, plan.getSize());
@@ -258,6 +262,22 @@ public class CCRunningCapacityTest {
         Assert.assertTrue(a1 instanceof ShutdownVM);
         Assert.assertTrue(a2 instanceof BootVM);
         Assert.assertTrue(a1.getEnd() <= a2.getStart());
+    }
+
+    @Test
+    public void testIssue112() throws Exception {
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[2,1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[]},\"constraints\":[{\"vm\":0,\"continuous\":false,\"id\":\"running\"},{\"vm\":1,\"continuous\":false,\"id\":\"running\"},{\"vm\":2,\"continuous\":false,\"id\":\"running\"},{\"amount\":2,\"nodes\":[0],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":1,\"nodes\":[1],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":0,\"nodes\":[2],\"continuous\":false,\"id\":\"runningCapacity\"},{\"continuous\":false,\"parts\":[[0,1,2]],\"id\":\"among\",\"vms\":[0]},{\"continuous\":false,\"parts\":[[0,1,2]],\"id\":\"among\",\"vms\":[1]},{\"continuous\":false,\"parts\":[[0,1,2]],\"id\":\"among\",\"vms\":[2]}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        Instance i = JSON.readInstance(new StringReader(buf));
+        List<SatConstraint> l = i.getSatConstraints().stream().filter(s -> !(s instanceof Among)).collect(Collectors.toList());
+        ChocoScheduler s = new DefaultChocoScheduler();
+        s.setVerbosity(3);
+        i = new Instance(i.getModel(), l, new MinMTTR());
+        System.out.println(i.getModel().getMapping());
+        System.out.println(i.getSatConstraints());
+        ReconfigurationPlan p = s.solve(i);
+        System.out.println(s.getStatistics());
+        Assert.assertNotNull(p);
+        System.out.println(p.getResult().getMapping());
     }
 
     @Test

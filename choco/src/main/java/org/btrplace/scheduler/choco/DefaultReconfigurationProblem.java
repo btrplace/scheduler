@@ -301,6 +301,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (v == null) {
             throw new SchedulerException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
+
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
@@ -530,18 +531,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public final String makeVarLabel(Object... lbl) {
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object s : lbl) {
-                if (s instanceof Object[]) {
-                    b.append(Arrays.toString((Object[]) s));
-                } else {
-                    b.append(s);
-                }
-            }
-            return b.toString();
+        if (!useLabels) {
+            return "";
         }
-        return "";
+        StringBuilder b = new StringBuilder();
+        for (Object s : lbl) {
+            if (s instanceof Object[]) {
+                for (Object o : (Object[]) s) {
+                    b.append(o);
+                }
+            } else {
+                b.append(s);
+            }
+        }
+        return b.toString();
     }
 
     @Override
