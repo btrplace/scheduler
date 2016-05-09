@@ -19,6 +19,10 @@
 package org.btrplace.scheduler.choco.view;
 
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.constraint.Preserve;
@@ -74,9 +78,9 @@ public class CShareableResource implements ChocoView {
     private Map<VM, VM> references;
     private Map<VM, VM> clones;
 
-    private Map<Node, Double> wantedRatios;
-    private Map<VM, Integer> wantedAmount;
-    private Map<Node, Integer> wantedCapacity;
+    private TObjectDoubleMap<Node> wantedRatios;
+    private TObjectIntMap<VM> wantedAmount;
+    private TObjectIntMap<Node> wantedCapacity;
     /**
      * The default value of ratio is not logical to detect an unchanged value
      */
@@ -90,9 +94,9 @@ public class CShareableResource implements ChocoView {
     public CShareableResource(ShareableResource r) throws SchedulerException {
         this.rc = r;
         this.id = r.getIdentifier();
-        wantedCapacity = new HashMap<>();
-        wantedAmount = new HashMap<>();
-        wantedRatios = new HashMap<>();
+        wantedCapacity = new TObjectIntHashMap<>();
+        wantedAmount = new TObjectIntHashMap<>();
+        wantedRatios = new TObjectDoubleHashMap<>();
     }
 
     @Override
@@ -105,7 +109,7 @@ public class CShareableResource implements ChocoView {
         List<Node> nodes = p.getNodes();
         phyRcUsage = new ArrayList<>(nodes.size());
         virtRcUsage = new ArrayList<>(nodes.size());
-        this.ratios = new ArrayList<>();
+        this.ratios = new ArrayList<>(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
             phyRcUsage.add(VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), p.getSolver()));

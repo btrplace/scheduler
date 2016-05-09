@@ -201,9 +201,15 @@ public class LocalTaskScheduler {
         updateDStartsSup(watchHosts);
     }
 
+    /**
+     * Report if the current local constraint is entailed or not.
+     *
+     * @return {@code true} iff entailed
+     */
     public boolean isEntailed() {
         return entailed.get();
     }
+
     private boolean computeProfiles() throws ContradictionException {
 
         initProfile();

@@ -18,6 +18,8 @@
 
 package org.btrplace.model.view;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import org.btrplace.model.VM;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class VMConsumptionComparator implements Comparator<VM> {
     /**
      * The ordering criteria for each resource.
      */
-    private List<Integer> ascs;
+    private TIntList ascs;
 
     /**
      * Make a new comparator.
@@ -59,7 +61,7 @@ public class VMConsumptionComparator implements Comparator<VM> {
      */
     public VMConsumptionComparator(ShareableResource rc, boolean asc) {
         this.rcs = new ArrayList<>();
-        this.ascs = new ArrayList<>();
+        this.ascs = new TIntArrayList();
 
         rcs.add(rc);
         ascs.add(asc ? 1 : -1);

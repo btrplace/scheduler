@@ -103,7 +103,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
         return rc;
     }
 
-    private void parseVMs(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
+    private static void parseVMs(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
@@ -119,7 +119,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
         }
     }
 
-    private void parseNodes(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
+    private static void parseNodes(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;

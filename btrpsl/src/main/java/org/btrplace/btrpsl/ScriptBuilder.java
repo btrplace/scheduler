@@ -18,6 +18,8 @@
 
 package org.btrplace.btrpsl;
 
+import gnu.trove.map.TIntLongMap;
+import gnu.trove.map.hash.TIntLongHashMap;
 import org.antlr.runtime.*;
 import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Lexer;
 import org.btrplace.btrpsl.antlr.ANTLRBtrplaceSL2Parser;
@@ -38,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class ScriptBuilder {
     /**
      * The date of last modification for the file. The key is the hashcode of the file path.
      */
-    private Map<Integer, Long> dates;
+    private TIntLongMap dates;
 
     public static final int DEFAULT_CACHE_SIZE = 100;
 
@@ -111,7 +112,7 @@ public class ScriptBuilder {
 
         catalog = DefaultConstraintsCatalog.newBundle();
         this.tpls = new MockTemplateFactory(mo);
-        this.dates = new HashMap<>();
+        this.dates = new TIntLongHashMap();
         this.includes = new PathBasedIncludes(this);
         this.cache = new LinkedHashMap<String, Script>() {
             @Override

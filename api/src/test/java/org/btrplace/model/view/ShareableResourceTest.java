@@ -120,16 +120,15 @@ public class ShareableResourceTest {
     public void testUnset() {
         ShareableResource rc = new ShareableResource("foo");
         rc.setConsumption(vms.get(0), 3);
-        Assert.assertTrue(rc.unset(vms.get(0)));
+        rc.unset(vms.get(0));
         Assert.assertFalse(rc.consumptionDefined(vms.get(0)));
 
-        Assert.assertFalse(rc.unset(vms.get(0)));
 
         rc.setCapacity(nodes.get(0), 3);
-        Assert.assertTrue(rc.unset(nodes.get(0)));
+        rc.unset(nodes.get(0));
         Assert.assertFalse(rc.capacityDefined(nodes.get(0)));
 
-        Assert.assertFalse(rc.unset(nodes.get(0)));
+        rc.unset(nodes.get(0));
 
     }
 

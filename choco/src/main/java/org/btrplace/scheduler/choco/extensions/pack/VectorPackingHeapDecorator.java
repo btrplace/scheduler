@@ -22,6 +22,7 @@ import org.chocosolver.solver.exception.ContradictionException;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -40,7 +41,7 @@ public class VectorPackingHeapDecorator {
     /**
      * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
      */
-    private ArrayList<PriorityQueue<Integer>> maxSlackBinHeap;
+    private List<PriorityQueue<Integer>> maxSlackBinHeap;
 
     private int lastWorld = -1;
     private long lastNbOfBacktracks = -1;

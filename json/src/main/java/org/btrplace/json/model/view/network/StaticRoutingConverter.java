@@ -18,6 +18,8 @@
 
 package org.btrplace.json.model.view.network;
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
@@ -26,7 +28,6 @@ import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.StaticRouting;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
     @Override
     public StaticRouting fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         Network v = Network.get(mo);
-        Map<Integer, Link> idToLink = new HashMap<>();
+        TIntObjectMap<Link> idToLink = new TIntObjectHashMap<>();
         for (Link l : v.getLinks()) {
             idToLink.put(l.id(), l);
         }
