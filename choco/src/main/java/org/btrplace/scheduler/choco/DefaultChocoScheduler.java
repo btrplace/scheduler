@@ -128,13 +128,12 @@ public class DefaultChocoScheduler implements ChocoScheduler {
         Network net = Network.get(i);
         stages = null;
         if  (net != null) {
-            stages = new StagedSolvingStatistics();
             // The network view is useless to take placement decisions
             i.detach(net);
 
             // Solve a first time using placement oriented MinMTTR optimisation constraint
             ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
-            stages.append(runner.getStatistics());
+            stages = new StagedSolvingStatistics(runner.getStatistics());
             if (p == null) {
                 return null;
             }

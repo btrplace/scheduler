@@ -228,18 +228,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
         return completed;
     }
 
-    /**
-     * Print the statistics as a CSV line.
-     * Fields are separated by a ';' and ordered this way:
-     * - getNbManagedVMs()
-     * - getCoreBuildDuration()
-     * - getSpecializationDuration()
-     * - getMeasures().getTimeCount() * 1000 (so in milliseconds)
-     * - solutions.size()
-     * - completed ? 1 : 0
-     *
-     * @return a CSV formatted string
-     */
+
     @Override
     public String toCSV() {
         long d = (long) (getMeasures().getTimeCount() * 1000);

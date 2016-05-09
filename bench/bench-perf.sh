@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #Quick script to run 10 times the 'standard benchmarks'
 #The output is the current commit ID or a folder given as a parameter
 
@@ -10,13 +10,11 @@ if [ $# -eq 2 ]; then
     OUTPUT=$2
 fi
 
-MAVEN_OPTS="-Xmx2G -Xms2G -server -da"
-ARGS="-n 10 -l src/test/resources/std-perf/std-perf.txt -v 1 -r -o ${OUTPUT}"
-
+MAVEN_OPTS="-Xmx8G -Xms8G -server -da"
 case $1 in
 run)
-    mvn -f ../ -o clean compile ||exit 1
-    mvn -o exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="${ARGS}" ||exit 1
+    #mvn -f ../ install -DskipTests -Dgpg.skip||exit 1
+    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 10 -l src/test/resources/std-perf/std-perf.txt -v 1 -r -o ${OUTPUT}" ||exit 1
     echo "Statistics available in ${OUTPUT}. Run '$0 stats ${OUTPUT}' to generate them"
     ;;
 stats)

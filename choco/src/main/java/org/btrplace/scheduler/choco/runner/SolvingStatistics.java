@@ -37,6 +37,7 @@ public interface SolvingStatistics {
      * @return the instance
      */
     Instance getInstance();
+
     /**
      * Get the time that was necessary to build the core-RP.
      *
@@ -102,7 +103,16 @@ public interface SolvingStatistics {
     ReconfigurationPlan lastSolution();
 
     /**
-     * Summarizes as a CSV data
+     * Summarizes as a CSV data.
+     * Print the statistics as a CSV line.
+     * Fields are separated by a ';' and ordered this way:
+     * - getNbManagedVMs()
+     * - getCoreBuildDuration()
+     * - getSpecializationDuration()
+     * - getMeasures().getTimeCount() * 1000 (so in milliseconds)
+     * - solutions.size()
+     * - completed ? 1 : 0
+     *
      * @return a CSV formatted line.
      */
     String toCSV();

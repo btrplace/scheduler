@@ -39,11 +39,18 @@ public class StagedSolvingStatistics implements SolvingStatistics {
      * Make a new statistic.
      *
      */
-    public StagedSolvingStatistics() {
+    public StagedSolvingStatistics(SolvingStatistics firstStage) {
         stages = new ArrayList<>();
+        stages.add(firstStage);
     }
 
 
+    /**
+     * Append statistics.
+     *
+     * @param stats the statistics to add
+     * @return {@code this}
+     */
     public StagedSolvingStatistics append(SolvingStatistics stats) {
         stages.add(stats);
         return this;
@@ -57,11 +64,21 @@ public class StagedSolvingStatistics implements SolvingStatistics {
         return stages.get(0);
     }
 
+    /**
+     * Get the number of stages.
+     * @return a positive integer
+     */
     public int getNbStages() {
         return stages.size();
     }
 
-    public SolvingStatistics getAtState(int st) {
+    /**
+     * Get the statistics associated to a given stage
+     *
+     * @param st the stage
+     * @return the resulting statistics if any. {@code null} otherwise
+     */
+    public SolvingStatistics getStage(int st) {
         return stages.get(st);
     }
 
@@ -88,7 +105,7 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     /**
      * Return the timestamp of the first phase.
      *
-     * @return a timestamp
+     * @return a timestamp. -1 if not started yet
      */
     @Override
     public long getStart() {
@@ -152,8 +169,46 @@ public class StagedSolvingStatistics implements SolvingStatistics {
         return last().lastSolution();
     }
 
+    /**
+     * Print the statistics as a CSV line.
+     * Statistics are computed wrt. the different stages:
+     * - the maximum number of managed VMs
+     * - the cumulative getCoreBuildDuration()
+     * - the cumulative getSpecializationDuration()
+     * - the cumulative getMeasures().getTimeCount() * 1000 (so in milliseconds)
+     * - the number of solutions for the last stage or 0 if any of the stages does not have at least a solution
+     * - completed ? 1 if all the stages are completed
+     *
+     * @return a CSV formatted string
+     */
     @Override
     public String toCSV() {
-        throw new UnsupportedOperationException();
+        int nbManagedVMs = -1;
+        long core = 0;
+        long spe = 0;
+        long d = 0;
+        int solutions = 0;
+        if (!stages.isEmpty()) {
+            solutions = stages.get(stages.size() - 1).getSolutions().size();
+        }
+        boolean completed = true;
+        for (SolvingStatistics sol : stages) {
+            nbManagedVMs = Math.max(nbManagedVMs, sol.getNbManagedVMs());
+            core += sol.getCoreBuildDuration();
+            spe += sol.getSpecializationDuration();
+            d += (long) (sol.getMeasures().getTimeCount() * 1000);
+            completed &= sol.completed();
+            if (sol.getSolutions().isEmpty()) {
+                solutions = 0;
+            }
+        }
+
+        return String.format("%d;%d;%d;%d;%d;%d", nbManagedVMs,
+                core,
+                spe,
+                d,
+                solutions,
+                completed ? 1 : 0);
+
     }
 }
