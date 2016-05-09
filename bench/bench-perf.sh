@@ -15,9 +15,9 @@ ARGS="-n 10 -l src/test/resources/std-perf/std-perf.txt -v 1 -r -o ${OUTPUT}"
 
 case $1 in
 run)
-    mvn -o compile ||exit 1
+    mvn -f ../ -o clean compile ||exit 1
     mvn -o exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="${ARGS}" ||exit 1
-    echo "Statistics available in ${OUTPUT}. Run '$0 stats' to generate them"
+    echo "Statistics available in ${OUTPUT}. Run '$0 stats ${OUTPUT}' to generate them"
     ;;
 stats)
     #summary per bench
