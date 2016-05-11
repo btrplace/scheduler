@@ -41,14 +41,14 @@ public interface SolvingStatistics {
     /**
      * Get the time that was necessary to build the core-RP.
      *
-     * @return a duration in milliseconds
+     * @return a duration in milliseconds.  -1 if not available
      */
     long getCoreBuildDuration();
 
     /**
      * Get the time that was necessary to specialize the core-CP.
      *
-     * @return a duration in milliseconds
+     * @return a duration in milliseconds.  -1 if not available
      */
     long getSpecializationDuration();
 
@@ -69,7 +69,7 @@ public interface SolvingStatistics {
     /**
      * Get the number of VMs managed by the algorithm.
      *
-     * @return a positive number
+     * @return a positive number.  -1 if not available
      */
     int getNbManagedVMs();
 

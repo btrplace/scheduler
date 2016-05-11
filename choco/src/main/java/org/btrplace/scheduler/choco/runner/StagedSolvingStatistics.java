@@ -22,12 +22,13 @@ import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
 import org.chocosolver.solver.search.measure.IMeasures;
+import org.chocosolver.solver.search.measure.MeasuresRecorder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Statistics to aggregate the statistics of a multi-stage resolution.
+ * Aggregate the statistics of a multi-stage resolution.
  *
  * @author Fabien Hermenier
  */
@@ -151,7 +152,19 @@ public class StagedSolvingStatistics implements SolvingStatistics {
 
     @Override
     public IMeasures getMeasures() {
-        return last().getMeasures();
+        MeasuresRecorder mr = (MeasuresRecorder) first().getMeasures().duplicate();
+        for (int i = 1; i < stages.size(); i++) {
+            IMeasures m = stages.get(i).getMeasures();
+            mr.backtrackCount += m.getBackTrackCount();
+            mr.failCount += m.getFailCount();
+            mr.nodeCount += m.getNodeCount();
+            mr.readingTimeCount += m.getReadingTimeCount();
+            mr.restartCount += m.getRestartCount();
+            mr.timeCount += m.getTimeCount() * 1000 * 1000 * 1000f; //Because it is expressed in nanoseconds
+            mr.objectiveOptimal &= m.isObjectiveOptimal();
+            mr.hasObjective &= m.hasObjective();
+        }
+        return mr;
     }
 
     @Override
@@ -196,7 +209,7 @@ public class StagedSolvingStatistics implements SolvingStatistics {
             nbManagedVMs = Math.max(nbManagedVMs, sol.getNbManagedVMs());
             core += sol.getCoreBuildDuration();
             spe += sol.getSpecializationDuration();
-            d += (long) (sol.getMeasures().getTimeCount() * 1000);
+            d += sol.getMeasures().getElapsedTimeInNanoseconds() / 1000;
             completed &= sol.completed();
             if (sol.getSolutions().isEmpty()) {
                 solutions = 0;

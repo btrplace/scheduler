@@ -84,7 +84,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * Set the scheduler generation duration.
      *
-     * @param d an amount in milliseconds
+     * @param d an amount in milliseconds.
      */
     public void setCoreBuildDuration(long d) {
         coreRPBuildDuration = d;
