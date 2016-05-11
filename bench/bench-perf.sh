@@ -4,17 +4,16 @@
 
 #The run command runs the benchmark and store the resulting numbers
 #The stats command computes the average numbers
-
+export MAVEN_OPTS="-Xmx6G -Xms6G"
 OUTPUT=`git rev-parse --short HEAD`
 if [ $# -eq 2 ]; then
     OUTPUT=$2
 fi
 
-MAVEN_OPTS="-Xmx8G -Xms8G -server -da"
 case $1 in
 run)
-    #mvn -f ../ install -DskipTests -Dgpg.skip||exit 1
-    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 10 -l src/test/resources/std-perf/std-perf.txt -v 1 -r -o ${OUTPUT}" ||exit 1
+    mvn -f ../ install -DskipTests -Dgpg.skip||exit 1
+    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 10 -l src/test/resources/std-perf/std-perf.txt -v 1 --repair --timeout 300 -o ${OUTPUT}" ||exit 1
     echo "Statistics available in ${OUTPUT}. Run '$0 stats ${OUTPUT}' to generate them"
     ;;
 stats)

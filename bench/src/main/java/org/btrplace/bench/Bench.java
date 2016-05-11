@@ -56,6 +56,16 @@ public class Bench {
     public static void main(String[] args) throws IOException {
         Options opts = new Options();
 
+        if (opts.verbosity() > 0) {
+            Runtime runtime = Runtime.getRuntime();
+            int mb = 1024 * 1024;
+            //Print total available memory
+            System.out.println("Total Memory:" + runtime.totalMemory() / mb);
+
+            //Print Maximum available memory
+            System.out.println("Max Memory:" + runtime.maxMemory() / mb);
+        }
+
         // Parse the cmdline arguments
         CmdLineParser cli = new CmdLineParser(opts);
         try {
