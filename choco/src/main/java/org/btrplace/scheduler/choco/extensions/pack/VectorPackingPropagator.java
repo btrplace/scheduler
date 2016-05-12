@@ -298,7 +298,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if the domain of the bin load variable becomes empty
      */
     protected boolean filterLoadSup(int dim, int bin, int newLoadSup) throws ContradictionException {
-        //System.out.println(loads[dim][bin] + " to " + newLoadSup);
         int delta = newLoadSup - loads[dim][bin].getUB();
         if (delta >= 0) {
             return false;
@@ -317,12 +316,15 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
-        for (int d = 0; d < nbDims; d++) {
-            //System.out.println(potentialLoad[d][bin].add(-1 * iSizes[d][item]));
-            filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
-        }
+        updateLoads(item, bin);
         if (decoKPSimple != null) {
             decoKPSimple.postRemoveItem(item, bin);
+        }
+    }
+
+    private void updateLoads(int item, int bin) throws ContradictionException {
+        for (int d = 0; d < nbDims; d++) {
+            filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
         }
     }
 
