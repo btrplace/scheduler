@@ -80,13 +80,12 @@ public class Bench {
         }
 
         Parameters ps = opts.parameters();
-        ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
 
         File output = opts.output();
         List<LabelledInstance> instances = opts.instances();
 
         for (LabelledInstance i : instances) {
-
+            ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
             s.solve(i);
             if (opts.single()) {
                 System.out.println(s.getStatistics());
@@ -100,7 +99,11 @@ public class Bench {
                     System.out.println();
                 }
                 store(i, stats, output);
+                stats = null;
             }
+            s = null;
+            System.gc();
+            System.gc();
         }
 
     }
