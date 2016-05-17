@@ -1,41 +1,41 @@
 /*
  * Copyright (c) 2016 University Nice Sophia Antipolis
- *
+ *  
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
- *
+ *  
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- *
+ *  
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * adouble with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
-import org.btrplace.scheduler.choco.extensions.env.trail.BoolTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.DoubleTrail;
 
 /**
  * @author Fabien Hermenier
  */
-public class FlatBoolTrail implements BoolTrail {
+public class FlatDoubleTrail implements DoubleTrail {
 
 
     /**
      * Stack of backtrackable search variables.
      */
-    private org.btrplace.scheduler.choco.extensions.env.StoredBool[] variableStack;
+    private org.btrplace.scheduler.choco.extensions.env.StoredDouble[] variableStack;
 
 
     /**
      * Stack of values (former values that need be restored upon backtracking).
      */
-    private boolean[] valueStack;
+    private double[] valueStack;
 
 
     /**
@@ -63,10 +63,10 @@ public class FlatBoolTrail implements BoolTrail {
      * @param nWorlds  maximal number of worlds that will be stored
      */
 
-    public FlatBoolTrail(int nUpdates, int nWorlds) {
+    public FlatDoubleTrail(int nUpdates, int nWorlds) {
         currentLevel = 0;
-        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredBool[nUpdates];
-        valueStack = new boolean[nUpdates];
+        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredDouble[nUpdates];
+        valueStack = new double[nUpdates];
         stampStack = new int[nUpdates];
         worldStartLevels = new int[nWorlds];
     }
@@ -97,7 +97,7 @@ public class FlatBoolTrail implements BoolTrail {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
             currentLevel--;
-            final org.btrplace.scheduler.choco.extensions.env.StoredBool v = variableStack[currentLevel];
+            final org.btrplace.scheduler.choco.extensions.env.StoredDouble v = variableStack[currentLevel];
             v._set(valueStack[currentLevel], stampStack[currentLevel]);
         }
     }
@@ -126,10 +126,10 @@ public class FlatBoolTrail implements BoolTrail {
         final int prevWorld = worldIndex - 1;
         int writeIdx = startLevel;
         for (int level = startLevel; level < currentLevel; level++) {
-            final org.btrplace.scheduler.choco.extensions.env.StoredBool var = variableStack[level];
-            final boolean val = valueStack[level];
+            final org.btrplace.scheduler.choco.extensions.env.StoredDouble var = variableStack[level];
+            final double val = valueStack[level];
             final int stamp = stampStack[level];
-            var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no longer exists)
+            var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no doubleer exists)
             if (stamp != prevWorld) {
                 // shift the update if needed
                 if (writeIdx != level) {
@@ -149,7 +149,7 @@ public class FlatBoolTrail implements BoolTrail {
      * on the stacks.
      */
 
-    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredBool v, boolean oldValue, int oldStamp) {
+    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredDouble v, double oldValue, int oldStamp) {
         valueStack[currentLevel] = oldValue;
         variableStack[currentLevel] = v;
         stampStack[currentLevel] = oldStamp;
@@ -160,7 +160,7 @@ public class FlatBoolTrail implements BoolTrail {
     }
 
     @Override
-    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredBool v, boolean initValue, int olderStamp) {
+    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredDouble v, double initValue, int olderStamp) {
         // from world 0 to fromStamp (excluded), create a fake history based on initValue
         // kind a copy of the current elements
         // first save the current state on the top of the stack
@@ -190,11 +190,11 @@ public class FlatBoolTrail implements BoolTrail {
     private void resizeUpdateCapacity() {
         final int newCapacity = ((variableStack.length * 3) / 2);
         // first, copy the stack of variables
-        final org.btrplace.scheduler.choco.extensions.env.StoredBool[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredBool[newCapacity];
+        final org.btrplace.scheduler.choco.extensions.env.StoredDouble[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredDouble[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
         // then, copy the stack of former values
-        final boolean[] tmp2 = new boolean[newCapacity];
+        final double[] tmp2 = new double[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
         // then, copy the stack of world stamps

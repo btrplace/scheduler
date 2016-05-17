@@ -17,42 +17,29 @@
  */
 package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.btrplace.scheduler.choco.extensions.env.StoredInt;
 import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
 
 
-public class ChunkedIntTrail implements IntTrail {
+public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail {
 
-
-    private IntWorld[] worlds;
-
-    private IntWorld current;
-
-    private int nbWorlds;
     /**
      * Constructs a trail with predefined size.
      */
     public ChunkedIntTrail(int size) {
         worlds = new IntWorld[size];
-        nbWorlds = 0;
     }
 
-
-    /**
-     * Moving up to the next world.
-     *
-     * @param worldIndex current world index
-     */
-
+    @Override
     public void worldPush(int worldIndex) {
-        int size = 1024;
-        if (current != null) {
-            size = Math.max(current.used(), size);
-        }
-        current = new IntWorld(size);
-        worlds[nbWorlds++] = current;
-        if (nbWorlds == worlds.length) {
+        //if (worlds[worldIndex] == null) {
+            current = new IntWorld(preferredSize());
+            worlds[worldIndex] = current;
+        /*} else {
+            current = worlds[worldIndex];
+            current.clear();
+        }*/
+        if (worldIndex == worlds.length - 1) {
             resizeWorlds();
         }
     }
@@ -64,40 +51,12 @@ public class ChunkedIntTrail implements IntTrail {
         worlds = tmp;
     }
 
-
-    /**
-     * Moving down to the previous world.
-     *
-     * @param worldIndex current world index
-     */
-
-    public void worldPop(int worldIndex) {
-        current.revert();
-        nbWorlds--;
-        current = null;
-        if (nbWorlds >= 0) {
-            current = worlds[nbWorlds];
-        }
-    }
-
-    /**
-     * Comits a world: merging it with the previous one.
-     */
-
-    public void worldCommit(int worldIndex) {
-        throw new UnsupportedOperationException();
-    }
-
-
-    /**
-     * Reacts when a StoredInt is modified: push the former value & timestamp
-     * on the stacks.
-     */
-
+    @Override
     public void savePreviousState(StoredInt v, int oldValue, int oldStamp) {
         current.savePreviousState(v, oldValue, oldStamp);
     }
 
+    @Override
     public void buildFakeHistory(StoredInt v, int initValue, int fromStamp) {
         throw new UnsupportedOperationException();
     }

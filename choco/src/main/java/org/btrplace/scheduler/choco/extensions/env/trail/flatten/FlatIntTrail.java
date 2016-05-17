@@ -13,29 +13,29 @@
  * Lesser General Public License for more details.
  *  
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * aint with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
-import org.btrplace.scheduler.choco.extensions.env.trail.LongTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
 
 /**
  * @author Fabien Hermenier
  */
-public class FlatIntTrail implements LongTrail {
+public class FlatIntTrail implements IntTrail {
 
 
     /**
      * Stack of backtrackable search variables.
      */
-    private org.btrplace.scheduler.choco.extensions.env.StoredLong[] variableStack;
+    private org.btrplace.scheduler.choco.extensions.env.StoredInt[] variableStack;
 
 
     /**
      * Stack of values (former values that need be restored upon backtracking).
      */
-    private long[] valueStack;
+    private int[] valueStack;
 
 
     /**
@@ -65,8 +65,8 @@ public class FlatIntTrail implements LongTrail {
 
     public FlatIntTrail(int nUpdates, int nWorlds) {
         currentLevel = 0;
-        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredLong[nUpdates];
-        valueStack = new long[nUpdates];
+        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredInt[nUpdates];
+        valueStack = new int[nUpdates];
         stampStack = new int[nUpdates];
         worldStartLevels = new int[nWorlds];
     }
@@ -97,7 +97,7 @@ public class FlatIntTrail implements LongTrail {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
             currentLevel--;
-            final org.btrplace.scheduler.choco.extensions.env.StoredLong v = variableStack[currentLevel];
+            final org.btrplace.scheduler.choco.extensions.env.StoredInt v = variableStack[currentLevel];
             v._set(valueStack[currentLevel], stampStack[currentLevel]);
         }
     }
@@ -126,10 +126,10 @@ public class FlatIntTrail implements LongTrail {
         final int prevWorld = worldIndex - 1;
         int writeIdx = startLevel;
         for (int level = startLevel; level < currentLevel; level++) {
-            final org.btrplace.scheduler.choco.extensions.env.StoredLong var = variableStack[level];
-            final long val = valueStack[level];
+            final org.btrplace.scheduler.choco.extensions.env.StoredInt var = variableStack[level];
+            final int val = valueStack[level];
             final int stamp = stampStack[level];
-            var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no longer exists)
+            var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no inter exists)
             if (stamp != prevWorld) {
                 // shift the update if needed
                 if (writeIdx != level) {
@@ -149,7 +149,7 @@ public class FlatIntTrail implements LongTrail {
      * on the stacks.
      */
 
-    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredLong v, long oldValue, int oldStamp) {
+    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredInt v, int oldValue, int oldStamp) {
         valueStack[currentLevel] = oldValue;
         variableStack[currentLevel] = v;
         stampStack[currentLevel] = oldStamp;
@@ -160,7 +160,7 @@ public class FlatIntTrail implements LongTrail {
     }
 
     @Override
-    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredLong v, long initValue, int olderStamp) {
+    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredInt v, int initValue, int olderStamp) {
         // from world 0 to fromStamp (excluded), create a fake history based on initValue
         // kind a copy of the current elements
         // first save the current state on the top of the stack
@@ -190,11 +190,11 @@ public class FlatIntTrail implements LongTrail {
     private void resizeUpdateCapacity() {
         final int newCapacity = ((variableStack.length * 3) / 2);
         // first, copy the stack of variables
-        final org.btrplace.scheduler.choco.extensions.env.StoredLong[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredLong[newCapacity];
+        final org.btrplace.scheduler.choco.extensions.env.StoredInt[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredInt[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
         // then, copy the stack of former values
-        final long[] tmp2 = new long[newCapacity];
+        final int[] tmp2 = new int[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
         // then, copy the stack of world stamps

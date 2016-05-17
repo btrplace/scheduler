@@ -18,63 +18,36 @@
 
 package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.btrplace.scheduler.choco.extensions.env.trail.OperationTrail;
 import org.chocosolver.memory.structure.Operation;
 
 
-public class ChunkedOperationTrail implements OperationTrail{
+public class ChunkedOperationTrail extends ChunkedTrail<OperationWorld> implements OperationTrail {
 
 
-    private ObjectArrayList<OperationWorld> worlds;
-
-    private OperationWorld current;
+    private OperationWorld[] worlds;
 
     /**
      * Constructs a trail with predefined size.
      */
-    public ChunkedOperationTrail() {
-        worlds = new ObjectArrayList<>();
+    public ChunkedOperationTrail(int size) {
+        worlds = new OperationWorld[size];
     }
 
-
-    /**
-     * Moving up to the next world.
-     *
-     * @param worldIndex current world index
-     */
-
+    @Override
     public void worldPush(int worldIndex) {
-        int size = 1024;
-        if (current != null) {
-            size = Math.max(current.used(), size);
-        }
-        current = new OperationWorld(size);
-        worlds.push(current);
-    }
-
-
-    /**
-     * Moving down to the previous world.
-     *
-     * @param worldIndex current world index
-     */
-
-    public void worldPop(int worldIndex) {
-        current.revert();
-        worlds.pop();
-        current = null;
-        if (!worlds.isEmpty()) {
-            current = worlds.top();
+        current = new OperationWorld(preferredSize());
+        worlds[worldIndex] = current;
+        if (worldIndex == worlds.length) {
+            resizeWorlds();
         }
     }
 
-    /**
-     * Comits a world: merging it with the previous one.
-     */
-
-    public void worldCommit(int worldIndex) {
-        throw new UnsupportedOperationException();
+    private void resizeWorlds() {
+        int newCapacity = ((worlds.length * 3) / 2);
+        OperationWorld [] tmp = new OperationWorld[newCapacity];
+        System.arraycopy(worlds, 0, tmp, 0, worlds.length);
+        worlds = tmp;
     }
 
     @Override

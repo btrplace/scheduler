@@ -23,7 +23,7 @@ import org.btrplace.scheduler.choco.extensions.env.StoredLong;
 /**
  * @author Fabien Hermenier
  */
-public class LongWorld {
+public class LongWorld implements World {
 
 
     /**
@@ -52,10 +52,7 @@ public class LongWorld {
         stampStack = new int[defaultSize];
         variableStack = new StoredLong[defaultSize];
     }
-    /**
-     * Reacts when a StoredLong is modified: push the former value & timestamp
-     * on the stacks.
-     */
+
     public void savePreviousState(StoredLong v, long oldValue, int oldStamp) {
         valueStack[now] = oldValue;
         variableStack[now] = v;
@@ -66,6 +63,7 @@ public class LongWorld {
         }
     }
 
+    @Override
     public void revert() {
         for (int i = now - 1; i >= 0; i--) {
             StoredLong v = variableStack[i];
@@ -86,6 +84,7 @@ public class LongWorld {
         stampStack = tmp3;
     }
 
+    @Override
     public int used() {
         return now;
     }

@@ -23,8 +23,7 @@ import org.btrplace.scheduler.choco.extensions.env.StoredBool;
 /**
  * @author Fabien Hermenier
  */
-public class BoolWorld {
-
+public class BoolWorld implements World{
 
     /**
      * Stack of backtrackable search variables.
@@ -43,7 +42,6 @@ public class BoolWorld {
      */
     private int[] stampStack;
 
-
     private int now;
 
     public BoolWorld(int defaultSize) {
@@ -52,6 +50,7 @@ public class BoolWorld {
         stampStack = new int[defaultSize];
         variableStack = new StoredBool[defaultSize];
     }
+
     /**
      * Reacts when a StoredBool is modified: push the former value & timestamp
      * on the stacks.
@@ -66,6 +65,7 @@ public class BoolWorld {
         }
     }
 
+    @Override
     public void revert() {
         for (int i = now - 1; i >= 0; i--) {
             StoredBool v = variableStack[i];
@@ -86,6 +86,7 @@ public class BoolWorld {
         stampStack = tmp3;
     }
 
+    @Override
     public int used() {
         return now;
     }

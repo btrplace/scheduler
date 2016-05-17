@@ -23,7 +23,7 @@ import org.btrplace.scheduler.choco.extensions.env.StoredDouble;
 /**
  * @author Fabien Hermenier
  */
-public class DoubleWorld {
+public class DoubleWorld implements World {
 
 
     /**
@@ -66,6 +66,7 @@ public class DoubleWorld {
         }
     }
 
+    @Override
     public void revert() {
         for (int i = now - 1; i >= 0; i--) {
             StoredDouble v = variableStack[i];
@@ -86,6 +87,7 @@ public class DoubleWorld {
         stampStack = tmp3;
     }
 
+    @Override
     public int used() {
         return now;
     }

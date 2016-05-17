@@ -23,7 +23,7 @@ import org.btrplace.scheduler.choco.extensions.env.StoredInt;
 /**
  * @author Fabien Hermenier
  */
-public class IntWorld {
+public class IntWorld implements World{
 
 
     /**
@@ -43,7 +43,6 @@ public class IntWorld {
      */
     private int[] stampStack;
 
-
     private int now;
 
     public IntWorld(int defaultSize) {
@@ -52,6 +51,7 @@ public class IntWorld {
         stampStack = new int[defaultSize];
         variableStack = new StoredInt[defaultSize];
     }
+
     /**
      * Reacts when a StoredInt is modified: push the former value & timestamp
      * on the stacks.
@@ -66,10 +66,10 @@ public class IntWorld {
         }
     }
 
+    @Override
     public void revert() {
         for (int i = now - 1; i >= 0; i--) {
-            StoredInt v = variableStack[i];
-            v._set(valueStack[i], stampStack[i]);
+            variableStack[i]._set(valueStack[i], stampStack[i]);
         }
     }
 
@@ -86,6 +86,10 @@ public class IntWorld {
         stampStack = tmp3;
     }
 
+    public void clear() {
+        now = 0;
+    }
+    @Override
     public int used() {
         return now;
     }

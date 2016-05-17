@@ -19,12 +19,8 @@ package org.btrplace.scheduler.choco.extensions.env;
 
 
 import org.btrplace.scheduler.choco.extensions.env.trail.*;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedBoolTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedDoubleTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedIntTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedLongTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedOperationTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatBoolTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.*;
+import org.btrplace.scheduler.choco.extensions.env.trail.flatten.*;
 import org.chocosolver.memory.*;
 import org.chocosolver.memory.structure.Operation;
 import org.chocosolver.memory.trailing.trail.IStoredBoolTrail;
@@ -57,16 +53,15 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
      * Constructs a new <code>IEnvironment</code> with
      * the default stack sizes : 50000 and 1000.
      */
-
     public MyEnvironmentTrailing() {
         super(Type.FLAT);
         System.out.println("custom trailing");
         trails = new IStorage[6];
-        intTrail = new ChunkedIntTrail(5000);
+        intTrail = new ChunkedIntTrail(1024);
         boolTrail = new FlatBoolTrail(5000, 100);
-        longTrail = new ChunkedLongTrail(5000);
-        doubleTrail = new ChunkedDoubleTrail();
-        operationTrail = new ChunkedOperationTrail();
+        longTrail = new FlatLongTrail(5000, 100);//new ChunkedLongTrail(1024);
+        doubleTrail = new FlatDoubleTrail(5000, 100);
+        operationTrail = new FlatOperationTrail(5000, 100);
         intVectorTrail = new StoredIntVectorTrail(this, 1024, 1000);
         trails[0] = intTrail;
         trails[1] = boolTrail;

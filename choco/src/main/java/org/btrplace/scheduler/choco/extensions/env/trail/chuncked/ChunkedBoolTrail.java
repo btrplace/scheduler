@@ -17,70 +17,36 @@
  */
 package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.btrplace.scheduler.choco.extensions.env.StoredBool;
 import org.btrplace.scheduler.choco.extensions.env.trail.BoolTrail;
 
 
-public class ChunkedBoolTrail implements BoolTrail {
-
-
-    private ObjectArrayList<BoolWorld> worlds;
-
-    private BoolWorld current;
+public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTrail {
 
     /**
      * Constructs a trail with predefined size.
      */
-    public ChunkedBoolTrail() {
-        worlds = new ObjectArrayList<>();
+    public ChunkedBoolTrail(int size) {
+        worlds = new BoolWorld[size];
     }
 
-
-    /**
-     * Moving up to the next world.
-     *
-     * @param worldIndex current world index
-     */
-
+    @Override
     public void worldPush(int worldIndex) {
-        int size = 1024;
-        if (current != null) {
-            size = Math.max(current.used(), size);
-        }
-        current = new BoolWorld(size);
-        worlds.push(current);
-    }
-
-
-    /**
-     * Moving down to the previous world.
-     *
-     * @param worldIndex current world index
-     */
-
-    public void worldPop(int worldIndex) {
-        current.revert();
-        worlds.pop();
-        current = null;
-        if (!worlds.isEmpty()) {
-            current = worlds.top();
+        current = new BoolWorld(preferredSize());
+        worlds[worldIndex] = current;
+        if (worldIndex == worlds.length) {
+            resizeWorlds();
         }
     }
 
-    /**
-     * Comits a world: merging it with the previous one.
-     */
-
-    public void worldCommit(int worldIndex) {
-        throw new UnsupportedOperationException();
+    private void resizeWorlds() {
+        int newCapacity = ((worlds.length * 3) / 2);
+        BoolWorld [] tmp = new BoolWorld[newCapacity];
+        System.arraycopy(worlds, 0, tmp, 0, worlds.length);
+        worlds = tmp;
     }
 
-
-    /**
-     * Reacts when a StoredInt is modified: push the former value & timestamp
-     * on the stacks.
-     */
+    @Override
     public void savePreviousState(StoredBool v, boolean oldValue, int oldStamp) {
         current.savePreviousState(v, oldValue, oldStamp);
     }

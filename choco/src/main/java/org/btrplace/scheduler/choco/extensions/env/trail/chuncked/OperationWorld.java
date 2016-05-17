@@ -23,7 +23,7 @@ import org.chocosolver.memory.structure.Operation;
 /**
  * @author Fabien Hermenier
  */
-public class OperationWorld {
+public class OperationWorld implements World {
 
 
     /**
@@ -50,6 +50,7 @@ public class OperationWorld {
         }
     }
 
+    @Override
     public void revert() {
         for (int i = now - 1; i >= 0; i--) {
             Operation o = valueStack[i];
@@ -65,6 +66,7 @@ public class OperationWorld {
         valueStack = tmp2;
     }
 
+    @Override
     public int used() {
         return now;
     }

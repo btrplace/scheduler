@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.extensions.pack;
 
 import org.chocosolver.memory.IStateBitSet;
 import org.chocosolver.memory.structure.S64BitSet;
+import org.chocosolver.solver.ICause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.util.iterators.DisposableValueIterator;
 
@@ -40,6 +41,7 @@ public class VectorPackingKPSimpleDecorator {
      */
     private VectorPackingPropagator p;
 
+    private final int CARD_DIM;
     /**
      * the list of candidate items for each bin [nbBins][]
      */
@@ -50,6 +52,7 @@ public class VectorPackingKPSimpleDecorator {
 
     public VectorPackingKPSimpleDecorator(VectorPackingPropagator p) {
         this.p = p;
+        CARD_DIM = p.loads.length - 1;
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i = 0; i < p.nbBins; i++) {
             candidate.add(new S64BitSet(p.getSolver().getEnvironment(), p.bins.length));
@@ -61,19 +64,26 @@ public class VectorPackingKPSimpleDecorator {
      * initialize the lists of candidates
      *
      */
-    protected void postInitialize() {
+    protected void postInitialize() throws ContradictionException{
+        int [] cards = new int[p.nbBins];
         for (int i = 0; i < p.bins.length; i++) {
             if (!p.bins[i].isInstantiated()) {
                 DisposableValueIterator it = p.bins[i].getValueIterator(true);
                 try {
                     while (it.hasNext()) {
-                        candidate.get(it.next()).set(i);
+                        int n = it.next();
+                        candidate.get(n).set(i);
+                        cards[n]++;
                     }
                 } finally {
                     it.dispose();
                 }
             }
         }
+        for (int n = 0; n < cards.length; n++) {
+            p.loads[CARD_DIM][n].updateUpperBound(cards[n], p);
+        }
+
     }
 
     /**
