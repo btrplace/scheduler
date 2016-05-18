@@ -21,9 +21,6 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -84,8 +81,6 @@ public class SliceBuilder {
             duration = makeDuration();
         }
 
-        Solver s = rp.getSolver();
-
         //UB for the time variables
         if (!start.isInstantiatedTo(0)) {
             //enforces start <= end, duration <= end, start + duration == end
@@ -95,18 +90,6 @@ public class SliceBuilder {
         return new Slice(vm, start, end, duration, hoster);
     }
 
-    /**
-     * Ensure the time variable t1 ticks before or at moment t2.
-     *
-     * @param s  the solver
-     * @param t1 first variable
-     * @param t2 second variable
-     */
-    private static void ticksSooner(Solver s, IntVar t1, IntVar t2) {
-        if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
-            s.post(new Arithmetic(t1, Operator.LE, t2));
-        }
-    }
 
     /**
      * Make the duration variable depending on the others.
