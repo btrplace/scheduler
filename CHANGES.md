@@ -5,15 +5,20 @@ version 0.46 - soon come
 ----------------------
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)
 
-This version provides better performance when solving large instances.
-The codebase has also been reduced significantly.
+This version improves the performance and the codebase.
+The codebase has been reduced and its quality increased.
+In terms of performance, the solver is faster at generating problems and
+solving them at large scale (see https://goo.gl/k5E0pf). The CSP is
+modeled using less constraints and variables. The solver has been tuned.  
 
 - API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
 - API change: The code to split problems and solve them in parallel moved
   to its own module named 'split'
-- API change: The JSON package has been refactored for simplifity. There
+- API change: The JSON package has been refactored for simplicity. There
   is now a single entry point for JSON (de-)serialisation with the class
   JSON.
+- the bench module has been rewritten to ease instance benching.
+  The URL https://goo.gl/k5E0pf will try to track performance gain.
 
 
 version 0.45 - 22 Apr 2016
