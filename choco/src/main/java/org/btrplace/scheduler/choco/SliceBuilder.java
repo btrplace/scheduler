@@ -90,10 +90,8 @@ public class SliceBuilder {
         if (!start.isInstantiatedTo(0)) {
             //enforces start <= end, duration <= end, start + duration == end
             new TaskMonitor(start, duration, end);
-        } else {
-            //start == 0 --> start <= end. No need to add ticksSooner
-            ticksSooner(s, duration, end);
         }
+        //start == 0 --> start <= end. duration = end enforced by TaskScheduler
         return new Slice(vm, start, end, duration, hoster);
     }
 

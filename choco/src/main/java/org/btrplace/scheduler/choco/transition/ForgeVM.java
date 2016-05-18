@@ -24,7 +24,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.SliceBuilder;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.solution.Solution;
@@ -62,10 +62,11 @@ public class ForgeVM implements VMTransition {
 
     private BoolVar state;
 
-    private Slice dSlice;
-
     private String template;
 
+    private IntVar start;
+
+    private IntVar end;
     /**
      * Make a new model.
      *
@@ -88,14 +89,12 @@ public class ForgeVM implements VMTransition {
          * We don't make any "real" d-slice cause it may impacts the TaskScheduler
          * so the hosting variable is set to -1 to be sure the VM is not hosted on a node
          */
-        dSlice = new SliceBuilder(rp, e, rp.makeVarLabel(VAR_PREFIX, "(", e, ").dSlice"))
-                .setDuration(duration)
-                .setStart(rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").start"))
-                .setEnd(rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").stop"))
-                .setHoster(-1)
-                .build();
-        s.post(IntConstraintFactory.arithm(dSlice.getDuration(), ">=", d));
-        s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", rp.getEnd()));
+
+        start = rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").start");
+        end = rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").stop");
+        new TaskMonitor(start, duration, end);
+        s.post(IntConstraintFactory.arithm(duration, ">=", d));
+        s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
     }
 
     @Override
@@ -111,12 +110,12 @@ public class ForgeVM implements VMTransition {
 
     @Override
     public IntVar getStart() {
-        return dSlice.getStart();
+        return start;
     }
 
     @Override
     public IntVar getEnd() {
-        return dSlice.getEnd();
+        return end;
     }
 
     @Override
