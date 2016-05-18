@@ -25,6 +25,7 @@ import org.btrplace.plan.event.BootNode;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.solution.Solution;
@@ -129,12 +130,12 @@ public class BootableNode implements NodeTransition {
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
         /* Ae = As + D */
         /*Task t = */
-        VariableFactory.task(start, effectiveDuration, end);
+        new TaskMonitor(start, effectiveDuration, end);
 
         /* Hs = Ae */
         hostingStart = end;
         hostingEnd = rp.makeUnboundedDuration(PREFIX, nId, ").hostingEnd");
-        s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
+        //s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*
           T = { 0, RP.end}

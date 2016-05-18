@@ -12,6 +12,7 @@ fi
 
 case $1 in
 run)
+<<<<<<< HEAD
     mvn -q -f ../ clean install -DskipTests -Dgpg.skip||exit 1
     #We run 11 times and get rid of the first run because the JIT will not be activated
     mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 11 -l src/test/resources/std-perf/std-perf.txt --repair --timeout 300 -v 1 -o ${OUTPUT}" ||exit 1
@@ -21,7 +22,7 @@ stats)
     #summary per bench
     for t in nr6 li6; do
         echo "---------- ${t} ----------"
-        DTA=`tail -n 9 ${OUTPUT}/scheduler.csv|grep ${t} |awk -F';' '{ core+=$3; spe +=$4; solve+=$5; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
+        DTA=`tail -n 10 ${OUTPUT}/scheduler.csv|grep ${t} |awk -F';' '{ core+=$3; spe +=$4; solve+=$5; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
         echo "${OUTPUT},${DTA}"
     done
     ;;

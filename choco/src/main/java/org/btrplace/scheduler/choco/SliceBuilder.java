@@ -129,7 +129,6 @@ public class SliceBuilder {
         }
         int sup = end.getUB() - start.getLB();
         IntVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
-        VF.task(start, d, end);
         return d;
     }
 

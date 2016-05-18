@@ -69,16 +69,12 @@ public class CSpread implements ChocoConstraint {
         s.post(IntConstraintFactory.alldifferent(running.toArray(new IntVar[running.size()]), "BC"));
 
         if (cstr.isContinuous()) {
-            VM[] vms = new VM[running.size()];
-            int x = 0;
-            for (VM vm : cstr.getInvolvedVMs()) {
-                vms[x++] = vm;
-            }
-            for (int i = 0; i < vms.length; i++) {
-                VM vm = vms[i];
+            List<VM> vms = new ArrayList<>(cstr.getInvolvedVMs());
+            for (int i = 0; i < vms.size(); i++) {
+                VM vm = vms.get(i);
                 VMTransition aI = rp.getVMAction(vm);
                 for (int j = 0; j < i; j++) {
-                    VM vmJ = vms[j];
+                    VM vmJ = vms.get(j);
                     VMTransition aJ = rp.getVMAction(vmJ);
                     disallowOverlap(s, aI, aJ);
                 }
