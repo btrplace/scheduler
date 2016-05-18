@@ -26,6 +26,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.FastIFFEq;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.solution.Solution;
@@ -128,7 +129,7 @@ public class ShutdownableNode implements NodeTransition {
         s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
         s.post(IntConstraintFactory.arithm(duration, "<=", rp.getEnd()));
         /* Ae = As + D */
-        VariableFactory.task(start, duration, end);
+        new TaskMonitor(start, duration, end);
 
 
         //The node is already online, so it can host VMs at the beginning of the RP

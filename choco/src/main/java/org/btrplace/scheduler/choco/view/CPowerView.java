@@ -24,12 +24,12 @@ import org.btrplace.model.Node;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 
 /**
  * A solver-side view to store variables that
@@ -59,12 +59,12 @@ public class CPowerView implements ChocoView {
             if (na instanceof ShutdownableNode) {
                 powerStarts.put(rp.getNode(n), rp.getStart());
                 IntVar powerEnd = rp.makeUnboundedDuration("NodeActionType(", n, ").Pe");
-                VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
+                new TaskMonitor(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
                 rp.getSolver().post(ICF.arithm(powerEnd,"<=",rp.getEnd()));
             } else if (na instanceof BootableNode) {
                 powerStarts.put(rp.getNode(n), na.getStart());
-                powerEnds.put(rp.getNode(n), /*na.getHostingEnd()*/rp.getEnd());
+                powerEnds.put(rp.getNode(n), rp.getEnd());
             }
         }
         return true;
