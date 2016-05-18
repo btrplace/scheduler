@@ -26,7 +26,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
@@ -82,7 +81,6 @@ public class SuspendVM implements VMTransition {
                 .build();
         start = VariableFactory.offset(cSlice.getEnd(), -d);
         state = VariableFactory.zero(rp.getSolver());
-        rp.getSolver().post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
     }
 
     @Override
