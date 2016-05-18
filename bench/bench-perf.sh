@@ -12,7 +12,6 @@ fi
 
 case $1 in
 run)
-<<<<<<< HEAD
     mvn -q -f ../ clean install -DskipTests -Dgpg.skip||exit 1
     #We run 11 times and get rid of the first run because the JIT will not be activated
     mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 11 -l src/test/resources/std-perf/std-perf.txt --repair --timeout 300 -v 1 -o ${OUTPUT}" ||exit 1
