@@ -54,7 +54,7 @@ public class SleepingConverter implements ConstraintConverter<Sleeping> {
     public JSONObject toJSON(Sleeping o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", JSONs.toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.elementToJSON(o.getInvolvedVMs().iterator().next()));
         c.put("continuous", o.isContinuous());
         return c;
     }

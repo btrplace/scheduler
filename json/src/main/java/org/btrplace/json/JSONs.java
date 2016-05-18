@@ -319,7 +319,7 @@ public class JSONs {
      * @param e the element
      * @return its identifier
      */
-    public static Integer toJSON(Element e) {
+    public static Integer elementToJSON(Element e) {
         return e.id();
     }
 }

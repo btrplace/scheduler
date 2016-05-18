@@ -55,7 +55,7 @@ public class OnlineConverter implements ConstraintConverter<Online> {
     public JSONObject toJSON(Online o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("node", JSONs.toJSON(o.getInvolvedNodes().iterator().next()));
+        c.put("node", JSONs.elementToJSON(o.getInvolvedNodes().iterator().next()));
         c.put("continuous", o.isContinuous());
         return c;
     }
