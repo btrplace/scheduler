@@ -136,7 +136,7 @@ public class ShutdownableNode implements NodeTransition {
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeUnboundedDuration(PREFIX, e, ").hostingEnd");
-        s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
+        //s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*
           T = { As, RP.end}

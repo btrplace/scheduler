@@ -135,7 +135,7 @@ public class BootableNode implements NodeTransition {
         /* Hs = Ae */
         hostingStart = end;
         hostingEnd = rp.makeUnboundedDuration(PREFIX, nId, ").hostingEnd");
-        s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
+        //s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*
           T = { 0, RP.end}
