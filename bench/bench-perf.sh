@@ -4,7 +4,7 @@
 
 #The run command runs the benchmark and store the resulting numbers
 #The stats command computes the average numbers
-export MAVEN_OPTS="-Xmx6G -Xms6G"
+export MAVEN_OPTS="-Xmx4G -Xms4G"
 OUTPUT=`git rev-parse --short HEAD`
 if [ $# -eq 2 ]; then
     OUTPUT=$2
@@ -13,14 +13,14 @@ fi
 case $1 in
 run)
     mvn -f ../ install -DskipTests -Dgpg.skip||exit 1
-    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 10 -l src/test/resources/std-perf/std-perf.txt -v 1 --repair --timeout 300 -o ${OUTPUT}" ||exit 1
+    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 11 -l src/test/resources/std-perf/std-perf.txt -v 1 --repair --timeout 300 -o ${OUTPUT}" ||exit 1
     echo "Statistics available in ${OUTPUT}. Run '$0 stats ${OUTPUT}' to generate them"
     ;;
 stats)
     #summary per bench
     for t in nr6 li6; do
         echo "---------- ${t} ----------"
-        DTA=`grep ${t} ${OUTPUT}/scheduler.csv| awk -F';' '{ core+=$3; spe +=$4; solve+=$5; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
+        DTA=`tail -n 10 ${OUTPUT}/scheduler.csv|grep ${t} |awk -F';' '{ core+=$3; spe +=$4; solve+=$5; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
         echo "${OUTPUT},${DTA}"
     done
     ;;
