@@ -47,7 +47,7 @@ public class LocalTaskScheduler {
     private BitSet out;
 
     //The indexes of the slices that will leave me
-    int[] outIdx;
+    private int[] outIdx;
     /**
      * The moment the consuming slices ends. Same order as the hosting variables.
      */
