@@ -135,4 +135,20 @@ public class CSpreadTest {
         Mapping res = p.getResult().getMapping();
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }
+
+    @Test
+    public void testIssue48() {
+        Model mo = new DefaultModel();
+        VM v1 = mo.newVM();
+        VM v2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().on(n1, n2)
+                .ready(v1)
+                .run(n1, v2);
+
+        Spread s = new Spread(mo.getMapping().getAllVMs(), true);
+        ChocoScheduler sched = new DefaultChocoScheduler();
+        Assert.assertNotNull(sched.solve(mo, Arrays.asList(s)));
+    }
 }
