@@ -32,7 +32,7 @@ public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTra
 
     @Override
     public void worldPush(int worldIndex) {
-        current = new BoolWorld(preferredSize());
+        current = new BoolWorld(DEFAULT_SIZE);
         worlds[worldIndex] = current;
         if (worldIndex == worlds.length) {
             resizeWorlds();

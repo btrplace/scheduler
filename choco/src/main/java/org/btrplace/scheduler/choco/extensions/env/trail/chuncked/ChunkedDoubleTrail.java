@@ -34,7 +34,7 @@ public class ChunkedDoubleTrail extends ChunkedTrail<DoubleWorld> implements Dou
 
     @Override
     public void worldPush(int worldIndex) {
-        current = new DoubleWorld(preferredSize());
+        current = new DoubleWorld(DEFAULT_SIZE);
         worlds[worldIndex] = current;
         if (worldIndex == worlds.length) {
             resizeWorlds();

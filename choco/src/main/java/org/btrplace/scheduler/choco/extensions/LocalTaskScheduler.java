@@ -142,7 +142,7 @@ public class LocalTaskScheduler {
             profilesMin[d] = new TIntIntHashMap();
         }
 
-        int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
+        int lastInf = outIdx.length == 0 ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
         for (int ct : outIdx) {
@@ -181,7 +181,7 @@ public class LocalTaskScheduler {
 
 
     public void propagate(BitSet watchHosts) throws ContradictionException {
-        if (vIn.size() == 0 && out.length() == 0) {
+        if (vIn.size() == 0 && outIdx.length == 0) {
             return;
         }
 

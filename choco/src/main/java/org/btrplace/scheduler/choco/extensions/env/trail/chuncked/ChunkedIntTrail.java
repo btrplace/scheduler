@@ -32,13 +32,13 @@ public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail 
 
     @Override
     public void worldPush(int worldIndex) {
-        //if (worlds[worldIndex] == null) {
-            current = new IntWorld(preferredSize());
+        if (worlds[worldIndex] == null) {
+            current = new IntWorld(DEFAULT_SIZE);
             worlds[worldIndex] = current;
-        /*} else {
+        } else {
             current = worlds[worldIndex];
             current.clear();
-        }*/
+        }
         if (worldIndex == worlds.length - 1) {
             resizeWorlds();
         }

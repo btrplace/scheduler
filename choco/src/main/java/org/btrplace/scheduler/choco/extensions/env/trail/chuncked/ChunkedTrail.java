@@ -27,19 +27,7 @@ public abstract class ChunkedTrail<W extends World> {
 
     protected W current;
 
-    private int defaultSize = 1024;
-
-    public int preferredSize() {
-        int size = defaultSize;
-        if (current != null) {
-            size = Math.max(current.used(), size);
-        }
-        return size;
-    }
-
-    public void setDefaultWorldSize(int s) {
-        defaultSize = s;
-    }
+    public static final int DEFAULT_SIZE = 1024;
 
     /**
      * Moving down to the previous world.

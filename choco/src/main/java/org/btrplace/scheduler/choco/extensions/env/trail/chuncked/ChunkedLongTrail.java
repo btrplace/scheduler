@@ -33,7 +33,7 @@ public class ChunkedLongTrail extends ChunkedTrail<LongWorld> implements LongTra
 
     @Override
     public void worldPush(int worldIndex) {
-        current = new LongWorld(preferredSize());
+        current = new LongWorld(DEFAULT_SIZE);
         worlds[worldIndex] = current;
         if (worldIndex == worlds.length - 1) {
             resizeWorlds();

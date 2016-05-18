@@ -59,7 +59,7 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
         trails = new IStorage[6];
         intTrail = new ChunkedIntTrail(1024);
         boolTrail = new FlatBoolTrail(5000, 100);
-        longTrail = new FlatLongTrail(5000, 100);//new ChunkedLongTrail(1024);
+        longTrail = new ChunkedLongTrail(1024);//new ChunkedLongTrail(1024);
         doubleTrail = new FlatDoubleTrail(5000, 100);
         operationTrail = new FlatOperationTrail(5000, 100);
         intVectorTrail = new StoredIntVectorTrail(this, 1024, 1000);

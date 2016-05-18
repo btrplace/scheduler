@@ -61,6 +61,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * The constant size of each item. [nbDims][nbItems]
      */
     protected final int[][] iSizes;
+    protected  int[][] negISizes;
+
     /**
      * The load of each bin per dimension. [nbDims][nbBins]
      */
@@ -125,6 +127,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         this.nbDims = l.length;
         this.bins = b;
         this.iSizes = s;
+        negISizes = new int[iSizes.length][iSizes[0].length];
+        for (int d = 0; d < iSizes.length; d++) {
+            for (int i = 0; i < iSizes[d].length; i++) {
+                negISizes[d][i] =  -iSizes[d][i];
+            }
+        }
         this.remProc = new RemProc(this);
         this.deltaMonitor = new IIntDeltaMonitor[b.length];
         for (int i = 0; i < deltaMonitor.length; i++) {
@@ -323,9 +331,10 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     }
 
     private void updateLoads(int item, int bin) throws ContradictionException {
-        for (int d = 0; d < nbDims; d++) {
-            //System.out.println(d + " " + -1 * iSizes[d][item]);
-            filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
+        int d = 0;
+        for (; d < nbDims; d++) {
+            //filterLoadSup(d, bin, potentialLoad[d][bin].add(-iSizes[d][item]));
+            filterLoadSup(d, bin, potentialLoad[d][bin].add(negISizes[d][item]));
         }
     }
 
