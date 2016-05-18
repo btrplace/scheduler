@@ -126,8 +126,8 @@ public class ShutdownableNode implements NodeTransition {
 
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
 
-        s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
-        s.post(IntConstraintFactory.arithm(duration, "<=", rp.getEnd()));
+        //s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
+        //s.post(IntConstraintFactory.arithm(duration, "<=", rp.getEnd()));
         /* Ae = As + D */
         new TaskMonitor(start, duration, end);
 
