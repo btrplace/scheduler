@@ -109,8 +109,7 @@ public class SliceBuilder {
             inf = 0;
         }
         int sup = end.getUB() - start.getLB();
-        IntVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
-        return d;
+        return rp.makeDuration(sup, inf, lblPrefix, "_duration");
     }
 
     /**

@@ -109,10 +109,6 @@ public class CSync implements ChocoConstraint {
                             vm = vm1;
                         }
 
-                        // Log an error and return false instead of throwing an exception
-                        /*throw new SchedulerException(mo, "The 'Sync' constraint must know the destination " +
-                                "node of the " + vm.getVM().toString() + " migration, see the 'Fence' constraint " +
-                                "to manually set the destination node.");*/
                         rp.getLogger().error("The 'Sync' constraint must know the destination " +
                                 "node of the " + vm.getVM().toString() + " migration, see the 'Fence' constraint " +
                                 "to manually set the destination node.");
@@ -150,7 +146,6 @@ public class CSync implements ChocoConstraint {
                     IntVar firstMigSync = vm1.usesPostCopy() ? vm1.getStart() : vm1.getEnd();
                     IntVar secondMigSync = vm2.usesPostCopy() ? vm2.getStart() : vm2.getEnd();
 
-                    //LCF.ifThen(LCF.and(moveFirst, moveSecond),
                     s.post(ICF.arithm(firstMigSync, "=", secondMigSync));
                 }
             }

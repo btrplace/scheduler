@@ -145,7 +145,6 @@ public class RelocatableVM implements KeepRunningVM {
         DurationEvaluators dev = rp.getDurationEvaluators();
         int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);
         int bootDuration = dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.BootVM.class, vm);
-        //int shutdownDuration = dev.evaluate(rp.getSourceModel(), org.btrplace.plan.event.ShutdownVM.class, vm);
         int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, vm);
 
         // Compute the re-instantiation duration
@@ -198,7 +197,6 @@ public class RelocatableVM implements KeepRunningVM {
 
             // Be sure that doReinstantiation will be instantiated
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
-            //s.post(ICF.arithm(doReinstantiation, "=", 0));
         }
         // The VM either migrate or stay but won't be re-instantiated for sure
         else {
@@ -237,7 +235,6 @@ public class RelocatableVM implements KeepRunningVM {
         DurationEvaluators dev = rp.getDurationEvaluators();
         // Only if the VM doesn't stay
         if (!s.getIntVal(cSlice.getHoster()).equals(s.getIntVal(dSlice.getHoster()))) {
-            assert s.getIntVal(stay) == 0;
             Action a;
             Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
             // Migration
@@ -251,8 +248,7 @@ public class RelocatableVM implements KeepRunningVM {
                 else {
                     a = new MigrateVM(vm, src, dst, st, ed);
                 }
-                boolean b = plan.add(a);
-                assert b;
+                plan.add(a);
             // Re-instantiation
             } else {
                     VM newVM = rp.cloneVM(vm);
@@ -267,8 +263,7 @@ public class RelocatableVM implements KeepRunningVM {
                             s.getIntVal(dSlice.getStart())
                     );
                     //forge the new VM from a template
-                    boolean b = plan.add(fvm);
-                    assert b;
+                plan.add(fvm);
                     //Boot the new VM
                     int endForging = fvm.getEnd();
                     org.btrplace.plan.event.BootVM boot = new org.btrplace.plan.event.BootVM(

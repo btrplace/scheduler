@@ -331,17 +331,23 @@ public class Network implements ModelView {
             for (Node n : nodes) {
                 dot.append("node").
                         append(String.valueOf(n.id())).
-                        append(" [shape=box, color=green, label=\"").
-                        append((nsNodes == null) ? "Node " + String.valueOf(n.id()) : nsNodes.resolve(n)).
-                        append("\"];\n");
+                        append(" [shape=box, color=green, label=\"");
+                if (nsNodes == null) {
+                    dot.append("Node ").append(String.valueOf(n.id()));
+                } else {
+                    dot.append(nsNodes.resolve(n));
+                }
+                dot.append("\"];\n");
             }
             // Draw switches
             for (Switch s : switches) {
                 dot.append("switch").
                         append(String.valueOf(s.id())).
                         append(" [shape=circle, color=blue, label=\"").
-                        append("Switch " + String.valueOf(s.id())).
-                        append((s.getCapacity() > 0) ? "\\n[" + bitsToString(s.getCapacity()) + "/s" + "]" : "");
+                        append("Switch ").append(String.valueOf(s.id()));
+                if (s.getCapacity() > 0) {
+                    dot.append("\\n[").append(bitsToString(s.getCapacity())).append("/s]");
+                }
                 dot.append("\"];\n");
             }
             // Draw links
