@@ -70,12 +70,10 @@ public class ModelViewsConverter {
      * Register a converter for a specific view.
      *
      * @param c the converter to register
-     * @return the container that was previously registered for a view. {@code null} if there was
-     * no registered converter
      */
-    public ModelViewConverter<? extends ModelView> register(ModelViewConverter<? extends ModelView> c) {
+    public void register(ModelViewConverter<? extends ModelView> c) {
         java2json.put(c.getSupportedView(), c);
-        return json2java.put(c.getJSONId(), c);
+        json2java.put(c.getJSONId(), c);
 
     }
 

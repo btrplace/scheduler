@@ -252,8 +252,6 @@ public class IssuesTest {
         System.err.flush();
         CMinMTTR obj = new CMinMTTR();
         obj.inject(new DefaultParameters(), rp);
-        //System.err.println(solver.toString());
-        //ChocoLogging.setLoggingMaxDepth(100);
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
         System.out.println(plan);

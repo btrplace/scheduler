@@ -393,7 +393,7 @@ public class RelocatableVMTest {
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getRelocationMethod().instantiateTo(0, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(new DefaultParameters(), rp);
+        new CMinMTTR(null).inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);

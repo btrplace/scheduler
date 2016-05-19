@@ -95,7 +95,7 @@ public class ConstraintsConverterTest {
     @Test
     public void testRegister() {
         ConstraintsConverter c = new ConstraintsConverter();
-        Assert.assertNull(c.register(new MockConstraintConverter()));
+        c.register(new MockConstraintConverter());
         Assert.assertTrue(c.getSupportedJavaConstraints().contains(MockSatConstraint.class));
         Assert.assertTrue(c.getSupportedJSONConstraints().contains("mock"));
     }
@@ -103,7 +103,7 @@ public class ConstraintsConverterTest {
     @Test(dependsOnMethods = {"testRegister"})
     public void testWithExistingConverter() throws JSONConverterException {
         ConstraintsConverter c = new ConstraintsConverter();
-        Assert.assertNull(c.register(new MockConstraintConverter()));
+        c.register(new MockConstraintConverter());
         MockSatConstraint m = new MockSatConstraint("bar");
         JSONObject o = c.toJSON(m);
         MockSatConstraint m2 = (MockSatConstraint) c.fromJSON(null, o);
@@ -131,7 +131,7 @@ public class ConstraintsConverterTest {
         JSONObject ob = new JSONObject();
         ob.put("value", "val");
         ConstraintsConverter c = new ConstraintsConverter();
-        Assert.assertNull(c.register(new MockConstraintConverter()));
+        c.register(new MockConstraintConverter());
         c.fromJSON(null, ob);
     }
 }
