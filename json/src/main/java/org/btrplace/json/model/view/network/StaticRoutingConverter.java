@@ -117,7 +117,8 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
             JSONObject ao = new JSONObject();
             ao.put("nodes_map", nodesMapToJSON(nm));
             JSONArray links = new JSONArray();
-            for (Link l : routes.get(nm).keySet()) {
+            for (Map.Entry<Link, Boolean> e : routes.get(nm).entrySet()) {
+                Link l = e.getKey();
                 JSONObject lo = new JSONObject();
                 lo.put("link", l.id());
                 lo.put("direction", routes.get(nm).get(l).toString());
