@@ -63,9 +63,7 @@ public class Bench {
     private static int makeApp(Instance i, int remainder, List<Collection<Node>> edges) {
 
         int curMax = Math.min(remainder, 30);
-        if (remainder <= 30) {
-            curMax = remainder;
-        } else if (remainder - 30 < 6) {
+        if (remainder - 30 < 6) {
             curMax = remainder / 2;
         } else {
             curMax = Math.min(curMax, rnd.nextInt(30 - 6) + 6);
@@ -92,15 +90,9 @@ public class Bench {
         int myEdge = rnd.nextInt(edges.size());
         Collection<Node> nodes = edges.get(myEdge);
         Node n = nodes.iterator().next();
-        for (VM v : t1) {
-            mo.getMapping().addRunningVM(v, n);
-        }
-        for (VM v : t2) {
-            mo.getMapping().addRunningVM(v, n);
-        }
-        for (VM v : t3) {
-            mo.getMapping().addRunningVM(v, n);
-        }
+        t1.stream().map(v -> mo.getMapping().addRunningVM(v, n));
+        t2.stream().map(v -> mo.getMapping().addRunningVM(v, n));
+        t3.stream().map(v -> mo.getMapping().addRunningVM(v, n));
 
         return nbVMs;
     }
