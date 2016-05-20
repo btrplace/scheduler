@@ -85,7 +85,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     public JSONObject toJSON(Network net) throws JSONConverterException {
         JSONObject container = new JSONObject();
         container.put("id", getJSONId());
-        container.put(SWITCH_LABEL, switchesToJSON(net.getSwitches()));
+        container.put("switches", switchesToJSON(net.getSwitches()));
         container.put("links", linksToJSON(net.getLinks()));
         container.put("routing", routingToJSON(net.getRouting()));
         
@@ -105,7 +105,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
 
         Network net = new Network();
 
-        switchesFromJSON(net, (JSONArray) o.get(SWITCH_LABEL));
+        switchesFromJSON(net, (JSONArray) o.get("switches"));
         linksFromJSON(mo, net, (JSONArray) o.get("links"));
 
         mo.attach(net);
@@ -236,7 +236,6 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      * Convert a JSON array of switches to a Java List of switches.
      * @param net the network to populate
      * @param a the json array
-
      */
     public void switchesFromJSON(Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {
