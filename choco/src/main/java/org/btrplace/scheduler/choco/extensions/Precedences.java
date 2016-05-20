@@ -213,6 +213,7 @@ public class Precedences extends Constraint {
                         }
                         start.updateLowerBound(min, this);
                     }
+                    break;
             }
         }
 
