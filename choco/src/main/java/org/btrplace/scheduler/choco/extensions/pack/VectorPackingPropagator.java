@@ -532,46 +532,47 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
 
         for (int d = 0; d < nbDims; d++) {
-            int sli = 0;
-            int sls = 0;
-            for (int b = 0; b < rs[d].length; b++) {
-                if (rs[d][b] != assignedLoad[d][b].get()) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
-                    check = false;
-                }
-                if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
-                    check = false;
-                }
-                if (loads[d][b].getLB() < rs[d][b]) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
-                    check = false;
-                }
-                if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
-                    check = false;
-                }
-                sli += loads[d][b].getLB();
-                sls += loads[d][b].getUB();
+            check = check && checkDimension(d, rs, cs);
+        }
+        if (!check) {
+            for (IntVar v : bins) {
+                System.err.println(v.toString());
             }
-            if (this.sumLoadInf[d].get() != sli) {
-                System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+        }
+        return check;
+    }
+
+    private boolean checkDimension(int d, int[][] rs, int[][] cs) {
+        boolean check = true;
+        int sli = 0;
+        int sls = 0;
+        for (int b = 0; b < rs[d].length; b++) {
+            if (rs[d][b] != assignedLoad[d][b].get()) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                 check = false;
             }
-            if (this.sumLoadSup[d].get() != sls) {
-                System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+            if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
                 check = false;
             }
-            if (!check) {
-                for (int b = 0; b < rs[d].length; b++) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " (" + rs[d][b] + ") potential=" + potentialLoad[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
-                }
-                System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
-                System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
-                for (IntVar v : bins) {
-                    System.err.println(v.toString());
-                }
+            if (loads[d][b].getLB() < rs[d][b]) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
+                check = false;
             }
+            if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                check = false;
+            }
+            sli += loads[d][b].getLB();
+            sls += loads[d][b].getUB();
+        }
+        if (this.sumLoadInf[d].get() != sli) {
+            System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+            check = false;
+        }
+        if (this.sumLoadSup[d].get() != sls) {
+            System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+            check = false;
         }
         return check;
     }
