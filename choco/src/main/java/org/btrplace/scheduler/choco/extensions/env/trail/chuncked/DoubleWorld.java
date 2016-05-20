@@ -46,17 +46,22 @@ public class DoubleWorld implements World {
 
     private int now;
 
+    private int defaultSize;
+
     public DoubleWorld(int defaultSize) {
         now = 0;
-        valueStack = new double[defaultSize];
-        stampStack = new int[defaultSize];
-        variableStack = new StoredDouble[defaultSize];
+        this.defaultSize = defaultSize;
     }
     /**
-     * Reacts when a Storeddouble is modified: push the former value & timestamp
+     * Reacts when a StoredDouble is modified: push the former value & timestamp
      * on the stacks.
      */
     public void savePreviousState(StoredDouble v, double oldValue, int oldStamp) {
+        if (stampStack == null) {
+            valueStack = new double[defaultSize];
+            stampStack = new int[defaultSize];
+            variableStack = new StoredDouble[defaultSize];
+        }
         valueStack[now] = oldValue;
         variableStack[now] = v;
         stampStack[now] = oldStamp;
@@ -75,14 +80,14 @@ public class DoubleWorld implements World {
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((variableStack.length * 3) / 2);
-        final StoredDouble[] tmp1 = new StoredDouble[newCapacity];
+        int newCapacity = ((variableStack.length * 3) / 2);
+        StoredDouble[] tmp1 = new StoredDouble[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
-        final double[] tmp2 = new double[newCapacity];
+        double[] tmp2 = new double[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
-        final int[] tmp3 = new int[newCapacity];
+        int[] tmp3 = new int[newCapacity];
         System.arraycopy(stampStack, 0, tmp3, 0, stampStack.length);
         stampStack = tmp3;
     }
@@ -90,5 +95,9 @@ public class DoubleWorld implements World {
     @Override
     public int used() {
         return now;
+    }
+
+    public void clear() {
+        now = 0;
     }
 }

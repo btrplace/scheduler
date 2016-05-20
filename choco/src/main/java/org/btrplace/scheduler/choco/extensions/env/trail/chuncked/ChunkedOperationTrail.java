@@ -36,9 +36,14 @@ public class ChunkedOperationTrail extends ChunkedTrail<OperationWorld> implemen
 
     @Override
     public void worldPush(int worldIndex) {
-        current = new OperationWorld(DEFAULT_SIZE);
-        worlds[worldIndex] = current;
-        if (worldIndex == worlds.length) {
+        if (worlds[worldIndex] == null) {
+            current = new OperationWorld(DEFAULT_SIZE);
+            worlds[worldIndex] = current;
+        } else {
+            current = worlds[worldIndex];
+            current.clear();
+        }
+        if (worldIndex == worlds.length - 1) {
             resizeWorlds();
         }
     }

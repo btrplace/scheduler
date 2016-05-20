@@ -57,7 +57,13 @@ public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail 
     }
 
     @Override
-    public void buildFakeHistory(StoredInt v, int initValue, int fromStamp) {
-        throw new UnsupportedOperationException();
+    public void buildFakeHistory(StoredInt v, int initValue, int olderStamp) {
+        // first save the current state on the top of the stack
+        savePreviousState(v, initValue, olderStamp - 1);
+        //then rewrite other states
+        for (int w = olderStamp; w > 1; w--) {
+            IntWorld cur = worlds[olderStamp];
+            cur.savePreviousState(v, initValue, w - 1);
+        }
     }
 }

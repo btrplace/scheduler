@@ -46,14 +46,19 @@ public class LongWorld implements World {
 
     private int now;
 
+    private int defaultSize;
+
     public LongWorld(int defaultSize) {
         now = 0;
-        valueStack = new long[defaultSize];
-        stampStack = new int[defaultSize];
-        variableStack = new StoredLong[defaultSize];
+        this.defaultSize = defaultSize;
     }
 
     public void savePreviousState(StoredLong v, long oldValue, int oldStamp) {
+        if (stampStack == null) {
+            valueStack = new long[defaultSize];
+            stampStack = new int[defaultSize];
+            variableStack = new StoredLong[defaultSize];
+        }
         valueStack[now] = oldValue;
         variableStack[now] = v;
         stampStack[now] = oldStamp;
@@ -72,16 +77,20 @@ public class LongWorld implements World {
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((variableStack.length * 3) / 2);
-        final StoredLong[] tmp1 = new StoredLong[newCapacity];
+        int newCapacity = ((variableStack.length * 3) / 2);
+        StoredLong[] tmp1 = new StoredLong[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
-        final long[] tmp2 = new long[newCapacity];
+        long[] tmp2 = new long[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
-        final int[] tmp3 = new int[newCapacity];
+        int[] tmp3 = new int[newCapacity];
         System.arraycopy(stampStack, 0, tmp3, 0, stampStack.length);
         stampStack = tmp3;
+    }
+
+    public void clear() {
+        now = 0;
     }
 
     @Override

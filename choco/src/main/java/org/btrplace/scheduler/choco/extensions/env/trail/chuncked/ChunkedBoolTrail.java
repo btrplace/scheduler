@@ -32,9 +32,14 @@ public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTra
 
     @Override
     public void worldPush(int worldIndex) {
-        current = new BoolWorld(DEFAULT_SIZE);
-        worlds[worldIndex] = current;
-        if (worldIndex == worlds.length) {
+        if (worlds[worldIndex] == null) {
+            current = new BoolWorld(DEFAULT_SIZE);
+            worlds[worldIndex] = current;
+        } else {
+            current = worlds[worldIndex];
+            current.clear();
+        }
+        if (worldIndex == worlds.length - 1) {
             resizeWorlds();
         }
     }
@@ -53,6 +58,12 @@ public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTra
 
     @Override
     public void buildFakeHistory(StoredBool v, boolean initValue, int olderStamp) {
-        throw new UnsupportedOperationException();
+        // first save the current state on the top of the stack
+        savePreviousState(v, initValue, olderStamp - 1);
+        //then rewrite other states
+        for (int w = olderStamp; w > 1; w--) {
+            BoolWorld cur = worlds[olderStamp];
+            cur.savePreviousState(v, initValue, w - 1);
+        }
     }
 }

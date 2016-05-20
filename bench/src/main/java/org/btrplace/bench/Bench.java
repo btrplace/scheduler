@@ -108,8 +108,6 @@ public class Bench {
                 stats = null;
             }
             s = null;
-            System.gc();
-            System.gc();
         }
 
     }

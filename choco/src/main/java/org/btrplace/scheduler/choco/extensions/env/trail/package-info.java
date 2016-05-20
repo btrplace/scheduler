@@ -16,16 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
-
 /**
- * @author Fabien Hermenier
+ * Abstract trails for the trailing environment.
  */
-public interface World {
-
-    int used();
-
-    void revert();
-
-    void clear();
-}
+package org.btrplace.scheduler.choco.extensions.env.trail;

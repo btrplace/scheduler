@@ -16,16 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
-
 /**
- * @author Fabien Hermenier
+ * Flat trails. Similar to the Choco 3.3.3 implementation but that have to match
+ * our interface.
  */
-public interface World {
-
-    int used();
-
-    void revert();
-
-    void clear();
-}
+package org.btrplace.scheduler.choco.extensions.env.trail.flatten;

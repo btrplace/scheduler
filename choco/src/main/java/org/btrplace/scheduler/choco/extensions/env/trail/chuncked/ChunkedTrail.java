@@ -38,6 +38,9 @@ public abstract class ChunkedTrail<W extends World> {
         current.revert();
         current = null;
         if (worldIndex >= 2) {
+            if (worlds == null) {
+                System.err.println("hop");
+            }
             current = worlds[worldIndex - 1];
         }
     }

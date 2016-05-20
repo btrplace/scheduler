@@ -16,16 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
-
 /**
- * @author Fabien Hermenier
+ * An alternative environment derived from the trailing one of Choco
+ * but with a more powerful implementation of the chunked version.
  */
-public interface World {
-
-    int used();
-
-    void revert();
-
-    void clear();
-}
+package org.btrplace.scheduler.choco.extensions.env;

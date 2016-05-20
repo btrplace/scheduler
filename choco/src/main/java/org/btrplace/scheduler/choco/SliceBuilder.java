@@ -90,7 +90,6 @@ public class SliceBuilder {
         return new Slice(vm, start, end, duration, hoster);
     }
 
-
     /**
      * Make the duration variable depending on the others.
      */

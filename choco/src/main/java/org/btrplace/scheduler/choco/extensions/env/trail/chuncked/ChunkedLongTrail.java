@@ -33,8 +33,13 @@ public class ChunkedLongTrail extends ChunkedTrail<LongWorld> implements LongTra
 
     @Override
     public void worldPush(int worldIndex) {
-        current = new LongWorld(DEFAULT_SIZE);
-        worlds[worldIndex] = current;
+        if (worlds[worldIndex] == null) {
+            current = new LongWorld(DEFAULT_SIZE);
+            worlds[worldIndex] = current;
+        } else {
+            current = worlds[worldIndex];
+            current.clear();
+        }
         if (worldIndex == worlds.length - 1) {
             resizeWorlds();
         }
@@ -55,6 +60,12 @@ public class ChunkedLongTrail extends ChunkedTrail<LongWorld> implements LongTra
 
     @Override
     public void buildFakeHistory(StoredLong v, long initValue, int olderStamp) {
-        throw new UnsupportedOperationException();
+        // first save the current state on the top of the stack
+        savePreviousState(v, initValue, olderStamp - 1);
+        //then rewrite other states
+        for (int w = olderStamp; w > 1; w--) {
+            LongWorld cur = worlds[olderStamp];
+            cur.savePreviousState(v, initValue, w - 1);
+        }
     }
 }

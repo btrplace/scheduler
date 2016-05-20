@@ -44,18 +44,26 @@ public class BoolWorld implements World{
 
     private int now;
 
+    private int defaultSize;
+
     public BoolWorld(int defaultSize) {
         now = 0;
-        valueStack = new boolean[defaultSize];
-        stampStack = new int[defaultSize];
-        variableStack = new StoredBool[defaultSize];
+        this.defaultSize = defaultSize;
     }
 
+    public void clear() {
+        now = 0;
+    }
     /**
      * Reacts when a StoredBool is modified: push the former value & timestamp
      * on the stacks.
      */
     public void savePreviousState(StoredBool v, boolean oldValue, int oldStamp) {
+        if (stampStack == null) {
+            valueStack = new boolean[defaultSize];
+            stampStack = new int[defaultSize];
+            variableStack = new StoredBool[defaultSize];
+        }
         valueStack[now] = oldValue;
         variableStack[now] = v;
         stampStack[now] = oldStamp;
@@ -74,14 +82,14 @@ public class BoolWorld implements World{
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((variableStack.length * 3) / 2);
-        final StoredBool[] tmp1 = new StoredBool[newCapacity];
+        int newCapacity = ((variableStack.length * 3) / 2);
+        StoredBool[] tmp1 = new StoredBool[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
-        final boolean[] tmp2 = new boolean[newCapacity];
+        boolean[] tmp2 = new boolean[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
-        final int[] tmp3 = new int[newCapacity];
+        int[] tmp3 = new int[newCapacity];
         System.arraycopy(stampStack, 0, tmp3, 0, stampStack.length);
         stampStack = tmp3;
     }

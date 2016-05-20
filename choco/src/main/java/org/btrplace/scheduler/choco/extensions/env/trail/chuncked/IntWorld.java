@@ -45,11 +45,10 @@ public class IntWorld implements World{
 
     private int now;
 
+    private int defaultSize;
     public IntWorld(int defaultSize) {
         now = 0;
-        valueStack = new int[defaultSize];
-        stampStack = new int[defaultSize];
-        variableStack = new StoredInt[defaultSize];
+        this.defaultSize = defaultSize;
     }
 
     /**
@@ -57,6 +56,11 @@ public class IntWorld implements World{
      * on the stacks.
      */
     public void savePreviousState(StoredInt v, int oldValue, int oldStamp) {
+        if (stampStack == null) {
+            valueStack = new int[defaultSize];
+            stampStack = new int[defaultSize];
+            variableStack = new StoredInt[defaultSize];
+        }
         valueStack[now] = oldValue;
         variableStack[now] = v;
         stampStack[now] = oldStamp;
@@ -74,14 +78,14 @@ public class IntWorld implements World{
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((variableStack.length * 3) / 2);
-        final StoredInt[] tmp1 = new StoredInt[newCapacity];
+        int newCapacity = ((variableStack.length * 3) / 2);
+        StoredInt[] tmp1 = new StoredInt[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
-        final int[] tmp2 = new int[newCapacity];
+        int[] tmp2 = new int[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
-        final int[] tmp3 = new int[newCapacity];
+        int[] tmp3 = new int[newCapacity];
         System.arraycopy(stampStack, 0, tmp3, 0, stampStack.length);
         stampStack = tmp3;
     }

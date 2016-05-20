@@ -70,4 +70,8 @@ public class OperationWorld implements World {
     public int used() {
         return now;
     }
+
+    public void clear() {
+        now = 0;
+    }
 }
