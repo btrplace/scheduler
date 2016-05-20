@@ -118,7 +118,7 @@ public class BenchTest {
         }
     }
 
-    @Test
+    /*@Test
     public void foo() throws Exception {
         String id = "bench/src/test/resources/std-perf/li6.gz";
         //String id = "bench/src/test/resources/wkld-tdsc/li/r3/p5000/c0/1.gz";
@@ -126,5 +126,5 @@ public class BenchTest {
                 "-i", id,
                 "--repair",
         });
-    }
+    }*/
 }
