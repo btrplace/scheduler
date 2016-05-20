@@ -445,8 +445,15 @@ public class CShareableResource implements ChocoView {
 
         ((Cumulatives) v).addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
 
-        //Check if the initial capacity > sum current consumption
-        //The ratio is instantiated now so the computation is correct
+        checkInitialSatisfaction();
+        return true;
+    }
+
+    /**
+     * Check if the initial capacity > sum current consumption
+     * The ratio is instantiated now so the computation is correct
+     */
+    private void checkInitialSatisfaction() {
         //Seems to me we don't support ratio change
         for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
             int nIdx = rp.getNode(n);
@@ -460,7 +467,6 @@ public class CShareableResource implements ChocoView {
                 }
             }
         }
-        return true;
     }
 
 

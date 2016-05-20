@@ -56,7 +56,7 @@ public class DeadlineConverter implements ConstraintConverter<Deadline> {
     public JSONObject toJSON(Deadline deadline) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", JSONs.toJSON(deadline.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.elementToJSON(deadline.getInvolvedVMs().iterator().next()));
         c.put("timestamp", deadline.getTimestamp());
         c.put("continuous", deadline.isContinuous());
         return c;

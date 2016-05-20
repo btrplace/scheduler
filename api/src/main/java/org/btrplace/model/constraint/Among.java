@@ -141,7 +141,7 @@ public class Among extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "among(" + "vms=" + vms + ", nodes=" + pGroups + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "among(vms=" + vms + ", nodes=" + pGroups + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
     }
 
     @Override

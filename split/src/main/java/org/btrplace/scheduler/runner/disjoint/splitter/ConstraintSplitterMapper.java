@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class ConstraintSplitterMapper {
 
-    private Map<Class<? extends Constraint>, ConstraintSplitter<?>> builders;
+    private Map<Class<? extends Constraint>, ConstraintSplitter<? extends Constraint>> builders;
 
     /**
      * Make a new bridge.

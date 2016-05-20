@@ -47,6 +47,11 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
      */
     public static final String DEFAULT_CAPACITY = "defCapacity";
 
+    /**
+     * The label describing nodes.
+     */
+    public static final String NODES_LABEL = "nodes";
+
     @Override
     public Class<ShareableResource> getSupportedView() {
         return ShareableResource.class;
@@ -84,7 +89,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
 
     @Override
     public ShareableResource fromJSON(Model mo, JSONObject o) throws JSONConverterException {
-        checkKeys(o, "vms", "nodes", DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
+        checkKeys(o, "vms", NODES_LABEL, DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
 
         String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
@@ -98,7 +103,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
         ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
 
         parseVMs(mo, rc, o.get("vms"));
-        parseNodes(mo, rc, o.get("nodes"));
+        parseNodes(mo, rc, o.get(NODES_LABEL));
 
         return rc;
     }
@@ -130,7 +135,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
                     rc.setCapacity(u, v);
                 }
             } catch (ClassCastException cc) {
-                throw new JSONConverterException("Unable to read the nodes at key 'nodes'. Expect a JSONObject but got a '" + o.getClass().getName() + "'", cc);
+                throw new JSONConverterException("Unable to read the nodes at key '" + NODES_LABEL + "'. Expect a JSONObject but got a '" + o.getClass().getName() + "'", cc);
             }
         }
     }

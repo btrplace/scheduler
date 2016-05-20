@@ -53,6 +53,12 @@ public class Bench {
     private Bench() {
     }
 
+    /**
+     * Launcher
+     *
+     * @param args the CLI arguments
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         Options opts = new Options();
 

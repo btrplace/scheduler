@@ -123,15 +123,29 @@ public class StaticRouting extends Routing {
         private Node n1;
         private Node n2;
 
+        /**
+         * Make a new pair.
+         *
+         * @param n1 the first node
+         * @param n2 the second node
+         */
         public NodesMap(Node n1, Node n2) {
             this.n1 = n1;
             this.n2 = n2;
         }
 
+        /**
+         * Get the first node of the pair.
+         * @return a node
+         */
         public Node getSrc() {
             return n1;
         }
 
+        /**
+         * Get the second node of the pair.
+         * @return a node
+         */
         public Node getDst() {
             return n2;
         }

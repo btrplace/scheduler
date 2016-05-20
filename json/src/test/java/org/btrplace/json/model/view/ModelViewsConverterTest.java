@@ -86,7 +86,7 @@ public class ModelViewsConverterTest {
     @Test
     public void testRegister() {
         ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
+        c.register(new MockModelViewConverter());
         Assert.assertTrue(c.getSupportedJavaViews().contains(MockModelView.class));
         Assert.assertTrue(c.getSupportedJSONViews().contains("mockView"));
     }
@@ -94,7 +94,7 @@ public class ModelViewsConverterTest {
     @Test(dependsOnMethods = {"testRegister"})
     public void testWithExistingConverter() throws JSONConverterException {
         ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
+        c.register(new MockModelViewConverter());
         MockModelView m = new MockModelView("bar");
         JSONObject o = c.toJSON(m);
         MockModelView m2 = (MockModelView) c.fromJSON(null, o);
@@ -122,7 +122,7 @@ public class ModelViewsConverterTest {
         JSONObject ob = new JSONObject();
         ob.put("value", "val");
         ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
+        c.register(new MockModelViewConverter());
         c.fromJSON(null, ob);
     }
 }

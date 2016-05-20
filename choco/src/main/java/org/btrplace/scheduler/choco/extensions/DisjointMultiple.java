@@ -119,7 +119,7 @@ public class DisjointMultiple extends Constraint {
         @Override
         public int getPropagationConditions(int vIdx) {
             //TODO: REMOVE should be fine
-            return IntEventType.all(); //IntEventType.REMOVE.getMask() + IntEventType.INSTANTIATE.getMask();
+            return IntEventType.all();
         }
 
         @Override

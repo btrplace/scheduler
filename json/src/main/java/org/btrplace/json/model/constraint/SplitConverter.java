@@ -26,8 +26,6 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Split;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.btrplace.json.JSONs.*;
 
@@ -52,16 +50,7 @@ public class SplitConverter implements ConstraintConverter<Split> {
     @Override
     public Split fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        Set<Collection<VM>> vms = new HashSet<>();
-        Object x = o.get("parts");
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of identifiers sets expected at key 'parts'");
-        }
-        for (Object obj : (JSONArray) x) {
-            vms.add(vmsFromJSON(mo, (JSONArray) obj));
-        }
-
-        return new Split(vms, requiredBoolean(o, "continuous"));
+        return new Split(requiredVMPart(mo, o, "parts"), requiredBoolean(o, "continuous"));
     }
 
     @Override

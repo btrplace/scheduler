@@ -26,8 +26,6 @@ import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Among;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.btrplace.json.JSONs.*;
 
@@ -37,6 +35,7 @@ import static org.btrplace.json.JSONs.*;
  * @author Fabien Hermenier
  */
 public class AmongConverter implements ConstraintConverter<Among> {
+
 
     @Override
     public Class<Among> getSupportedConstraint() {
@@ -50,19 +49,10 @@ public class AmongConverter implements ConstraintConverter<Among> {
 
     @Override
     public Among fromJSON(Model mo, JSONObject o) throws JSONConverterException {
-        checkKeys(o, "parts");
         checkId(o);
-        Set<Collection<Node>> nodes = new HashSet<>();
-        Object x = o.get("parts");
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of int sets expected at key 'parts'");
-        }
-        for (Object obj : (JSONArray) x) {
-            nodes.add(nodesFromJSON(mo, (JSONArray) obj));
-        }
 
         return new Among(requiredVMs(mo, o, "vms"),
-                nodes,
+                requiredNodePart(mo, o, "parts"),
                 requiredBoolean(o, "continuous"));
     }
 

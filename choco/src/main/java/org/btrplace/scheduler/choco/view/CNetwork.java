@@ -212,13 +212,11 @@ public class CNetwork implements ChocoView {
                         LinkDirection linkDirection = net.getRouting().getLinkDirection(src, dst, l);
                         // UpLink
                         if (linkDirection == LinkDirection.UPLINK) {
-                            //tasksListUp.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
                             tasksListUp.add(((RelocatableVM) a).getMigrationTask());
                             heightsListUp.add(((RelocatableVM) a).getBandwidth());
                         }
                         // DownLink
                         else {
-                            //tasksListDown.add(new Task(a.getStart(), a.getDuration(), a.getEnd()));
                             tasksListDown.add(((RelocatableVM) a).getMigrationTask());
                             heightsListDown.add(((RelocatableVM) a).getBandwidth());
                         }

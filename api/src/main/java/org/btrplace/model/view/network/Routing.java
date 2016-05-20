@@ -37,6 +37,9 @@ import java.util.List;
  */
 public abstract class Routing implements Copyable<Routing> {
 
+    /**
+     * State the link direction.
+     */
     public enum LinkDirection {
         /**
          * Link does not cross.

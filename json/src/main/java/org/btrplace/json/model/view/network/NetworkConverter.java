@@ -48,6 +48,20 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     private Map<String, RoutingConverter<? extends Routing>> json2java;
 
     /**
+     * Label stating a switch.
+     */
+    public static final String SWITCH_LABEL = "switch";
+
+    /**
+     * Label stating a node.
+     */
+    public static final String NODE_LABEL = "node";
+
+    /**
+     * Label stating a capacity.
+     */
+    public static final String CAPACITY_LABEL = "capacity";
+    /**
      * Make a new converter.
      */
     public NetworkConverter() {
@@ -109,7 +123,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     public JSONObject switchToJSON(Switch s) {
         JSONObject o = new JSONObject();
         o.put("id", s.id());
-        o.put("capacity", s.getCapacity());
+        o.put(CAPACITY_LABEL, s.getCapacity());
         return o;
     }
 
@@ -136,10 +150,10 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     public JSONObject physicalElementToJSON(PhysicalElement pe) throws IllegalArgumentException {
         JSONObject o = new JSONObject();
         if (pe instanceof Node) {
-            o.put("type", "node");
+            o.put("type", NODE_LABEL);
             o.put("id", ((Node) pe).id());
         } else if (pe instanceof Switch) {
-            o.put("type", "switch");
+            o.put("type", SWITCH_LABEL);
             o.put("id", ((Switch) pe).id());
         } else {
             throw new IllegalArgumentException("Unsupported physical element '" + pe.getClass().toString() + "'");
@@ -156,8 +170,8 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     public JSONObject linkToJSON(Link s) {
         JSONObject o = new JSONObject();
         o.put("id", s.id());
-        o.put("capacity", s.getCapacity());
-        o.put("switch", s.getSwitch().id());
+        o.put(CAPACITY_LABEL, s.getCapacity());
+        o.put(SWITCH_LABEL, s.getSwitch().id());
         o.put("physicalElement", physicalElementToJSON(s.getElement()));
         return o;
     }
@@ -215,18 +229,17 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      * @return the Switch
      */
     public Switch switchFromJSON(JSONObject o) throws JSONConverterException {
-        return new Switch(requiredInt(o, "id"), requiredInt(o, "capacity"));
+        return new Switch(requiredInt(o, "id"), requiredInt(o, CAPACITY_LABEL));
     }
 
     /**
      * Convert a JSON array of switches to a Java List of switches.
      * @param net the network to populate
      * @param a the json array
-
      */
     public void switchesFromJSON(Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {
-            net.newSwitch(requiredInt((JSONObject) o, "id"), requiredInt((JSONObject) o, "capacity"));
+            net.newSwitch(requiredInt((JSONObject) o, "id"), requiredInt((JSONObject) o, CAPACITY_LABEL));
         }
     }
 
@@ -239,9 +252,9 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     public PhysicalElement physicalElementFromJSON(Model mo, Network net, JSONObject o) throws JSONConverterException {
         String type = requiredString(o, "type");
         switch (type) {
-            case "node":
+            case NODE_LABEL:
                 return requiredNode(mo, o, "id");
-            case "switch":
+            case SWITCH_LABEL:
                 return getSwitch(net, requiredInt(o, "id"));
             default:
                 throw new JSONConverterException("type '" + type + "' is not a physical element");
@@ -264,8 +277,8 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      */
     public void linkFromJSON(Model mo, Network net, JSONObject o) throws JSONConverterException {
         net.connect(requiredInt(o, "id"),
-                requiredInt(o, "capacity"),
-                getSwitch(net, requiredInt(o, "switch")),
+                requiredInt(o, CAPACITY_LABEL),
+                getSwitch(net, requiredInt(o, SWITCH_LABEL)),
                 physicalElementFromJSON(mo, net, (JSONObject) o.get("physicalElement"))
         );
     }

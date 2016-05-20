@@ -88,12 +88,10 @@ public class ConstraintsConverter {
      * Register a converter for a specific constraint.
      *
      * @param c the converter to register
-     * @return the container that was previously registered for a constraint. {@code null} if there was
-     * no registered converter
      */
-    public ConstraintConverter<? extends Constraint> register(ConstraintConverter<? extends Constraint> c) {
+    public void register(ConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);
-        return json2java.put(c.getJSONId(), c);
+        json2java.put(c.getJSONId(), c);
 
     }
 
@@ -173,7 +171,7 @@ public class ConstraintsConverter {
      */
     public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
-        for (Constraint cstr : e) {
+        for (SatConstraint cstr : e) {
             arr.add(toJSON(cstr));
         }
         return arr;

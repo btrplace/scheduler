@@ -21,6 +21,7 @@ package org.btrplace.plan.event;
 import org.btrplace.model.Model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * An action is an event that has to be scheduled for reliability purpose.
@@ -183,12 +184,7 @@ public abstract class Action implements Event {
                 Set<Event> l = entry.getValue();
                 Hook k = entry.getKey();
                 b.append(", @").append(k).append("= {");
-                for (Iterator<Event> ite = l.iterator(); ite.hasNext(); ) {
-                    b.append(ite.next());
-                    if (ite.hasNext()) {
-                        b.append(", ");
-                    }
-                }
+                b.append(l.stream().map(e -> l.toString()).collect(Collectors.joining(", ")));
                 b.append('}');
             }
         }

@@ -53,7 +53,7 @@ public class NoDelayConverter implements ConstraintConverter<NoDelay> {
     public JSONObject toJSON(NoDelay noDelay) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", JSONs.toJSON(noDelay.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.elementToJSON(noDelay.getInvolvedVMs().iterator().next()));
         c.put("continuous", noDelay.isContinuous());
         return c;
     }

@@ -53,7 +53,7 @@ public class QuarantineConverter implements ConstraintConverter<Quarantine> {
     public JSONObject toJSON(Quarantine o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("node", JSONs.toJSON(o.getInvolvedNodes().iterator().next()));
+        c.put("node", JSONs.elementToJSON(o.getInvolvedNodes().iterator().next()));
         return c;
     }
 }

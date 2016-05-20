@@ -59,8 +59,8 @@ public class PrecedenceConverter implements ConstraintConverter<Precedence> {
         JSONObject c = new JSONObject();
         Iterator<VM> it = precedence.getInvolvedVMs().iterator();
         c.put("id", getJSONId());
-        c.put("vm1", JSONs.toJSON(it.next()));
-        c.put("vm2", JSONs.toJSON(it.next()));
+        c.put("vm1", JSONs.elementToJSON(it.next()));
+        c.put("vm2", JSONs.elementToJSON(it.next()));
         c.put("continuous", precedence.isContinuous());
         return c;
     }

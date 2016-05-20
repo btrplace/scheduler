@@ -161,8 +161,8 @@ public class StagedSolvingStatistics implements SolvingStatistics {
             mr.readingTimeCount += m.getReadingTimeCount();
             mr.restartCount += m.getRestartCount();
             mr.timeCount += m.getTimeCount() * 1000 * 1000 * 1000f; //Because it is expressed in nanoseconds
-            mr.objectiveOptimal &= m.isObjectiveOptimal();
-            mr.hasObjective &= m.hasObjective();
+            mr.objectiveOptimal = mr.objectiveOptimal && m.isObjectiveOptimal();
+            mr.hasObjective = mr.hasObjective && m.hasObjective();
         }
         return mr;
     }

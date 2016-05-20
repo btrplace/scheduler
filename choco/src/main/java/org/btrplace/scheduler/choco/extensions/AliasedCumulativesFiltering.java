@@ -193,6 +193,41 @@ public class AliasedCumulativesFiltering {
 
         initProfile();
 
+        insertCSlices();
+        insertDSlices();
+
+        toAbsoluteResources();
+
+        summary();
+    }
+
+    private void toAbsoluteResources() {
+        //Now transforms into an absolute profile
+        sortedMinProfile = profilesMin[0].keys();
+        Arrays.sort(sortedMinProfile);
+
+        sortedMaxProfile = profilesMax[0].keys();
+        Arrays.sort(sortedMaxProfile);
+
+        for (int i = 0; i < nbDims; i++) {
+            toAbsoluteFreeResources(profilesMin[i], sortedMinProfile);
+            toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
+        }
+    }
+
+    private void insertDSlices() {
+        for (int i = 0; i < nbDims; i++) {
+            for (int x = 0; x < vIn.size(); x++) {
+                int j = vIn.get(x);
+                int t = dStarts[j].getUB();
+                profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
+                t = dStarts[j].getLB();
+                profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
+            }
+        }
+    }
+
+    private void insertCSlices() {
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
@@ -224,30 +259,6 @@ public class AliasedCumulativesFiltering {
 
         lastCendInf.set(lastInf);
         lastCendSup.set(lastSup);
-
-        for (int i = 0; i < nbDims; i++) {
-            for (int x = 0; x < vIn.size(); x++) {
-                int j = vIn.get(x);
-                int t = dStarts[j].getUB();
-                profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
-                t = dStarts[j].getLB();
-                profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
-            }
-        }
-
-        //Now transforms into an absolute profile
-        sortedMinProfile = profilesMin[0].keys();
-        Arrays.sort(sortedMinProfile);
-
-        sortedMaxProfile = profilesMax[0].keys();
-        Arrays.sort(sortedMaxProfile);
-
-        for (int i = 0; i < nbDims; i++) {
-            toAbsoluteFreeResources(profilesMin[i], sortedMinProfile);
-            toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
-        }
-
-        summary();
     }
 
     private void summary() {

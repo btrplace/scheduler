@@ -21,7 +21,6 @@ package org.btrplace.json.plan;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
-import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.plan.event.*;
 
@@ -89,6 +88,11 @@ public class ActionConverter implements ActionVisitor {
      */
     public static final String RC_AMOUNT_LABEL = "amount";
 
+    /**
+     * Key to indicate an allocation event or action
+     */
+    public static final String RC_ALLOCATE_LABEL = "allocate";
+
     private Model mo;
 
     /**
@@ -138,7 +142,7 @@ public class ActionConverter implements ActionVisitor {
             case "suspendVM":
                 a = suspendVMFromJSON(in);
                 break;
-            case "allocate":
+            case RC_ALLOCATE_LABEL:
                 a = allocateFromJSON(in);
                 break;
             default:
@@ -177,7 +181,7 @@ public class ActionConverter implements ActionVisitor {
         String id = requiredString(o, ACTION_ID_LABEL);
 
         switch (id) {
-            case "allocate":
+            case RC_ALLOCATE_LABEL:
                 return allocateEventFromJSON(o);
             case "substitutedVM":
                 return substitutedVMEventFromJSON(o);
@@ -191,8 +195,8 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(BootVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, elementToJSON(a.getDestinationNode()));
         return o;
     }
 
@@ -207,8 +211,8 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(ShutdownVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put(ON_LABEL, JSONs.toJSON(a.getNode()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put(ON_LABEL, elementToJSON(a.getNode()));
         return o;
     }
 
@@ -223,7 +227,7 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(ShutdownNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownNode");
-        o.put(NODE_LABEL, JSONs.toJSON(a.getNode()));
+        o.put(NODE_LABEL, elementToJSON(a.getNode()));
         return o;
     }
 
@@ -237,7 +241,7 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(BootNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootNode");
-        o.put(NODE_LABEL, JSONs.toJSON(a.getNode()));
+        o.put(NODE_LABEL, elementToJSON(a.getNode()));
         return o;
     }
 
@@ -251,9 +255,9 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(MigrateVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "migrateVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
-        o.put(VM_LOCATION_LABEL, JSONs.toJSON(a.getSourceNode()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, elementToJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, elementToJSON(a.getSourceNode()));
         o.put(BANDWIDTH, a.getBandwidth());
         return o;
     }
@@ -273,9 +277,9 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(SuspendVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "suspendVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
-        o.put(VM_LOCATION_LABEL, JSONs.toJSON(a.getSourceNode()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, elementToJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, elementToJSON(a.getSourceNode()));
         return o;
     }
 
@@ -291,9 +295,9 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(ResumeVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "resumeVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put(VM_DESTINATION_LABEL, JSONs.toJSON(a.getDestinationNode()));
-        o.put(VM_LOCATION_LABEL, JSONs.toJSON(a.getSourceNode()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, elementToJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, elementToJSON(a.getSourceNode()));
         return o;
     }
 
@@ -309,8 +313,8 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(KillVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "killVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put(ON_LABEL, JSONs.toJSON(a.getNode()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put(ON_LABEL, elementToJSON(a.getNode()));
         return o;
     }
 
@@ -326,7 +330,7 @@ public class ActionConverter implements ActionVisitor {
     public JSONObject visit(ForgeVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "forgeVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
         return o;
 
     }
@@ -340,11 +344,11 @@ public class ActionConverter implements ActionVisitor {
     @Override
     public JSONObject visit(Allocate a) {
         JSONObject o = makeActionSkeleton(a);
-        o.put(ACTION_ID_LABEL, "allocate");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(ACTION_ID_LABEL, RC_ALLOCATE_LABEL);
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
         o.put(RC_LABEL, a.getResourceId());
         o.put(RC_AMOUNT_LABEL, a.getAmount());
-        o.put(ON_LABEL, JSONs.toJSON(a.getHost()));
+        o.put(ON_LABEL, elementToJSON(a.getHost()));
         return o;
     }
 
@@ -360,9 +364,9 @@ public class ActionConverter implements ActionVisitor {
     @Override
     public Object visit(AllocateEvent a) {
         JSONObject o = new JSONObject();
-        o.put(ACTION_ID_LABEL, "allocate");
+        o.put(ACTION_ID_LABEL, RC_ALLOCATE_LABEL);
         o.put(RC_LABEL, a.getResourceId());
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
         o.put(RC_AMOUNT_LABEL, a.getAmount());
         return o;
     }
@@ -377,8 +381,8 @@ public class ActionConverter implements ActionVisitor {
     public Object visit(SubstitutedVMEvent a) {
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "substitutedVM");
-        o.put(VM_LABEL, JSONs.toJSON(a.getVM()));
-        o.put("newVm", JSONs.toJSON(a.getNewVM()));
+        o.put(VM_LABEL, elementToJSON(a.getVM()));
+        o.put("newVm", elementToJSON(a.getNewVM()));
         return o;
     }
 

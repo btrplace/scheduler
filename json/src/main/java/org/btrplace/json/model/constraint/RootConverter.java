@@ -53,7 +53,7 @@ public class RootConverter implements ConstraintConverter<Root> {
     public JSONObject toJSON(Root o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", JSONs.toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", JSONs.elementToJSON(o.getInvolvedVMs().iterator().next()));
         return c;
     }
 }
