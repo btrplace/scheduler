@@ -32,9 +32,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -313,63 +311,52 @@ public class Network implements ModelView {
      */
     public void generateDot(Model mo, String out, boolean fromLeftToRight) throws IOException {
 
-        List<Node> nodes = getConnectedNodes();
-        Set<Link> drawedLinks = new HashSet<>();
-
-        // Try to retrieve naming services from the model, if provided
-        NamingService<Node> nsNodes = null;
-        if (mo != null) {
-            nsNodes = NamingService.getNodeNames(mo);
-        }
-
         try (BufferedWriter dot = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out), StandardCharsets.UTF_8))) {
             dot.append("digraph G {\n");
             if (fromLeftToRight) {
                 dot.append("rankdir=LR;\n");
             }
-            // Draw nodes
-            for (Node n : nodes) {
-                dot.append("node").
-                        append(String.valueOf(n.id())).
-                        append(" [shape=box, color=green, label=\"");
-                if (nsNodes == null) {
-                    dot.append("Node ").append(String.valueOf(n.id()));
-                } else {
-                    dot.append(nsNodes.resolve(n));
-                }
-                dot.append("\"];\n");
-            }
-            // Draw switches
-            for (Switch s : switches) {
-                dot.append("switch").
-                        append(String.valueOf(s.id())).
-                        append(" [shape=circle, color=blue, label=\"").
-                        append("Switch ").append(String.valueOf(s.id()));
-                if (s.getCapacity() > 0) {
-                    dot.append("\\n[").append(bitsToString(s.getCapacity())).append("/s]");
-                }
-                dot.append("\"];\n");
-            }
-            // Draw links
-            for (Switch s : switches) {
-                for (Link l : getConnectedLinks(s)) {
-                    if (!drawedLinks.contains(l)) {
-                        dot.append("switch").append(String.valueOf(s.id())).append(" -> ");
-                        if (l.getElement() instanceof Node) {
-                            dot.append("node").append(String.valueOf(((Node) l.getElement()).id()));
-                        }
-                        else {
-                            Switch dsw = l.getSwitch().equals(s) ? (Switch) l.getElement() : l.getSwitch();
-                            dot.append("switch").append(String.valueOf(dsw.id()));
-                        }
-                        dot.append(" [arrowhead=none, color=red, label=\"").
-                                append(bitsToString(l.getCapacity())).append("/s").
-                                append("\"]\n");
-                        drawedLinks.add(l);
-                    }
-                }
-            }
+            drawNodes(dot, NamingService.getNodeNames(mo));
+            drawSwitches(dot);
+            drawLinks(dot);
             dot.append("}\n");
+        }
+    }
+
+    private void drawNodes(BufferedWriter dot, NamingService<Node> nsNodes) throws IOException {
+        for (Node n : getConnectedNodes()) {
+            dot.append("node").
+                    append(String.valueOf(n.id())).
+                    append(" [shape=box, color=green, label=\"");
+            if (nsNodes == null) {
+                dot.append("Node ").append(String.valueOf(n.id()));
+            } else {
+                dot.append(nsNodes.resolve(n));
+            }
+            dot.append("\"];\n");
+        }
+    }
+
+    private void drawSwitches(BufferedWriter dot) throws IOException {
+        for (Switch s : switches) {
+            dot.append("switch").
+                    append(String.valueOf(s.id())).
+                    append(" [shape=circle, color=blue, label=\"").
+                    append("Switch ").append(String.valueOf(s.id()));
+            if (s.getCapacity() > 0) {
+                dot.append("\\n[").append(bitsToString(s.getCapacity())).append("/s]");
+            }
+            dot.append("\"];\n");
+        }
+    }
+
+    private void drawLinks(BufferedWriter dot) throws IOException {
+        for (Link l : links) {
+            dot.append("switch").append(String.valueOf(l.getSwitch())).append(" -> ");
+            dot.append(String.valueOf(l.getElement()));
+            dot.append(" [arrowhead=none, color=red, label=\"").
+                    append(bitsToString(l.getCapacity())).append("/s").
+                    append("\"]\n");
         }
     }
 

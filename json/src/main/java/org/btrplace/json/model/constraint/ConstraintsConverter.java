@@ -171,7 +171,7 @@ public class ConstraintsConverter {
      */
     public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
-        for (Constraint cstr : e) {
+        for (SatConstraint cstr : e) {
             arr.add(toJSON(cstr));
         }
         return arr;

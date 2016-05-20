@@ -319,7 +319,7 @@ public interface Mapping extends Copyable<Mapping> {
     default Mapping run(Node n, VM... vms) {
         for (VM vm : vms) {
             if (!this.addRunningVM(vm, n)) {
-                throw new IllegalArgumentException("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
+                throw new IllegalArgumentException(vm + " cannot be running. Is '" + n + "' online ?");
             }
         }
         return this;
@@ -336,7 +336,7 @@ public interface Mapping extends Copyable<Mapping> {
     default Mapping sleep(Node n, VM... vms) {
         for (VM vm : vms) {
             if (!this.addSleepingVM(vm, n)) {
-                throw new IllegalArgumentException("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
+                throw new IllegalArgumentException(vm + "' cannot be sleeping. Is '" + n + "' online ?");
             }
         }
         return this;
@@ -378,7 +378,7 @@ public interface Mapping extends Copyable<Mapping> {
     default Mapping off(Node... nodes) {
         for (Node n : nodes) {
             if (!this.addOfflineNode(n)) {
-                throw new IllegalArgumentException("Unable to set '" + n + "' offline. Is it hosting VMs ?");
+                throw new IllegalArgumentException(n + " cannot be offline. Is it hosting VMs ?");
             }
         }
         return this;

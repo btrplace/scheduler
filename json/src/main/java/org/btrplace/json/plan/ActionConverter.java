@@ -88,6 +88,11 @@ public class ActionConverter implements ActionVisitor {
      */
     public static final String RC_AMOUNT_LABEL = "amount";
 
+    /**
+     * Key to indicate an allocation event or action
+     */
+    public static final String RC_ALLOCATE_LABEL = "allocate";
+
     private Model mo;
 
     /**
@@ -137,7 +142,7 @@ public class ActionConverter implements ActionVisitor {
             case "suspendVM":
                 a = suspendVMFromJSON(in);
                 break;
-            case "allocate":
+            case RC_ALLOCATE_LABEL:
                 a = allocateFromJSON(in);
                 break;
             default:
@@ -176,7 +181,7 @@ public class ActionConverter implements ActionVisitor {
         String id = requiredString(o, ACTION_ID_LABEL);
 
         switch (id) {
-            case "allocate":
+            case RC_ALLOCATE_LABEL:
                 return allocateEventFromJSON(o);
             case "substitutedVM":
                 return substitutedVMEventFromJSON(o);
@@ -339,7 +344,7 @@ public class ActionConverter implements ActionVisitor {
     @Override
     public JSONObject visit(Allocate a) {
         JSONObject o = makeActionSkeleton(a);
-        o.put(ACTION_ID_LABEL, "allocate");
+        o.put(ACTION_ID_LABEL, RC_ALLOCATE_LABEL);
         o.put(VM_LABEL, elementToJSON(a.getVM()));
         o.put(RC_LABEL, a.getResourceId());
         o.put(RC_AMOUNT_LABEL, a.getAmount());
@@ -359,7 +364,7 @@ public class ActionConverter implements ActionVisitor {
     @Override
     public Object visit(AllocateEvent a) {
         JSONObject o = new JSONObject();
-        o.put(ACTION_ID_LABEL, "allocate");
+        o.put(ACTION_ID_LABEL, RC_ALLOCATE_LABEL);
         o.put(RC_LABEL, a.getResourceId());
         o.put(VM_LABEL, elementToJSON(a.getVM()));
         o.put(RC_AMOUNT_LABEL, a.getAmount());

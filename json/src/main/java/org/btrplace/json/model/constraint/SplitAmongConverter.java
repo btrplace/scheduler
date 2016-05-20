@@ -27,8 +27,6 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SplitAmong;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.btrplace.json.JSONs.*;
 
@@ -52,26 +50,7 @@ public class SplitAmongConverter implements ConstraintConverter<SplitAmong> {
     @Override
     public SplitAmong fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-
-        Set<Collection<Node>> nodes = new HashSet<>();
-        Object x = o.get("pParts");
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
-        }
-        for (Object obj : (JSONArray) x) {
-            nodes.add(nodesFromJSON(mo, (JSONArray) obj));
-        }
-
-        Set<Collection<VM>> vms = new HashSet<>();
-        x = o.get("vParts");
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
-        }
-        for (Object obj : (JSONArray) x) {
-            vms.add(vmsFromJSON(mo, (JSONArray) obj));
-        }
-
-        return new SplitAmong(vms, nodes, requiredBoolean(o, "continuous"));
+        return new SplitAmong(requiredVMPart(mo, o, "vParts"), requiredNodePart(mo, o, "pParts"), requiredBoolean(o, "continuous"));
     }
 
     @Override

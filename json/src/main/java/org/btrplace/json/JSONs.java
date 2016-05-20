@@ -240,7 +240,48 @@ public class JSONs {
             s.add(getNode(mo, (Integer) i));
         }
         return s;
+    }
 
+    /**
+     * Read partitions of VMs.
+     *
+     * @param mo the associated model to browse
+     * @param o  the object to parse
+     * @param id the key in the map that points to the partitions
+     * @return the parsed partition
+     * @throws JSONConverterException if the key does not point to partitions of VMs
+     */
+    public static Set<Collection<VM>> requiredVMPart(Model mo, JSONObject o, String id) throws JSONConverterException {
+        Set<Collection<VM>> vms = new HashSet<>();
+        Object x = o.get(id);
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of identifiers sets expected at key '" + id + "'");
+        }
+        for (Object obj : (JSONArray) x) {
+            vms.add(vmsFromJSON(mo, (JSONArray) obj));
+        }
+        return vms;
+    }
+
+    /**
+     * Read partitions of nodes.
+     *
+     * @param mo the associated model to browse
+     * @param o  the object to parse
+     * @param id the key in the map that points to the partitions
+     * @return the parsed partition
+     * @throws JSONConverterException if the key does not point to partitions of nodes
+     */
+    public static Set<Collection<Node>> requiredNodePart(Model mo, JSONObject o, String id) throws JSONConverterException {
+        Set<Collection<Node>> nodes = new HashSet<>();
+        Object x = o.get(id);
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of identifiers sets expected at key '" + id + "'");
+        }
+        for (Object obj : (JSONArray) x) {
+            nodes.add(nodesFromJSON(mo, (JSONArray) obj));
+        }
+        return nodes;
     }
 
     /**

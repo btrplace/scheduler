@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.btrplace.json.JSONs.*;
+
 /**
  * A converter to (un-)serialise a {@link StaticRouting}.
  *
@@ -113,12 +114,13 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
         o.put("type", getJSONId());
         JSONArray a = new JSONArray();
         Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = routing.getStaticRoutes();
-        for (StaticRouting.NodesMap nm : routes.keySet()) {
+        for (Map.Entry<StaticRouting.NodesMap, Map<Link, Boolean>> e : routes.entrySet()) {
+            StaticRouting.NodesMap nm = e.getKey();
             JSONObject ao = new JSONObject();
             ao.put("nodes_map", nodesMapToJSON(nm));
             JSONArray links = new JSONArray();
-            for (Map.Entry<Link, Boolean> e : routes.get(nm).entrySet()) {
-                Link l = e.getKey();
+            Map<Link, Boolean> v = e.getValue();
+            for (Link l : v.keySet()) {
                 JSONObject lo = new JSONObject();
                 lo.put("link", l.id());
                 lo.put("direction", routes.get(nm).get(l).toString());
