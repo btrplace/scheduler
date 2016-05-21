@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 import org.btrplace.scheduler.choco.extensions.env.StoredInt;
 
 /**
+ * A world devoted to integers.
  * @author Fabien Hermenier
  */
 public class IntWorld implements World{
@@ -46,6 +47,12 @@ public class IntWorld implements World{
     private int now;
 
     private int defaultSize;
+
+    /**
+     * Make a new world.
+     *
+     * @param defaultSize the default world size
+     */
     public IntWorld(int defaultSize) {
         now = 0;
         this.defaultSize = defaultSize;
@@ -77,6 +84,9 @@ public class IntWorld implements World{
         }
     }
 
+    /**
+     * Resize the stack.
+     */
     private void resizeUpdateCapacity() {
         int newCapacity = ((variableStack.length * 3) / 2);
         StoredInt[] tmp1 = new StoredInt[newCapacity];
@@ -90,11 +100,18 @@ public class IntWorld implements World{
         stampStack = tmp3;
     }
 
+    @Override
     public void clear() {
         now = 0;
     }
+
     @Override
     public int used() {
         return now;
+    }
+
+    @Override
+    public int allocated() {
+        return stampStack == null ? 0 : stampStack.length;
     }
 }

@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 import org.btrplace.scheduler.choco.extensions.env.StoredDouble;
 
 /**
+ * A world devoted to doubles.
  * @author Fabien Hermenier
  */
 public class DoubleWorld implements World {
@@ -48,6 +49,11 @@ public class DoubleWorld implements World {
 
     private int defaultSize;
 
+    /**
+     * Make a new world.
+     *
+     * @param defaultSize the default world size
+     */
     public DoubleWorld(int defaultSize) {
         now = 0;
         this.defaultSize = defaultSize;
@@ -97,7 +103,13 @@ public class DoubleWorld implements World {
         return now;
     }
 
+    @Override
     public void clear() {
         now = 0;
+    }
+
+    @Override
+    public int allocated() {
+        return stampStack == null ? 0 : stampStack.length;
     }
 }

@@ -21,10 +21,16 @@ import org.btrplace.scheduler.choco.extensions.env.StoredBool;
 import org.btrplace.scheduler.choco.extensions.env.trail.BoolTrail;
 
 
+/**
+ * A trail for booleans.
+ *
+ * @author Fabien Hermenier
+ */
 public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTrail {
 
     /**
      * Constructs a trail with predefined size.
+     * @param size
      */
     public ChunkedBoolTrail(int size) {
         worlds = new BoolWorld[size];
@@ -33,7 +39,7 @@ public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTra
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new BoolWorld(DEFAULT_SIZE);
+            current = new BoolWorld(preferredSize());
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

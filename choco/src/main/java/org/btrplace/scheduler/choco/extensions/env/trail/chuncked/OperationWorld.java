@@ -33,14 +33,18 @@ public class OperationWorld implements World {
 
     private int now;
 
+    /**
+     * Make a new world.
+     *
+     * @param defaultSize the default world size
+     */
     public OperationWorld(int defaultSize) {
         now = 0;
         valueStack = new Operation[defaultSize];
     }
 
     /**
-     * Reacts when a StoredInt is modified: push the former value & timestamp
-     * on the stacks.
+     * Reacts when a Operation is done: push the former value on the stacks
      */
     public void savePreviousState(Operation oldValue) {
         valueStack[now] = oldValue;
@@ -71,7 +75,13 @@ public class OperationWorld implements World {
         return now;
     }
 
+    @Override
     public void clear() {
         now = 0;
+    }
+
+    @Override
+    public int allocated() {
+        return valueStack == null ? 0 : valueStack.length;
     }
 }

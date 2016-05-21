@@ -24,7 +24,7 @@ import org.btrplace.scheduler.choco.extensions.env.StoredIntVector;
 /**
  * Implements a trail with the history of all the stored search vectors.
  */
-public class StoredIntVectorTrail implements ITrailStorage {
+public class StoredIntVectorTrail implements TraceableStorage {
 
     /**
      * The current environment.
@@ -211,5 +211,10 @@ public class StoredIntVectorTrail implements ITrailStorage {
 
     public int getSize() {
         return currentLevel;
+    }
+
+    @Override
+    public int allocated() {
+        return stampStack.length;
     }
 }

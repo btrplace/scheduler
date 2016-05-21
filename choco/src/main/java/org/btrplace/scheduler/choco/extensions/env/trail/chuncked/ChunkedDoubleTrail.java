@@ -22,11 +22,17 @@ import org.btrplace.scheduler.choco.extensions.env.StoredDouble;
 import org.btrplace.scheduler.choco.extensions.env.trail.DoubleTrail;
 
 
+/**
+ * A trail for doubles.
+ *
+ * @author Fabien Hermenier
+ */
 public class ChunkedDoubleTrail extends ChunkedTrail<DoubleWorld> implements DoubleTrail {
 
 
     /**
      * Constructs a trail with predefined size.
+     * @param size the default size
      */
     public ChunkedDoubleTrail(int size) {
         worlds = new DoubleWorld[size];
@@ -35,7 +41,7 @@ public class ChunkedDoubleTrail extends ChunkedTrail<DoubleWorld> implements Dou
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new DoubleWorld(DEFAULT_SIZE);
+            current = new DoubleWorld(preferredSize());
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

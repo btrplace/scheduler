@@ -19,7 +19,6 @@ package org.btrplace.scheduler.choco.extensions.env.trail;
 
 
 import org.btrplace.scheduler.choco.extensions.env.StoredDouble;
-import org.chocosolver.memory.IStorage;
 
 /**
  * <br/>
@@ -27,9 +26,16 @@ import org.chocosolver.memory.IStorage;
  * @author Charles Prud'homme
  * @since 29/04/13
  */
-public interface DoubleTrail extends IStorage {
+public interface DoubleTrail extends TraceableStorage {
 
     void savePreviousState(StoredDouble v, double oldValue, int oldStamp);
 
     void buildFakeHistory(StoredDouble v, double initValue, int fromStamp);
+
+    /**
+     * Returns the allocated trail size.
+     *
+     * @return a positive number
+     */
+    int allocated();
 }

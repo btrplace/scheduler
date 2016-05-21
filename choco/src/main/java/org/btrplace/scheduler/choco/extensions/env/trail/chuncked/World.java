@@ -19,13 +19,32 @@
 package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 
 /**
+ * Specify a stack in a world.
  * @author Fabien Hermenier
  */
 public interface World {
 
+    /**
+     * The amount of values in the stack
+     *
+     * @return a positive integer
+     */
     int used();
 
+    /**
+     * Pop all the stack.
+     */
     void revert();
 
+    /**
+     * Clean the stack
+     */
     void clear();
+
+    /**
+     * The allocated trail for this world.
+     *
+     * @return a positive number
+     */
+    int allocated();
 }

@@ -20,11 +20,17 @@ package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 import org.btrplace.scheduler.choco.extensions.env.StoredInt;
 import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
 
+/**
+ * A trail for integers.
+ *
+ * @author Fabien Hermenier
+ */
 
 public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail {
 
     /**
      * Constructs a trail with predefined size.
+     * @param size the trail default size
      */
     public ChunkedIntTrail(int size) {
         worlds = new IntWorld[size];
@@ -33,7 +39,7 @@ public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail 
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new IntWorld(DEFAULT_SIZE);
+            current = new IntWorld(preferredSize());
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

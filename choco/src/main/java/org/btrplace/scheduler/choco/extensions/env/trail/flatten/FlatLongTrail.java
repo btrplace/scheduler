@@ -19,11 +19,12 @@
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
 import org.btrplace.scheduler.choco.extensions.env.trail.LongTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.TraceableStorage;
 
 /**
  * @author Fabien Hermenier
  */
-public class FlatLongTrail implements LongTrail {
+public class FlatLongTrail implements LongTrail, TraceableStorage {
 
 
     /**
@@ -209,4 +210,12 @@ public class FlatLongTrail implements LongTrail {
         worldStartLevels = tmp;
     }
 
+    /**
+     * Returns the allocated trail size.
+     *
+     * @return a positive number
+     */
+    public int allocated() {
+        return valueStack.length;
+    }
 }

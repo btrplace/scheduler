@@ -19,7 +19,6 @@ package org.btrplace.scheduler.choco.extensions.env.trail;
 
 
 import org.btrplace.scheduler.choco.extensions.env.StoredInt;
-import org.chocosolver.memory.IStorage;
 
 /**
  * <br/>
@@ -27,9 +26,16 @@ import org.chocosolver.memory.IStorage;
  * @author Charles Prud'homme
  * @since 29/04/13
  */
-public interface IntTrail extends IStorage {
+public interface IntTrail extends TraceableStorage {
 
     void savePreviousState(StoredInt v, int oldValue, int oldStamp);
 
     void buildFakeHistory(StoredInt v, int initValue, int fromStamp);
+
+    /**
+     * Returns the allocated trail size.
+     *
+     * @return a positive number
+     */
+    int allocated();
 }

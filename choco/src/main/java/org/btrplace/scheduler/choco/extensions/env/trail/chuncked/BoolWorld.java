@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 import org.btrplace.scheduler.choco.extensions.env.StoredBool;
 
 /**
+ * A world devoted to booleans.
  * @author Fabien Hermenier
  */
 public class BoolWorld implements World{
@@ -46,14 +47,21 @@ public class BoolWorld implements World{
 
     private int defaultSize;
 
+    /**
+     * Make a new world.
+     *
+     * @param defaultSize the default world size
+     */
     public BoolWorld(int defaultSize) {
         now = 0;
         this.defaultSize = defaultSize;
     }
 
+    @Override
     public void clear() {
         now = 0;
     }
+
     /**
      * Reacts when a StoredBool is modified: push the former value & timestamp
      * on the stacks.
@@ -97,5 +105,10 @@ public class BoolWorld implements World{
     @Override
     public int used() {
         return now;
+    }
+
+    @Override
+    public int allocated() {
+        return stampStack == null ? 0 : stampStack.length;
     }
 }

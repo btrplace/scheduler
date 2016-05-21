@@ -17,7 +17,6 @@
  */
 package org.btrplace.scheduler.choco.extensions.env.trail;
 
-import org.chocosolver.memory.IStorage;
 import org.chocosolver.memory.structure.Operation;
 
 /**
@@ -26,7 +25,7 @@ import org.chocosolver.memory.structure.Operation;
  * @author Charles Prud'homme
  * @since 29/04/13
  */
-public interface OperationTrail extends IStorage {
+public interface OperationTrail extends TraceableStorage {
 
     void savePreviousState(Operation oldValue);
 }

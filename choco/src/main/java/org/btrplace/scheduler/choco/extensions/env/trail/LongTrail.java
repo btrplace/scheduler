@@ -19,7 +19,6 @@ package org.btrplace.scheduler.choco.extensions.env.trail;
 
 
 import org.btrplace.scheduler.choco.extensions.env.StoredLong;
-import org.chocosolver.memory.IStorage;
 
 /**
  * <br/>
@@ -27,9 +26,16 @@ import org.chocosolver.memory.IStorage;
  * @author Charles Prud'homme
  * @since 29/04/13
  */
-public interface LongTrail extends IStorage {
+public interface LongTrail extends TraceableStorage {
 
     void savePreviousState(StoredLong v, long oldValue, int oldStamp);
 
     void buildFakeHistory(StoredLong v, long initValue, int fromStamp);
+
+    /**
+     * Returns the allocated trail size.
+     *
+     * @return a positive number
+     */
+    int allocated();
 }

@@ -19,12 +19,13 @@
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
 import org.btrplace.scheduler.choco.extensions.env.trail.OperationTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.TraceableStorage;
 import org.chocosolver.memory.structure.Operation;
 
 /**
  * @author Fabien Hermenier
  */
-public class FlatOperationTrail implements OperationTrail {
+public class FlatOperationTrail implements OperationTrail, TraceableStorage {
 
 
     /**
@@ -122,5 +123,14 @@ public class FlatOperationTrail implements OperationTrail {
         final int[] tmp = new int[newWorldCapacity];
         System.arraycopy(worldStartLevels, 0, tmp, 0, worldStartLevels.length);
         worldStartLevels = tmp;
+    }
+
+    /**
+     * Returns the allocated trail size.
+     *
+     * @return a positive number
+     */
+    public int allocated() {
+        return valueStack.length;
     }
 }

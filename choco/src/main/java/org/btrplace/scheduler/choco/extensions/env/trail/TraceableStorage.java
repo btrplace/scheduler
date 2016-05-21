@@ -15,26 +15,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.btrplace.scheduler.choco.extensions.env.trail;
 
-import org.btrplace.scheduler.choco.extensions.env.StoredBool;
+import org.chocosolver.memory.IStorage;
 
 /**
- * <br/>
- *
- * @author Charles Prud'homme
- * @since 29/04/13
+ * @author Fabien Hermenier
  */
-public interface BoolTrail extends TraceableStorage {
+public interface TraceableStorage extends IStorage {
 
-    void savePreviousState(StoredBool v, boolean oldValue, int oldStamp);
-
-    void buildFakeHistory(StoredBool v, boolean initValue, int fromStamp);
-
-    /**
-     * Returns the allocated trail size.
-     *
-     * @return a positive number
-     */
     int allocated();
 }

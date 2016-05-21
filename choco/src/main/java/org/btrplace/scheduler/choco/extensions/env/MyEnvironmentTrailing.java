@@ -49,7 +49,7 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
      * Contains all the {@link org.chocosolver.memory.IStorage} trails for
      * storing different kinds of data.
      */
-    private IStorage[] trails;
+    private TraceableStorage[] trails;
 
     /**
      * Constructs a new <code>IEnvironment</code> with
@@ -58,13 +58,13 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
     public MyEnvironmentTrailing() {
         super(Type.FLAT);
         System.out.println("custom trailing");
-        trails = new IStorage[6];
-        intTrail = new ChunkedIntTrail(1024);
-        boolTrail = new ChunkedBoolTrail(1024);
-        longTrail = new ChunkedLongTrail(1024);
-        doubleTrail = new ChunkedDoubleTrail(1024);
+        trails = new TraceableStorage[6];
+        intTrail = new ChunkedIntTrail(128);
+        boolTrail = new ChunkedBoolTrail(128);
+        longTrail = new ChunkedLongTrail(128);
+        doubleTrail = new ChunkedDoubleTrail(128);
         operationTrail = new FlatOperationTrail(1000, 5000);
-        intVectorTrail = new StoredIntVectorTrail(this, 1024, 1000);
+        intVectorTrail = new StoredIntVectorTrail(this, 128, 1000);
         trails[0] = intTrail;
         trails[1] = boolTrail;
         trails[2] = longTrail;
@@ -219,6 +219,14 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
     
     public void save(Operation oldValue) {
         getOperationTrail().savePreviousState(oldValue);
+    }
+
+    public String statistics() {
+        StringBuilder b = new StringBuilder();
+        for (IStorage s : trails) {
+            b.append(s.getClass().getSimpleName()).append(": ").append(((TraceableStorage) s).allocated()).append("\n");
+        }
+        return b.toString();
     }
 }
 
