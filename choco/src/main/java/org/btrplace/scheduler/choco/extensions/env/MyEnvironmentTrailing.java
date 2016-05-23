@@ -19,10 +19,10 @@ package org.btrplace.scheduler.choco.extensions.env;
 
 
 import org.btrplace.scheduler.choco.extensions.env.trail.*;
+import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedDoubleTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedIntTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedLongTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatBoolTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatDoubleTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatOperationTrail;
 import org.chocosolver.memory.*;
 import org.chocosolver.memory.structure.Operation;
@@ -56,11 +56,11 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
         super(Type.FLAT);
         trails = new TraceableStorage[6];
         intTrail = new ChunkedIntTrail(1024, 1024);
-        longTrail = new ChunkedLongTrail(1024, 1024);
         boolTrail = new FlatBoolTrail(128, 1024);
-        doubleTrail = new FlatDoubleTrail(1024, 1024);
+        longTrail = new ChunkedLongTrail(1024, 1024);
+        doubleTrail = new ChunkedDoubleTrail(1024, 1024);
         operationTrail = new FlatOperationTrail(1000, 5000);
-        intVectorTrail = new StoredIntVectorTrail(this, 128, 1000);
+        intVectorTrail = new StoredIntVectorTrail(this, 1024, 1000);
         trails[0] = intTrail;
         trails[1] = boolTrail;
         trails[2] = longTrail;

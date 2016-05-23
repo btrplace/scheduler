@@ -27,7 +27,7 @@ import org.btrplace.scheduler.choco.extensions.env.trail.LongTrail;
  */
 public class ChunkedLongTrail extends ChunkedTrail<LongWorld> implements LongTrail {
 
-    private int ws;
+    private final int ws;
 
     /**
      * Constructs a trail with predefined size.

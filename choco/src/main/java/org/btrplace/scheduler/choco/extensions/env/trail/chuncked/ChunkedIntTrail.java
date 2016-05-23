@@ -28,7 +28,7 @@ import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
 
 public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail {
 
-    private int ws;
+    private final int ws;
 
     /**
      * Constructs a trail with predefined size.

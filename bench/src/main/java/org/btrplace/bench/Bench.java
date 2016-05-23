@@ -105,7 +105,11 @@ public class Bench {
                     System.out.println();
                 }
                 store(i, stats, output);
+                stats = null;
             }
+            s = null;
+            System.gc();
+            System.gc();
         }
 
     }
