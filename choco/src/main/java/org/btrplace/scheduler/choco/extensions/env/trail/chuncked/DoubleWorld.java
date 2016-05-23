@@ -58,6 +58,7 @@ public class DoubleWorld implements World {
         now = 0;
         this.defaultSize = defaultSize;
     }
+
     /**
      * Reacts when a StoredDouble is modified: push the former value & timestamp
      * on the stacks.
@@ -86,7 +87,7 @@ public class DoubleWorld implements World {
     }
 
     private void resizeUpdateCapacity() {
-        int newCapacity = ((variableStack.length * 3) / 2);
+        int newCapacity = (variableStack.length * 3) / 2;
         StoredDouble[] tmp1 = new StoredDouble[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;

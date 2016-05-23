@@ -31,11 +31,4 @@ public interface LongTrail extends TraceableStorage {
     void savePreviousState(StoredLong v, long oldValue, int oldStamp);
 
     void buildFakeHistory(StoredLong v, long initValue, int fromStamp);
-
-    /**
-     * Returns the allocated trail size.
-     *
-     * @return a positive number
-     */
-    int allocated();
 }

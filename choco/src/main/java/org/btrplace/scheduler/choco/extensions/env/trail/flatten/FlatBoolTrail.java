@@ -78,7 +78,7 @@ public class FlatBoolTrail implements BoolTrail, TraceableStorage {
      *
      * @param worldIndex current world index
      */
-
+    @Override
     public void worldPush(int worldIndex) {
         worldStartLevels[worldIndex] = currentLevel;
         if (worldIndex == worldStartLevels.length - 1) {
@@ -93,7 +93,7 @@ public class FlatBoolTrail implements BoolTrail, TraceableStorage {
      *
      * @param worldIndex current world index
      */
-
+    @Override
     public void worldPop(int worldIndex) {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
@@ -114,9 +114,9 @@ public class FlatBoolTrail implements BoolTrail, TraceableStorage {
 
 
     /**
-     * Comits a world: merging it with the previous one.
+     * Commit a world: merging it with the previous one.
      */
-
+    @Override
     public void worldCommit(int worldIndex) {
         // principle:
         //   currentLevel decreases to end of previous world
@@ -149,7 +149,7 @@ public class FlatBoolTrail implements BoolTrail, TraceableStorage {
      * Reacts when a StoredInt is modified: push the former value & timestamp
      * on the stacks.
      */
-
+    @Override
     public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredBool v, boolean oldValue, int oldStamp) {
         valueStack[currentLevel] = oldValue;
         variableStack[currentLevel] = v;
@@ -189,7 +189,7 @@ public class FlatBoolTrail implements BoolTrail, TraceableStorage {
 
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((variableStack.length * 3) / 2);
+        final int newCapacity = (variableStack.length * 3) / 2;
         // first, copy the stack of variables
         final org.btrplace.scheduler.choco.extensions.env.StoredBool[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredBool[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
@@ -215,6 +215,7 @@ public class FlatBoolTrail implements BoolTrail, TraceableStorage {
      *
      * @return a positive number
      */
+    @Override
     public int allocated() {
         return valueStack.length;
     }

@@ -118,14 +118,40 @@ public class BenchTest {
         }
     }
 
-/*    @Test
+    @Test
     public void foo() throws Exception {
         String id = "bench/src/test/resources/std-perf/li6.gz";
         //String id = "bench/src/test/resources/wkld-tdsc/li/r5/p5000/c0/1.gz";
+
         Bench.main(new String[]{
                 "-i", id,
                 "--repair",
-                "-n","5",
+
         });
-    }*/
+    }
+
+    @Test
+    public void testAllocation() throws Exception {
+        String base = "bench/src/test/resources/std-perf/";
+        String[] ids = {
+                "li3.gz",
+                "li4.gz",
+                "li5.gz",
+                "li6.gz",
+                "nr3.gz",
+                "nr4.gz",
+                "nr5.gz",
+                "nr6.gz",
+                "issue-100.gz",
+        };
+        for (String id : ids) {
+            System.out.println("------- " + id + " ----------");
+            Bench.main(new String[]{
+                    "-i", base + id,
+                    "--repair",
+
+            });
+        }
+
+    }
 }

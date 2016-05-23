@@ -63,7 +63,7 @@ public class OperationWorld implements World {
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((valueStack.length * 3) / 2);
+        final int newCapacity = (valueStack.length * 3) / 2;
         // First, copy the stack of former values
         final Operation[] tmp2 = new Operation[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);

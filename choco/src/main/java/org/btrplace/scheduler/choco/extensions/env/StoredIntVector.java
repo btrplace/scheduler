@@ -33,7 +33,6 @@ public class StoredIntVector extends IStateIntVector {
 
     protected final StoredIntVectorTrail myTrail;
 
-
     /**
      * Constructs a stored search vector with an initial size, and initial values.
      *
@@ -76,7 +75,7 @@ public class StoredIntVector extends IStateIntVector {
      * @param minCapacity the necessary capacity.
      */
 
-    public void ensureCapacity(int minCapacity) {
+    private void ensureCapacity(int minCapacity) {
         int oldCapacity = elementData.length;
         if (minCapacity > oldCapacity) {
             int[] oldData = elementData;
@@ -97,7 +96,7 @@ public class StoredIntVector extends IStateIntVector {
      *
      * @param i The search to add.
      */
-
+    @Override
     public void add(int i) {
         int newsize = size.get() + 1;
         ensureCapacity(newsize);
@@ -115,11 +114,6 @@ public class StoredIntVector extends IStateIntVector {
     public void remove(int i) {
         System.arraycopy(elementData, i, elementData, i + 1, size.get());
         System.arraycopy(worldStamps, i, worldStamps, i + 1, size.get());
-
-        //        for(int j = i; j < size.get()-1; j++){
-        //            elementData[j] = elementData[j+1];
-        //            worldStamps[j] = worldStamps[j+1];
-        //        }
         int newsize = size.get() - 1;
         if (newsize >= 0)
             size.set(newsize);
@@ -129,7 +123,7 @@ public class StoredIntVector extends IStateIntVector {
      * removes the search at the end of the vector.
      * does nothing when called on an empty vector
      */
-
+    @Override
     public void removeLast() {
         int newsize = size.get() - 1;
         if (newsize >= 0)
@@ -140,11 +134,9 @@ public class StoredIntVector extends IStateIntVector {
     /**
      * Assigns a new value <code>val</code> to the element <code>index</code>.
      */
-
+    @Override
     public int set(int index, int val) {
         if (rangeCheck(index)) {
-            //<hca> je vire cet assert en cas de postCut il n est pas vrai ok ?
-            //assert(this.worldStamps[index] <= environment.getWorldIndex());
             return quickSet(index, val);
         }
         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
@@ -152,7 +144,7 @@ public class StoredIntVector extends IStateIntVector {
 
     @Override
     public final int quickSet(int index, int val) {
-        assert (rangeCheck(index));
+        assert rangeCheck(index);
         final int oldValue = elementData[index];
         if (val != oldValue) {
             final int oldStamp = this.worldStamps[index];
@@ -169,9 +161,8 @@ public class StoredIntVector extends IStateIntVector {
     /**
      * Sets an element without storing the previous value.
      */
-
     public int _set(int index, int val, int stamp) {
-        assert (rangeCheck(index));
+        assert rangeCheck(index);
         int oldval = elementData[index];
         elementData[index] = val;
         worldStamps[index] = stamp;

@@ -39,13 +39,14 @@ public abstract class ChunkedTrail<W extends World> implements TraceableStorage 
     /**
      * The default world size.
      */
-    public static final int DEFAULT_SIZE = 512;
+    public static final int DEFAULT_SIZE = 1024;
 
     /**
      * Moving down to the previous world.
      *
      * @param worldIndex current world index
      */
+    @Override
     public void worldPop(int worldIndex) {
         current.revert();
         current = null;
@@ -54,6 +55,7 @@ public abstract class ChunkedTrail<W extends World> implements TraceableStorage 
         }
     }
 
+    @Override
     public void worldCommit(int worldIndex) {
         throw new UnsupportedOperationException();
     }
@@ -67,6 +69,7 @@ public abstract class ChunkedTrail<W extends World> implements TraceableStorage 
      *
      * @return a positive number
      */
+    @Override
     public int allocated() {
         int n = 0;
         for (World w : worlds) {

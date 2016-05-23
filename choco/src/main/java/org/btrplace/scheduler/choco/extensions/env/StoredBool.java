@@ -19,8 +19,6 @@ package org.btrplace.scheduler.choco.extensions.env;
 
 import org.btrplace.scheduler.choco.extensions.env.trail.BoolTrail;
 import org.chocosolver.memory.IStateBool;
-import org.chocosolver.memory.trailing.trail.IStoredBoolTrail;
-import org.chocosolver.memory.trailing.trail.IStoredIntTrail;
 
 
 /**
@@ -47,6 +45,7 @@ public class StoredBool extends IStateBool {
      * Modifies the value and stores if needed the former value on the
      * env stack.
      */
+    @Override
     public final void set(final boolean y) {
         if (y != currentValue) {
             final int wi = environment.getWorldIndex();

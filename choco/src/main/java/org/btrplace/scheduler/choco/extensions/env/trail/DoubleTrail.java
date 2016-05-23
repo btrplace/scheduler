@@ -31,11 +31,4 @@ public interface DoubleTrail extends TraceableStorage {
     void savePreviousState(StoredDouble v, double oldValue, int oldStamp);
 
     void buildFakeHistory(StoredDouble v, double initValue, int fromStamp);
-
-    /**
-     * Returns the allocated trail size.
-     *
-     * @return a positive number
-     */
-    int allocated();
 }

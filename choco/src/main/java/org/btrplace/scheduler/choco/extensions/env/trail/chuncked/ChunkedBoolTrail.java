@@ -30,7 +30,7 @@ public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTra
 
     /**
      * Constructs a trail with predefined size.
-     * @param size
+     * @param size the default number of worlds
      */
     public ChunkedBoolTrail(int size) {
         worlds = new BoolWorld[size];
@@ -51,7 +51,7 @@ public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTra
     }
 
     private void resizeWorlds() {
-        int newCapacity = ((worlds.length * 3) / 2);
+        int newCapacity = (worlds.length * 3) / 2;
         BoolWorld [] tmp = new BoolWorld[newCapacity];
         System.arraycopy(worlds, 0, tmp, 0, worlds.length);
         worlds = tmp;

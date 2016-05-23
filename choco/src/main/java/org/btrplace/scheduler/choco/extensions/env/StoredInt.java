@@ -17,10 +17,8 @@
  */
 
 package org.btrplace.scheduler.choco.extensions.env;
+
 import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
-
-
-
 import org.chocosolver.memory.IStateInt;
 
 /**
@@ -47,6 +45,7 @@ public class StoredInt extends IStateInt {
      * Modifies the value and stores if needed the former value on the
      * env stack.
      */
+    @Override
     public final void set(final int y) {
         if (y != currentValue) {
             final int wi = environment.getWorldIndex();

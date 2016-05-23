@@ -51,7 +51,7 @@ public class ChunkedLongTrail extends ChunkedTrail<LongWorld> implements LongTra
     }
 
     private void resizeWorlds() {
-        int newCapacity = ((worlds.length * 3) / 2);
+        int newCapacity = (worlds.length * 3) / 2;
         LongWorld [] tmp = new LongWorld[newCapacity];
         System.arraycopy(worlds, 0, tmp, 0, worlds.length);
         worlds = tmp;

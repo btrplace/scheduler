@@ -83,7 +83,6 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
      * Constructs a trail for the specified environment with the
      * specified numbers of updates and worlds.
      */
-
     public StoredDoubleVectorTrail(MyEnvironmentTrailing env, int nUpdates, int nWorlds) {
         this.environment = env;
         this.currentLevel = 0;
@@ -99,7 +98,6 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
     /**
      * Reacts on the modification of an element in a stored search vector.
      */
-
     public void savePreviousState(StoredDoubleVector vect, int index, double oldValue, int oldStamp) {
         this.vectorStack[currentLevel] = vect;
         this.indexStack[currentLevel] = index;
@@ -112,7 +110,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((maxUpdates * 3) / 2);
+        final int newCapacity = (maxUpdates * 3) / 2;
         // first, copy the stack of variables
         final StoredDoubleVector[] tmp1 = new StoredDoubleVector[newCapacity];
         System.arraycopy(vectorStack, 0, tmp1, 0, vectorStack.length);
@@ -134,6 +132,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
         maxUpdates = newCapacity;
     }
 
+    @Override
     public void resizeWorldCapacity(int newWorldCapacity) {
         final int[] tmp = new int[newWorldCapacity];
         System.arraycopy(worldStartLevels, 0, tmp, 0, worldStartLevels.length);
@@ -145,7 +144,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
      *
      * @param  worldIndex current world index
      */
-
+    @Override
     public void worldPush(int worldIndex) {
         this.worldStartLevels[worldIndex] = currentLevel;
     }
@@ -156,7 +155,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
      *
      * @param worldIndex current world index
      */
-
+    @Override
     public void worldPop(int worldIndex) {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
@@ -170,7 +169,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
     /**
      * Comits a world: merging it with the previous one.
      */
-
+    @Override
     public void worldCommit(int worldIndex) {
         // principle:
         //   currentLevel decreases to end of previous world
@@ -204,7 +203,6 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
     /**
      * Returns the current size of the stack.
      */
-
     public int getSize() {
         return currentLevel;
     }

@@ -105,7 +105,6 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
      */
     @Override
     public void worldCommit() {
-        //code optim.: replace loop by enumeration;
         if (currentWorld == 0) {
             throw new IllegalStateException("Commit in world 0?");
         }
@@ -216,11 +215,17 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
     public StoredDoubleVectorTrail getDoubleVectorTrail() {
         throw new UnsupportedOperationException();
     }
-    
+
+    @Override
     public void save(Operation oldValue) {
         getOperationTrail().savePreviousState(oldValue);
     }
 
+    /**
+     * Print statistics for each trails regarding to their memory usage.
+     *
+     * @return a String
+     */
     public String statistics() {
         StringBuilder b = new StringBuilder();
         for (IStorage s : trails) {

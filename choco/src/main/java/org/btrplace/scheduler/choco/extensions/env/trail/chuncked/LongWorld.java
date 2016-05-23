@@ -87,7 +87,7 @@ public class LongWorld implements World {
     }
 
     private void resizeUpdateCapacity() {
-        int newCapacity = ((variableStack.length * 3) / 2);
+        int newCapacity = (variableStack.length * 3) / 2;
         StoredLong[] tmp1 = new StoredLong[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;

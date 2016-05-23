@@ -63,6 +63,7 @@ public class FlatOperationTrail implements OperationTrail, TraceableStorage {
      *
      * @param worldIndex current world index
      */
+    @Override
     public void worldPush(int worldIndex) {
         worldStartLevels[worldIndex] = currentLevel;
         if (worldIndex == worldStartLevels.length - 1) {
@@ -76,6 +77,7 @@ public class FlatOperationTrail implements OperationTrail, TraceableStorage {
      *
      * @param worldIndex current world index
      */
+    @Override
     public void worldPop(int worldIndex) {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
@@ -94,8 +96,9 @@ public class FlatOperationTrail implements OperationTrail, TraceableStorage {
 
 
     /**
-     * Comits a world: merging it with the previous one.
+     * Commit a world: merging it with the previous one.
      */
+    @Override
     public void worldCommit(int worldIndex) {
     }
 
@@ -103,6 +106,7 @@ public class FlatOperationTrail implements OperationTrail, TraceableStorage {
      * Reacts when a StoredInt is modified: push the former value & timestamp
      * on the stacks.
      */
+    @Override
     public void savePreviousState(Operation oldValue) {
         valueStack[currentLevel] = oldValue;
         currentLevel++;
@@ -112,14 +116,14 @@ public class FlatOperationTrail implements OperationTrail, TraceableStorage {
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((valueStack.length * 3) / 2);
+        final int newCapacity = (valueStack.length * 3) / 2;
         // First, copy the stack of former values
         final Operation[] tmp2 = new Operation[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
     }
 
-    public void resizeWorldCapacity(int newWorldCapacity) {
+    private void resizeWorldCapacity(int newWorldCapacity) {
         final int[] tmp = new int[newWorldCapacity];
         System.arraycopy(worldStartLevels, 0, tmp, 0, worldStartLevels.length);
         worldStartLevels = tmp;
@@ -130,6 +134,7 @@ public class FlatOperationTrail implements OperationTrail, TraceableStorage {
      *
      * @return a positive number
      */
+    @Override
     public int allocated() {
         return valueStack.length;
     }

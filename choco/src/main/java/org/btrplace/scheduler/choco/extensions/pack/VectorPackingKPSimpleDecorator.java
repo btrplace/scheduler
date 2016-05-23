@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco.extensions.pack;
 
 import org.chocosolver.memory.IStateBitSet;
 import org.chocosolver.memory.structure.S64BitSet;
-import org.chocosolver.solver.ICause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.util.iterators.DisposableValueIterator;
 

@@ -90,7 +90,7 @@ public class BoolWorld implements World{
     }
 
     private void resizeUpdateCapacity() {
-        int newCapacity = ((variableStack.length * 3) / 2);
+        int newCapacity = (variableStack.length * 3) / 2;
         StoredBool[] tmp1 = new StoredBool[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;

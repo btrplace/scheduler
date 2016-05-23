@@ -29,48 +29,41 @@ public class StoredIntVectorTrail implements TraceableStorage {
     /**
      * The current environment.
      */
-
     private final MyEnvironmentTrailing environment;
 
 
     /**
      * All the stored search vectors.
      */
-
     private StoredIntVector[] vectorStack;
 
 
     /**
      * Indices of the previous values in the stored vectors.
      */
-
     private int[] indexStack;
 
 
     /**
      * Previous values of the stored vector elements.
      */
-
     private int[] valueStack;
 
 
     /**
      * World stamps associated to the previous values
      */
-
     private int[] stampStack;
 
     /**
      * The last world an search vector was modified in.
      */
-
     private int currentLevel;
 
 
     /**
      * Starts of levels in all the history arrays.
      */
-
     private int[] worldStartLevels;
 
     /**
@@ -83,7 +76,6 @@ public class StoredIntVectorTrail implements TraceableStorage {
      * Constructs a trail for the specified environment with the
      * specified numbers of updates and worlds.
      */
-
     public StoredIntVectorTrail(MyEnvironmentTrailing env, int nUpdates, int nWorlds) {
         this.environment = env;
         this.currentLevel = 0;
@@ -99,7 +91,6 @@ public class StoredIntVectorTrail implements TraceableStorage {
     /**
      * Reacts on the modification of an element in a stored search vector.
      */
-
     public void savePreviousState(StoredIntVector vect, int index, int oldValue, int oldStamp) {
         this.vectorStack[currentLevel] = vect;
         this.indexStack[currentLevel] = index;
@@ -112,7 +103,7 @@ public class StoredIntVectorTrail implements TraceableStorage {
     }
 
     private void resizeUpdateCapacity() {
-        final int newCapacity = ((maxUpdates * 3) / 2);
+        final int newCapacity = (maxUpdates * 3) / 2;
         // first, copy the stack of variables
         final StoredIntVector[] tmp1 = new StoredIntVector[newCapacity];
         System.arraycopy(vectorStack, 0, tmp1, 0, vectorStack.length);
@@ -145,7 +136,7 @@ public class StoredIntVectorTrail implements TraceableStorage {
      *
      * @param worldIndex current world index
      */
-
+    @Override
     public void worldPush(int worldIndex) {
         this.worldStartLevels[worldIndex] = currentLevel;
         if (worldIndex == worldStartLevels.length - 1) {
@@ -160,7 +151,7 @@ public class StoredIntVectorTrail implements TraceableStorage {
      *
      * @param worldIndex current world index
      */
-
+    @Override
     public void worldPop(int worldIndex) {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
@@ -174,7 +165,7 @@ public class StoredIntVectorTrail implements TraceableStorage {
     /**
      * Comits a world: merging it with the previous one.
      */
-
+    @Override
     public void worldCommit(int worldIndex) {
         // principle:
         //   currentLevel decreases to end of previous world

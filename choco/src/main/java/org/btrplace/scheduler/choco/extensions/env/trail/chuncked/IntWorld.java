@@ -88,7 +88,7 @@ public class IntWorld implements World{
      * Resize the stack.
      */
     private void resizeUpdateCapacity() {
-        int newCapacity = ((variableStack.length * 3) / 2);
+        int newCapacity = (variableStack.length * 3) / 2;
         StoredInt[] tmp1 = new StoredInt[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;

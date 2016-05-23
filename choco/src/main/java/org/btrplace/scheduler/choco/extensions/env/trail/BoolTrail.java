@@ -30,11 +30,4 @@ public interface BoolTrail extends TraceableStorage {
     void savePreviousState(StoredBool v, boolean oldValue, int oldStamp);
 
     void buildFakeHistory(StoredBool v, boolean initValue, int fromStamp);
-
-    /**
-     * Returns the allocated trail size.
-     *
-     * @return a positive number
-     */
-    int allocated();
 }

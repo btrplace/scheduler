@@ -53,7 +53,7 @@ public class ChunkedDoubleTrail extends ChunkedTrail<DoubleWorld> implements Dou
     }
 
     private void resizeWorlds() {
-        int newCapacity = ((worlds.length * 3) / 2);
+        int newCapacity = (worlds.length * 3) / 2;
         DoubleWorld [] tmp = new DoubleWorld[newCapacity];
         System.arraycopy(worlds, 0, tmp, 0, worlds.length);
         worlds = tmp;
