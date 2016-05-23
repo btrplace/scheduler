@@ -27,19 +27,22 @@ import org.btrplace.scheduler.choco.extensions.env.trail.LongTrail;
  */
 public class ChunkedLongTrail extends ChunkedTrail<LongWorld> implements LongTrail {
 
+    private int ws;
 
     /**
      * Constructs a trail with predefined size.
-     * @param size the trail size
+     * @param ws the initial world size
+     * @param nbWorlds the initial number of worlds
      */
-    public ChunkedLongTrail(int size) {
-        worlds = new LongWorld[size];
+    public ChunkedLongTrail(int ws, int nbWorlds) {
+        worlds = new LongWorld[nbWorlds];
+        this.ws = ws;
     }
 
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new LongWorld(preferredSize());
+            current = new LongWorld(ws);
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

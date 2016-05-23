@@ -28,18 +28,22 @@ import org.btrplace.scheduler.choco.extensions.env.trail.BoolTrail;
  */
 public class ChunkedBoolTrail extends ChunkedTrail<BoolWorld> implements BoolTrail {
 
+    private int ws;
+
     /**
      * Constructs a trail with predefined size.
-     * @param size the default number of worlds
+     * @param ws the initial world size
+     * @param nbWorlds the initial number of worlds
      */
-    public ChunkedBoolTrail(int size) {
-        worlds = new BoolWorld[size];
+    public ChunkedBoolTrail(int ws, int nbWorlds) {
+        worlds = new BoolWorld[nbWorlds];
+        this.ws = ws;
     }
 
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new BoolWorld(preferredSize());
+            current = new BoolWorld(ws);
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

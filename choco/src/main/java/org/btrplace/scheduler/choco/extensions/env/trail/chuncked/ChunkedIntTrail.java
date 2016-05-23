@@ -28,18 +28,22 @@ import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
 
 public class ChunkedIntTrail extends ChunkedTrail<IntWorld> implements IntTrail {
 
+    private int ws;
+
     /**
      * Constructs a trail with predefined size.
-     * @param size the trail default size
+     * @param ws the initial world size
+     * @param nbWorlds the initial number of worlds
      */
-    public ChunkedIntTrail(int size) {
-        worlds = new IntWorld[size];
+    public ChunkedIntTrail(int ws, int nbWorlds) {
+        worlds = new IntWorld[nbWorlds];
+        this.ws = ws;
     }
 
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new IntWorld(preferredSize());
+            current = new IntWorld(ws);
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

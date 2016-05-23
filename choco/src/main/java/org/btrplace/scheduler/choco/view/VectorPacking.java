@@ -31,7 +31,7 @@ import java.util.List;
 
 
 /*
- * Created on 17/09/14.
+ * View to generated the vector packing constraint.
  *
  * @author Sophie Demassey
  */

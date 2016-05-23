@@ -212,6 +212,11 @@ public class RelocatableVM implements KeepRunningVM {
         migrationTask = VariableFactory.task(start, duration, end);
     }
 
+    /**
+     * Get the task associated to the migration
+     *
+     * @return a task
+     */
     public Task getMigrationTask() {
         return migrationTask;
     }

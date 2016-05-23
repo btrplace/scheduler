@@ -29,19 +29,22 @@ import org.btrplace.scheduler.choco.extensions.env.trail.DoubleTrail;
  */
 public class ChunkedDoubleTrail extends ChunkedTrail<DoubleWorld> implements DoubleTrail {
 
+    private int ws;
 
     /**
      * Constructs a trail with predefined size.
-     * @param size the default size
+     * @param ws the initial world size
+     * @param nbWorlds the initial number of worlds
      */
-    public ChunkedDoubleTrail(int size) {
-        worlds = new DoubleWorld[size];
+    public ChunkedDoubleTrail(int ws, int nbWorlds) {
+        worlds = new DoubleWorld[nbWorlds];
+        this.ws = ws;
     }
 
     @Override
     public void worldPush(int worldIndex) {
         if (worlds[worldIndex] == null) {
-            current = new DoubleWorld(preferredSize());
+            current = new DoubleWorld(ws);
             worlds[worldIndex] = current;
         } else {
             current = worlds[worldIndex];

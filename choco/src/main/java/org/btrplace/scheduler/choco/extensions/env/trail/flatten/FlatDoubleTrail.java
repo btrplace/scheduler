@@ -204,7 +204,7 @@ public class FlatDoubleTrail implements DoubleTrail, TraceableStorage {
         stampStack = tmp3;
     }
 
-    public void resizeWorldCapacity(int newWorldCapacity) {
+    private void resizeWorldCapacity(int newWorldCapacity) {
         final int[] tmp = new int[newWorldCapacity];
         System.arraycopy(worldStartLevels, 0, tmp, 0, worldStartLevels.length);
         worldStartLevels = tmp;

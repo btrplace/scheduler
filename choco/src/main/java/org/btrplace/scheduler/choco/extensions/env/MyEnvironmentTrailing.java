@@ -19,10 +19,10 @@ package org.btrplace.scheduler.choco.extensions.env;
 
 
 import org.btrplace.scheduler.choco.extensions.env.trail.*;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedBoolTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedDoubleTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedIntTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedLongTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatBoolTrail;
+import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatDoubleTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatOperationTrail;
 import org.chocosolver.memory.*;
 import org.chocosolver.memory.structure.Operation;
@@ -34,9 +34,6 @@ import org.chocosolver.memory.structure.Operation;
  * It is responsible for managing backtrackable data.
  */
 public final class MyEnvironmentTrailing extends AbstractEnvironment {
-
-    //Contains all the {@link IStorage} trails for
-    // storing different kinds of data.
 
     private IntTrail intTrail;
     private BoolTrail boolTrail;
@@ -57,12 +54,11 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
      */
     public MyEnvironmentTrailing() {
         super(Type.FLAT);
-        System.out.println("custom trailing");
         trails = new TraceableStorage[6];
-        intTrail = new ChunkedIntTrail(128);
-        boolTrail = new ChunkedBoolTrail(128);
-        longTrail = new ChunkedLongTrail(128);
-        doubleTrail = new ChunkedDoubleTrail(128);
+        intTrail = new ChunkedIntTrail(1024, 1024);
+        longTrail = new ChunkedLongTrail(1024, 1024);
+        boolTrail = new FlatBoolTrail(128, 1024);
+        doubleTrail = new FlatDoubleTrail(1024, 1024);
         operationTrail = new FlatOperationTrail(1000, 5000);
         intVectorTrail = new StoredIntVectorTrail(this, 128, 1000);
         trails[0] = intTrail;
@@ -80,12 +76,11 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
     public void worldPush() {
         timestamp++;
         final int wi = currentWorld + 1;
-        for (int i = 0; i < trails.length; i++) {
+        for (int i = trails.length - 1; i >= 0; i--) {
             trails[i].worldPush(wi);
         }
         currentWorld++;
     }
-
 
     /**
      * {@inheritDoc}
@@ -93,9 +88,8 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
     @Override
     public void worldPop() {
         timestamp++;
-        final int wi = currentWorld;
         for (int i = trails.length - 1; i >= 0; i--) {
-            trails[i].worldPop(wi);
+            trails[i].worldPop(currentWorld);
         }
         currentWorld--;
     }
@@ -108,80 +102,52 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
         if (currentWorld == 0) {
             throw new IllegalStateException("Commit in world 0?");
         }
-        final int wi = currentWorld;
         for (int i = trails.length; i >= 0; i--) {
-            trails[i].worldCommit(wi);
+            trails[i].worldCommit(currentWorld);
         }
         currentWorld--;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateInt makeInt() {
         return makeInt(0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateInt makeInt(final int initialValue) {
         return new StoredInt(this, initialValue);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateBool makeBool(final boolean initialValue) {
         return new StoredBool(this, initialValue);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateIntVector makeIntVector(final int size, final int initialValue) {
         return new StoredIntVector(this, size, initialValue);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateDoubleVector makeDoubleVector(final int size, final double initialValue) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateDouble makeFloat() {
         return makeFloat(Double.NaN);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateDouble makeFloat(final double initialValue) {
         return new StoredDouble(this, initialValue);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateLong makeLong() {
         return makeLong(0);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public IStateLong makeLong(final long init) {
         return new StoredLong(this, init);
