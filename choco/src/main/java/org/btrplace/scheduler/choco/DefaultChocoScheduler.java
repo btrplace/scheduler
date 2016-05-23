@@ -54,12 +54,13 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     private InstanceSolver runner;
 
     private StagedSolvingStatistics stages;
+
     /**
      * Make a new algorithm.
      *
      * @param ps the parameters to use to configure the algorithm
      */
-    public DefaultChocoScheduler(DefaultParameters ps) {
+    public DefaultChocoScheduler(Parameters ps) {
         params = ps;
         runner = new SingleRunner();
     }
