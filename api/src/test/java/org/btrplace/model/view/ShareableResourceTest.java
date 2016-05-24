@@ -84,27 +84,6 @@ public class ShareableResourceTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
-    public void testGets() {
-        ShareableResource rc = new ShareableResource("foo");
-        for (int i = 0; i < 10; i++) {
-            rc.setCapacity(nodes.get(i), i);
-        }
-        List<Integer> values = rc.getCapacities(nodes);
-        for (int i = 0; i < 10; i++) {
-            Assert.assertEquals(values.get(i), (Integer) i);
-        }
-
-        for (int i = 0; i < 10; i++) {
-            rc.setConsumption(vms.get(i), i);
-        }
-        values = rc.getConsumptions(vms);
-        for (int i = 0; i < 10; i++) {
-            Assert.assertEquals(values.get(i), (Integer) i);
-        }
-
-    }
-
-    @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testDefined() {
         ShareableResource rc = new ShareableResource("foo");
         Model mo = new DefaultModel();
