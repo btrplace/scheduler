@@ -98,7 +98,7 @@ public class IssuesTest {
 
             // IF the node is online and hosting VMs -> busy = 1.
             busy[i] = VF.bool("busy" + n, rp.getSolver());
-            ChocoUtils.postIfOnlyIf(solver, busy[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], ">=", 1));
+            ChocoUtils.postIfOnlyIf(rp, busy[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], ">=", 1));
             i++;
         }
 
@@ -242,7 +242,7 @@ public class IssuesTest {
             solver.post(elem);
             // IF number of VMs on a node is 0 -> Idle
             idles[i] = VF.bool("idle" + n, solver);
-            ChocoUtils.postIfOnlyIf(solver, idles[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], "=", 0));
+            ChocoUtils.postIfOnlyIf(rp, idles[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], "=", 0));
             i++;
         }
         IntVar sum = VF.bounded("sum", 0, 1000, solver);

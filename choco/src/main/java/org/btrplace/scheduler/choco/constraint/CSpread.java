@@ -34,6 +34,7 @@ import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.VF;
 
 import java.util.*;
 
@@ -76,14 +77,14 @@ public class CSpread implements ChocoConstraint {
                 for (int j = 0; j < i; j++) {
                     VM vmJ = vms.get(j);
                     VMTransition aJ = rp.getVMAction(vmJ);
-                    disallowOverlap(s, aI, aJ);
+                    disallowOverlap(rp, aI, aJ);
                 }
             }
         }
         return true;
     }
 
-    private static void disallowOverlap(Solver s, VMTransition t1, VMTransition t2) {
+    private static void disallowOverlap(ReconfigurationProblem rp, VMTransition t1, VMTransition t2) {
         Slice dI = t1.getDSlice();
         Slice cJ = t1.getCSlice();
 
@@ -91,25 +92,27 @@ public class CSpread implements ChocoConstraint {
         Slice cI = t2.getCSlice();
 
         if (dI != null && cJ != null) {
-            precedenceIfOverlap(s, dI, cJ);
+            precedenceIfOverlap(rp, dI, cJ);
         }
         //The inverse relation
         if (dJ != null && cI != null) {
-            precedenceIfOverlap(s, dJ, cI);
+            precedenceIfOverlap(rp, dJ, cI);
         }
     }
 
     /**
      * Establish the precedence constraint {@code c.getEnd() <= d.getStart()} if the two slices may overlap.
      */
-    private static void precedenceIfOverlap(Solver s, Slice d, Slice c) {
+    private static void precedenceIfOverlap(ReconfigurationProblem rp, Slice d, Slice c) {
+        Solver s = rp.getSolver();
         //No need to place the constraints if the slices do not have a chance to overlap
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
-            BoolVar eq = new Arithmetic(d.getHoster(), Operator.EQ, c.getHoster()).reif();
+            BoolVar eq = VF.bool(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"), s);
+            new Arithmetic(d.getHoster(), Operator.EQ, c.getHoster()).reifyWith(eq);
             Arithmetic leqCstr = new Arithmetic(c.getEnd(), Operator.LE, d.getStart());
-            ChocoUtils.postImplies(s, eq, leqCstr);
+            ChocoUtils.postImplies(rp, eq, leqCstr);
         }
     }
 

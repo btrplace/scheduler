@@ -85,7 +85,7 @@ public class CNoDelay implements ChocoConstraint {
         } else {
             Arithmetic c = new Arithmetic(d.getStart(), Operator.EQ, 0);
             BoolVar move = VF.not(((RelocatableVM) vt).isStaying());
-            ChocoUtils.postImplies(s, move, c);
+            ChocoUtils.postImplies(rp, move, c);
         }
         return true;
     }
