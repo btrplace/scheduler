@@ -127,7 +127,7 @@ public class ShutdownableNode implements NodeTransition {
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
 
         /* Ae = As + D */
-        new TaskMonitor(start, duration, end);
+        TaskMonitor.build(start, duration, end);
 
 
         //The node is already online, so it can host VMs at the beginning of the RP

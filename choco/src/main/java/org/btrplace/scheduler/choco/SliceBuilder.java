@@ -84,7 +84,7 @@ public class SliceBuilder {
         //UB for the time variables
         if (!start.isInstantiatedTo(0)) {
             //enforces start <= end, duration <= end, start + duration == end
-            new TaskMonitor(start, duration, end);
+            TaskMonitor.build(start, duration, end);
         }
         //start == 0 --> start <= end. duration = end enforced by TaskScheduler
         return new Slice(vm, start, end, duration, hoster);

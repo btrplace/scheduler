@@ -128,7 +128,7 @@ public class BootableNode implements NodeTransition {
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
         /* Ae = As + D */
         /*Task t = */
-        new TaskMonitor(start, effectiveDuration, end);
+        TaskMonitor.build(start, effectiveDuration, end);
 
         /* Hs = Ae */
         hostingStart = end;

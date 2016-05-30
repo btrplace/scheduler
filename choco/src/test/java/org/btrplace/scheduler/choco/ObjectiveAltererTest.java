@@ -21,8 +21,6 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.scheduler.SchedulerException;
-import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,8 +35,6 @@ public class ObjectiveAltererTest {
     public void testBasic() throws SchedulerException {
         Model mo = new DefaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        IntVar obj = VF.bounded("obj", 10, 1000, rp.getSolver());
-        //rp.getSolver().setObjective(obj);
         ObjectiveAlterer oa = (rp1, currentValue) -> currentValue * 2;
         Assert.assertEquals(oa.newBound(rp, 25), 50);
         Assert.assertEquals(oa.newBound(rp, 50), 100);

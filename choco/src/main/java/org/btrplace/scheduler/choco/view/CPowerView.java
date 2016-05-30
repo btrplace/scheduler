@@ -59,7 +59,7 @@ public class CPowerView implements ChocoView {
             if (na instanceof ShutdownableNode) {
                 powerStarts.put(rp.getNode(n), rp.getStart());
                 IntVar powerEnd = rp.makeUnboundedDuration("NodeActionType(", n, ").Pe");
-                new TaskMonitor(na.getHostingEnd(), na.getDuration(), powerEnd);
+                TaskMonitor.build(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
                 rp.getSolver().post(ICF.arithm(powerEnd,"<=",rp.getEnd()));
             } else if (na instanceof BootableNode) {

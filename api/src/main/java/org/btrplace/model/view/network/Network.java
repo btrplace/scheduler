@@ -361,27 +361,6 @@ public class Network implements ModelView {
     }
 
     /**
-     * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
-     *
-     * @param out               the output dot file to create
-     * @param fromLeftToRight   if true: force diagram's shapes to be placed side by side (create larger diagrams) 
-     * @throws IOException if an error occurred while writing
-     */
-    public void generateDot(String out, boolean fromLeftToRight) throws IOException {
-        generateDot(null, out, fromLeftToRight);
-    }
-
-    /**
-     * Generate a dot file (diagram) of the current network infrastructure, included all connected elements and links.
-     *
-     * @param out   the output dot file to create
-     * @throws IOException if an error occurred while writing
-     */
-    public void generateDot(String out) throws IOException {
-        generateDot(null, out, false);
-    }
-
-    /**
      * Set the routing implementation to use
      *
      * @param routing the routing implementation

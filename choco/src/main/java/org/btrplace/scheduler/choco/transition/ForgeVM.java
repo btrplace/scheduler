@@ -92,7 +92,7 @@ public class ForgeVM implements VMTransition {
 
         start = rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").start");
         end = rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").stop");
-        new TaskMonitor(start, duration, end);
+        TaskMonitor.build(start, duration, end);
         s.post(IntConstraintFactory.arithm(duration, ">=", d));
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
     }

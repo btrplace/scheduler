@@ -19,12 +19,11 @@
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
 import org.btrplace.scheduler.choco.extensions.env.trail.DoubleTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.TraceableStorage;
 
 /**
  * @author Fabien Hermenier
  */
-public class FlatDoubleTrail implements DoubleTrail, TraceableStorage {
+public class FlatDoubleTrail implements DoubleTrail {
 
 
     /**

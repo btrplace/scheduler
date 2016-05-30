@@ -61,7 +61,7 @@ public class VectorPackingKPSimpleDecorator {
      * initialize the lists of candidates
      *
      */
-    protected void postInitialize() throws ContradictionException{
+    protected void postInitialize() {
         for (int i = 0; i < p.bins.length; i++) {
             if (!p.bins[i].isInstantiated()) {
                 DisposableValueIterator it = p.bins[i].getValueIterator(true);

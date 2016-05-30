@@ -19,13 +19,12 @@
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
 import org.btrplace.scheduler.choco.extensions.env.trail.OperationTrail;
-import org.btrplace.scheduler.choco.extensions.env.trail.TraceableStorage;
 import org.chocosolver.memory.structure.Operation;
 
 /**
  * @author Fabien Hermenier
  */
-public class FlatOperationTrail implements OperationTrail, TraceableStorage {
+public class FlatOperationTrail implements OperationTrail {
 
 
     /**

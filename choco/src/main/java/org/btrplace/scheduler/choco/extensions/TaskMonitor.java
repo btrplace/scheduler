@@ -37,13 +37,26 @@ public class TaskMonitor implements IVariableMonitor<IntVar> {
     private IntVar end;
 
     /**
+     * Make a new Monitor
+     *
+     * @param start    the task start moment
+     * @param duration the task duration
+     * @param end      the task end
+     * @return the resulting task.
+     */
+    public static TaskMonitor build(IntVar start, IntVar duration, IntVar end) {
+        TaskMonitor monitor = new TaskMonitor(start, duration, end);
+        return monitor;
+    }
+
+    /**
      * Make a new monitor.
      *
      * @param start    the task start moment
      * @param duration the task duration
      * @param end      the task end
      */
-    public TaskMonitor(IntVar start, IntVar duration, IntVar end) {
+    private TaskMonitor(IntVar start, IntVar duration, IntVar end) {
         this.start = start;
         this.duration = duration;
         this.end = end;
