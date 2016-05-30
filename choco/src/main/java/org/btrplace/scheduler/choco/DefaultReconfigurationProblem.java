@@ -32,6 +32,7 @@ import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.Cumulatives;
 import org.btrplace.scheduler.choco.view.Packing;
+import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -79,7 +80,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private Model model;
 
     private Solver solver;
-    private MyEnvironmentTrailing env;
 
     private Set<VM> ready;
     private Set<VM> running;
@@ -142,7 +142,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         model = m;
         durEval = ps.getDurationEvaluators();
 
-        env = new MyEnvironmentTrailing();
+        IEnvironment env = new MyEnvironmentTrailing();
         solver = new Solver(env, "");
         solver.set(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
