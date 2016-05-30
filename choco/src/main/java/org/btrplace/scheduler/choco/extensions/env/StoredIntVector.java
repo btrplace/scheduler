@@ -41,7 +41,7 @@ public class StoredIntVector extends IStateIntVector {
      * @param initialValue The initial common value.
      */
 
-    public StoredIntVector(MyEnvironmentTrailing env, int initialSize, int initialValue) {
+    public StoredIntVector(ChunkedTrailing env, int initialSize, int initialValue) {
         super(env, initialSize, initialValue);
         int initialCapacity = Math.max(MIN_CAPACITY, initialSize);
         int w = env.getWorldIndex();
@@ -54,7 +54,7 @@ public class StoredIntVector extends IStateIntVector {
     }
 
 
-    public StoredIntVector(MyEnvironmentTrailing env, int[] entries) {
+    public StoredIntVector(ChunkedTrailing env, int[] entries) {
         super(env, entries);
         int initialCapacity = Math.max(MIN_CAPACITY, entries.length);
         int w = env.getWorldIndex();

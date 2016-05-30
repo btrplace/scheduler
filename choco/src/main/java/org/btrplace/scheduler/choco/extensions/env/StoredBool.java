@@ -33,7 +33,7 @@ public class StoredBool extends IStateBool {
      * Note: this constructor should not be used directly: one should instead
      * use the IEnvironment factory
      */
-    public StoredBool(final MyEnvironmentTrailing env, final boolean i) {
+    public StoredBool(final ChunkedTrailing env, final boolean i) {
         super(env, i);
         myTrail = env.getBoolTrail();
         if(env.fakeHistoryNeeded()){

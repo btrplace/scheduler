@@ -33,7 +33,7 @@ public class StoredLong extends IStateLong {
      * Note: this constructor should not be used directly: one should instead
      * use the IEnvironment factory
      */
-    public StoredLong(final MyEnvironmentTrailing env, final long i) {
+    public StoredLong(final ChunkedTrailing env, final long i) {
         super(env, i);
         myTrail = env.getLongTrail();
         if(env.fakeHistoryNeeded()){

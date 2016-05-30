@@ -33,7 +33,7 @@ public class StoredDouble extends IStateDouble {
      * Note: this constructor should not be used directly: one should instead
      * use the IEnvironment factory
      */
-    public StoredDouble(final MyEnvironmentTrailing env, final double i) {
+    public StoredDouble(final ChunkedTrailing env, final double i) {
         super(env, i);
         myTrail = env.getDoubleTrail();
         if(env.fakeHistoryNeeded()){

@@ -267,4 +267,14 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     public List<Class<? extends ChocoView>> getChocoViews() {
         return params.getChocoViews();
     }
+
+    @Override
+    public EnvironmentFactory getEnvironmentFactory() {
+        return params.getEnvironmentFactory();
+    }
+
+    @Override
+    public Parameters setEnvironmentFactory(EnvironmentFactory f) {
+        return params.setEnvironmentFactory(f);
+    }
 }

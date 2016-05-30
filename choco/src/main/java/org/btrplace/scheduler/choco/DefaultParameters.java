@@ -25,6 +25,8 @@ import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives;
 import org.btrplace.scheduler.choco.view.DefaultCumulatives;
 import org.btrplace.scheduler.choco.view.VectorPacking;
+import org.chocosolver.memory.IEnvironment;
+import org.chocosolver.memory.trailing.EnvironmentTrailing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,7 @@ import java.util.List;
  * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.VectorPacking}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Cumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultCumulatives}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.AliasedCumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives}</li>
+ * <li>The {@link IEnvironment} is the default choco trailing environment. For large scale experiment, use</li>
  * </ul>
  *
  * @author Fabien Hermenier
@@ -49,6 +52,8 @@ public class DefaultParameters implements Parameters {
     private ChocoMapper mapper;
 
     private TransitionFactory amf;
+
+    private EnvironmentFactory envf;
 
     private boolean optimize = false;
 
@@ -75,6 +80,7 @@ public class DefaultParameters implements Parameters {
         mapper = ChocoMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
         amf = TransitionFactory.newBundle();
+        envf = mo -> new EnvironmentTrailing();
         //Default solver views
         views = new ArrayList<>();
         views.add(VectorPacking.class);
@@ -82,6 +88,11 @@ public class DefaultParameters implements Parameters {
         views.add(DefaultAliasedCumulatives.class);
     }
 
+    /**
+     * Copy constructor for the parameters.
+     *
+     * @param ps the parameters to copy
+     */
     public DefaultParameters(Parameters ps) {
         seed = ps.getRandomSeed();
         amf = ps.getTransitionFactory();
@@ -94,6 +105,7 @@ public class DefaultParameters implements Parameters {
         verbosityLevel = ps.getVerbosity();
         views = ps.getChocoViews();
         mapper = ps.getMapper();
+        envf = ps.getEnvironmentFactory();
     }
 
     @Override
@@ -213,5 +225,16 @@ public class DefaultParameters implements Parameters {
     @Override
     public List<Class<? extends ChocoView>> getChocoViews() {
         return views;
+    }
+
+    @Override
+    public EnvironmentFactory getEnvironmentFactory() {
+        return envf;
+    }
+
+    @Override
+    public Parameters setEnvironmentFactory(EnvironmentFactory f) {
+        envf = f;
+        return this;
     }
 }

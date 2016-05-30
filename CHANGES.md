@@ -19,6 +19,7 @@ modeled using less constraints and variables. The solver has been tuned.
   JSON.
 - the bench module has been rewritten to ease instance benching.
   The URL https://goo.gl/k5E0pf will try to track performance gain.
+- a new memory environment usable on demand for large scale instances (#116)
 
 
 version 0.45 - 22 Apr 2016

@@ -26,7 +26,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.extensions.MyFirstFail;
-import org.btrplace.scheduler.choco.extensions.env.MyEnvironmentTrailing;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
@@ -142,7 +141,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         model = m;
         durEval = ps.getDurationEvaluators();
 
-        IEnvironment env = new MyEnvironmentTrailing();
+        IEnvironment env = ps.getEnvironmentFactory().build(m);
         solver = new Solver(env, "");
         solver.set(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);

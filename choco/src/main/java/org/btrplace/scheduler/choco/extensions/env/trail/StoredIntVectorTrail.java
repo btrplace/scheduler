@@ -17,7 +17,7 @@
  */
 package org.btrplace.scheduler.choco.extensions.env.trail;
 
-import org.btrplace.scheduler.choco.extensions.env.MyEnvironmentTrailing;
+import org.btrplace.scheduler.choco.extensions.env.ChunkedTrailing;
 import org.btrplace.scheduler.choco.extensions.env.StoredIntVector;
 
 
@@ -29,7 +29,7 @@ public class StoredIntVectorTrail implements TraceableStorage {
     /**
      * The current environment.
      */
-    private final MyEnvironmentTrailing environment;
+    private final ChunkedTrailing environment;
 
 
     /**
@@ -76,7 +76,7 @@ public class StoredIntVectorTrail implements TraceableStorage {
      * Constructs a trail for the specified environment with the
      * specified numbers of updates and worlds.
      */
-    public StoredIntVectorTrail(MyEnvironmentTrailing env, int nUpdates, int nWorlds) {
+    public StoredIntVectorTrail(ChunkedTrailing env, int nUpdates, int nWorlds) {
         this.environment = env;
         this.currentLevel = 0;
         maxUpdates = nUpdates;

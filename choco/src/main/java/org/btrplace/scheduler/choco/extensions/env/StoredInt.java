@@ -33,7 +33,7 @@ public class StoredInt extends IStateInt {
      * Note: this constructor should not be used directly: one should instead
      * use the IEnvironment factory
      */
-    public StoredInt(final MyEnvironmentTrailing env, final int i) {
+    public StoredInt(final ChunkedTrailing env, final int i) {
         super(env, i);
         myTrail = env.getIntTrail();
         if(env.fakeHistoryNeeded()){

@@ -17,7 +17,7 @@
  */
 package org.btrplace.scheduler.choco.extensions.env.trail;
 
-import org.btrplace.scheduler.choco.extensions.env.MyEnvironmentTrailing;
+import org.btrplace.scheduler.choco.extensions.env.ChunkedTrailing;
 import org.chocosolver.memory.trailing.StoredDoubleVector;
 
 
@@ -30,7 +30,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
      * The current environment.
      */
 
-    private final MyEnvironmentTrailing environment;
+    private final ChunkedTrailing environment;
 
 
     /**
@@ -83,7 +83,7 @@ public class StoredDoubleVectorTrail implements ITrailStorage {
      * Constructs a trail for the specified environment with the
      * specified numbers of updates and worlds.
      */
-    public StoredDoubleVectorTrail(MyEnvironmentTrailing env, int nUpdates, int nWorlds) {
+    public StoredDoubleVectorTrail(ChunkedTrailing env, int nUpdates, int nWorlds) {
         this.environment = env;
         this.currentLevel = 0;
         maxUpdates = nUpdates;

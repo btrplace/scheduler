@@ -46,7 +46,7 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <argLine>-Xmx512M</argLine>
+        <argLine>-Xmx256M</argLine>
     </properties>
     <licenses>
         <license>
@@ -186,7 +186,7 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <argLine>-Xmx512M</argLine>
+                    <argLine>-Xmx256M</argLine>
                 </configuration>
             </plugin>
             <plugin>

@@ -28,12 +28,13 @@ import org.chocosolver.memory.*;
 import org.chocosolver.memory.structure.Operation;
 
 /**
- * The root class for managing memory and sessions.
- * <p/>
- * A environment is associated to each problem.
- * It is responsible for managing backtrackable data.
+ * A trailing environment that allocate memory per world.
+ * It tends to increase the memory usage but reduces significantly the solving duration
+ * when the number of nodes and VMs is very large.
+ *
+ * @author Fabien Hermenier
  */
-public final class MyEnvironmentTrailing extends AbstractEnvironment {
+public final class ChunkedTrailing extends AbstractEnvironment {
 
     private IntTrail intTrail;
     private BoolTrail boolTrail;
@@ -52,7 +53,7 @@ public final class MyEnvironmentTrailing extends AbstractEnvironment {
      * Constructs a new <code>IEnvironment</code> with
      * the default stack sizes : 50000 and 1000.
      */
-    public MyEnvironmentTrailing() {
+    public ChunkedTrailing() {
         super(Type.FLAT);
         trails = new TraceableStorage[6];
         intTrail = new ChunkedIntTrail(1024, 1024);
