@@ -36,8 +36,8 @@ import java.util.BitSet;
  */
 public class LocalTaskScheduler {
 
-    public static final int DEBUG = -3;
-    public static final int DEBUG_ALL = -2;
+    private static final int DEBUG = -3;
+    private static final int DEBUG_ALL = -2;
     public static final int NO_ASSOCIATIONS = -1;
     private static final Logger LOGGER = LoggerFactory.getLogger("solver");
     private int me;
@@ -376,7 +376,6 @@ public class LocalTaskScheduler {
     }
 
     // TODO: ou sont instanciees les dates des VMs qui restent sur le noeud ??
-    // TODO: mettre passif quand toutes les dates in et out sont instanciees
     // TODO: detecter si la capacite totale permet de faire passer tout le monde (et mettre passif dans ce cas)
 
     private void updateDStartsInf(BitSet watchHosts) throws ContradictionException {

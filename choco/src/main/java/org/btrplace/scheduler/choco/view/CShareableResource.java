@@ -422,28 +422,23 @@ public class CShareableResource implements ChocoView {
         }
 
         //The slice scheduling constraint that is necessary
-        //TODO: a slice on both the real and the raw resource usage ?
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> dUse = new ArrayList<>();
 
-        for (VM vmId : rp.getVMs()) {
-            VMTransition a = rp.getVMAction(vmId);
+        for (VMTransition a : rp.getVMActions()) {
+            VM vm = a.getVM();
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
             if (c != null) {
-                cUse.add(getSourceResource().getConsumption(vmId));
+                cUse.add(getSourceResource().getConsumption(vm));
             }
             if (d != null) {
-                dUse.add(vmAllocation.get(rp.getVM(vmId)));
+                dUse.add(vmAllocation.get(rp.getVM(vm)));
             }
         }
 
-        ChocoView v = rp.getView(Cumulatives.VIEW_ID);
-        if (v == null) {
-            throw new SchedulerException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
-        }
-
-        ((Cumulatives) v).addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+        Cumulatives v = (Cumulatives) rp.getView(Cumulatives.VIEW_ID);
+        v.addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
 
         checkInitialSatisfaction();
         return true;

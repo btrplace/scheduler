@@ -59,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -69,10 +70,6 @@ import java.util.stream.Stream;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    /**
-     * The maximum duration of a plan in seconds: One hour.
-     */
-    public static final int DEFAULT_MAX_TIME = 3600;
     private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
     private boolean useLabels = false;
     private IntVar objective;
@@ -110,6 +107,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private TransitionFactory amFactory;
 
     private Map<String, ChocoView> coreViews;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -124,13 +122,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
-    public DefaultReconfigurationProblem(Model m,
-                                         Parameters ps,
-                                         Set<VM> ready,
-                                         Set<VM> running,
-                                         Set<VM> sleeping,
-                                         Set<VM> killed,
-                                         Set<VM> preRooted) throws SchedulerException {
+    DefaultReconfigurationProblem(Model m,
+                                  Parameters ps,
+                                  Set<VM> ready,
+                                  Set<VM> running,
+                                  Set<VM> sleeping,
+                                  Set<VM> killed,
+                                  Set<VM> preRooted) throws SchedulerException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
@@ -210,11 +208,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException {
-        List<ReconfigurationPlan> plans = new ArrayList<>();
-        for (Solution s : solver.getSolutionRecorder().getSolutions()) {
-            plans.add(buildReconfigurationPlan(s, model));
-        }
-        return plans;
+        return solver.getSolutionRecorder().getSolutions().stream()
+                .map(s -> buildReconfigurationPlan(s, model))
+                .collect(Collectors.toList());
     }
 
     private ReconfigurationPlan makeResultingPlan() {
@@ -388,13 +384,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Mapping map = model.getMapping();
         vmActions = new ArrayList<>(vms.size());
         for (VM vmId : vms) {
-            VMState curState = VMState.INIT;
-            if (map.isRunning(vmId)) {
-                curState = VMState.RUNNING;
-            } else if (map.isSleeping(vmId)) {
-                curState = VMState.SLEEPING;
-            } else if (map.isReady(vmId)) {
-                curState = VMState.READY;
+            VMState curState = map.getState(vmId);
+            if (curState == null) {
+                curState = VMState.INIT;
             }
 
             VMState nextState;
@@ -440,7 +432,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Mapping m = model.getMapping();
         nodeActions = new ArrayList<>(nodes.size());
         for (Node nId : nodes) {
-            NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
+            NodeState state = m.getState(nId);
             NodeTransitionBuilder b = amFactory.getBuilder(state);
             if (b == null) {
                 throw new SchedulerException(model, "No model available for a node transition " + state + " -> (offline|online)");

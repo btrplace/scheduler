@@ -87,12 +87,10 @@ public class Precedences extends Constraint {
 
         @Override
         public int getPropagationConditions(int idx) {
-            switch (idx) {
-                case 0:
-                    return IntEventType.INSTANTIATE.getMask();
-                default:
-                    return IntEventType.INCLOW.getMask() + IntEventType.DECUPP.getMask() + IntEventType.INSTANTIATE.getMask();
+            if (idx == 0) {
+                return IntEventType.INSTANTIATE.getMask();
             }
+            return IntEventType.INCLOW.getMask() + IntEventType.DECUPP.getMask() + IntEventType.INSTANTIATE.getMask();
         }
 
         @Override
@@ -129,7 +127,6 @@ public class Precedences extends Constraint {
         }
 
         public void awake() throws ContradictionException {
-            //TODO: reduce the array size, to reduce memory footprint
             horizonLB = new IStateInt[host.getUB() + 1];
             horizonUB = new IStateInt[host.getUB() + 1];
             endsByHost = new int[host.getUB() + 1][];
