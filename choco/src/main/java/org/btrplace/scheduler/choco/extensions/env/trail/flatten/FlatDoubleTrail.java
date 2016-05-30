@@ -169,7 +169,9 @@ public class FlatDoubleTrail implements DoubleTrail {
         while (currentLevel + olderStamp > variableStack.length) {
             resizeUpdateCapacity();
         }
-        int i1, f, s = currentLevel;
+        int i1;
+        int f;
+        int s = currentLevel;
         for (int w = olderStamp; w > 1; w--) {
             f = worldStartLevels[w];
             i1 = f + w - 1;

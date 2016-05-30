@@ -206,7 +206,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
             solver.findOptimalSolution(solvingPolicy, objective);
         }
-        //System.out.println(env.statistics());
         return makeResultingPlan();
     }
 
