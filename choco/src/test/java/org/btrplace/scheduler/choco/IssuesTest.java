@@ -525,13 +525,11 @@ public class IssuesTest {
     @Test
     public void testIssue100() throws Exception {
         Instance i = JSON.readInstance(new File("src/test/resources/issue-100.json.gz"));
-        for (int x = 0; x < 20; x++) {
             ChocoScheduler s = new DefaultChocoScheduler();
             ReconfigurationPlan p = s.solve(i);
             SolvingStatistics stats = s.getStatistics();
             Assert.assertNotNull(p);
             System.out.println(stats);
-        }
     }
 
     @Test

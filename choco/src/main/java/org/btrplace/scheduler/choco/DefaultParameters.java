@@ -36,6 +36,7 @@ import java.util.List;
  * <ul>
  * <li>repair mode is disabled</li>
  * <li>no time limit</li>
+ * <li>a default horizon of 1 hour</li>
  * <li>the transition factory comes from {@link org.btrplace.scheduler.choco.transition.TransitionFactory#newBundle()}</li>
  * <li>the duration evaluator is {@link org.btrplace.scheduler.choco.duration.DurationEvaluators#newBundle()}</li>
  * <li>the api to choco element mapper is {@link ChocoMapper#newBundle()}</li>
@@ -69,7 +70,10 @@ public class DefaultParameters implements Parameters {
 
     private DurationEvaluators durationEvaluators;
 
-    private int maxEnd = DefaultReconfigurationProblem.DEFAULT_MAX_TIME;
+    /**
+     * Defautl horizon is one hour.
+     */
+    private int maxEnd = 3600;
 
     private int verbosityLevel;
 
