@@ -20,7 +20,10 @@ package org.btrplace.scheduler.choco;
 
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
-import org.btrplace.model.constraint.*;
+import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.Root;
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
@@ -103,37 +106,23 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs) throws SchedulerException {
-        return solve(i, cstrs, new MinMTTR());
+    public ReconfigurationPlan solve(Model mo, Collection<? extends SatConstraint> cstrs) throws SchedulerException {
+        return solve(mo, cstrs, new MinMTTR());
     }
 
     @Override
     public ReconfigurationPlan solve(Instance i) throws SchedulerException {
-        return solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
-    }
-
-    @Override
-    public DefaultChocoScheduler setParameters(Parameters p) {
-        params = p;
-        return this;
-    }
-
-    @Override
-    public Parameters getParameters() {
-        return params;
-    }
-
-    @Override
-    public ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs, OptConstraint opt) throws SchedulerException {
+        Model mo = i.getModel();
+        Collection<SatConstraint> cstrs = i.getSatConstraints();
         // If a network view is attached, ensure that all the migrations' destination node are defined
-        Network net = Network.get(i);
+        Network net = Network.get(mo);
         stages = null;
-        if  (net != null) {
+        if (net != null) {
             // The network view is useless to take placement decisions
-            i.detach(net);
+            mo.detach(net);
 
             // Solve a first time using placement oriented MinMTTR optimisation constraint
-            ReconfigurationPlan p = runner.solve(params, new Instance(i, cstrs, new MinMTTR()));
+            ReconfigurationPlan p = runner.solve(params, i);
             stages = new StagedSolvingStatistics(runner.getStatistics());
             if (p == null) {
                 return null;
@@ -151,14 +140,14 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                 throw new SchedulerException(p.getOrigin(), "The plan is not viable");
             }
             // Add Root constraints to all staying VMs
-            newCstrs.addAll(i.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
+            newCstrs.addAll(mo.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
                     result.getMapping().getVMLocation(v).id()).map(Root::new).collect(Collectors.toList()));
 
 
             // Add the old constraints
             newCstrs.addAll(cstrs);
             // Re-attach the network view
-            i.attach(net);
+            mo.attach(net);
 
             //New timeout value = elapsed time - initial timeout value
             Parameters ps = new DefaultParameters(params);
@@ -167,10 +156,21 @@ public class DefaultChocoScheduler implements ChocoScheduler {
                 ps.setTimeLimit((int) timeout);
             }
 
-            return runner.solve(ps, new Instance(i, newCstrs, opt));
+            return runner.solve(ps, new Instance(mo, newCstrs, i.getOptConstraint()));
         }
         // Solve and return the computed plan
-        return runner.solve(params, new Instance(i, cstrs, opt));
+        return runner.solve(params, new Instance(mo, cstrs, i.getOptConstraint()));
+    }
+
+    @Override
+    public DefaultChocoScheduler setParameters(Parameters p) {
+        params = p;
+        return this;
+    }
+
+    @Override
+    public Parameters getParameters() {
+        return params;
     }
 
     @Override
