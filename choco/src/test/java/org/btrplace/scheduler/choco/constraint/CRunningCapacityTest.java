@@ -270,7 +270,7 @@ public class CRunningCapacityTest {
         Instance i = JSON.readInstance(new StringReader(buf));
         List<SatConstraint> l = i.getSatConstraints().stream().filter(s -> !(s instanceof Among)).collect(Collectors.toList());
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(3);
+
         i = new Instance(i.getModel(), l, new MinMTTR());
         System.out.println(i.getModel().getMapping());
         System.out.println(i.getSatConstraints());

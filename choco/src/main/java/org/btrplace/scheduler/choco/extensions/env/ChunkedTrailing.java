@@ -155,30 +155,59 @@ public final class ChunkedTrailing extends AbstractEnvironment {
     }
 
 
+    /**
+     * Get the trail for backtrackable integers.
+     *
+     * @return a trail
+     */
     public IntTrail getIntTrail() {
         return intTrail;
     }
 
+    /**
+     * Get the trail for backtrackable longs.
+     * @return a trail
+     */
     public LongTrail getLongTrail() {
         return longTrail;
     }
 
+    /**
+     * Get the trail for backtrackable booleans.
+     * @return a trail
+     */
     public BoolTrail getBoolTrail() {
         return boolTrail;
     }
 
+    /**
+     * Get the trail for backtrackable doubles.
+     * @return a trail
+     */
     public DoubleTrail getDoubleTrail() {
         return doubleTrail;
     }
 
+    /**
+     * Get the trail for backtrackable operations.
+     * @return a trail
+     */
     public OperationTrail getOperationTrail() {
         return operationTrail;
     }
 
+    /**
+     * Get the trail for backtrackable vector of integers.
+     * @return a trail
+     */
     public StoredIntVectorTrail getIntVectorTrail() {
         return intVectorTrail;
     }
 
+    /**
+     * Get the trail for backtrackable vector of doubles.
+     * @return a trail
+     */
     public StoredDoubleVectorTrail getDoubleVectorTrail() {
         throw new UnsupportedOperationException();
     }
