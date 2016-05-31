@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
+import org.btrplace.scheduler.choco.extensions.env.StoredInt;
 import org.btrplace.scheduler.choco.extensions.env.trail.IntTrail;
 
 /**
@@ -29,7 +30,7 @@ public class FlatIntTrail implements IntTrail {
     /**
      * Stack of backtrackable search variables.
      */
-    private org.btrplace.scheduler.choco.extensions.env.StoredInt[] variableStack;
+    private StoredInt[] variableStack;
 
 
     /**
@@ -65,7 +66,7 @@ public class FlatIntTrail implements IntTrail {
 
     public FlatIntTrail(int nUpdates, int nWorlds) {
         currentLevel = 0;
-        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredInt[nUpdates];
+        variableStack = new StoredInt[nUpdates];
         valueStack = new int[nUpdates];
         stampStack = new int[nUpdates];
         worldStartLevels = new int[nWorlds];
@@ -97,7 +98,7 @@ public class FlatIntTrail implements IntTrail {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
             currentLevel--;
-            final org.btrplace.scheduler.choco.extensions.env.StoredInt v = variableStack[currentLevel];
+            final StoredInt v = variableStack[currentLevel];
             v._set(valueStack[currentLevel], stampStack[currentLevel]);
         }
     }
@@ -126,7 +127,7 @@ public class FlatIntTrail implements IntTrail {
         final int prevWorld = worldIndex - 1;
         int writeIdx = startLevel;
         for (int level = startLevel; level < currentLevel; level++) {
-            final org.btrplace.scheduler.choco.extensions.env.StoredInt var = variableStack[level];
+            final StoredInt var = variableStack[level];
             final int val = valueStack[level];
             final int stamp = stampStack[level];
             var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no inter exists)
@@ -149,7 +150,7 @@ public class FlatIntTrail implements IntTrail {
      * on the stacks.
      */
     @Override
-    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredInt v, int oldValue, int oldStamp) {
+    public void savePreviousState(StoredInt v, int oldValue, int oldStamp) {
         valueStack[currentLevel] = oldValue;
         variableStack[currentLevel] = v;
         stampStack[currentLevel] = oldStamp;
@@ -160,7 +161,7 @@ public class FlatIntTrail implements IntTrail {
     }
 
     @Override
-    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredInt v, int initValue, int olderStamp) {
+    public void buildFakeHistory(StoredInt v, int initValue, int olderStamp) {
         // from world 0 to fromStamp (excluded), create a fake history based on initValue
         // kind a copy of the current elements
         // first save the current state on the top of the stack
@@ -193,7 +194,7 @@ public class FlatIntTrail implements IntTrail {
     private void resizeUpdateCapacity() {
         final int newCapacity = (variableStack.length * 3) / 2;
         // first, copy the stack of variables
-        final org.btrplace.scheduler.choco.extensions.env.StoredInt[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredInt[newCapacity];
+        final StoredInt[] tmp1 = new StoredInt[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
         // then, copy the stack of former values

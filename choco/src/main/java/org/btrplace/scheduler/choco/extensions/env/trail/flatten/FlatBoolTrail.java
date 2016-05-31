@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
+import org.btrplace.scheduler.choco.extensions.env.StoredBool;
 import org.btrplace.scheduler.choco.extensions.env.trail.BoolTrail;
 
 /**
@@ -29,7 +30,7 @@ public class FlatBoolTrail implements BoolTrail {
     /**
      * Stack of backtrackable search variables.
      */
-    private org.btrplace.scheduler.choco.extensions.env.StoredBool[] variableStack;
+    private StoredBool[] variableStack;
 
 
     /**
@@ -65,7 +66,7 @@ public class FlatBoolTrail implements BoolTrail {
 
     public FlatBoolTrail(int nUpdates, int nWorlds) {
         currentLevel = 0;
-        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredBool[nUpdates];
+        variableStack = new StoredBool[nUpdates];
         valueStack = new boolean[nUpdates];
         stampStack = new int[nUpdates];
         worldStartLevels = new int[nWorlds];
@@ -97,7 +98,7 @@ public class FlatBoolTrail implements BoolTrail {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
             currentLevel--;
-            final org.btrplace.scheduler.choco.extensions.env.StoredBool v = variableStack[currentLevel];
+            final StoredBool v = variableStack[currentLevel];
             v._set(valueStack[currentLevel], stampStack[currentLevel]);
         }
     }
@@ -126,7 +127,7 @@ public class FlatBoolTrail implements BoolTrail {
         final int prevWorld = worldIndex - 1;
         int writeIdx = startLevel;
         for (int level = startLevel; level < currentLevel; level++) {
-            final org.btrplace.scheduler.choco.extensions.env.StoredBool var = variableStack[level];
+            final StoredBool var = variableStack[level];
             final boolean val = valueStack[level];
             final int stamp = stampStack[level];
             var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no longer exists)
@@ -149,7 +150,7 @@ public class FlatBoolTrail implements BoolTrail {
      * on the stacks.
      */
     @Override
-    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredBool v, boolean oldValue, int oldStamp) {
+    public void savePreviousState(StoredBool v, boolean oldValue, int oldStamp) {
         valueStack[currentLevel] = oldValue;
         variableStack[currentLevel] = v;
         stampStack[currentLevel] = oldStamp;
@@ -160,7 +161,7 @@ public class FlatBoolTrail implements BoolTrail {
     }
 
     @Override
-    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredBool v, boolean initValue, int olderStamp) {
+    public void buildFakeHistory(StoredBool v, boolean initValue, int olderStamp) {
         // from world 0 to fromStamp (excluded), create a fake history based on initValue
         // kind a copy of the current elements
         // first save the current state on the top of the stack
@@ -192,7 +193,7 @@ public class FlatBoolTrail implements BoolTrail {
     private void resizeUpdateCapacity() {
         final int newCapacity = (variableStack.length * 3) / 2;
         // first, copy the stack of variables
-        final org.btrplace.scheduler.choco.extensions.env.StoredBool[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredBool[newCapacity];
+        final StoredBool[] tmp1 = new StoredBool[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
         // then, copy the stack of former values

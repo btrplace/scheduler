@@ -445,7 +445,7 @@ public class RelocatableVMTest {
             ReconfigurationPlan p = cra.solve(mo, cstrs);
             System.out.println(p);
             Assert.assertNotNull(p);
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             Assert.fail(e.getMessage(), e);
         }
     }

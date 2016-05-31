@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
+import org.btrplace.scheduler.choco.extensions.env.StoredDouble;
 import org.btrplace.scheduler.choco.extensions.env.trail.DoubleTrail;
 
 /**
@@ -25,11 +26,10 @@ import org.btrplace.scheduler.choco.extensions.env.trail.DoubleTrail;
  */
 public class FlatDoubleTrail implements DoubleTrail {
 
-
     /**
      * Stack of backtrackable search variables.
      */
-    private org.btrplace.scheduler.choco.extensions.env.StoredDouble[] variableStack;
+    private StoredDouble[] variableStack;
 
 
     /**
@@ -65,7 +65,7 @@ public class FlatDoubleTrail implements DoubleTrail {
 
     public FlatDoubleTrail(int nUpdates, int nWorlds) {
         currentLevel = 0;
-        variableStack = new org.btrplace.scheduler.choco.extensions.env.StoredDouble[nUpdates];
+        variableStack = new StoredDouble[nUpdates];
         valueStack = new double[nUpdates];
         stampStack = new int[nUpdates];
         worldStartLevels = new int[nWorlds];
@@ -97,7 +97,7 @@ public class FlatDoubleTrail implements DoubleTrail {
         final int wsl = worldStartLevels[worldIndex];
         while (currentLevel > wsl) {
             currentLevel--;
-            final org.btrplace.scheduler.choco.extensions.env.StoredDouble v = variableStack[currentLevel];
+            final StoredDouble v = variableStack[currentLevel];
             v._set(valueStack[currentLevel], stampStack[currentLevel]);
         }
     }
@@ -126,7 +126,7 @@ public class FlatDoubleTrail implements DoubleTrail {
         final int prevWorld = worldIndex - 1;
         int writeIdx = startLevel;
         for (int level = startLevel; level < currentLevel; level++) {
-            final org.btrplace.scheduler.choco.extensions.env.StoredDouble var = variableStack[level];
+            final StoredDouble var = variableStack[level];
             final double val = valueStack[level];
             final int stamp = stampStack[level];
             var.overrideTimeStamp(prevWorld);// update the stamp of the variable (current stamp refers to a world that no doubleer exists)
@@ -149,7 +149,7 @@ public class FlatDoubleTrail implements DoubleTrail {
      * on the stacks.
      */
     @Override
-    public void savePreviousState(org.btrplace.scheduler.choco.extensions.env.StoredDouble v, double oldValue, int oldStamp) {
+    public void savePreviousState(StoredDouble v, double oldValue, int oldStamp) {
         valueStack[currentLevel] = oldValue;
         variableStack[currentLevel] = v;
         stampStack[currentLevel] = oldStamp;
@@ -160,7 +160,7 @@ public class FlatDoubleTrail implements DoubleTrail {
     }
 
     @Override
-    public void buildFakeHistory(org.btrplace.scheduler.choco.extensions.env.StoredDouble v, double initValue, int olderStamp) {
+    public void buildFakeHistory(StoredDouble v, double initValue, int olderStamp) {
         // from world 0 to fromStamp (excluded), create a fake history based on initValue
         // kind a copy of the current elements
         // first save the current state on the top of the stack
@@ -192,7 +192,7 @@ public class FlatDoubleTrail implements DoubleTrail {
     private void resizeUpdateCapacity() {
         final int newCapacity = (variableStack.length * 3) / 2;
         // first, copy the stack of variables
-        final org.btrplace.scheduler.choco.extensions.env.StoredDouble[] tmp1 = new org.btrplace.scheduler.choco.extensions.env.StoredDouble[newCapacity];
+        final StoredDouble[] tmp1 = new StoredDouble[newCapacity];
         System.arraycopy(variableStack, 0, tmp1, 0, variableStack.length);
         variableStack = tmp1;
         // then, copy the stack of former values

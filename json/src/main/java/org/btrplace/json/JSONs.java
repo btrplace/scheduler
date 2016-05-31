@@ -51,7 +51,7 @@ public class JSONs {
         checkKeys(o, id);
         try {
             return (Integer) o.get(id);
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
         }
     }
@@ -69,7 +69,7 @@ public class JSONs {
         if (o.containsKey(id)) {
             try {
                 return (Integer) o.get(id);
-            } catch (Exception e) {
+            } catch (ClassCastException e) {
                 throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
             }
         }

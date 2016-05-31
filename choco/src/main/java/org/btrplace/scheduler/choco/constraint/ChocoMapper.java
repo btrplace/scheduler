@@ -123,7 +123,7 @@ public class ChocoMapper {
     private static void checkInstantiable(Class<?> c, Class<?> cc) {
         try {
             cc.getDeclaredConstructor(c);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getSimpleName() + ")' available", e);
         }
     }
