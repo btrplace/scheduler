@@ -122,7 +122,7 @@ public class JSON {
      * @param instance the instance to write
      * @throws IllegalArgumentException if an error occurred while writing the json
      */
-    public String toString(Instance instance) {
+    public static String toString(Instance instance) {
         try {
             InstanceConverter c = new InstanceConverter();
             return c.toJSON(instance).toJSONString();
