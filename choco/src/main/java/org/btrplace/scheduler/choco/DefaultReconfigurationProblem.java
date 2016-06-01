@@ -220,6 +220,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         boolean ok = vms.size() == running.size() + sleeping.size() + ready.size() + killed.size();
 
+
         //It is sure there is no solution as a VM cannot have multiple destination state
         Map<VM, VMState> states = new HashMap<>();
         for (VM v : running) {

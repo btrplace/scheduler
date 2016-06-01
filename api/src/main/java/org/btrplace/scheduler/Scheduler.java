@@ -58,7 +58,7 @@ public interface Scheduler {
      * @param cstrs the satisfaction-oriented constraints that must be considered
      * @return the plan to execute to reach the new solution or {@code null} if there is no
      * solution.
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred while trying to solve the problem
+     * @throws SchedulerException if an error occurred while trying to solve the problem
      */
     default ReconfigurationPlan solve(Model mo, Collection<? extends SatConstraint> cstrs) throws SchedulerException {
         return solve(mo, cstrs, new MinMTTR());
