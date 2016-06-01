@@ -32,6 +32,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Scheduler {
 
     /**
