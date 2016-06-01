@@ -171,6 +171,35 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
 
+        //Check for multiple destination state
+        if (vms.size() != running.size() + sleeping.size() + ready.size() + killed.size()) {
+            //It is sure there is no solution as a VM cannot have multiple destination state
+            Map<VM, VMState> states = new HashMap<>();
+            for (VM v : running) {
+                states.put(v, VMState.RUNNING);
+            }
+            for (VM v : ready) {
+                VMState prev = states.put(v, VMState.READY);
+                if (prev != null) {
+                    getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.READY);
+                }
+            }
+            for (VM v : sleeping) {
+                VMState prev = states.put(v, VMState.SLEEPING);
+                if (prev != null) {
+                    getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.SLEEPING);
+                }
+            }
+            for (VM v : killed) {
+                VMState prev = states.put(v, VMState.KILLED);
+                if (prev != null) {
+                    getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.KILLED);
+                }
+            }
+            return null;
+        }
+
+
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }

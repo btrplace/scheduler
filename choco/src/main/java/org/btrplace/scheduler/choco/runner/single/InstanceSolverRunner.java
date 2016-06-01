@@ -65,6 +65,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
     private Instance instance;
 
     private SingleRunnerStatistics stats;
+
     /**
      * Choco version of the constraints.
      */
@@ -168,6 +169,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         Set<VM> toSleep = new HashSet<>();
 
         cConstraints = new ArrayList<>();
+
         for (SatConstraint cstr : cstrs) {
             checkNodesExistence(origin, cstr.getInvolvedNodes());
 
