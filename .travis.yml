@@ -5,6 +5,7 @@ cache:
 branches:
   except:
     - /^exp-.*$/
+    - /^btrplace-scheduler-.*$/
 env:
   global:
   - secure: fIpwqTk0CaukDz2gGEW8R7Pwa+dLPuPA5hcDm5d5vuqNH2FA02oX09fUrqZWPBlM79ve6UmRTt0TNM2kKCMuZQB175dY/CCPHO22aOw+uMP7ywFkq2FIK8+1qvkTUwWmNsA+sHTMrdmNBM4unguwBq8v3627dik8FAOAkqVWtUI=
