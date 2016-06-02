@@ -5,18 +5,18 @@ version 0.46 - soon come
 ----------------------
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)
 
-This version improves the performance and the codebase.
-The codebase has been reduced and its quality increased.
+This version improves the performance and the codebase quality.
 In terms of performance, the solver is faster at generating problems and
-solving them at large scale (see https://goo.gl/k5E0pf). The CSP is
-modeled using less constraints and variables. The solver has been tuned.  
+solving them at large scale (see https://goo.gl/k5E0pf). The CSP model is
+modeled using less constraints and variables. The solver has been tuned
+by cooperating with the Choco dev team. 
 
-- API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
-- API change: The code to split problems and solve them in parallel moved
-  to its own module named 'split'
-- API change: The JSON package has been refactored for simplicity. There
-  is now a single entry point for JSON (de-)serialisation with the class
-  JSON.
+- API change:
+    - ReconfigurationPlanCheckerException becomes SatConstraintViolationException
+    - The code to split problems and solve them in parallel moved
+       to its own module named 'split'
+    - The JSON package has been refactored for simplicity. There is now
+       a single entry point for JSON (de-)serialisation in the JSON class
 - the bench module has been rewritten to ease instance benching.
   The URL https://goo.gl/k5E0pf will try to track performance gain.
 - a new memory environment usable on demand for large scale instances (#116)
