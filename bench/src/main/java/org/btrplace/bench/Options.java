@@ -146,7 +146,7 @@ public class Options {
      * @return the parsed instance. The instance label is the file name
      */
     public static LabelledInstance instance(File f) {
-        String path = f.getName();
+        String path = f.getAbsolutePath();
         String lbl = path.substring(0, path.indexOf('.'));
         return new LabelledInstance(lbl, JSON.readInstance(f));
     }
