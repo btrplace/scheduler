@@ -122,7 +122,6 @@ public class Bench {
 
         //The resulting plan
         if (best != null) {
-            String path = base.getAbsolutePath() + File.separator + id.toString() + ".gz";
             File f = toFile(base, id);
             JSON.write(best, f);
         }
