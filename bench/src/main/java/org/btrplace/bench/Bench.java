@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -114,14 +115,29 @@ public class Bench {
         Files.createDirectories(base.toPath());
         //Stats about the solving process
         Path p = Paths.get(base.getAbsolutePath(), SCHEDULER_STATS);
-        Files.write(p, Collections.singletonList(i.label + ";" + stats.toCSV()), UTF_8, CREATE, APPEND);
+        UUID id = uniqueFile(base);
+        Files.write(p, Collections.singletonList(id + ";" + i.label + ";" + stats.toCSV()), UTF_8, CREATE, APPEND);
         ReconfigurationPlan best = stats.lastSolution();
 
         //The resulting plan
         if (best != null) {
-            String path = base.getAbsolutePath() + File.separator + i.label + "-plan.json.gz";
-            File f = new File(path);
+            String path = base.getAbsolutePath() + File.separator + id.toString() + ".gz";
+            File f = toFile(base, id);
             JSON.write(best, f);
         }
+    }
+
+    private static File toFile(File root, UUID id) {
+        return new File(root.getAbsolutePath() + File.separator + id.toString() + ".gz");
+    }
+
+    private static UUID uniqueFile(File base) {
+        UUID u;
+        File f = null;
+        do {
+            u = UUID.randomUUID();
+            f = toFile(base, u);
+        } while (f.exists());
+        return u;
     }
 }

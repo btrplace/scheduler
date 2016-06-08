@@ -109,7 +109,7 @@ public class BenchTest {
 
         for (String line : Files.readAllLines(csv.toPath(), UTF_8)) {
             String file = line.split(";")[0];
-            File plan = new File(output.toString() + File.separator + file + "-plan.json.gz");
+            File plan = new File(output.toString() + File.separator + file + ".gz");
 
             System.out.println(plan.getAbsolutePath());
             Assert.assertTrue(plan.isFile());
