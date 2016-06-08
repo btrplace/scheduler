@@ -147,7 +147,6 @@ public class Options {
      */
     public static LabelledInstance instance(File f) {
         String path = f.getAbsolutePath();
-        String lbl = path.substring(0, path.indexOf('.'));
-        return new LabelledInstance(lbl, JSON.readInstance(f));
+        return new LabelledInstance(path, JSON.readInstance(f));
     }
 }

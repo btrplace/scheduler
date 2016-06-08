@@ -116,7 +116,8 @@ public class Bench {
         //Stats about the solving process
         Path p = Paths.get(base.getAbsolutePath(), SCHEDULER_STATS);
         UUID id = uniqueFile(base);
-        Files.write(p, Collections.singletonList(id + ";" + i.label + ";" + stats.toCSV()), UTF_8, CREATE, APPEND);
+        StringBuilder line = new StringBuilder(id.toString()).append(";").append(i.label).append(";").append(stats.toCSV());
+        Files.write(p, Collections.singletonList(line), UTF_8, CREATE, APPEND);
         ReconfigurationPlan best = stats.lastSolution();
 
         //The resulting plan
