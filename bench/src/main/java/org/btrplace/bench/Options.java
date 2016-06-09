@@ -21,6 +21,7 @@ package org.btrplace.bench;
 import org.btrplace.json.JSON;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
+import org.btrplace.scheduler.choco.extensions.env.ChunkedTrailing;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
@@ -59,6 +60,10 @@ public class Options {
     @Option(name = "-o", aliases = "--output", usage = "Output folder where the CSV and the plans are stored", depends = {"-l"})
     private String output = "./";
 
+    @Option(name = "-c", aliases = "--chunked", usage = "Use the chunked memory environment (false by default)")
+    private boolean chunk = false;
+
+
     @Option(name = "-v", usage = "Set the verbosity level. With '-i' it controls the solver verbosity. With '-l' the bench progress")
     private int verbosity = 0;
 
@@ -78,6 +83,9 @@ public class Options {
 
         if (single()) {
             ps.setVerbosity(verbosity);
+        }
+        if (chunk) {
+            ps.setEnvironmentFactory(mo -> new ChunkedTrailing());
         }
         return ps;
     }
