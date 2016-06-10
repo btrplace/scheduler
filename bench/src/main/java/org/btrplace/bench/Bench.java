@@ -20,6 +20,7 @@ package org.btrplace.bench;
 
 import org.btrplace.json.JSON;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.Parameters;
@@ -93,13 +94,21 @@ public class Bench {
 
         for (LabelledInstance i : instances) {
             ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
-            s.solve(i);
+            try {
+                s.solve(i);
+            } catch (SchedulerException ex) {
+                //Don't propagate away
+            }
             if (opts.single()) {
                 System.out.println(s.getStatistics());
             } else {
                 SolvingStatistics stats = s.getStatistics();
                 if (v == 0) {
-                    System.out.println(i.label + ": OK");
+                    if (stats.getSolutions().isEmpty()) {
+                        System.out.println(i.label + ": KO");
+                    } else {
+                        System.out.println(i.label + ": OK");
+                    }
                 } else if (v > 0) {
                     System.out.println("----- " + i.label + " -----");
                     System.out.println(stats);
@@ -108,7 +117,6 @@ public class Bench {
                 store(i, stats, output);
             }
         }
-
     }
 
     private static void store(LabelledInstance i, SolvingStatistics stats, File base) throws IOException {
