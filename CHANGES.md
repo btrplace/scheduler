@@ -5,6 +5,9 @@ version 0.47 - soon come
 ----------------------
 See milestone [0.47](https://github.com/btrplace/scheduler/milestones/0.47)
 
+- Fix a severe performance regression when parsing JSON instances (#118)
+
+
 version 0.46 - 02 Jun 2016
 ----------------------
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)

@@ -34,7 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -90,9 +90,9 @@ public class Bench {
         Parameters ps = opts.parameters();
 
         File output = opts.output();
-        List<LabelledInstance> instances = opts.instances();
-
-        for (LabelledInstance i : instances) {
+        Iterator<LabelledInstance> ite = opts.instances().iterator();
+        while (ite.hasNext()) {
+            LabelledInstance i = ite.next();
             ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
             try {
                 s.solve(i);

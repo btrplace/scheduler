@@ -536,7 +536,6 @@ public class IssuesTest {
     public void testIssue101() throws Exception {
         Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json.gz"));
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
         System.out.println(stats);
