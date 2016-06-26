@@ -26,7 +26,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.BanConverter}.
@@ -41,7 +40,7 @@ public class BanConverterTest {
         Model mo = new DefaultModel();
 
         Ban d = new Ban(mo.newVM(),
-                new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())));
+                Arrays.asList(mo.newNode(), mo.newNode()));
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));

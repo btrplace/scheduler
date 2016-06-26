@@ -23,6 +23,8 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Spread;
 
+import java.util.HashSet;
+
 import static org.btrplace.json.JSONs.*;
 
 /**
@@ -45,7 +47,7 @@ public class SpreadConverter implements ConstraintConverter<Spread> {
     @Override
     public Spread fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Spread(requiredVMs(mo, o, "vms"), requiredBoolean(o, "continuous"));
+        return new Spread(new HashSet<>(requiredVMs(mo, o, "vms")), requiredBoolean(o, "continuous"));
     }
 
     @Override

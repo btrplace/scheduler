@@ -25,9 +25,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A helper class to ease JSON conversion.
@@ -35,6 +33,40 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 public class JSONs {
+
+    /**
+     * The default cache for set of VMs and nodes.
+     */
+    private static final int DEFAULT_CACHE_SIZE = 1024;
+
+    private static Map<String, List<VM>> vmsCache = new LinkedHashMap<String, List<VM>>() {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, List<VM>> foo) {
+            return size() == DEFAULT_CACHE_SIZE;
+        }
+    };
+
+    private static Map<String, List<Node>> nodesCache = new LinkedHashMap<String, List<Node>>() {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, List<Node>> foo) {
+            return size() == DEFAULT_CACHE_SIZE;
+        }
+    };
+
+    public static void resetCaches(int size) {
+        nodesCache = new LinkedHashMap<String, List<Node>>() {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, List<Node>> foo) {
+                return size() == size;
+            }
+        };
+        vmsCache = new LinkedHashMap<String, List<VM>>() {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, List<VM>> foo) {
+                return size() == size;
+            }
+        };
+    }
 
     private JSONs() {
     }
@@ -141,31 +173,43 @@ public class JSONs {
 
     /**
      * Convert an array of VM identifiers to a set of VMs.
-     *
+     * This operation uses a cache of previously converted set of VMs.
      * @param mo the associated model to browse
      * @param a the json array
      * @return the set of VMs
      */
-    public static Set<VM> vmsFromJSON(Model mo, JSONArray a) throws JSONConverterException {
-        Set<VM> s = new HashSet<>(a.size());
+    public static List<VM> vmsFromJSON(Model mo, JSONArray a) throws JSONConverterException {
+        String json = a.toJSONString();
+        List<VM> s = vmsCache.get(json);
+        if (s != null) {
+            return s;
+        }
+        s = new ArrayList<>(a.size());
         for (Object o : a) {
             s.add(getVM(mo, (int) o));
         }
+        vmsCache.put(json, s);
         return s;
     }
 
     /**
      * Convert an array of VM identifiers to a set of VMs.
-     *
+     * This operation uses a cache of previously converted set of nodes.
      * @param mo the associated model to browse
      * @param a the json array
      * @return the set of nodes
      */
-    public static Set<Node> nodesFromJSON(Model mo, JSONArray a) throws JSONConverterException {
-        Set<Node> s = new HashSet<>(a.size());
+    public static List<Node> nodesFromJSON(Model mo, JSONArray a) throws JSONConverterException {
+        String json = a.toJSONString();
+        List<Node> s = nodesCache.get(json);
+        if (s != null) {
+            return s;
+        }
+        s = new ArrayList<>(a.size());
         for (Object o : a) {
             s.add(getNode(mo, (int) o));
         }
+        nodesCache.put(json, s);
         return s;
     }
 
@@ -198,48 +242,39 @@ public class JSONs {
     }
 
     /**
-     * Read an expected set of VMs.
+     * Read an expected list of VMs.
      *
      * @param mo the associated model to browse
      * @param o  the object to parse
-     * @param id the key in the map that points to the set
-     * @return the parsed set
-     * @throws JSONConverterException if the key does not point to a set of VM identifiers
+     * @param id the key in the map that points to the list
+     * @return the parsed list
+     * @throws JSONConverterException if the key does not point to a list of VM identifiers
      */
-    public static Set<VM> requiredVMs(Model mo, JSONObject o, String id) throws JSONConverterException {
+    public static List<VM> requiredVMs(Model mo, JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("integers expected at key '" + id + "'");
         }
-        Set<VM> s = new HashSet<>(((JSONArray) x).size());
-        for (Object i : (JSONArray) x) {
-            VM v = getVM(mo, (Integer) i);
-            s.add(v);
-        }
-        return s;
+        return vmsFromJSON(mo, (JSONArray) x);
     }
 
     /**
-     * Read an expected set of nodes.
+     * Read an expected list of nodes.
      *
      * @param mo the associated model to browse
      * @param o  the object to parse
-     * @param id the key in the map that points to the set
-     * @return the parsed set
-     * @throws JSONConverterException if the key does not point to a set of nodes identifiers
+     * @param id the key in the map that points to the list
+     * @return the parsed list
+     * @throws JSONConverterException if the key does not point to a list of nodes identifiers
      */
-    public static Set<Node> requiredNodes(Model mo, JSONObject o, String id) throws JSONConverterException {
+    public static List<Node> requiredNodes(Model mo, JSONObject o, String id) throws JSONConverterException {
         checkKeys(o, id);
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("integers expected at key '" + id + "'");
         }
-        Set<Node> s = new HashSet<>(((JSONArray) x).size());
-        for (Object i : (JSONArray) x) {
-            s.add(getNode(mo, (Integer) i));
-        }
-        return s;
+        return nodesFromJSON(mo, (JSONArray) x);
     }
 
     /**

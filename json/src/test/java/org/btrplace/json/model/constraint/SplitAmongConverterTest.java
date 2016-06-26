@@ -43,14 +43,14 @@ public class SplitAmongConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        Collection<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Collection<VM> s1 = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
+        Collection<VM> s2 = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
+        Collection<VM> s3 = Arrays.asList(mo.newVM(), mo.newVM());
         Collection<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
 
-        Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Collection<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Collection<Node> p3 = new HashSet<>(Collections.singletonList(mo.newNode()));
+        Collection<Node> p1 = Arrays.asList(mo.newNode(), mo.newNode());
+        Collection<Node> p2 = Arrays.asList(mo.newNode(), mo.newNode());
+        Collection<Node> p3 = Collections.singletonList(mo.newNode());
         Collection<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         SplitAmong d = new SplitAmong(vgrps, pgrps, false);

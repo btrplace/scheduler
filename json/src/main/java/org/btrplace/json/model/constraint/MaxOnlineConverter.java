@@ -23,6 +23,8 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.MaxOnline;
 
+import java.util.HashSet;
+
 import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link MaxOnlineConverter}.
@@ -43,7 +45,8 @@ public class MaxOnlineConverter implements ConstraintConverter<MaxOnline> {
     @Override
     public MaxOnline fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkId(in);
-        return new MaxOnline(requiredNodes(mo, in, "nodes"), requiredInt(in, "amount"),
+        return new MaxOnline(new HashSet<>(requiredNodes(mo, in, "nodes")),
+                requiredInt(in, "amount"),
                 requiredBoolean(in, "continuous"));
     }
 

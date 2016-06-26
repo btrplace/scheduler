@@ -24,6 +24,8 @@ import org.btrplace.json.model.constraint.ConstraintConverter;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Serialize;
 
+import java.util.HashSet;
+
 import static org.btrplace.json.JSONs.requiredVMs;
 import static org.btrplace.json.JSONs.vmsToJSON;
 
@@ -48,7 +50,7 @@ public class SerializeConverter implements ConstraintConverter<Serialize> {
     @Override
     public Serialize fromJSON(Model mo, JSONObject in) throws JSONConverterException {
         checkId(in);
-        return new Serialize(requiredVMs(mo, in, "vms"));
+        return new Serialize(new HashSet<>(requiredVMs(mo, in, "vms")));
     }
 
     @Override

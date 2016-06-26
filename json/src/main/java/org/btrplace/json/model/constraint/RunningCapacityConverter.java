@@ -23,6 +23,8 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.RunningCapacity;
 
+import java.util.HashSet;
+
 import static org.btrplace.json.JSONs.*;
 
 /**
@@ -46,7 +48,7 @@ public class RunningCapacityConverter implements ConstraintConverter<RunningCapa
     @Override
     public RunningCapacity fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new RunningCapacity(requiredNodes(mo, o, "nodes"),
+        return new RunningCapacity(new HashSet<>(requiredNodes(mo, o, "nodes")),
                 requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }

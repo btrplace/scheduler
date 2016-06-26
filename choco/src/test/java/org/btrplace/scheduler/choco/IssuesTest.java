@@ -536,6 +536,19 @@ public class IssuesTest {
     public void testIssue101() throws Exception {
         Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json.gz"));
         ChocoScheduler s = new DefaultChocoScheduler();
+        s.setVerbosity(3);
+        ReconfigurationPlan p = s.solve(i);
+        SolvingStatistics stats = s.getStatistics();
+        System.out.println(stats);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+    }
+
+    @Test
+    public void testFoo() throws Exception {
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":2,\"nodes\":{},\"rcId\":\"CPU\",\"id\":\"shareableResource\",\"defCapacity\":7,\"vms\":{}}]},\"constraints\":[{\"nodes\":[0],\"vm\":0,\"continuous\":false,\"id\":\"ban\"},{\"nodes\":[1],\"vm\":1,\"continuous\":false,\"id\":\"ban\"},{\"rc\":\"CPU\",\"amount\":4,\"vm\":0,\"id\":\"preserve\"},{\"rc\":\"CPU\",\"amount\":4,\"vm\":1,\"id\":\"preserve\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        Instance i = JSON.readInstance(new StringReader(buf));
+        ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
         System.out.println(stats);

@@ -23,6 +23,8 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.ResourceCapacity;
 
+import java.util.HashSet;
+
 import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link ResourceCapacityConverter}.
@@ -44,7 +46,7 @@ public class ResourceCapacityConverter implements ConstraintConverter<ResourceCa
     @Override
     public ResourceCapacity fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new ResourceCapacity(requiredNodes(mo, o, "nodes"),
+        return new ResourceCapacity(new HashSet<>(requiredNodes(mo, o, "nodes")),
                 requiredString(o, "rc"),
                 requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));

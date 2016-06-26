@@ -104,7 +104,7 @@ public class Ban extends SimpleConstraint {
         Ban ban = (Ban) o;
         return isContinuous() == ban.isContinuous() &&
                 Objects.equals(vm, ban.vm) &&
-                Objects.equals(nodes, ban.nodes);
+                Objects.equals(getInvolvedNodes(), ban.getInvolvedNodes());
     }
 
     @Override
