@@ -1,9 +1,14 @@
 Release notes
 ======================
 
-version 0.47 - soon come
+version 1.0 - soon come
 ----------------------
-See milestone [0.47](https://github.com/btrplace/scheduler/milestones/0.47)
+See milestone [1.0](https://github.com/btrplace/scheduler/milestones/1.0)
+
+This version is a minor release. It does not break the user API.
+It is flagged as a '1.0' version simply because there was no real reason not
+to stay with 0.x versions. It is featured enough since a long time and the
+last releases improved the code quality significantly.
 
 - Fix a severe performance regression when parsing JSON instances (#118)
 
