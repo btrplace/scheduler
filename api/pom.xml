@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <name>scheduler-api</name>
     <artifactId>scheduler-api</artifactId>
