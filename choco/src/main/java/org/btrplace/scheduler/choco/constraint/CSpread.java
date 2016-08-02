@@ -86,10 +86,11 @@ public class CSpread implements ChocoConstraint {
 
     private static void disallowOverlap(ReconfigurationProblem rp, VMTransition t1, VMTransition t2) {
         Slice dI = t1.getDSlice();
-        Slice cJ = t1.getCSlice();
+        Slice cI = t1.getCSlice();
 
         Slice dJ = t2.getDSlice();
-        Slice cI = t2.getCSlice();
+        Slice cJ = t2.getCSlice();
+
 
         if (dI != null && cJ != null) {
             precedenceIfOverlap(rp, dI, cJ);
