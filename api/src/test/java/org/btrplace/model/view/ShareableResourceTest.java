@@ -45,7 +45,7 @@ public class ShareableResourceTest {
         Assert.assertEquals(rc.getDefaultCapacity(), ShareableResource.DEFAULT_NO_VALUE);
         Assert.assertEquals(rc.getDefaultConsumption(), ShareableResource.DEFAULT_NO_VALUE);
 
-        rc = new ShareableResource("bar", -7, 3);
+        rc = new ShareableResource("bar", 7, 3);
         Assert.assertEquals(rc.getIdentifier(), "ShareableResource.bar");
 
     }
@@ -113,7 +113,7 @@ public class ShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testSum() {
-        ShareableResource rc = new ShareableResource("foo", -5, -5); //-5 as default no code value to detect its presence in sum (would be an error)
+        ShareableResource rc = new ShareableResource("foo", 5, 5); //-5 as default no code value to detect its presence in sum (would be an error)
 
         rc.setConsumption(vms.get(0), 3);
         rc.setConsumption(vms.get(1), 7);
@@ -160,7 +160,7 @@ public class ShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition", "testEqualsAndHashCode"})
     public void testClone() {
-        ShareableResource rc1 = new ShareableResource("foo", -1, -1);
+        ShareableResource rc1 = new ShareableResource("foo", 1, 1);
         rc1.setConsumption(vms.get(0), 3);
         rc1.setConsumption(vms.get(1), 5);
         rc1.setCapacity(nodes.get(0), 10);
@@ -169,14 +169,14 @@ public class ShareableResourceTest {
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
 
-        rc1.setConsumption(vms.get(0), -5);
+        rc1.setConsumption(vms.get(0), 5);
         Assert.assertNotEquals(rc1, rc2);
         rc1.unset(vms.get(0));
         Assert.assertNotEquals(rc1, rc2);
         rc1.setConsumption(vms.get(0), 3);
         Assert.assertEquals(rc1, rc2);
 
-        rc1.setCapacity(nodes.get(0), -5);
+        rc1.setCapacity(nodes.get(0), 5);
         Assert.assertNotEquals(rc1, rc2);
         rc1.unset(nodes.get(0));
         Assert.assertNotEquals(rc1, rc2);

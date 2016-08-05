@@ -80,7 +80,7 @@ public class VMConsumptionComparatorTest {
         for (int i = 0; i < 4; i++) {
             rc2.setConsumption(vms.get(i), i / 2);
         }
-        rc2.setConsumption(vms.get(4), -1);
+        rc2.setConsumption(vms.get(4), 1);
         rc2.setConsumption(vms.get(5), 3);
         rc2.setConsumption(vms.get(6), 3);
 

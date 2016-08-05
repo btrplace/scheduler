@@ -87,6 +87,13 @@ public class ShareableResource implements ModelView {
     public ShareableResource(String id, int defCapacity, int defConsumption) {
         vmsConsumption = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defConsumption);
         nodesCapacity = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defCapacity);
+        if (defCapacity < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' default capacity must be >= 0");
+        }
+        if (defConsumption < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' default consumption must be >= 0");
+        }
+
         this.rcId = id;
         this.viewId = VIEW_ID_BASE + rcId;
     }
@@ -137,6 +144,9 @@ public class ShareableResource implements ModelView {
      * @return the current resource
      */
     public ShareableResource setConsumption(VM vm, int val) {
+        if (val < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' consumption of '" + vm + "' must be >= 0");
+        }
         vmsConsumption.put(vm, val);
         return this;
     }
@@ -149,6 +159,9 @@ public class ShareableResource implements ModelView {
      * @return the current resource
      */
     public ShareableResource setCapacity(Node n, int val) {
+        if (val < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' capacity of '" + n + "' must be >= 0");
+        }
         nodesCapacity.put(n, val);
         return this;
     }
