@@ -151,7 +151,9 @@ public class CShareableResource implements ChocoView {
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
                 hosts.toArray(new IntVar[hosts.size()]));
+
         return true;
+
     }
 
     /**
