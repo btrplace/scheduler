@@ -392,13 +392,14 @@ public class CShareableResource implements ChocoView {
      * Reduce the cardinality wrt. the worst case scenario.
      *
      * @param nIdx the node index
-     * @param min  the min consumption for a VM
+     * @param min  the min (but > 0 ) consumptionfor a VM
+     * @param nbZeroes the number of VMs consuming 0
      * @return {@code false} if the problem no longer has a solution
      */
-    private boolean capHosting(int nIdx, int min) {
+    private boolean capHosting(int nIdx, int min, int nbZeroes) {
         Node n = rp.getNode(nIdx);
         double capa = getSourceResource().getCapacity(n) * getOverbookRatio(nIdx).getLB();
-        int card = (int) (capa / min + 1);
+        int card = (int) (capa / min + 1) + nbZeroes;
         try {
             //Restrict the hosting capacity.
             rp.getNbRunningVMs().get(nIdx).updateUpperBound(card, Cause.Null);
@@ -411,14 +412,23 @@ public class CShareableResource implements ChocoView {
 
     private boolean linkVirtualToPhysicalUsage() throws SchedulerException {
         int min = Integer.MAX_VALUE;
+
+        //Number of VMs with a 0 usage
+        int nbZeroes = 0;
+
         for (IntVar v : vmAllocation) {
-            min = Math.min(v.getLB(), min);
+            if (v.getLB() > 0) {
+                //Catch the minimum but > 0 usage
+                min = Math.min(v.getLB(), min);
+            } else {
+                nbZeroes++;
+            }
         }
         for (int nIdx = 0; nIdx < ratios.size(); nIdx++) {
             if (!linkVirtualToPhysicalUsage(nIdx)) {
                 return false;
             }
-            if (!capHosting(nIdx, min)) {
+            if (!capHosting(nIdx, min, nbZeroes)) {
                 return false;
             }
         }

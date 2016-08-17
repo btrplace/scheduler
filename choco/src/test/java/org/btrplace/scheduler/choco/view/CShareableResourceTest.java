@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.view;
 
+import org.btrplace.json.JSON;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
@@ -28,6 +29,7 @@ import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -256,5 +258,17 @@ public class CShareableResourceTest {
         Assert.assertEquals(p.getResult().getMapping(), mo.getMapping());
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);
+    }
+
+    //Issue124
+    @Test
+    public void testEmpty() throws SchedulerException {
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{},\"rcId\":\"CPU\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{}}]},\"constraints\":[{\"continuous\":false,\"id\":\"spread\",\"vms\":[0,1]}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        Instance i = JSON.readInstance(new StringReader(buf));
+        System.out.println(i.getModel());
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(i);
+        System.out.println(s.getStatistics());
+        Assert.assertNotNull(p);
     }
 }
