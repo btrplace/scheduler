@@ -8,6 +8,7 @@ See milestone [1.1](https://github.com/btrplace/scheduler/milestones/1.1)
 Another minor release.
 - solve a modeling issue in the continuous version of spread
 - parameter validation in ShareableResource
+- fix a false negative in ShareableResource
 
 
 version 1.0 - 06 Jul 2016
