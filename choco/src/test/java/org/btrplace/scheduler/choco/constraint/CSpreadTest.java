@@ -132,10 +132,7 @@ public class CSpreadTest {
         cstr.addAll(Online.newOnline(mo.getMapping().getAllNodes()));
         cstr.add(new Fence(vm1, Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(mo, cstr);
-        Assert.assertNotNull(p);
-        Assert.assertEquals(p.getSize(), 1);
-        Mapping res = p.getResult().getMapping();
-        Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
+        Assert.assertNull(p);
     }
 
     @Test
