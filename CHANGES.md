@@ -5,6 +5,7 @@ version 1.2 - soon come
 ----------------------
 See milestone [1.2](https://github.com/btrplace/scheduler/milestones/1.2)
 
+
 version 1.1 - 17 Aug 2016
 ----------------------
 See milestone [1.1](https://github.com/btrplace/scheduler/milestones/1.1)
