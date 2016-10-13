@@ -41,7 +41,7 @@
         <module>api</module>
         <module>examples</module>
         <module>btrpsl</module>
-        <!--<module>safeplace</module>-->
+        <module>safeplace</module>
         <module>bench</module>
         <module>split</module>
     </modules>
