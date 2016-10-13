@@ -5,6 +5,11 @@ version 1.2 - soon come
 ----------------------
 See milestone [1.2](https://github.com/btrplace/scheduler/milestones/1.2)
 
+- minor bug fixes
+- improve a bit some error messages
+- the scheduler returns ```null``` when an unsupported state transition
+is expected. Previously, it thrown a SchedulerException
+
 
 version 1.1 - 17 Aug 2016
 ----------------------
