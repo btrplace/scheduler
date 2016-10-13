@@ -25,7 +25,10 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.SpecScanner;
-import org.btrplace.safeplace.testing.*;
+import org.btrplace.safeplace.testing.Bench;
+import org.btrplace.safeplace.testing.Restriction;
+import org.btrplace.safeplace.testing.TestCampaign;
+import org.btrplace.safeplace.testing.TestScanner;
 import org.btrplace.safeplace.testing.reporting.CSVReporting;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.btrplace.CheckerVerifier;
@@ -34,7 +37,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -45,7 +50,7 @@ import java.util.stream.Collectors;
  */
 public class DSN {
 
-    public static String root = "sp_3";
+    public static String root = "xp-dsn";
 
     public TestScanner newScanner() throws Exception {
         SpecScanner specScanner = new SpecScanner();
@@ -134,9 +139,6 @@ public class DSN {
         TestScanner sc = newScanner();
         Bench.population = 500;
         Bench.scale = 5;
-        //Path p = Paths.get(root,"errors.csv");
-        //Files.deleteIfExists(p);
-        //Bench.reporting = new CSVReporting(p, "");
         System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
     }
 

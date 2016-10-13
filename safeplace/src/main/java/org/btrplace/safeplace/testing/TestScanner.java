@@ -24,7 +24,10 @@ import org.btrplace.safeplace.spec.Constraint;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,22 +36,11 @@ import java.util.stream.Stream;
  */
 public class TestScanner {
 
-    private Map<String, Constraint> specs;
-
-    private List<Constraint> cores;
-
     private List<Constraint> cstrs;
+
+
     public TestScanner(List<Constraint> cstrs) {
         this.cstrs = cstrs;
-        this.specs = new HashMap<>();
-        cores = new ArrayList<>();
-
-        for (Constraint c : cstrs) {
-            this.specs.put(c.id().toLowerCase(), c);
-            if (c.args().isEmpty()) {
-                cores.add(c);
-            }
-        }
     }
 
 
@@ -65,12 +57,12 @@ public class TestScanner {
             }
             Class cl = m.getDeclaringClass();
             Object o = cl.newInstance();
-            campaigns.add(makeTestCampaign(t, m, o));
+            campaigns.add(makeTestCampaign(m, o));
         }
         return campaigns;
     }
 
-    private TestCampaign makeTestCampaign(CstrTest t, Method m, Object o) throws InvocationTargetException, IllegalAccessException {
+    private TestCampaign makeTestCampaign(Method m, Object o) throws InvocationTargetException, IllegalAccessException {
         TestCampaign campaign = new TestCampaign(cstrs);
         m.invoke(o, campaign);
         return campaign;

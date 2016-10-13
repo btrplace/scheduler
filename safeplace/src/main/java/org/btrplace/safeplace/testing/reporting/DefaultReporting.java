@@ -43,8 +43,6 @@ public class DefaultReporting implements Reporting {
 
     private List<TestCaseResult> toPrint = new ArrayList<>();
 
-    public DefaultReporting() {}
-
     @Override
     public void start(Constraint cstr) {
         if (verbosity >= 1) {
