@@ -36,9 +36,9 @@ public class KilledConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         KilledConverter conv = new KilledConverter();
-        conv.setModel(mo);
+
         Killed d = new Killed(mo.newVM());
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

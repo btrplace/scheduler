@@ -20,13 +20,11 @@ package org.btrplace.json.model.view;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.view.ModelViewsConverter}.
@@ -59,7 +57,7 @@ public class ModelViewsConverterTest {
         }
     }
 
-    public static class MockModelViewConverter extends ModelViewConverter<MockModelView> {
+    public static class MockModelViewConverter implements ModelViewConverter<MockModelView> {
 
         @Override
         public Class<MockModelView> getSupportedView() {
@@ -80,7 +78,7 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public MockModelView fromJSON(JSONObject in) throws JSONConverterException {
+        public MockModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
             return new MockModelView(in.get("value").toString());
         }
     }
@@ -88,7 +86,7 @@ public class ModelViewsConverterTest {
     @Test
     public void testRegister() {
         ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
+        c.register(new MockModelViewConverter());
         Assert.assertTrue(c.getSupportedJavaViews().contains(MockModelView.class));
         Assert.assertTrue(c.getSupportedJSONViews().contains("mockView"));
     }
@@ -96,35 +94,11 @@ public class ModelViewsConverterTest {
     @Test(dependsOnMethods = {"testRegister"})
     public void testWithExistingConverter() throws JSONConverterException {
         ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
+        c.register(new MockModelViewConverter());
         MockModelView m = new MockModelView("bar");
-        String o = c.toJSONString(m);
-        MockModelView m2 = (MockModelView) c.fromJSON(o);
+        JSONObject o = c.toJSON(m);
+        MockModelView m2 = (MockModelView) c.fromJSON(null, o);
         Assert.assertEquals(m.value, m2.value);
-    }
-
-    @Test
-    public void testWithMultipleViews() throws JSONConverterException {
-        ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
-        List<ModelView> l = new ArrayList<>();
-        l.add(new MockModelView("foo"));
-        l.add(new MockModelView("bar"));
-        String o = c.toJSONString(l);
-        List<ModelView> l2 = c.listFromJSON(o);
-        Assert.assertEquals(l2.size(), l.size());
-        int j = 0;
-        for (int i = 0; i < l2.size(); i++) {
-            MockModelView v = (MockModelView) l2.get(i);
-            if (v.value.equals("foo")) {
-                j++;
-            } else if (v.value.equals("bar")) {
-                j--;
-            } else {
-                Assert.fail("Unexpected identifier: " + v.getIdentifier());
-            }
-        }
-        Assert.assertEquals(j, 0);
     }
 
     @Test(dependsOnMethods = {"testRegister"}, expectedExceptions = {JSONConverterException.class})
@@ -140,7 +114,7 @@ public class ModelViewsConverterTest {
         ob.put("id", "mockView");
         ob.put("value", "val");
         ModelViewsConverter c = new ModelViewsConverter();
-        c.fromJSON(ob);
+        c.fromJSON(null, ob);
     }
 
     @Test(dependsOnMethods = {"testRegister"}, expectedExceptions = {JSONConverterException.class})
@@ -148,7 +122,7 @@ public class ModelViewsConverterTest {
         JSONObject ob = new JSONObject();
         ob.put("value", "val");
         ModelViewsConverter c = new ModelViewsConverter();
-        Assert.assertNull(c.register(new MockModelViewConverter()));
-        c.fromJSON(ob);
+        c.register(new MockModelViewConverter());
+        c.fromJSON(null, ob);
     }
 }

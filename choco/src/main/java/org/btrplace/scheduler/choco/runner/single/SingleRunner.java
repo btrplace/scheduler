@@ -37,7 +37,7 @@ public class SingleRunner implements InstanceSolver {
     public ReconfigurationPlan solve(Parameters cra,
                                 Instance i) throws SchedulerException {
         r = new InstanceSolverRunner(cra, i);
-        return r.call().getPlan();
+        return r.call().lastSolution();
     }
 
     @Override

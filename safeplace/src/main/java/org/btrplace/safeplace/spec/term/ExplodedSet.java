@@ -20,12 +20,12 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Fabien Hermenier
@@ -46,10 +46,7 @@ public class ExplodedSet implements Term<Set> {
     @Override
     public Set eval(Context mo, Object... args) {
         if (cache == null) {
-            cache = new HashSet<>();
-            for (Term t : terms) {
-                cache.add(t.eval(mo));
-            }
+            cache = terms.stream().map(t -> t.eval(mo)).collect(Collectors.toSet());
         }
         return cache;
     }

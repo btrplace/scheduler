@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.term.SetMinus;
 import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.VMStateType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

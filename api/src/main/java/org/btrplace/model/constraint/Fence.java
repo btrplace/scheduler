@@ -86,7 +86,9 @@ public class Fence extends SimpleConstraint {
         Fence fence = (Fence) o;
         return isContinuous() == fence.isContinuous() &&
                 Objects.equals(vm, fence.vm) &&
-                Objects.equals(nodes, fence.nodes);
+                nodes.size() == fence.nodes.size() &&
+                nodes.containsAll(fence.nodes) &&
+                fence.nodes.containsAll(nodes);
     }
 
     @Override

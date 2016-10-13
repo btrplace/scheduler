@@ -18,18 +18,20 @@
 
 package org.btrplace.json.model.view.network;
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.view.network.Link;
 import org.btrplace.model.view.network.Network;
-import org.btrplace.model.view.network.Routing;
 import org.btrplace.model.view.network.StaticRouting;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static org.btrplace.json.JSONs.*;
 
 /**
  * A converter to (un-)serialise a {@link StaticRouting}.
@@ -38,7 +40,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
+public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
 
     @Override
     public Class<StaticRouting> getSupportedRouting() {
@@ -56,10 +58,9 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
     }
 
     @Override
-    public Routing fromJSON(JSONObject o) throws JSONConverterException {
-        Model mo = getModel();
+    public StaticRouting fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         Network v = Network.get(mo);
-        Map<Integer, Link> idToLink = new HashMap<>();
+        TIntObjectMap<Link> idToLink = new TIntObjectHashMap<>();
         for (Link l : v.getLinks()) {
             idToLink.put(l.id(), l);
         }
@@ -67,7 +68,7 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
         checkKeys(o, "routes");
         JSONArray a = (JSONArray) o.get("routes");
         for (Object ao : a) {
-            StaticRouting.NodesMap nm = nodesMapFromJSON((JSONObject) ((JSONObject) ao).get("nodes_map"));
+            StaticRouting.NodesMap nm = nodesMapFromJSON(mo, (JSONObject) ((JSONObject) ao).get("nodes_map"));
             LinkedHashMap<Link, Boolean> links = new LinkedHashMap<>();
             JSONArray aoa = (JSONArray) ((JSONObject) ao).get("links");
             for (Object aoao : aoa) {
@@ -85,8 +86,8 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
      * @param o the JSON object to convert
      * @return the nodes map
      */
-    public StaticRouting.NodesMap nodesMapFromJSON(JSONObject o) throws JSONConverterException {
-        return new StaticRouting.NodesMap(requiredNode(o, "src"), requiredNode(o, "dst"));
+    public StaticRouting.NodesMap nodesMapFromJSON(Model mo, JSONObject o) throws JSONConverterException {
+        return new StaticRouting.NodesMap(requiredNode(mo, o, "src"), requiredNode(mo, o, "dst"));
     }
 
     /**
@@ -107,19 +108,20 @@ public class StaticRoutingConverter extends RoutingConverter<StaticRouting> {
      *
      * @param routing the routing implementation to convert
      * @return the JSON formatted routing object
-     * @throws JSONConverterException if the Routing implementation is not known
      */
     @Override
-    public JSONObject toJSON(Routing routing) throws JSONConverterException {
+    public JSONObject toJSON(StaticRouting routing) {
         JSONObject o = new JSONObject();
         o.put("type", getJSONId());
         JSONArray a = new JSONArray();
-        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = ((StaticRouting) routing).getStaticRoutes();
-        for (StaticRouting.NodesMap nm : routes.keySet()) {
+        Map<StaticRouting.NodesMap, Map<Link, Boolean>> routes = routing.getStaticRoutes();
+        for (Map.Entry<StaticRouting.NodesMap, Map<Link, Boolean>> e : routes.entrySet()) {
+            StaticRouting.NodesMap nm = e.getKey();
             JSONObject ao = new JSONObject();
             ao.put("nodes_map", nodesMapToJSON(nm));
             JSONArray links = new JSONArray();
-            for (Link l : routes.get(nm).keySet()) {
+            Map<Link, Boolean> v = e.getValue();
+            for (Link l : v.keySet()) {
                 JSONObject lo = new JSONObject();
                 lo.put("link", l.id());
                 lo.put("direction", routes.get(nm).get(l).toString());

@@ -20,14 +20,18 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Offline;
 
+import static org.btrplace.json.JSONs.requiredBoolean;
+import static org.btrplace.json.JSONs.requiredNode;
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.Online}.
  *
  * @author Fabien Hermenier
  */
-public class OfflineConverter extends ConstraintConverter<Offline> {
+public class OfflineConverter implements ConstraintConverter<Offline> {
 
 
     @Override
@@ -42,17 +46,16 @@ public class OfflineConverter extends ConstraintConverter<Offline> {
 
 
     @Override
-    public Offline fromJSON(JSONObject o) throws JSONConverterException {
+    public Offline fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Offline(requiredNode(o, "node"), requiredBoolean(o, "continuous"));
+        return new Offline(requiredNode(mo, o, "node"));
     }
 
     @Override
     public JSONObject toJSON(Offline o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("node", toJSON(o.getInvolvedNodes().iterator().next()));
-        c.put("continuous", o.isContinuous());
+        c.put("node", JSONs.elementToJSON(o.getInvolvedNodes().iterator().next()));
         return c;
     }
 }

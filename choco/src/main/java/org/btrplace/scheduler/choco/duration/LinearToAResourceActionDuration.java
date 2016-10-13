@@ -57,12 +57,15 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      *
      * @param rcId the resource to consider
      * @param a    the coefficient
-     * @param b    the newBound
+     * @param b    the base. Must be > 0
      */
     public LinearToAResourceActionDuration(String rcId, double a, double b) {
         this.rc = rcId;
         this.coefficient = a;
         this.offset = b;
+        if (b < 0) {
+            throw new IllegalArgumentException("the base cannot be negative");
+        }
     }
 
     @Override
@@ -79,7 +82,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
         } else {
             return -1;
         }
-        return (int) (coefficient * x + offset);
+        return (int) Math.round(coefficient * x + offset);
     }
 
     /**

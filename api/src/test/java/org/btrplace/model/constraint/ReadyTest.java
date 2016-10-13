@@ -41,7 +41,7 @@ public class ReadyTest {
         Assert.assertEquals(Collections.singletonList(v), s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
-        Assert.assertTrue(s.setContinuous(true));
+        Assert.assertTrue(s.setContinuous(false));
         System.out.println(s);
     }
 

@@ -45,7 +45,7 @@ public final class VMPlacementUtils {
      * @return the resulting map.
      */
     public static Map<IntVar, VM> makePlacementMap(ReconfigurationProblem rp) {
-        Map<IntVar, VM> m = new HashMap<>();
+        Map<IntVar, VM> m = new HashMap<>(rp.getFutureRunningVMs().size());
         for (VM vm : rp.getFutureRunningVMs()) {
             IntVar v = rp.getVMAction(vm).getDSlice().getHoster();
             m.put(v, vm);

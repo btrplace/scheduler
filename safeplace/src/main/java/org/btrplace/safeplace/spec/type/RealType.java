@@ -25,13 +25,9 @@ import org.btrplace.safeplace.spec.term.Constant;
  */
 public class RealType extends Atomic {
 
-    private double inf, sup;
+    private static final RealType instance = new RealType();
 
-    private static final RealType instance = new RealType(0, 5);
-
-    private RealType(int lb, int ub) {
-        this.inf = lb;
-        this.sup = ub;
+    private RealType() {
     }
 
     public static RealType getInstance() {
@@ -49,12 +45,17 @@ public class RealType extends Atomic {
     }
 
     @Override
+    public String encode() {
+        return toString();
+    }
+
+    @Override
+    public Object toJSON(Object value) {
+        return value;
+    }
+
+    @Override
     public Constant parse(String n) {
         return new Constant(Double.parseDouble(n), RealType.getInstance());
     }
-
-    public Constant newValue(double i) {
-        return new Constant(i, RealType.getInstance());
-    }
-
 }

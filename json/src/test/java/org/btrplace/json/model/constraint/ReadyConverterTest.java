@@ -36,10 +36,10 @@ public class ReadyConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         ReadyConverter conv = new ReadyConverter();
-        conv.setModel(mo);
+
         Ready d = new Ready(mo.newVM());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

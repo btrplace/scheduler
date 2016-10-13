@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier

@@ -393,7 +393,7 @@ public class RelocatableVMTest {
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
         am.getRelocationMethod().instantiateTo(0, Cause.Null);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
-        new CMinMTTR().inject(new DefaultParameters(), rp);
+        new CMinMTTR(null).inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -445,7 +445,7 @@ public class RelocatableVMTest {
             ReconfigurationPlan p = cra.solve(mo, cstrs);
             System.out.println(p);
             Assert.assertNotNull(p);
-        } catch (Exception e) {
+        } catch (SchedulerException e) {
             Assert.fail(e.getMessage(), e);
         }
     }

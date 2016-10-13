@@ -168,6 +168,7 @@ public class DefaultMapping extends AbstractMapping {
                 place.put(vmId, n);
                 on.add(vm);
                 st.put(vmId, RUNNING_STATE);
+                break;
         }
         return true;
     }
@@ -212,6 +213,7 @@ public class DefaultMapping extends AbstractMapping {
                 place.put(vmId, n);
                 host[SLEEPING_STATE].get(nId).add(vm);
                 st.put(vmId, SLEEPING_STATE);
+                break;
         }
         st.put(vm.id(), SLEEPING_STATE);
         return true;

@@ -37,9 +37,9 @@ public class SyncConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         SyncConverter conv = new SyncConverter();
-        conv.setModel(mo);
+
         Sync sync = new Sync(mo.newVM(), mo.newVM());
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(sync)).toString(), sync.toString());
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(sync)).toString(), sync.toString());
         System.out.println(conv.toJSONString(sync));
     }
 }

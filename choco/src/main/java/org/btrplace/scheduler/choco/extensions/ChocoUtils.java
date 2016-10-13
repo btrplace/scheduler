@@ -19,11 +19,13 @@
 package org.btrplace.scheduler.choco.extensions;
 
 
+import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.VF;
 import org.chocosolver.solver.variables.VariableFactory;
 
 import static org.chocosolver.solver.constraints.LogicalConstraintFactory.and;
@@ -43,13 +45,14 @@ public final class ChocoUtils {
      * Make and post an implies constraint where the first operand is a boolean: b1 -> c2.
      * The constraint is translated into (or(not(b1,c2))
      *
-     * @param s  the solver
+     * @param rp the problem to solve
      * @param b1 the first constraint as boolean
      * @param c2 the second constraint
      */
-    public static void postImplies(Solver s, BoolVar b1, Constraint c2) {
-
-        BoolVar bC2 = c2.reif();
+    public static void postImplies(ReconfigurationProblem rp, BoolVar b1, Constraint c2) {
+        Solver s = rp.getSolver();
+        BoolVar bC2 = VF.bool(rp.makeVarLabel(c2.toString(), " satisfied"), s);
+        c2.reifyWith(bC2);
 
         BoolVar notB1 = VariableFactory.not(b1);
         s.post(new Arithmetic(b1, Operator.NQ, notB1));
@@ -60,14 +63,15 @@ public final class ChocoUtils {
     /**
      * Make and post a constraint that states and(or(b1, non c2), or(non b1, c2))
      *
-     * @param s  the solver
+     * @param rp the problem to solve
      * @param b1 the first constraint
      * @param c2 the second constraint
      */
-    public static void postIfOnlyIf(Solver s, BoolVar b1, Constraint c2) {
+    public static void postIfOnlyIf(ReconfigurationProblem rp, BoolVar b1, Constraint c2) {
+        Solver s = rp.getSolver();
         BoolVar notBC1 = VariableFactory.not(b1);
-
-        BoolVar bC2 = c2.reif();
+        BoolVar bC2 = VF.bool(rp.makeVarLabel(c2.toString(), " satisfied"), s);
+        c2.reifyWith(bC2);
         BoolVar notBC2 = bC2.not();
         s.post(or(and(b1, bC2), and(notBC1, notBC2)));
     }

@@ -19,6 +19,10 @@
 package org.btrplace.scheduler.choco.view;
 
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TObjectDoubleMap;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.constraint.Preserve;
@@ -74,9 +78,9 @@ public class CShareableResource implements ChocoView {
     private Map<VM, VM> references;
     private Map<VM, VM> clones;
 
-    private Map<Node, Double> wantedRatios;
-    private Map<VM, Integer> wantedAmount;
-    private Map<Node, Integer> wantedCapacity;
+    private TObjectDoubleMap<Node> wantedRatios;
+    private TObjectIntMap<VM> wantedAmount;
+    private TObjectIntMap<Node> wantedCapacity;
     /**
      * The default value of ratio is not logical to detect an unchanged value
      */
@@ -90,9 +94,9 @@ public class CShareableResource implements ChocoView {
     public CShareableResource(ShareableResource r) throws SchedulerException {
         this.rc = r;
         this.id = r.getIdentifier();
-        wantedCapacity = new HashMap<>();
-        wantedAmount = new HashMap<>();
-        wantedRatios = new HashMap<>();
+        wantedCapacity = new TObjectIntHashMap<>();
+        wantedAmount = new TObjectIntHashMap<>();
+        wantedRatios = new TObjectDoubleHashMap<>();
     }
 
     @Override
@@ -105,7 +109,7 @@ public class CShareableResource implements ChocoView {
         List<Node> nodes = p.getNodes();
         phyRcUsage = new ArrayList<>(nodes.size());
         virtRcUsage = new ArrayList<>(nodes.size());
-        this.ratios = new ArrayList<>();
+        this.ratios = new ArrayList<>(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
             phyRcUsage.add(VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), p.getSolver()));
@@ -147,7 +151,9 @@ public class CShareableResource implements ChocoView {
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
                 hosts.toArray(new IntVar[hosts.size()]));
+
         return true;
+
     }
 
     /**
@@ -382,39 +388,79 @@ public class CShareableResource implements ChocoView {
         return false;
     }
 
+    /**
+     * Reduce the cardinality wrt. the worst case scenario.
+     *
+     * @param nIdx the node index
+     * @param min  the min (but > 0 ) consumptionfor a VM
+     * @param nbZeroes the number of VMs consuming 0
+     * @return {@code false} if the problem no longer has a solution
+     */
+    private boolean capHosting(int nIdx, int min, int nbZeroes) {
+        Node n = rp.getNode(nIdx);
+        double capa = getSourceResource().getCapacity(n) * getOverbookRatio(nIdx).getLB();
+        int card = (int) (capa / min + 1) + nbZeroes;
+        try {
+            //Restrict the hosting capacity.
+            rp.getNbRunningVMs().get(nIdx).updateUpperBound(card, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to cap the hosting capacity of '" + n + " ' to " + card, ex);
+            return false;
+        }
+        return true;
+    }
+
     private boolean linkVirtualToPhysicalUsage() throws SchedulerException {
+        int min = Integer.MAX_VALUE;
+
+        //Number of VMs with a 0 usage
+        int nbZeroes = 0;
+
+        for (IntVar v : vmAllocation) {
+            if (v.getLB() > 0) {
+                //Catch the minimum but > 0 usage
+                min = Math.min(v.getLB(), min);
+            } else {
+                nbZeroes++;
+            }
+        }
         for (int nIdx = 0; nIdx < ratios.size(); nIdx++) {
             if (!linkVirtualToPhysicalUsage(nIdx)) {
+                return false;
+            }
+            if (!capHosting(nIdx, min, nbZeroes)) {
                 return false;
             }
         }
 
         //The slice scheduling constraint that is necessary
-        //TODO: a slice on both the real and the raw resource usage ?
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> dUse = new ArrayList<>();
 
-        for (VM vmId : rp.getVMs()) {
-            VMTransition a = rp.getVMAction(vmId);
+        for (VMTransition a : rp.getVMActions()) {
+            VM vm = a.getVM();
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
             if (c != null) {
-                cUse.add(getSourceResource().getConsumption(vmId));
+                cUse.add(getSourceResource().getConsumption(vm));
             }
             if (d != null) {
-                dUse.add(vmAllocation.get(rp.getVM(vmId)));
+                dUse.add(vmAllocation.get(rp.getVM(vm)));
             }
         }
 
-        ChocoView v = rp.getView(Cumulatives.VIEW_ID);
-        if (v == null) {
-            throw new SchedulerException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
-        }
+        Cumulatives v = (Cumulatives) rp.getView(Cumulatives.VIEW_ID);
+        v.addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
 
-        ((Cumulatives) v).addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+        checkInitialSatisfaction();
+        return true;
+    }
 
-        //Check if the initial capacity > sum current consumption
-        //The ratio is instantiated now so the computation is correct
+    /**
+     * Check if the initial capacity > sum current consumption
+     * The ratio is instantiated now so the computation is correct
+     */
+    private void checkInitialSatisfaction() {
         //Seems to me we don't support ratio change
         for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
             int nIdx = rp.getNode(n);
@@ -430,7 +476,6 @@ public class CShareableResource implements ChocoView {
                 }
             }
         }
-        return true;
     }
 
 

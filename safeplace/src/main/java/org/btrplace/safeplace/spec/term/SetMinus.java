@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,11 +41,7 @@ public class SetMinus extends Minus<Set> {
         Collection o1 = a.eval(mo);
         Collection o2 = b.eval(mo);
         Set l = new HashSet();
-        for (Object o : o1) {
-            if (!o2.contains(o)) {
-                l.add(o);
-            }
-        }
+        o1.stream().filter(o -> !o2.contains(o)).forEach(l::add);
         return l;
     }
 }

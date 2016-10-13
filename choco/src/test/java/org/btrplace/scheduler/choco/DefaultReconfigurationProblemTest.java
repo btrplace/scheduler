@@ -465,6 +465,25 @@ public class DefaultReconfigurationProblemTest {
     }
 
 
+    /**
+     * Exhibit issue #43
+     */
+    @Test
+    public void testMultipleStates() {
+        Model mo = new DefaultModel();
+        VM vm0 = mo.newVM();
+        Node n0 = mo.newNode();
+        mo.getMapping().ready(vm0).on(n0);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<>(Arrays.asList(vm0)),
+                        new HashSet<>(Arrays.asList(vm0)),
+                        new HashSet<>(Arrays.asList(vm0)),
+                        new HashSet<>(Arrays.asList(vm0))
+                ).build();
+        Assert.assertNull(rp.solve(2, false));
+    }
+
     @Test
     public void testVMStaySleeping() throws SchedulerException {
         Model mo = new DefaultModel();

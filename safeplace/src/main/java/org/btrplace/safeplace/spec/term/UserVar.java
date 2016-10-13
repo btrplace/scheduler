@@ -19,14 +19,16 @@
 package org.btrplace.safeplace.spec.term;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
+import org.btrplace.safeplace.testing.Domain;
 import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.NoneType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Fabien Hermenier
@@ -87,17 +89,11 @@ public class UserVar<T> implements Var<T> {
     }
 
     public List<Constant> domain(Context mo) {
-        Collection col = null;
-        col = (Collection) backend.eval(mo);
+        Collection col = (Collection) backend.eval(mo);
         if (op.equals("<:") || op.equals("/<:")) {
             List<Object> s = new ArrayList<>();
-            for (Object o : col) {
-                s.add(o);
-            }
-            List<List<Object>> tuples = new ArrayList<>();
-            for (Object o : s) {
-                tuples.add(s);
-            }
+            col.forEach(s::add);
+            List<List<Object>> tuples = s.stream().map(o -> s).collect(Collectors.toList());
             AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, tuples);
             Set<Constant> res = new HashSet<>();
             for (Object[] tuple : tg) {
@@ -111,6 +107,18 @@ public class UserVar<T> implements Var<T> {
             }
             return s;
         }
+    }
+
+    public Object pick(Domain d) {
+        switch (op) {
+            case ":":
+                return d.randomValue();
+            case "<:":
+                return new HashSet<>(d.randomSubset());
+            case "<<:":
+                return new HashSet<>(d.randomPacking());
+        }
+        throw new IllegalArgumentException("Cannot pick a value inside " + type());
     }
 
 }

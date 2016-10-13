@@ -20,24 +20,22 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.btrplace.json.AbstractJSONObjectConverter;
-import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.io.*;
 import java.util.*;
+
+import static org.btrplace.json.JSONs.checkKeys;
 
 /**
  * Extensible converter for {@link org.btrplace.model.constraint.Constraint}.
  *
  * @author Fabien Hermenier
  */
-public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint> implements JSONArrayConverter<SatConstraint> {
+public class ConstraintsConverter {
 
     private Map<Class<? extends Constraint>, ConstraintConverter<? extends Constraint>> java2json;
     private Map<String, ConstraintConverter<? extends Constraint>> json2java;
@@ -90,12 +88,10 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
      * Register a converter for a specific constraint.
      *
      * @param c the converter to register
-     * @return the container that was previously registered for a constraint. {@code null} if there was
-     * no registered converter
      */
-    public ConstraintConverter<? extends Constraint> register(ConstraintConverter<? extends Constraint> c) {
+    public void register(ConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);
-        return json2java.put(c.getJSONId(), c);
+        json2java.put(c.getJSONId(), c);
 
     }
 
@@ -117,21 +113,30 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         return json2java.keySet();
     }
 
-    @Override
-    public Constraint fromJSON(JSONObject in) throws JSONConverterException {
+    /**
+     * Convert a json-encoded constraint.
+     *
+     * @param mo the model to rely on
+     * @param in the constraint to decode
+     * @return the resulting constraint
+     * @throws JSONConverterException if the conversion failed
+     */
+    public Constraint fromJSON(Model mo, JSONObject in) throws JSONConverterException {
+        checkKeys(in, "id");
         Object id = in.get("id");
-        if (id == null) {
-            throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
-        }
         ConstraintConverter<? extends Constraint> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
         }
-        c.setModel(getModel());
-        return c.fromJSON(in);
+        return c.fromJSON(mo, in);
     }
 
-    @Override
+    /**
+     * Serialise a constraint.
+     * @param o the constraint
+     * @return the resulting encoded constraint
+     * @throws JSONConverterException if the conversion failed
+     */
     public JSONObject toJSON(Constraint o) throws JSONConverterException {
         ConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
@@ -140,78 +145,35 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         return c.toJSON(o);
     }
 
-    @Override
-    public List<SatConstraint> listFromJSON(JSONArray in) throws JSONConverterException {
+    /**
+     * Convert a list of json-encoded sat-constraints.
+     * @param mo the model to rely on
+     * @param in the constraints to decode
+     * @return the constraint list. Might be empty
+     * @throws JSONConverterException if the conversion failed
+     */
+    public List<SatConstraint> listFromJSON(Model mo, JSONArray in) throws JSONConverterException {
         List<SatConstraint> l = new ArrayList<>(in.size());
         for (Object o : in) {
             if (!(o instanceof JSONObject)) {
                 throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
             }
-            l.add((SatConstraint) fromJSON((JSONObject) o));
+            l.add((SatConstraint) fromJSON(mo, (JSONObject) o));
         }
         return l;
     }
 
-    @Override
+    /**
+     * Serialise a list of sat-constraints.
+     * @param e the list to serialise
+     * @return the resulting encoded list
+     * @throws JSONConverterException if the conversion failed
+     */
     public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
-        for (Constraint cstr : e) {
+        for (SatConstraint cstr : e) {
             arr.add(toJSON(cstr));
         }
         return arr;
-    }
-
-    @Override
-    public List<SatConstraint> listFromJSON(File path) throws JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
-            return listFromJSON(in);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-
-    }
-
-    @Override
-    public List<SatConstraint> listFromJSON(String buf) throws JSONConverterException {
-        try (StringReader in = new StringReader(buf)) {
-            return listFromJSON(in);
-        }
-    }
-
-    @Override
-    public List<SatConstraint> listFromJSON(Reader r) throws JSONConverterException {
-        try {
-            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-            Object o = p.parse(r);
-            if (!(o instanceof JSONArray)) {
-                throw new JSONConverterException("Unable to parse a JSONArray");
-            }
-            return listFromJSON((JSONArray) o);
-        } catch (ParseException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public String toJSONString(Collection<SatConstraint> o) throws JSONConverterException {
-        return toJSON(o).toJSONString();
-    }
-
-    @Override
-    public void toJSON(Collection<SatConstraint> e, Appendable w) throws JSONConverterException {
-        try {
-            toJSON(e).writeJSONString(w);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public void toJSON(Collection<SatConstraint> e, File path) throws JSONConverterException {
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
-            toJSON(e, out);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
     }
 }

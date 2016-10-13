@@ -25,11 +25,13 @@ import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
+import org.btrplace.scheduler.choco.extensions.MyFirstFail;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.Cumulatives;
 import org.btrplace.scheduler.choco.view.Packing;
+import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -41,7 +43,6 @@ import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
@@ -58,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -68,10 +70,6 @@ import java.util.stream.Stream;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    /**
-     * The maximum duration of a plan in seconds: One hour.
-     */
-    public static final int DEFAULT_MAX_TIME = 3600;
     private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
     private boolean useLabels = false;
     private IntVar objective;
@@ -109,6 +107,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private TransitionFactory amFactory;
 
     private Map<String, ChocoView> coreViews;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -123,13 +122,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
-    public DefaultReconfigurationProblem(Model m,
-                                         Parameters ps,
-                                         Set<VM> ready,
-                                         Set<VM> running,
-                                         Set<VM> sleeping,
-                                         Set<VM> killed,
-                                         Set<VM> preRooted) throws SchedulerException {
+    DefaultReconfigurationProblem(Model m,
+                                  Parameters ps,
+                                  Set<VM> ready,
+                                  Set<VM> running,
+                                  Set<VM> sleeping,
+                                  Set<VM> killed,
+                                  Set<VM> preRooted) throws SchedulerException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
@@ -140,7 +139,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         model = m;
         durEval = ps.getDurationEvaluators();
 
-        solver = new Solver();
+        IEnvironment env = ps.getEnvironmentFactory().build(m);
+        solver = new Solver(env, "");
         solver.set(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
         end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), solver);
@@ -170,6 +170,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
+
+        //Check for multiple destination state
+        if (!distinctVMStates()) {
+            return null;
+        }
 
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
@@ -206,13 +211,47 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return makeResultingPlan();
     }
 
+    /**
+     * Check if every VM has a single destination state
+     *
+     * @return {@code true} if states are distinct
+     */
+    private boolean distinctVMStates() {
+
+        boolean ok = vms.size() == running.size() + sleeping.size() + ready.size() + killed.size();
+
+
+        //It is sure there is no solution as a VM cannot have multiple destination state
+        Map<VM, VMState> states = new HashMap<>();
+        for (VM v : running) {
+            states.put(v, VMState.RUNNING);
+        }
+        for (VM v : ready) {
+            VMState prev = states.put(v, VMState.READY);
+            if (prev != null) {
+                getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.READY);
+            }
+        }
+        for (VM v : sleeping) {
+            VMState prev = states.put(v, VMState.SLEEPING);
+            if (prev != null) {
+                getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.SLEEPING);
+            }
+        }
+        for (VM v : killed) {
+            VMState prev = states.put(v, VMState.KILLED);
+            if (prev != null) {
+                getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.KILLED);
+            }
+        }
+        return ok;
+    }
+
     @Override
     public List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException {
-        List<ReconfigurationPlan> plans = new ArrayList<>();
-        for (Solution s : solver.getSolutionRecorder().getSolutions()) {
-            plans.add(buildReconfigurationPlan(s, model));
-        }
-        return plans;
+        return solver.getSolutionRecorder().getSolutions().stream()
+                .map(s -> buildReconfigurationPlan(s, model))
+                .collect(Collectors.toList());
     }
 
     private ReconfigurationPlan makeResultingPlan() {
@@ -261,7 +300,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void appendNaiveBranchHeuristic() {
         StrategiesSequencer seq;
 
-        IntStrategy strat = ISF.custom(new FirstFail(), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
+        IntStrategy strat = ISF.custom(new MyFirstFail(solver), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(strat);
         } else {
@@ -301,6 +340,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (v == null) {
             throw new SchedulerException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
+
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
@@ -385,13 +425,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Mapping map = model.getMapping();
         vmActions = new ArrayList<>(vms.size());
         for (VM vmId : vms) {
-            VMState curState = VMState.INIT;
-            if (map.isRunning(vmId)) {
-                curState = VMState.RUNNING;
-            } else if (map.isSleeping(vmId)) {
-                curState = VMState.SLEEPING;
-            } else if (map.isReady(vmId)) {
-                curState = VMState.READY;
+            VMState curState = map.getState(vmId);
+            if (curState == null) {
+                curState = VMState.INIT;
             }
 
             VMState nextState;
@@ -416,13 +452,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                         sleeping.add(vmId);
                         break;
                     default:
-                        throw new SchedulerException(model, "Unsupported VM transition " + curState + " -> " + nextState);
+                        throw new LifeCycleViolationException(model, vmId, curState, nextState);
                 }
             }
 
             VMTransitionBuilder am = amFactory.getBuilder(curState, nextState);
             if (am == null) {
-                throw new SchedulerException(model, "No model available for VM transition " + curState + " -> " + nextState);
+                throw new LifeCycleViolationException(model, vmId, curState, nextState);
             }
             VMTransition t = am.build(this, vmId);
             vmActions.add(t);
@@ -437,10 +473,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Mapping m = model.getMapping();
         nodeActions = new ArrayList<>(nodes.size());
         for (Node nId : nodes) {
-            NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
+            NodeState state = m.getState(nId);
             NodeTransitionBuilder b = amFactory.getBuilder(state);
             if (b == null) {
-                throw new SchedulerException(model, "No model available for a node transition " + state + " -> (offline|online)");
+                throw new LifeCycleViolationException(model, nId, state, EnumSet.of(NodeState.OFFLINE, NodeState.ONLINE));
             }
             nodeActions.add(b.build(this, nId));
         }
@@ -530,18 +566,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public final String makeVarLabel(Object... lbl) {
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object s : lbl) {
-                if (s instanceof Object[]) {
-                    b.append(Arrays.toString((Object[]) s));
-                } else {
-                    b.append(s);
-                }
-            }
-            return b.toString();
+        if (!useLabels) {
+            return "";
         }
-        return "";
+        StringBuilder b = new StringBuilder();
+        for (Object s : lbl) {
+            if (s instanceof Object[]) {
+                for (Object o : (Object[]) s) {
+                    b.append(o);
+                }
+            } else {
+                b.append(s);
+            }
+        }
+        return b.toString();
     }
 
     @Override

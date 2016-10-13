@@ -26,6 +26,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
+import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.mttr.MovementGraph;
 import org.btrplace.scheduler.choco.constraint.mttr.MyInputOrder;
 import org.btrplace.scheduler.choco.constraint.mttr.OnStableNodeFirst;
@@ -53,7 +54,7 @@ import java.util.stream.Stream;
  *
  * @author Vincent Kherbache
  */
-public class CMinMTTRMig implements org.btrplace.scheduler.choco.constraint.CObjective {
+public class CMinMTTRMig implements CObjective {
 
     private ReconfigurationProblem rp;
     private List<Constraint> costConstraints;

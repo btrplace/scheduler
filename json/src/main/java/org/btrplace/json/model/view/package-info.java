@@ -17,6 +17,6 @@
  */
 
 /**
- * Converters for the views.
+ * Converters for the decorators.
  */
 package org.btrplace.json.model.view;

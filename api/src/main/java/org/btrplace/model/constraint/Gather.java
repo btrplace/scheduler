@@ -85,7 +85,9 @@ public class Gather extends SimpleConstraint {
         }
         Gather gather = (Gather) o;
         return isContinuous() == gather.isContinuous() &&
-                Objects.equals(vms, gather.vms);
+                vms.size() == gather.vms.size() &&
+                vms.containsAll(gather.vms) &&
+                gather.vms.containsAll(vms);
     }
 
     @Override

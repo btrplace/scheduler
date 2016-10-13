@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM to be killed.
- *
+ * The constraint is discrete
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"v : vms"}, inv = "vmState(v) = terminated")
@@ -38,22 +38,12 @@ public class Killed extends SimpleConstraint {
     private VM vm;
 
     /**
-     * Make a new discrete constraint.
-     *
-     * @param vm the VMs to remove
-     */
-    public Killed(VM vm) {
-        this(vm, false);
-    }
-
-    /**
      * Make a new constraint.
      *
      * @param vm         the VMs to remove
-     * @param continuous {@code true} for a continuous restriction
      */
-    public Killed(VM vm, boolean continuous) {
-        super(continuous);
+    public Killed(VM vm) {
+        super(false);
         this.vm = vm;
     }
 
@@ -65,7 +55,7 @@ public class Killed extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "killed(vm=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "killed(vm=" + vm + ")";
     }
 
     @Override
@@ -82,13 +72,17 @@ public class Killed extends SimpleConstraint {
             return false;
         }
         Killed killed = (Killed) o;
-        return isContinuous() == killed.isContinuous() &&
-                Objects.equals(vm, killed.vm);
+        return Objects.equals(vm, killed.vm);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, isContinuous());
+        return Objects.hash(vm);
     }
 
     /**

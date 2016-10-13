@@ -19,7 +19,7 @@
 package org.btrplace.safeplace.invariant;
 
 import org.btrplace.safeplace.spec.prop.Proposition;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

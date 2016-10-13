@@ -1,12 +1,52 @@
 Release notes
 ======================
 
-version 0.46 - soon come
+version 1.2 - soon come
+----------------------
+See milestone [1.2](https://github.com/btrplace/scheduler/milestones/1.2)
+
+
+version 1.1 - 17 Aug 2016
+----------------------
+See milestone [1.1](https://github.com/btrplace/scheduler/milestones/1.1)
+
+Another minor release.
+- solve a modeling issue in the continuous version of spread
+- parameter validation in ShareableResource
+- fix a false negative in ShareableResource
+
+
+version 1.0 - 06 Jul 2016
+----------------------
+See milestone [1.0](https://github.com/btrplace/scheduler/milestones/1.0)
+
+This version is a minor release. It does not break the user API.
+It is flagged as a '1.0' version simply because there was no real reason not
+to stay with 0.x versions. It is featured enough since a long time and the
+last releases improved the code quality significantly.
+
+- Fix a severe performance regression when parsing JSON instances (#118)
+
+
+version 0.46 - 02 Jun 2016
 ----------------------
 See milestone [0.46](https://github.com/btrplace/scheduler/milestones/0.46)
 
-- API change: ReconfigurationPlanCheckerException becomes SatConstraintViolationException
-- API change: The code to split problems and solve them in parallel moved to its own module named 'split'
+This version improves the performance and the codebase quality.
+In terms of performance, the solver is faster at generating problems and
+solving them at large scale (see https://goo.gl/k5E0pf). The CSP model is
+modeled using less constraints and variables. The solver has been tuned
+by cooperating with the Choco dev team. 
+
+- API change:
+    - ReconfigurationPlanCheckerException becomes SatConstraintViolationException
+    - The code to split problems and solve them in parallel moved
+       to its own module named 'split'
+    - The JSON package has been refactored for simplicity. There is now
+       a single entry point for JSON (de-)serialisation in the JSON class
+- the bench module has been rewritten to ease instance benching.
+  The URL https://goo.gl/k5E0pf will try to track performance gain.
+- a new memory environment usable on demand for large scale instances (#116)
 
 
 version 0.45 - 22 Apr 2016
@@ -26,8 +66,8 @@ version 0.44 - 17 Jan 2016
 ----------------------
 See milestone [0.44](https://github.com/btrplace/scheduler/milestones/0.44)
 
-A maintenance release but on a critical heisenbug bug that prevented migrations to
-be added to plans.
+A maintenance release but on a critical heisenbug bug that prevented migrations
+to be added to plans.
 
 - bug fixes: #91
 
@@ -37,8 +77,8 @@ version 0.43 - 12 Jan 2016
 See milestone [0.43](https://github.com/btrplace/scheduler/milestones/0.43)
 
 This release proposes significant performance improvement in both placement
-oriented problems and migration oriented problems. It also simplifies the code
-that map choco objects to their api-side equivalent.
+oriented problems and migration oriented problems. It also simplifies the
+code that map choco objects to their api-side equivalent.
 
 - Improved scalability of the Network model
 - Improved the scalability of the placement model (#67)
@@ -346,6 +386,12 @@ inform nodes about additional operations to execute
 
 #### version 0.3 - 08 Feb 2013 ####
 - Synchronize with solver-api
+
+
+
+
+
+
 
 
 

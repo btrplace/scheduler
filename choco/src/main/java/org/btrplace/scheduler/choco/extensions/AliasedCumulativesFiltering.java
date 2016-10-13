@@ -104,18 +104,18 @@ public class AliasedCumulativesFiltering {
                                        int[] revAssocs,
                                        ICause aCause) {
 
-        this.associations = assocs.clone();
-        this.cEnds = Arrays.copyOf(cEnds, cEnds.length);
+        this.associations = assocs;
+        this.cEnds = cEnds;
         this.aCause = aCause;
-        this.capacities = capacities.clone();
+        this.capacities = capacities;
         this.nbDims = capacities.length;
-        this.cUsages = cUsages.clone();
-        this.dUsages = dUsages.clone();
+        this.cUsages = cUsages;
+        this.dUsages = dUsages;
 
-        this.dStarts = Arrays.copyOf(dStarts, dStarts.length);
+        this.dStarts = dStarts;
         this.vIn = vIn;
         this.out = outs;
-        revAssociations = revAssocs.clone();
+        revAssociations = revAssocs;
 
         //The amount of free resources at startup
 
@@ -193,6 +193,41 @@ public class AliasedCumulativesFiltering {
 
         initProfile();
 
+        insertCSlices();
+        insertDSlices();
+
+        toAbsoluteResources();
+
+        summary();
+    }
+
+    private void toAbsoluteResources() {
+        //Now transforms into an absolute profile
+        sortedMinProfile = profilesMin[0].keys();
+        Arrays.sort(sortedMinProfile);
+
+        sortedMaxProfile = profilesMax[0].keys();
+        Arrays.sort(sortedMaxProfile);
+
+        for (int i = 0; i < nbDims; i++) {
+            toAbsoluteFreeResources(profilesMin[i], sortedMinProfile);
+            toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
+        }
+    }
+
+    private void insertDSlices() {
+        for (int i = 0; i < nbDims; i++) {
+            for (int x = 0; x < vIn.size(); x++) {
+                int j = vIn.get(x);
+                int t = dStarts[j].getUB();
+                profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
+                t = dStarts[j].getLB();
+                profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
+            }
+        }
+    }
+
+    private void insertCSlices() {
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
 
@@ -224,30 +259,6 @@ public class AliasedCumulativesFiltering {
 
         lastCendInf.set(lastInf);
         lastCendSup.set(lastSup);
-
-        for (int i = 0; i < nbDims; i++) {
-            for (int x = 0; x < vIn.size(); x++) {
-                int j = vIn.get(x);
-                int t = dStarts[j].getUB();
-                profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
-                t = dStarts[j].getLB();
-                profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
-            }
-        }
-
-        //Now transforms into an absolute profile
-        sortedMinProfile = profilesMin[0].keys();
-        Arrays.sort(sortedMinProfile);
-
-        sortedMaxProfile = profilesMax[0].keys();
-        Arrays.sort(sortedMaxProfile);
-
-        for (int i = 0; i < nbDims; i++) {
-            toAbsoluteFreeResources(profilesMin[i], sortedMinProfile);
-            toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
-        }
-
-        summary();
     }
 
     private void summary() {
@@ -366,11 +377,10 @@ public class AliasedCumulativesFiltering {
     private void updateDStartsSup() throws ContradictionException {
 
 
-        int[] myCapacity = capacities;
         int lastSup = -1;
         for (int i = sortedMaxProfile.length - 1; i >= 0; i--) {
             int t = sortedMaxProfile[i];
-            if (!exceedCapacity(profilesMax, t, myCapacity)) {
+            if (!exceedCapacity(profilesMax, t, capacities)) {
                 lastSup = t;
             } else {
                 break;

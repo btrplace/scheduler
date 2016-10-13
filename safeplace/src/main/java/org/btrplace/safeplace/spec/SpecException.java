@@ -23,7 +23,7 @@ package org.btrplace.safeplace.spec;
  */
 public class SpecException extends Exception {
 
-    public static enum ErrType {SYMBOL_NOT_FOUND, UNKNOWN}
+    public enum ErrType {SYMBOL_NOT_FOUND, UNKNOWN}
 
     public ErrType type;
 

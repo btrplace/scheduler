@@ -87,7 +87,6 @@ public class BootVM implements VMTransition {
                 .setDuration(p.makeDuration(p.getEnd().getUB(), d, VAR_PREFIX, "(", e, ").dSlice_duration"))
                 .build();
         Solver s = p.getSolver();
-        s.post(IntConstraintFactory.arithm(start, "<=", p.getEnd()));
         s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
         s.post(IntConstraintFactory.arithm(duration, "<=", p.getEnd()));
 

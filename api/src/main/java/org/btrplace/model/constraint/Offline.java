@@ -28,34 +28,27 @@ import java.util.stream.Collectors;
 
 /**
  * A constraint to force a node at being offline.
- *
+ * The constraint is discrete
  * @author Fabien Hermenier
  */
 @SideConstraint(args = {"n : nodes"}, inv = "nodeState(n) = offline")
 public class Offline extends SimpleConstraint {
 
     private Node node;
-
-    /**
-     * Make a new discrete constraint.
-     *
-     * @param n the node to set offline
-     */
-    public Offline(Node n) {
-        this(n, false);
-    }
-
     /**
      * Make a new constraint.
      *
      * @param n          the node to set offline
-     * @param continuous {@code true} for a continuous restriction
      */
-    public Offline(Node n, boolean continuous) {
-        super(continuous);
+    public Offline(Node n) {
+        super(false);
         node = n;
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 
     @Override
     public OfflineChecker getChecker() {
@@ -64,7 +57,7 @@ public class Offline extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "offline(node=" + node + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "offline(node=" + node + ")";
     }
 
     @Override
@@ -76,13 +69,12 @@ public class Offline extends SimpleConstraint {
             return false;
         }
         Offline offline = (Offline) o;
-        return isContinuous() == offline.isContinuous() &&
-                Objects.equals(node, offline.node);
+        return Objects.equals(node, offline.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(node, isContinuous());
+        return Objects.hash(node);
     }
 
     @Override

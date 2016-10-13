@@ -186,6 +186,21 @@ public interface Parameters {
     TransitionFactory getTransitionFactory();
 
     /**
+     * Get the environment factory.
+     *
+     * @return the registered factory.
+     */
+    EnvironmentFactory getEnvironmentFactory();
+
+    /**
+     * Set the environment factory to use to get the memory environment of Choco
+     *
+     * @param f the factory to use
+     * @return {@code this}
+     */
+    Parameters setEnvironmentFactory(EnvironmentFactory f);
+
+    /**
      * Declare a standalone view to be plugged inside the solver.
      * The class will be automatically instantiated at the beginning of the solver
      * specialisation phase. It must provided a default constructor
@@ -204,9 +219,9 @@ public interface Parameters {
     boolean removeChocoView(Class<? extends ChocoView> v);
 
     /**
-     * Get the standalone views.
+     * Get the standalone decorators.
      *
-     * @return a list of views that may be empty
+     * @return a list of decorators that may be empty
      */
     List<Class<? extends ChocoView>> getChocoViews();
 }

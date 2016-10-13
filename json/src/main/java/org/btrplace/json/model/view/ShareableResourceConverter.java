@@ -20,6 +20,7 @@ package org.btrplace.json.model.view;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
@@ -27,13 +28,14 @@ import org.btrplace.model.view.ShareableResource;
 import java.util.Map;
 import java.util.Set;
 
+import static org.btrplace.json.JSONs.*;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.ShareableResource}.
  *
  * @author Fabien Hermenier
  */
-public class ShareableResourceConverter extends ModelViewConverter<ShareableResource> {
+public class ShareableResourceConverter implements ModelViewConverter<ShareableResource> {
 
     /**
      * JSON label for default VM consumption.
@@ -44,6 +46,11 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
      * JSON label for default node capacity.
      */
     public static final String DEFAULT_CAPACITY = "defCapacity";
+
+    /**
+     * The label describing nodes.
+     */
+    public static final String NODES_LABEL = "nodes";
 
     @Override
     public Class<ShareableResource> getSupportedView() {
@@ -81,8 +88,8 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     }
 
     @Override
-    public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
-        checkKeys(o, "vms", "nodes", DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
+    public ShareableResource fromJSON(Model mo, JSONObject o) throws JSONConverterException {
+        checkKeys(o, "vms", NODES_LABEL, DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
 
         String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
@@ -90,32 +97,24 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
 
         String rcId = requiredString(o, "rcId");
-        Object dc = o.get(DEFAULT_CONSUMPTION);
-        if (!(dc instanceof Integer)) {
-            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CONSUMPTION + "' but got '" + dc.getClass().getName() + "'");
-        }
-        int defConsumption = (Integer) o.get(DEFAULT_CONSUMPTION);
-        dc = o.get(DEFAULT_CAPACITY);
-        if (!(dc instanceof Integer)) {
-            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CAPACITY + "' but got '" + dc.getClass().getName() + "'");
-        }
-        int defCapacity = (Integer) o.get(DEFAULT_CAPACITY);
+        int defConsumption = requiredInt(o, DEFAULT_CONSUMPTION);
+        int defCapacity = requiredInt(o, DEFAULT_CAPACITY);
 
         ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
 
-        parseVMs(rc, o.get("vms"));
-        parseNodes(rc, o.get("nodes"));
+        parseVMs(mo, rc, o.get("vms"));
+        parseNodes(mo, rc, o.get(NODES_LABEL));
 
         return rc;
     }
 
-    private void parseVMs(ShareableResource rc, Object o) throws JSONConverterException {
+    private static void parseVMs(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
                 for (Map.Entry<String, Object> e : values.entrySet()) {
                     String k = e.getKey();
-                    VM u = getVM(Integer.parseInt(k));
+                    VM u = getVM(mo, Integer.parseInt(k));
                     int v = Integer.parseInt(e.getValue().toString());
                     rc.setConsumption(u, v);
                 }
@@ -125,18 +124,18 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
     }
 
-    private void parseNodes(ShareableResource rc, Object o) throws JSONConverterException {
+    private static void parseNodes(Model mo, ShareableResource rc, Object o) throws JSONConverterException {
         if (o != null) {
             try {
                 JSONObject values = (JSONObject) o;
                 for (Map.Entry<String, Object> e : values.entrySet()) {
                     String k = e.getKey();
-                    Node u = getNode(Integer.parseInt(k));
+                    Node u = getNode(mo, Integer.parseInt(k));
                     int v = Integer.parseInt(e.getValue().toString());
                     rc.setCapacity(u, v);
                 }
             } catch (ClassCastException cc) {
-                throw new JSONConverterException("Unable to read the nodes at key 'nodes'. Expect a JSONObject but got a '" + o.getClass().getName() + "'", cc);
+                throw new JSONConverterException("Unable to read the nodes at key '" + NODES_LABEL + "'. Expect a JSONObject but got a '" + o.getClass().getName() + "'", cc);
             }
         }
     }

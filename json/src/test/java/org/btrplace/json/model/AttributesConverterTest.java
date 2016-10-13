@@ -18,6 +18,7 @@
 
 package org.btrplace.json.model;
 
+import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.*;
 import org.testng.Assert;
@@ -47,11 +48,9 @@ public class AttributesConverterTest {
         attrs.put(vm3, "clone", true);
         attrs.put(vm3, "foo", 1.3);
 
-        AttributesConverter json = new AttributesConverter();
-        json.setModel(mo);
-        String o = json.toJSONString(attrs);
+        JSONObject o = AttributesConverter.toJSON(attrs);
         System.out.println(o);
-        Attributes attrs2 = json.fromJSON(o);
+        Attributes attrs2 = AttributesConverter.fromJSON(mo, o);
         Assert.assertTrue(attrs.equals(attrs2));
     }
 }

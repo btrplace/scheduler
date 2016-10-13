@@ -20,12 +20,13 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.MinMTTR;
 
 /**
  * @author Fabien Hermenier
  */
-public class MinMTTRConverter extends ConstraintConverter<MinMTTR> {
+public class MinMTTRConverter implements ConstraintConverter<MinMTTR> {
 
     @Override
     public Class<MinMTTR> getSupportedConstraint() {
@@ -39,7 +40,7 @@ public class MinMTTRConverter extends ConstraintConverter<MinMTTR> {
 
 
     @Override
-    public MinMTTR fromJSON(JSONObject o) throws JSONConverterException {
+    public MinMTTR fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
         return new MinMTTR();
     }

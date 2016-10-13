@@ -20,143 +20,75 @@ package org.btrplace.json.model;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONObjectConverter;
 import org.btrplace.json.model.constraint.ConstraintsConverter;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.OptConstraint;
-import org.btrplace.model.constraint.SatConstraint;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.zip.GZIPInputStream;
+import static org.btrplace.json.JSONs.checkKeys;
 
 /**
  * A JSON converter for {@link org.btrplace.model.Instance}.
  *
  * @author Fabien Hermenier
  */
-
-public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
-
-    /**
-     * Quick deserialization for a pure legacy BtrPlace instance.
-     *
-     * @param in the json version of the instance
-     * @return the resulting instance
-     * @throws IllegalArgumentException if the json format is incorrect
-     */
-    public static Instance quickFromJSON(JSONObject in) {
-        try {
-            return new InstanceConverter().fromJSON(in);
-        } catch (JSONConverterException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-    }
+public class InstanceConverter implements JSONObjectConverter<Instance> {
 
     /**
-     * Quick deserialization for a pure legacy BtrPlace instance.
-     * The file must be encoded in UTF-8.
-     *
-     * @param path the file containing the json message. If the file name ends with ".gz", a gzipped file is assumed
-     * @return the resulting instance
-     * @throws IllegalArgumentException if the json format is incorrect
+     * Key that indicates the model.
      */
-    public static Instance quickFromJSON(File path) throws IllegalArgumentException {
-        if (path.getName().endsWith(".gz")) {
-            try (Reader in = new InputStreamReader(new GZIPInputStream(new FileInputStream(path)), StandardCharsets.UTF_8)) {
-                return quickFromJSON(in);
-            } catch (IOException ex) {
-                throw new IllegalArgumentException(ex);
-            }
-        }
-        try (Reader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
-            return quickFromJSON(in);
-        } catch (IOException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-    }
+    private static final String MODEL_LABEL = "model";
 
     /**
-     * Quick deserialization for a pure legacy BtrPlace instance.
-     *
-     * @param buf the json message
-     * @return the resulting instance
-     * @throws IllegalArgumentException if the json format is incorrect
+     * Key that indicates the constraint list.
      */
-    public static Instance quickFromJSON(String buf) throws IllegalArgumentException {
-        try (StringReader in = new StringReader(buf)) {
-            return quickFromJSON(in);
-        }
-    }
-
-    public static Instance quickFromJSON(Reader r) throws IllegalArgumentException {
-        try {
-            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-            Object o = p.parse(r);
-            if (!(o instanceof JSONObject)) {
-                throw new IllegalArgumentException("Unable to parse a JSON object");
-            }
-            return quickFromJSON((JSONObject) o);
-        } catch (ParseException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-    }
+    private static final String CONSTRAINTS_LABEL = "constraints";
 
     /**
-     * Quick serialization of a pure legacy BtrPlace instance.
-     *
-     * @param in the instance
-     * @return the resulting JSON Object
-     * @throws IllegalArgumentException if the json format is incorrect
+     * Key that indicates the objective.
      */
-    public static JSONObject quickToJSON(Instance in) {
-        try {
-            return new InstanceConverter().toJSON(in);
-        } catch (JSONConverterException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-    }
+    private static final String OBJ_LABEL = "objective";
 
-    /**
-     * Quick serialization of a pure legacy BtrPlace instance.
-     *
-     * @param mo    the model
-     * @param cstrs the sat-constraints
-     * @param o     the optimisation constraint
-     * @return {@code quickToJSON(new Instance(mo, cstrs, o)}
-     * @throws IllegalArgumentException if the json format is incorrect
-     */
-    public static JSONObject quickToJSON(Model mo, Collection<SatConstraint> cstrs, OptConstraint o) {
-        return quickToJSON(new Instance(mo, cstrs, o));
-    }
+    private ModelConverter moc;
 
+    private ConstraintsConverter cc;
+
+    public InstanceConverter() {
+        moc = new ModelConverter();
+        cc = ConstraintsConverter.newBundle();
+    }
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
-        ModelConverter moc = new ModelConverter();
-        moc.setCharset(getCharset());
-        ConstraintsConverter cConverter = ConstraintsConverter.newBundle();
-        cConverter.setCharset(getCharset());
-        Model mo = moc.fromJSON((JSONObject) in.get("model"));
-        cConverter.setModel(mo);
-        return new Instance(mo, cConverter.listFromJSON((JSONArray) in.get("constraints")),
-                (OptConstraint) cConverter.fromJSON((JSONObject) in.get("objective")));
+        checkKeys(in, MODEL_LABEL, CONSTRAINTS_LABEL, OBJ_LABEL);
+        Model mo = moc.fromJSON((JSONObject) in.get(MODEL_LABEL));
+        return new Instance(mo, cc.listFromJSON(mo, (JSONArray) in.get(CONSTRAINTS_LABEL)),
+                (OptConstraint) cc.fromJSON(mo, (JSONObject) in.get(OBJ_LABEL)));
+    }
+
+    /**
+     * Get the converter used to serialise models.
+     * @return a converter
+     */
+    public ModelConverter getModelConverter() {
+        return moc;
+    }
+
+    /**
+     * Get the converter used to serialise constraints.
+     * @return a converter
+     */
+    public ConstraintsConverter getConstraintsConverter() {
+        return cc;
     }
 
     @Override
     public JSONObject toJSON(Instance instance) throws JSONConverterException {
-        ModelConverter moc = new ModelConverter();
-        moc.setCharset(getCharset());
-        ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
-        cstrc.setCharset(getCharset());
         JSONObject ob = new JSONObject();
-        ob.put("model", moc.toJSON(instance.getModel()));
-        ob.put("constraints", cstrc.toJSON(instance.getSatConstraints()));
-        ob.put("objective", cstrc.toJSON(instance.getOptConstraint()));
+        ob.put(MODEL_LABEL, moc.toJSON(instance.getModel()));
+        ob.put(CONSTRAINTS_LABEL, cc.toJSON(instance.getSatConstraints()));
+        ob.put(OBJ_LABEL, cc.toJSON(instance.getOptConstraint()));
         return ob;
     }
 }

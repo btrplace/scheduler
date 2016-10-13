@@ -71,8 +71,6 @@ public class CAmongTest {
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        //System.out.println(p);
-        //Assert.assertEquals(a.isSatisfied(p.getResult()), SatConstraint.Sat.SATISFIED);
     }
 
     @Test

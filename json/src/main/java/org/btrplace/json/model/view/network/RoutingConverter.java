@@ -19,8 +19,8 @@
 package org.btrplace.json.model.view.network;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.json.AbstractJSONObjectConverter;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.view.network.Routing;
 
@@ -29,21 +29,21 @@ import org.btrplace.model.view.network.Routing;
  *
  * @author Fabien Hermenier
  */
-public abstract class RoutingConverter<E extends Routing> extends AbstractJSONObjectConverter<Routing> {
+public interface RoutingConverter<E extends Routing> {
 
     /**
      * Get the name of the constraint that is supported by the converter.
      *
      * @return The constraint class
      */
-    public abstract Class<E> getSupportedRouting();
+    Class<E> getSupportedRouting();
 
     /**
      * Get the JSON identifier for the constraint.
      *
      * @return a non-empty string
      */
-    public abstract String getJSONId();
+    String getJSONId();
 
     /**
      * Check if the JSON object can be converted using this converter.
@@ -52,11 +52,29 @@ public abstract class RoutingConverter<E extends Routing> extends AbstractJSONOb
      * @param o the object to test
      * @throws JSONConverterException if the object is not compatible
      */
-    public void checkId(JSONObject o) throws JSONConverterException {
+    default void checkId(JSONObject o) throws JSONConverterException {
         Object id = o.get("id");
         if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a routing id '" + id + "'");
         }
-
     }
+
+    /**
+     * Decode a routing.
+     *
+     * @param mo the model to rely on
+     * @param o  the routing to decode
+     * @return the conversion result
+     * @throws JSONConverterException if an error occurred while decoding the routing
+     */
+    E fromJSON(Model mo, JSONObject o) throws JSONConverterException;
+
+    /**
+     * Serialize a routing.
+     *
+     * @param o the routing to serialize
+     * @return the conversion result
+     */
+    JSONObject toJSON(E o);
+
 }

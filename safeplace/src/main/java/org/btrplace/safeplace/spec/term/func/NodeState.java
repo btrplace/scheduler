@@ -22,12 +22,12 @@ import org.btrplace.model.Node;
 import org.btrplace.safeplace.spec.type.NodeStateType;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class NodeState extends DefaultFunction<NodeStateType.Type> {
+public class NodeState implements Function<NodeStateType.Type> {
 
     @Override
     public NodeStateType type() {

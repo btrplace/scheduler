@@ -42,10 +42,10 @@ public class SpreadConverterTest {
         Spread d = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Spread c = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
         SpreadConverter conv = new SpreadConverter();
-        conv.setModel(mo);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

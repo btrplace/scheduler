@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 /**
  * A constraint to force a VM at being sleeping.
+ * The constraint is discrete
  * <p>
  *
  * @author Fabien Hermenier
@@ -38,30 +39,18 @@ public class Sleeping extends SimpleConstraint {
     private VM vm;
 
     /**
-     * Make a new discrete constraint.
-     *
-     * @param vm the VMs to make sleeping
+     * Make a new constraint.
+     * @param vm         the VM to make sleeping
      */
     public Sleeping(VM vm) {
-        this(vm, false);
-    }
-
-    /**
-     * Make a new discrete constraint.
-     * <p>
-     * <<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/Sleeping.java
-     *
-     * @param vm         the VM to make sleeping
-     *                   =======
-     * @param vm         the VMs to make sleeping
-     *                   >>>>>>> master:api/src/main/java/org/btrplace/model/constraint/Sleeping.java
-     * @param continuous {@code true} for a continuous restriction
-     */
-    public Sleeping(VM vm, boolean continuous) {
-        super(continuous);
+        super(false);
         this.vm = vm;
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 
     @Override
     public SleepingChecker getChecker() {
@@ -70,7 +59,7 @@ public class Sleeping extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "sleeping(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "sleeping(vms=" + vm + ")";
     }
 
     @Override
@@ -87,13 +76,12 @@ public class Sleeping extends SimpleConstraint {
             return false;
         }
         Sleeping sleeping = (Sleeping) o;
-        return isContinuous() == sleeping.isContinuous() &&
-                Objects.equals(vm, sleeping.vm);
+        return Objects.equals(vm, sleeping.vm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, isContinuous());
+        return Objects.hash(vm);
     }
 
     /**

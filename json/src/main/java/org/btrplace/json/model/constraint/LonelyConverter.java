@@ -20,14 +20,18 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Lonely;
 
+import java.util.HashSet;
+
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON converter for the {@link Lonely} constraint.
  *
  * @author Fabien Hermenier
  */
-public class LonelyConverter extends ConstraintConverter<Lonely> {
+public class LonelyConverter implements ConstraintConverter<Lonely> {
 
     @Override
     public Class<Lonely> getSupportedConstraint() {
@@ -41,9 +45,9 @@ public class LonelyConverter extends ConstraintConverter<Lonely> {
 
 
     @Override
-    public Lonely fromJSON(JSONObject o) throws JSONConverterException {
+    public Lonely fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Lonely(requiredVMs(o, "vms"), requiredBoolean(o, "continuous"));
+        return new Lonely(new HashSet<>(requiredVMs(mo, o, "vms")), requiredBoolean(o, "continuous"));
     }
 
     @Override

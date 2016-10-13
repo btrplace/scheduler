@@ -22,13 +22,13 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.btrplace.safeplace.*;
 import org.btrplace.safeplace.spec.prop.*;
 import org.btrplace.safeplace.spec.term.*;
-import org.btrplace.safeplace.spec.term.func.DefaultFunction;
+import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
 import org.btrplace.safeplace.spec.term.func.ValueAt;
 import org.btrplace.safeplace.spec.type.*;
+import org.btrplace.safeplace.spec.antlr.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
+public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpecBaseVisitor {
 
     private SymbolsTable symbols;
 
@@ -45,50 +45,41 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     private SpecException err = null;
 
-    public MyCstrSpecVisitor(String fn) {
-        filename = fn;
+    public MyCstrSpecVisitor() {
+        symbols = new SymbolsTable();
     }
 
-    public Specification getSpecification(ParseTree t) {
-        return (Specification) visit(t);
+    public MyCstrSpecVisitor args(List<UserVar> args) {
+        args.forEach(symbols::put);
+        return this;
+    }
+
+    public MyCstrSpecVisitor library(List<Function> funcs) {
+        funcs.forEach(symbols::put);
+        return this;
+    }
+
+    public MyCstrSpecVisitor constraints(List<Constraint> cstrs) {
+        cstrs.forEach(symbols::put);
+        return this;
     }
 
 
-    public Constraint getCoreConstraint(String name, ParseTree t) throws SpecException {
-        symbols = SymbolsTable.newBundle();
+    public Proposition getProposition(String name, ParseTree t) throws SpecException {
         symbols = symbols.enterSpec();
         filename = name;
+
         Proposition p = (Proposition) visit(t);
         if (err != null) {
             throw err;
         }
         symbols = symbols.leaveScope();
-        return Constraint.newCoreConstraint(name, p, false);
-    }
-
-    public Constraint getSideConstraint(String name, String cl, List<UserVar> args, List<Constraint> known, ParseTree t) throws SpecException {
-        this.filename = name;
-        symbols = SymbolsTable.newBundle();
-        symbols = symbols.enterSpec();
-        for (Constraint c : known) {
-            symbols.put(c);
-        }
-        for (UserVar v : args) {
-            symbols.put(v);
-        }
-        filename = name;
-        Proposition p = (Proposition) visit(t);
-        if (err != null) {
-            throw err;
-        }
-        symbols = symbols.leaveScope();
-        return Constraint.newPluggableConstraint(name, cl, p, args, false);
+        return p;
     }
 
     public UserVar getUserVar(String name, ParseTree t) throws SpecException {
-        filename = name;
-        symbols = SymbolsTable.newBundle();
         symbols = symbols.enterSpec();
+        filename = name;
         List<UserVar> l = (List) visit(t);
         if (err != null) {
             throw err;
@@ -123,7 +114,6 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             return null;
         }
         return new Exists(vars, p);
-
     }
 
     public FunctionCall visitCall(@NotNull CstrSpecParser.CallContext ctx) {
@@ -137,7 +127,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             ps.add(tm);
         }
 
-        DefaultFunction f = symbols.getFunction(id);
+        Function f = symbols.getFunction(id);
         if (f == null) {
             report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, id, "Cannot resolve symbol '" + id + "'");
             return null;
@@ -153,18 +143,6 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             report(ctx.ID().getSymbol(), ex.getMessage());
             return null;
         }
-    }
-
-    private List<Term> extractTerms(List<CstrSpecParser.TermContext> ctxs) {
-        List<Term> terms = new ArrayList<>(ctxs.size());
-        for (CstrSpecParser.TermContext ctx : ctxs) {
-            Term t = (Term) visit(ctx);
-            if (t == null) {
-                return null;
-            }
-            terms.add(t);
-        }
-        return terms;
     }
 
     @Override
@@ -184,10 +162,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             report(ctx.call().ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, lbl, "Cannot resolve symbol '" + lbl + "'");
             return null;
         }
-        if (ref.isCore()) {
-            report(ctx.call().ID().getSymbol(), "Cannot call core constraint '" + lbl + "'");
-            return null;
-        }
+
         try {
             return new ConstraintCall(ref, ps);
         } catch (IllegalArgumentException ex) {

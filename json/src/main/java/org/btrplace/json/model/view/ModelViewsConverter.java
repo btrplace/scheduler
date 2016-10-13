@@ -18,25 +18,24 @@
 
 package org.btrplace.json.model.view;
 
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-import org.btrplace.json.AbstractJSONObjectConverter;
-import org.btrplace.json.JSONArrayConverter;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.view.network.NetworkConverter;
+import org.btrplace.model.Model;
 import org.btrplace.model.view.ModelView;
 
-import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static org.btrplace.json.JSONs.checkKeys;
 
 /**
  * Extensible converter for {@link org.btrplace.model.view.ModelView}.
  *
  * @author Fabien Hermenier
  */
-public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> implements JSONArrayConverter<ModelView> {
+public class ModelViewsConverter {
 
     private Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
     private Map<String, ModelViewConverter<? extends ModelView>> json2java;
@@ -50,7 +49,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     /**
-     * Make a new {@code ModelViewsConverter} and fulfill it using converters for the following views:
+     * Make a new {@code ModelViewsConverter} and fulfill it using converters for the following decorators:
      * <ul>
      * <li>{@link org.btrplace.json.model.view.ShareableResourceConverter}</li>
      * <li>{@link org.btrplace.json.model.view.NamingServiceConverter}</li>
@@ -71,12 +70,10 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      * Register a converter for a specific view.
      *
      * @param c the converter to register
-     * @return the container that was previously registered for a view. {@code null} if there was
-     * no registered converter
      */
-    public ModelViewConverter<? extends ModelView> register(ModelViewConverter<? extends ModelView> c) {
+    public void register(ModelViewConverter<? extends ModelView> c) {
         java2json.put(c.getSupportedView(), c);
-        return json2java.put(c.getJSONId(), c);
+        json2java.put(c.getJSONId(), c);
 
     }
 
@@ -90,7 +87,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     /**
-     * Get the JSON views that are supported by the converter.
+     * Get the JSON decorators that are supported by the converter.
      *
      * @return a set of view identifiers that may be empty
      */
@@ -98,21 +95,29 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         return json2java.keySet();
     }
 
-    @Override
-    public ModelView fromJSON(JSONObject in) throws JSONConverterException {
+    /**
+     * Convert a json-encoded view.
+     *
+     * @param mo the model to rely on
+     * @param in the view to decode
+     * @return the resulting view
+     * @throws JSONConverterException if the conversion failed
+     */
+    public ModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
+        checkKeys(in, "id");
         Object id = in.get("id");
-        if (id == null) {
-            throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
-        }
         ModelViewConverter<? extends ModelView> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a view having id '" + id + "'");
         }
-        c.setModel(getModel());
-        return c.fromJSON(in);
+        return c.fromJSON(mo, in);
     }
 
-    @Override
+    /**
+     * Serialise a view.
+     * @param o the view
+     * @return the resulting encoded view
+     */
     public JSONObject toJSON(ModelView o) throws JSONConverterException {
         ModelViewConverter c = java2json.get(o.getClass());
         if (c == null) {
@@ -120,81 +125,4 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
         }
         return c.toJSON(o);
     }
-
-    @Override
-    public List<ModelView> listFromJSON(JSONArray in) throws JSONConverterException {
-        List<ModelView> l = new ArrayList<>(in.size());
-        for (Object o : in) {
-            if (!(o instanceof JSONObject)) {
-                throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
-            }
-            l.add(fromJSON((JSONObject) o));
-        }
-        return l;
-    }
-
-    @Override
-    public JSONArray toJSON(Collection<ModelView> e) throws JSONConverterException {
-        JSONArray arr = new JSONArray();
-        for (ModelView cstr : e) {
-            arr.add(toJSON(cstr));
-        }
-        return arr;
-    }
-
-    @Override
-    public List<ModelView> listFromJSON(File path) throws JSONConverterException {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(path), getCharset()))) {
-            return listFromJSON(in);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-
-    }
-
-    @Override
-    public List<ModelView> listFromJSON(String buf) throws JSONConverterException {
-        try (StringReader in = new StringReader(buf)) {
-            return listFromJSON(in);
-        }
-    }
-
-    @Override
-    public List<ModelView> listFromJSON(Reader r) throws JSONConverterException {
-        try {
-            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-            Object o = p.parse(r);
-            if (!(o instanceof JSONArray)) {
-                throw new JSONConverterException("Unable to parse a JSONArray");
-            }
-            return listFromJSON((JSONArray) o);
-        } catch (ParseException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public String toJSONString(Collection<ModelView> o) throws JSONConverterException {
-        return toJSON(o).toJSONString();
-    }
-
-    @Override
-    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException {
-        try {
-            toJSON(e).writeJSONString(w);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-    @Override
-    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException {
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), getCharset()))) {
-            toJSON(e, out);
-        } catch (IOException ex) {
-            throw new JSONConverterException(ex);
-        }
-    }
-
-
 }

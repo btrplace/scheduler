@@ -18,6 +18,9 @@
 
 package org.btrplace.safeplace.spec.type;
 
+import net.minidev.json.JSONObject;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.term.Constant;
 
 /**
@@ -48,6 +51,21 @@ public class NodeType extends Atomic {
     @Override
     public Constant parse(String n) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String encode() {
+        return label();
+    }
+
+    @Override
+    public Object toJSON(Object value) {
+        return ((Node)value).id();
+    }
+
+    @Override
+    public Node fromJSON(Object value) {
+        return new Node((Integer) value);
     }
 
 }

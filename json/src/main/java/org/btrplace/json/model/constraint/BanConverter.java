@@ -20,14 +20,17 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Ban;
+
+import static org.btrplace.json.JSONs.*;
 
 /**
  * JSON converter for the {@link org.btrplace.model.constraint.Ban} constraint.
  *
  * @author Fabien Hermenier
  */
-public class BanConverter extends ConstraintConverter<Ban> {
+public class BanConverter implements ConstraintConverter<Ban> {
 
     @Override
     public Class<Ban> getSupportedConstraint() {
@@ -40,10 +43,10 @@ public class BanConverter extends ConstraintConverter<Ban> {
     }
 
     @Override
-    public Ban fromJSON(JSONObject o) throws JSONConverterException {
+    public Ban fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Ban(requiredVM(o, "vm"),
-                requiredNodes(o, "nodes"),
+        return new Ban(requiredVM(mo, o, "vm"),
+                requiredNodes(mo, o, "nodes"),
                 requiredBoolean(o, "continuous"));
     }
 
@@ -51,7 +54,7 @@ public class BanConverter extends ConstraintConverter<Ban> {
     public JSONObject toJSON(Ban o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", elementToJSON(o.getInvolvedVMs().iterator().next()));
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         c.put("continuous", o.isContinuous());
         return c;

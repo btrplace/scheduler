@@ -18,13 +18,14 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import org.btrplace.safeplace.spec.type.TimeType;
-import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import net.minidev.json.JSONObject;
+import org.btrplace.safeplace.spec.type.*;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Fabien Hermenier
@@ -47,20 +48,38 @@ public class Constant implements Term {
     @Override
     public String toString() {
         if (o instanceof Collection) {
-            StringBuilder b = new StringBuilder("{");
-            Iterator ite = ((Collection) o).iterator();
-            if (ite.hasNext()) {
-                b.append(ite.next().toString());
-            }
-            while (ite.hasNext()) {
-                b.append(", ").append(ite.next());
-            }
-            b.append('}');
-            return b.toString();
+            return ((Collection) o).stream().map(Object::toString).collect(Collectors.joining(", ","{","}")).toString();
         } else if (type().equals(TimeType.getInstance())) {
             return "t" + o;
         }
         return o.toString();
+    }
+
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        o.put("type", type().encode());
+        o.put("value", type().toJSON(eval(null)));
+        return o;
+    }
+
+    public static Constant fromJSON(JSONObject o) {
+        Type t = Type.decode(o.getAsString("type"));
+        Object r = t.fromJSON(o.get("value"));
+        return new Constant(r, t);
+    }
+
+    private static Type type(JSONObject o) {
+        switch(o.getAsString("type")) {
+            case "int":
+                return IntType.getInstance();
+            case "set":
+                return new SetType(type((JSONObject) o.get("value")));
+            case "list":
+                return new ListType(type((JSONObject) o.get("value")));
+            case "string":
+                return StringType.getInstance();
+        }
+        throw new IllegalArgumentException(o.getAsString("type"));
     }
 
     @Override

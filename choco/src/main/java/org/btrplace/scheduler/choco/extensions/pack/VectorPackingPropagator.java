@@ -61,6 +61,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * The constant size of each item. [nbDims][nbItems]
      */
     protected final int[][] iSizes;
+    protected  int[][] negISizes;
+
     /**
      * The load of each bin per dimension. [nbDims][nbBins]
      */
@@ -119,12 +121,18 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
-        this.name = labels.clone();
-        this.loads = Arrays.copyOf(l, l.length);
+        this.name = labels;
+        this.loads = l;
         this.nbBins = l[0].length;
         this.nbDims = l.length;
-        this.bins = Arrays.copyOf(b, b.length);
-        this.iSizes = s.clone();
+        this.bins = b;
+        this.iSizes = s;
+        negISizes = new int[iSizes.length][iSizes[0].length];
+        for (int d = 0; d < iSizes.length; d++) {
+            for (int i = 0; i < iSizes[d].length; i++) {
+                negISizes[d][i] =  -iSizes[d][i];
+            }
+        }
         this.remProc = new RemProc(this);
         this.deltaMonitor = new IIntDeltaMonitor[b.length];
         for (int i = 0; i < deltaMonitor.length; i++) {
@@ -233,10 +241,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 recomputeLoadSums(); // TODO: update rather than recompute
             }
         }
-        if (decoHeap != null)
+        if (decoHeap != null) {
             decoHeap.fixPoint(recomputeLoads);
-        else
+        } else {
             fixPoint();
+        }
         assert checkLoadConsistency();
     }
 
@@ -315,11 +324,17 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
-        for (int d = 0; d < nbDims; d++) {
-            filterLoadSup(d, bin, potentialLoad[d][bin].add(-1 * iSizes[d][item]));
-        }
+        updateLoads(item, bin);
         if (decoKPSimple != null) {
             decoKPSimple.postRemoveItem(item, bin);
+        }
+    }
+
+    private void updateLoads(int item, int bin) throws ContradictionException {
+        int d = 0;
+        for (; d < nbDims; d++) {
+            //filterLoadSup(d, bin, potentialLoad[d][bin].add(-iSizes[d][item]));
+            filterLoadSup(d, bin, potentialLoad[d][bin].add(negISizes[d][item]));
         }
     }
 
@@ -527,46 +542,47 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
 
         for (int d = 0; d < nbDims; d++) {
-            int sli = 0;
-            int sls = 0;
-            for (int b = 0; b < rs[d].length; b++) {
-                if (rs[d][b] != assignedLoad[d][b].get()) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
-                    check = false;
-                }
-                if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
-                    check = false;
-                }
-                if (loads[d][b].getLB() < rs[d][b]) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
-                    check = false;
-                }
-                if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
-                    check = false;
-                }
-                sli += loads[d][b].getLB();
-                sls += loads[d][b].getUB();
+            check = check && checkDimension(d, rs, cs);
+        }
+        if (!check) {
+            for (IntVar v : bins) {
+                System.err.println(v.toString());
             }
-            if (this.sumLoadInf[d].get() != sli) {
-                System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+        }
+        return check;
+    }
+
+    private boolean checkDimension(int d, int[][] rs, int[][] cs) {
+        boolean check = true;
+        int sli = 0;
+        int sls = 0;
+        for (int b = 0; b < rs[d].length; b++) {
+            if (rs[d][b] != assignedLoad[d][b].get()) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                 check = false;
             }
-            if (this.sumLoadSup[d].get() != sls) {
-                System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+            if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
                 check = false;
             }
-            if (!check) {
-                for (int b = 0; b < rs[d].length; b++) {
-                    System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " (" + rs[d][b] + ") potential=" + potentialLoad[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
-                }
-                System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
-                System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
-                for (IntVar v : bins) {
-                    System.err.println(v.toString());
-                }
+            if (loads[d][b].getLB() < rs[d][b]) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
+                check = false;
             }
+            if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
+                System.err.println(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                check = false;
+            }
+            sli += loads[d][b].getLB();
+            sls += loads[d][b].getUB();
+        }
+        if (this.sumLoadInf[d].get() != sli) {
+            System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+            check = false;
+        }
+        if (this.sumLoadSup[d].get() != sls) {
+            System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+            check = false;
         }
         return check;
     }

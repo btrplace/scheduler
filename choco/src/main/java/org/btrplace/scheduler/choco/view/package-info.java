@@ -17,6 +17,6 @@
  */
 
 /**
- * Choco implementation of the model views.
+ * Choco implementation of the model decorators.
  */
 package org.btrplace.scheduler.choco.view;

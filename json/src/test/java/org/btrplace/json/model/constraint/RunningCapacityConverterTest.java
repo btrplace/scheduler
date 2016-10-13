@@ -39,12 +39,12 @@ public class RunningCapacityConverterTest {
     public void testViables() throws JSONConverterException {
         RunningCapacityConverter conv = new RunningCapacityConverter();
         Model mo = new DefaultModel();
-        conv.setModel(mo);
+
         RunningCapacity d = new RunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
         RunningCapacity c = new RunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), 5, true);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

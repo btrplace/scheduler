@@ -21,12 +21,13 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Split;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+
+import static org.btrplace.json.JSONs.*;
 
 
 /**
@@ -34,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SplitConverter extends ConstraintConverter<Split> {
+public class SplitConverter implements ConstraintConverter<Split> {
 
     @Override
     public Class<Split> getSupportedConstraint() {
@@ -47,18 +48,9 @@ public class SplitConverter extends ConstraintConverter<Split> {
     }
 
     @Override
-    public Split fromJSON(JSONObject o) throws JSONConverterException {
+    public Split fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        Set<Collection<VM>> vms = new HashSet<>();
-        Object x = o.get("parts");
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of identifiers sets expected at key 'parts'");
-        }
-        for (Object obj : (JSONArray) x) {
-            vms.add(vmsFromJSON((JSONArray) obj));
-        }
-
-        return new Split(vms, requiredBoolean(o, "continuous"));
+        return new Split(requiredVMPart(mo, o, "parts"), requiredBoolean(o, "continuous"));
     }
 
     @Override

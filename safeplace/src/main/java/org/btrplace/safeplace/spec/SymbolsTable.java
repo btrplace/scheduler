@@ -18,7 +18,6 @@
 
 package org.btrplace.safeplace.spec;
 
-import org.btrplace.safeplace.Constraint;
 import org.btrplace.safeplace.spec.term.*;
 import org.btrplace.safeplace.spec.term.func.*;
 import org.btrplace.safeplace.spec.type.*;
@@ -35,13 +34,13 @@ public class SymbolsTable {
 
     private Map<String, Var> table;
 
-    private Map<String, Constraint> cstrs;
-
-    private Map<String, DefaultFunction> funcs;
+    private Map<String, Function> funcs;
 
     private SymbolsTable parent;
 
     private List<Primitive> primitives;
+
+    private Map<String, Constraint> cstrs;
 
     public SymbolsTable() {
         this(null);
@@ -49,35 +48,12 @@ public class SymbolsTable {
 
     public SymbolsTable(SymbolsTable p) {
         table = new HashMap<>();
-        this.cstrs = new HashMap<>();
         this.funcs = new HashMap<>();
         parent = p;
         primitives = new ArrayList<>();
+        cstrs = new HashMap<>();
     }
 
-
-    public static SymbolsTable newBundle() {
-        SymbolsTable root = new SymbolsTable();
-        //Core functions
-        root.put(new Host());
-        root.put(new Hosted());
-        root.put(new Running());
-        root.put(new Ready());
-        root.put(new Sleeping());
-        root.put(new Cons());
-        root.put(new Capa());
-        root.put(new Colocated());
-        root.put(new VMState());
-        root.put(new NodeState());
-        root.put(new Card());
-        root.put(new Sum());
-        root.put(new Lists());
-        root.put(new Range());
-        root.put(new Actions());
-        root.put(new Begin());
-        root.put(new End());
-        return root;
-    }
 
     public SymbolsTable enterSpec() {
         SymbolsTable syms = new SymbolsTable(this);
@@ -95,15 +71,6 @@ public class SymbolsTable {
         syms.put(new InDomain<>("string", StringType.getInstance()));
         syms.put(None.instance());
         return syms;
-    }
-
-    public Primitive getPrimitive(String id) {
-        for (Primitive p : primitives) {
-            if (p.label().equals(id)) {
-                return p;
-            }
-        }
-        return null;
     }
 
     public SymbolsTable enterScope() {
@@ -124,16 +91,13 @@ public class SymbolsTable {
         for (Map.Entry<String, Var> e : table.entrySet()) {
             b.append("var \t").append(e.getKey()).append("\t").append(e.getValue().type()).append("\n");
         }
-        for (Map.Entry<String, DefaultFunction> e : funcs.entrySet()) {
+        for (Map.Entry<String, Function> e : funcs.entrySet()) {
             b.append("func\t").append(e.getValue()).append("\t").append(e.getValue().type()).append("\n");
-        }
-        for (Map.Entry<String, Constraint> e : cstrs.entrySet()) {
-            b.append("cstr\t").append(e.getValue()).append("\n");
         }
         return b.toString();
     }
 
-    public boolean put(DefaultFunction f) {
+    public boolean put(Function f) {
         if (funcs.containsKey(f.id())) {
             return false;
         }
@@ -141,7 +105,15 @@ public class SymbolsTable {
         return true;
     }
 
-    public DefaultFunction getFunction(String id) {
+    public boolean put(Constraint c) {
+        if (cstrs.containsKey(c.id())) {
+            return false;
+        }
+        cstrs.put(c.id(), c);
+        return true;
+    }
+
+    public Function getFunction(String id) {
         if (funcs.containsKey(id)) {
             return funcs.get(id);
         }
@@ -151,6 +123,15 @@ public class SymbolsTable {
         return null;
     }
 
+    public Constraint getConstraint(String id) {
+        if (cstrs.containsKey(id)) {
+            return cstrs.get(id);
+        }
+        if (parent != null) {
+            return parent.getConstraint(id);
+        }
+        return null;
+    }
 
     private boolean putVar(Var v) {
         if (table.containsKey(v.label())) {
@@ -179,20 +160,4 @@ public class SymbolsTable {
     public boolean put(UserVar v) {
         return putVar(v);
     }
-
-    public void put(Constraint cstr) {
-        cstrs.put(cstr.id(), cstr);
-    }
-
-    public Constraint getConstraint(String id) {
-        if (cstrs.containsKey(id)) {
-            return cstrs.get(id);
-        }
-        return parent == null ? null : parent.getConstraint(id);
-    }
-
-    public List<Primitive> getPrimitives() {
-        return primitives;
-    }
-
 }

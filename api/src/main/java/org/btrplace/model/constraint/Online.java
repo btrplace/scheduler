@@ -28,31 +28,22 @@ import java.util.stream.Collectors;
 
 /**
  * A constraint to force a node at being online.
+ * The constraint is only discrete.
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"n : nodes"}, inv = "nodeState(n) = online")
+@SideConstraint(args = {"n : nodes"}, inv = "$nodeState(n) = online")
 public class Online extends SimpleConstraint {
 
     private Node node;
 
     /**
-     * Make a new discrete constraint.
-     *
-     * @param n the node to set online
-     */
-    public Online(Node n) {
-        this(n, false);
-    }
-
-    /**
      * Make a new constraint.
      *
      * @param n          the node to set online
-     * @param continuous {@code true} for a continuous restriction
      */
-    public Online(Node n, boolean continuous) {
-        super(continuous);
+    public Online(Node n) {
+        super(false);
         node = n;
     }
 
@@ -63,7 +54,12 @@ public class Online extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "online(node=" + node + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "online(node=" + node + ")";
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
     @Override
@@ -75,13 +71,12 @@ public class Online extends SimpleConstraint {
             return false;
         }
         Online online = (Online) o;
-        return isContinuous() == online.isContinuous() &&
-                Objects.equals(node, online.node);
+        return Objects.equals(node, online.node);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(node, isContinuous());
+        return Objects.hash(node);
     }
 
     @Override

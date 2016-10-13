@@ -20,14 +20,16 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Fence;
 
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON converter for the {@link Fence} constraint.
  *
  * @author Fabien Hermenier
  */
-public class FenceConverter extends ConstraintConverter<Fence> {
+public class FenceConverter implements ConstraintConverter<Fence> {
 
     @Override
     public Class<Fence> getSupportedConstraint() {
@@ -40,10 +42,10 @@ public class FenceConverter extends ConstraintConverter<Fence> {
     }
 
     @Override
-    public Fence fromJSON(JSONObject o) throws JSONConverterException {
+    public Fence fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Fence(requiredVM(o, "vm"),
-                requiredNodes(o, "nodes"),
+        return new Fence(requiredVM(mo, o, "vm"),
+                requiredNodes(mo, o, "nodes"),
                 requiredBoolean(o, "continuous"));
     }
 
@@ -51,7 +53,7 @@ public class FenceConverter extends ConstraintConverter<Fence> {
     public JSONObject toJSON(Fence o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
+        c.put("vm", elementToJSON(o.getInvolvedVMs().iterator().next()));
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         c.put("continuous", o.isContinuous());
         return c;

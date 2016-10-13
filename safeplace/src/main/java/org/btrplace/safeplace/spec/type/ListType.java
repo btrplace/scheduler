@@ -18,6 +18,14 @@
 
 package org.btrplace.safeplace.spec.type;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 /**
  * @author Fabien Hermenier
  */
@@ -51,12 +59,26 @@ public class ListType extends ColType {
     }
 
     @Override
+    public String encode() {
+        return "list " + type.encode();
+    }
+
+    @Override
     public String toString() {
         return label();
     }
 
     public Type enclosingType() {
         return type;
+    }
+
+    @Override
+    public Object fromJSON(Object c) {
+        List s = new ArrayList<>();
+        for (Object o : (Collection) c) {
+            s.add(type.fromJSON(o));
+        }
+        return s;
     }
 
 }

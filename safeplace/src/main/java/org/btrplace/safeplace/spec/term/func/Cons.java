@@ -24,16 +24,15 @@ import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.StringType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Cons extends DefaultFunction<Integer> {
+public class Cons implements Function<Integer> {
 
     @Override
     public Integer eval(Context mo, Object... args) {
-        //throw new UnsupportedOperationException();
         String rc = (String) args[1];
         ShareableResource r = (ShareableResource) mo.getModel().getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {

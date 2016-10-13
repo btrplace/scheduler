@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"n : nodes", "id : string", "qty : float"}, inv = "sum({cons(v, id). v : running(n)}) * qty < capa(n, id)")
 public class Overbook extends SimpleConstraint implements ResourceRelated {
 
     private String rcId;

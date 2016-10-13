@@ -18,6 +18,7 @@
 
 package org.btrplace.safeplace.spec.type;
 
+import net.minidev.json.JSONObject;
 import org.btrplace.safeplace.spec.term.Constant;
 
 /**
@@ -46,4 +47,18 @@ public class StringType extends Atomic {
         return instance;
     }
 
+    @Override
+    public String encode() {
+        return label();
+    }
+
+    @Override
+    public Object toJSON(Object value) {
+        return value.toString();
+    }
+
+    @Override
+    public Object fromJSON(Object value) {
+        return value.toString();
+    }
 }

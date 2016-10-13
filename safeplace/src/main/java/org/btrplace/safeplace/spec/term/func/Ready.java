@@ -24,14 +24,14 @@ import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class Ready extends DefaultFunction<Set<VM>> {
+public class Ready implements Function<Set<VM>> {
 
     @Override
     public SetType type() {

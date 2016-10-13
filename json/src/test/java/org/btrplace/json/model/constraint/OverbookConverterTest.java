@@ -36,9 +36,9 @@ public class OverbookConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         OverbookConverter conv = new OverbookConverter();
-        conv.setModel(mo);
+
         Overbook d = new Overbook(mo.newNode(), "foo", 1.4);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
 
         System.out.println(conv.toJSONString(d));
     }

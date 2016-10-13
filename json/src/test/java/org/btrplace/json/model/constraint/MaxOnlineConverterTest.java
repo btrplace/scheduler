@@ -43,8 +43,8 @@ public class MaxOnlineConverterTest {
         Set<Node> s = new HashSet<>(Arrays.asList(model.newNode(), model.newNode(), model.newNode()));
         MaxOnline mo = new MaxOnline(s, 2);
         MaxOnlineConverter moc = new MaxOnlineConverter();
-        moc.setModel(model);
-        MaxOnline new_max = moc.fromJSON(moc.toJSONString(mo));
+
+        MaxOnline new_max = moc.fromJSON(model, moc.toJSON(mo));
         Assert.assertEquals(mo, new_max);
         System.out.println(moc.toJSONString(mo));
     }

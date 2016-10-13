@@ -5,6 +5,7 @@ cache:
 branches:
   except:
     - /^exp-.*$/
+    - /^btrplace-scheduler-.*$/
 env:
   global:
   - secure: fIpwqTk0CaukDz2gGEW8R7Pwa+dLPuPA5hcDm5d5vuqNH2FA02oX09fUrqZWPBlM79ve6UmRTt0TNM2kKCMuZQB175dY/CCPHO22aOw+uMP7ywFkq2FIK8+1qvkTUwWmNsA+sHTMrdmNBM4unguwBq8v3627dik8FAOAkqVWtUI=
@@ -29,6 +30,8 @@ before_install:
 - git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
 - export PYTHONPATH=".:./bin:$PYTHONPATH"
+- python --version
+- pip install --user requests
 install:
 - true
 jdk:
@@ -42,7 +45,7 @@ notifications:
     - btrplace-ci@googlegroups.com
   webhooks:
     urls:
-    - https://webhooks.gitter.im/e/35b65a3f9edbdb762ede
+    - https://webhooks.gitter.im/e/08e84639ce79857bcff2
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always

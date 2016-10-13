@@ -21,7 +21,7 @@ package org.btrplace.safeplace.spec.term.func;
 import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.ListType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Range extends DefaultFunction<List<Integer>> {
+public class Range implements Function<List<Integer>> {
 
     @Override
     public Type type() {

@@ -20,14 +20,18 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.JSONs;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Ready;
 
+import static org.btrplace.json.JSONs.requiredBoolean;
+import static org.btrplace.json.JSONs.requiredVM;
 /**
  * JSON Converter for the constraint {@link Ready}.
  *
  * @author Fabien Hermenier
  */
-public class ReadyConverter extends ConstraintConverter<Ready> {
+public class ReadyConverter implements ConstraintConverter<Ready> {
 
 
     @Override
@@ -41,17 +45,16 @@ public class ReadyConverter extends ConstraintConverter<Ready> {
     }
 
     @Override
-    public Ready fromJSON(JSONObject o) throws JSONConverterException {
+    public Ready fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Ready(requiredVM(o, "vm"), requiredBoolean(o, "continuous"));
+        return new Ready(requiredVM(mo, o, "vm"));
     }
 
     @Override
     public JSONObject toJSON(Ready o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
-        c.put("continuous", o.isContinuous());
+        c.put("vm", JSONs.elementToJSON(o.getInvolvedVMs().iterator().next()));
         return c;
     }
 }

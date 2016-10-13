@@ -81,7 +81,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
         return map.isSleeping(vm)
-                && map.getVMLocation(vm) == src
+                && map.getVMLocation(vm).equals(src)
                 && map.addRunningVM(vm, dst);
     }
 

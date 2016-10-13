@@ -26,7 +26,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.SpreadConverter}.
@@ -39,12 +38,12 @@ public class GatherConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         GatherConverter conv = new GatherConverter();
-        conv.setModel(mo);
-        Gather d = new Gather(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
-        Gather c = new Gather(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        Gather d = new Gather(Arrays.asList(mo.newVM(), mo.newVM()), false);
+        Gather c = new Gather(Arrays.asList(mo.newVM(), mo.newVM()), true);
+
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

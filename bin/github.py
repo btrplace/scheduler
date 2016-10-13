@@ -20,8 +20,8 @@ def api():
 def createRelease(tag, changes):
 	dta = {
 	"draft" : False,
-	"tag_name" : tag,
-	"name":tag,
+	"tag_name" : TAG_HEADER + tag,
+	"name": tag,
 	"body": changes,
 	}
 	r = requests.post(api() + "/releases", json=dta, headers=header())

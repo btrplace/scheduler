@@ -20,14 +20,19 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Spread;
+
+import java.util.HashSet;
+
+import static org.btrplace.json.JSONs.*;
 
 /**
  * JSON converter for the {@link Spread} constraint.
  *
  * @author Fabien Hermenier
  */
-public class SpreadConverter extends ConstraintConverter<Spread> {
+public class SpreadConverter implements ConstraintConverter<Spread> {
 
     @Override
     public Class<Spread> getSupportedConstraint() {
@@ -40,9 +45,9 @@ public class SpreadConverter extends ConstraintConverter<Spread> {
     }
 
     @Override
-    public Spread fromJSON(JSONObject o) throws JSONConverterException {
+    public Spread fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Spread(requiredVMs(o, "vms"), requiredBoolean(o, "continuous"));
+        return new Spread(new HashSet<>(requiredVMs(mo, o, "vms")), requiredBoolean(o, "continuous"));
     }
 
     @Override

@@ -36,10 +36,10 @@ public class RootConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         RootConverter conv = new RootConverter();
-        conv.setModel(mo);
+
         Root d = new Root(mo.newVM());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

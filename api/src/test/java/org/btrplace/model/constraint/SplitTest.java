@@ -39,7 +39,7 @@ public class SplitTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 3);
+        Util.newNodes(mo, 3);
         List<VM> vms = Util.newVMs(mo, 3);
 
         Collection<VM> s1 = Collections.singleton(vms.get(0));
@@ -65,7 +65,7 @@ public class SplitTest {
     @Test
     public void testEquals() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 3);
+        Util.newNodes(mo, 3);
         List<VM> vms = Util.newVMs(mo, 3);
 
         Collection<VM> s1 = Collections.singleton(vms.get(0));

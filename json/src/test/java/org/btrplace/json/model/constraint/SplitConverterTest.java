@@ -26,7 +26,10 @@ import org.btrplace.model.constraint.Split;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.SplitConverter}.
@@ -39,18 +42,18 @@ public class SplitConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
 
-        Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Collection<VM> s3 = new HashSet<>(Collections.singletonList(mo.newVM()));
-        Set<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Collection<VM> s1 = Arrays.asList(mo.newVM(), mo.newVM());
+        Collection<VM> s2 = Arrays.asList(mo.newVM(), mo.newVM());
+        Collection<VM> s3 = Collections.singletonList(mo.newVM());
+        Collection<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);
 
         SplitConverter conv = new SplitConverter();
-        conv.setModel(mo);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

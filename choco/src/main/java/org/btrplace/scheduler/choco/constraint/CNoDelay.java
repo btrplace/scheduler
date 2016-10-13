@@ -28,7 +28,6 @@ import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -62,9 +61,6 @@ public class CNoDelay implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
-        // Get the solver
-        Solver s = rp.getSolver();
-
         VM v = noDelay.getInvolvedVMs().iterator().next();
         // For each vm involved in the constraint
         VMTransition vt = rp.getVMAction(v);
@@ -85,7 +81,7 @@ public class CNoDelay implements ChocoConstraint {
         } else {
             Arithmetic c = new Arithmetic(d.getStart(), Operator.EQ, 0);
             BoolVar move = VF.not(((RelocatableVM) vt).isStaying());
-            ChocoUtils.postImplies(s, move, c);
+            ChocoUtils.postImplies(rp, move, c);
         }
         return true;
     }

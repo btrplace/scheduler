@@ -1,0 +1,2 @@
+src/test/resources/std-perf/li6.gz
+src/test/resources/std-perf/nr6.gz

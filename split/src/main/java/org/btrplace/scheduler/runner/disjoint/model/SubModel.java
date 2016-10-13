@@ -34,7 +34,7 @@ import java.util.Set;
  * <ul>
  * <li>Elements created in a sub-model are integrated automatically into the
  * parent component</li>
- * <li>It is not allowed to attach/detach/clear views</li>
+ * <li>It is not allowed to attach/detach/clear decorators</li>
  * <li>It is not possible to set the attributes</li>
  * </ul>
  *

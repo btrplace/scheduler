@@ -24,7 +24,7 @@ import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +32,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class Colocated extends DefaultFunction<Set<VM>> {
+public class Colocated implements Function<Set<VM>> {
 
     @Override
     public SetType type() {

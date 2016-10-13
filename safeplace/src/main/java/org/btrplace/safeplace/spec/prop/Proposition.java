@@ -18,7 +18,7 @@
 
 package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * A logical proposition.
@@ -31,7 +31,7 @@ public interface Proposition {
 
     Boolean eval(Context m);
 
-    static final Proposition False = new Proposition() {
+    Proposition False = new Proposition() {
         @Override
         public Proposition not() {
             return True;
@@ -53,7 +53,7 @@ public interface Proposition {
         }
     };
 
-    static final Proposition True = new Proposition() {
+    Proposition True = new Proposition() {
         @Override
         public Proposition not() {
             return False;

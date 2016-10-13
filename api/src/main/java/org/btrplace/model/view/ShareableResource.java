@@ -18,12 +18,17 @@
 
 package org.btrplace.model.view;
 
+import gnu.trove.impl.Constants;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
+import org.btrplace.model.constraint.SideConstraint;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A view to denote a resource that nodes share among the VMs they host
@@ -38,21 +43,15 @@ import java.util.stream.Collectors;
  * <li>{@link org.btrplace.model.constraint.Overbook} to specify a mapping between the virtual and the physical resources.</li>
  * </ul>
  * <p>
- * <<<<<<< HEAD:api/src/main/java/btrplace/model/view/ShareableResource.java
- * By default, if there is no {@link btrplace.model.constraint.Preserve} constraint for a VM, it is considered the VM requires
- * the same amount of virtual resources it is currently consuming.
- * <p>
- * By default, if there is no {@link btrplace.model.constraint.Overbook} constraint for a node, a conservative ratio
- * =======
  * By default, if there is no {@link org.btrplace.model.constraint.Preserve} constraint for a VM, it is considered the VM requires
  * the same amount of virtual resources it is currently consuming.
  * <p>
  * By default, if there is no {@link org.btrplace.model.constraint.Overbook} constraint for a node, a conservative ratio
- * >>>>>>> master:api/src/main/java/org/btrplace/model/view/ShareableResource.java
  * of <b>1</b> is used. This means one unit of virtual resources consumes one unit of physical resources.
  *
  * @author Fabien Hermenier
  */
+@SideConstraint(args = {"id : string"}, inv = "!(n : nodes) sum({cons(v, id). v : running(n)}) <= capa(n, id)")
 public class ShareableResource implements ModelView {
 
     /**
@@ -61,11 +60,8 @@ public class ShareableResource implements ModelView {
      */
     public static final String VIEW_ID_BASE = "ShareableResource.";
 
-    private Map<VM, Integer> vmsConsumption;
-    private Map<Node, Integer> nodesCapacity;
-
-    private int vmsNoValue;
-    private int nodesNoValue;
+    private TObjectIntHashMap<VM> vmsConsumption;
+    private TObjectIntHashMap<Node> nodesCapacity;
 
     private String viewId;
 
@@ -91,12 +87,17 @@ public class ShareableResource implements ModelView {
      * @param defConsumption the VM default consumption
      */
     public ShareableResource(String id, int defCapacity, int defConsumption) {
-        vmsConsumption = new HashMap<>();
-        nodesCapacity = new HashMap<>();
+        vmsConsumption = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defConsumption);
+        nodesCapacity = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defCapacity);
+        if (defCapacity < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' default capacity must be >= 0");
+        }
+        if (defConsumption < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' default consumption must be >= 0");
+        }
+
         this.rcId = id;
         this.viewId = VIEW_ID_BASE + rcId;
-        this.nodesNoValue = defCapacity;
-        this.vmsNoValue = defConsumption;
     }
 
     /**
@@ -106,10 +107,7 @@ public class ShareableResource implements ModelView {
      * @return its consumption if it was defined otherwise the default value.
      */
     public int getConsumption(VM vm) {
-        if (vmsConsumption.containsKey(vm)) {
-            return vmsConsumption.get(vm);
-        }
-        return vmsNoValue;
+        return vmsConsumption.get(vm);
     }
 
     /**
@@ -119,31 +117,7 @@ public class ShareableResource implements ModelView {
      * @return its capacity if it was defined otherwise the default value.
      */
     public int getCapacity(Node n) {
-        if (nodesCapacity.containsKey(n)) {
-            return nodesCapacity.get(n);
-        }
-        return nodesNoValue;
-
-    }
-
-    /**
-     * Get the capacity for a list of nodes.
-     *
-     * @param ids the node identifiers
-     * @return the capacity of each node. The order is maintained
-     */
-    public List<Integer> getCapacities(List<Node> ids) {
-        return ids.stream().map(this::getCapacity).collect(Collectors.toList());
-    }
-
-    /**
-     * Get the consumption for a list of VMs.
-     *
-     * @param ids the VM identifiers
-     * @return the consumption of each VM. The order is maintained
-     */
-    public List<Integer> getConsumptions(List<VM> ids) {
-        return ids.stream().map(this::getConsumption).collect(Collectors.toList());
+        return nodesCapacity.get(n);
     }
 
     /**
@@ -172,6 +146,9 @@ public class ShareableResource implements ModelView {
      * @return the current resource
      */
     public ShareableResource setConsumption(VM vm, int val) {
+        if (val < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' consumption of '" + vm + "' must be >= 0");
+        }
         vmsConsumption.put(vm, val);
         return this;
     }
@@ -184,6 +161,9 @@ public class ShareableResource implements ModelView {
      * @return the current resource
      */
     public ShareableResource setCapacity(Node n, int val) {
+        if (val < 0) {
+            throw new IllegalArgumentException("The '" + rcId + "' capacity of '" + n + "' must be >= 0");
+        }
         nodesCapacity.put(n, val);
         return this;
     }
@@ -192,20 +172,18 @@ public class ShareableResource implements ModelView {
      * Unset a VM consumption.
      *
      * @param vm the VM
-     * @return {@code true} iff a value was previously defined for {@code n}.
      */
-    public boolean unset(VM vm) {
-        return vmsConsumption.remove(vm) != null;
+    public void unset(VM vm) {
+        vmsConsumption.remove(vm);
     }
 
     /**
      * Unset a node capacity.
      *
      * @param n the node
-     * @return {@code true} iff a value was previously defined for {@code n}.
      */
-    public boolean unset(Node n) {
-        return nodesCapacity.remove(n) != null;
+    public void unset(Node n) {
+        nodesCapacity.remove(n);
     }
 
 
@@ -254,7 +232,7 @@ public class ShareableResource implements ModelView {
      * @return the value.
      */
     public int getDefaultConsumption() {
-        return vmsNoValue;
+        return vmsConsumption.getNoEntryValue();
     }
 
     /**
@@ -263,7 +241,7 @@ public class ShareableResource implements ModelView {
      * @return the value.
      */
     public int getDefaultCapacity() {
-        return nodesNoValue;
+        return nodesCapacity.getNoEntryValue();
     }
 
     @Override
@@ -287,34 +265,38 @@ public class ShareableResource implements ModelView {
 
     @Override
     public int hashCode() {
-        return Objects.hash(rcId, vmsConsumption, vmsNoValue, nodesCapacity, nodesNoValue);
+        return Objects.hash(rcId, vmsConsumption, nodesCapacity);
     }
 
     @Override
     public ShareableResource copy() {
-        ShareableResource rc = new ShareableResource(rcId, nodesNoValue, vmsNoValue);
-        for (Map.Entry<VM, Integer> e : vmsConsumption.entrySet()) {
-            rc.vmsConsumption.put(e.getKey(), e.getValue());
-        }
-        for (Map.Entry<Node, Integer> e : nodesCapacity.entrySet()) {
-            rc.nodesCapacity.put(e.getKey(), e.getValue());
-        }
+        ShareableResource rc = new ShareableResource(rcId, nodesCapacity.getNoEntryValue(), vmsConsumption.getNoEntryValue());
+        vmsConsumption.forEachEntry((vm, c) -> {
+            rc.vmsConsumption.put(vm, c);
+            return true;
+        });
+        nodesCapacity.forEachEntry((n, c) -> {
+            rc.nodesCapacity.put(n, c);
+            return true;
+        });
         return rc;
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("rc:").append(rcId).append(':');
-        for (Iterator<Map.Entry<Node, Integer>> ite = nodesCapacity.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<Node, Integer> e = ite.next();
-            buf.append("<node ").append(e.getKey().toString()).append(',').append(e.getValue()).append('>');
+        for (Iterator<Node> ite = nodesCapacity.keySet().iterator(); ite.hasNext(); ) {
+            Node n = ite.next();
+            int c = nodesCapacity.get(n);
+            buf.append("<node ").append(n).append(',').append(c).append('>');
             if (ite.hasNext()) {
                 buf.append(',');
             }
         }
-        for (Iterator<Map.Entry<VM, Integer>> ite = vmsConsumption.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<VM, Integer> e = ite.next();
-            buf.append("<VM ").append(e.getKey().toString()).append(',').append(e.getValue()).append('>');
+        for (Iterator<VM> ite = vmsConsumption.keySet().iterator(); ite.hasNext(); ) {
+            VM vm = ite.next();
+            int c = vmsConsumption.get(vm);
+            buf.append("<VM ").append(vm).append(',').append(c).append('>');
             if (ite.hasNext()) {
                 buf.append(',');
             }
@@ -339,7 +321,7 @@ public class ShareableResource implements ModelView {
         int s = 0;
         for (VM u : ids) {
             if (consumptionDefined(u) || undef) {
-                s += consumptionDefined(u) ? vmsConsumption.get(u) : vmsNoValue;
+                s += vmsConsumption.get(u);
             }
         }
         return s;
@@ -356,7 +338,7 @@ public class ShareableResource implements ModelView {
         int s = 0;
         for (Node u : ids) {
             if (capacityDefined(u) || undef) {
-                s += capacityDefined(u) ? nodesCapacity.get(u) : nodesNoValue;
+                s += nodesCapacity.get(u);
             }
         }
         return s;

@@ -39,23 +39,14 @@ import java.util.stream.Collectors;
 public class Ready extends SimpleConstraint {
 
     private VM vm;
-    /**
-     * Make a new discrete constraint.
-     *
-     * @param vm the VM to make ready
-     */
-    public Ready(VM vm) {
-        this(vm, false);
-    }
 
     /**
      * Make a new constraint.
      *
      * @param vm         the VM to make ready
-     * @param continuous {@code true} for a continuous restriction
      */
-    public Ready(VM vm, boolean continuous) {
-        super(continuous);
+    public Ready(VM vm) {
+        super(false);
         this.vm = vm;
     }
 
@@ -66,7 +57,7 @@ public class Ready extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "ready(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "ready(vms=" + vm + ")";
     }
 
     /**
@@ -88,13 +79,17 @@ public class Ready extends SimpleConstraint {
             return false;
         }
         Ready ready = (Ready) o;
-        return isContinuous() == ready.isContinuous() &&
-                Objects.equals(vm, ready.vm);
+        return Objects.equals(vm, ready.vm);
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, isContinuous());
+        return Objects.hash(vm);
     }
 
     @Override

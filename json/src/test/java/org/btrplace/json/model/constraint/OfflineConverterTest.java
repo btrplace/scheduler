@@ -36,10 +36,10 @@ public class OfflineConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         OfflineConverter conv = new OfflineConverter();
-        conv.setModel(mo);
+
         Offline d = new Offline(mo.newNode());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

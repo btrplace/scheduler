@@ -40,18 +40,17 @@ public class AmongConverterTest {
     public void testViables() throws JSONConverterException {
         AmongConverter conv = new AmongConverter();
         Model mo = new DefaultModel();
-        conv.setModel(mo);
-        Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Set<Node> p3 = new HashSet<>(Collections.singletonList(mo.newNode()));
+        List<VM> s1 = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
+        Collection<Node> p1 = Arrays.asList(mo.newNode(), mo.newNode());
+        List<Node> p2 = Arrays.asList(mo.newNode(), mo.newNode());
+        List<Node> p3 = Collections.singletonList(mo.newNode());
 
         Set<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         Among d = new Among(s1, pgrps, false);
         Among c = new Among(s1, pgrps, true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
         System.out.println(conv.toJSONString(d));
     }
 }

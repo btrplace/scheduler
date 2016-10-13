@@ -43,7 +43,7 @@ public class KilledTest {
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         System.out.println(s);
-        Assert.assertTrue(s.setContinuous(true));
+        Assert.assertFalse(s.setContinuous(true));
     }
 
     @Test

@@ -107,7 +107,7 @@ public class ScriptBuilderTest {
             Assert.assertEquals(bi, BtrpNumber.FALSE);
 
 
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
             Assert.fail(x.getMessage(), x);
         }
     }
@@ -178,7 +178,7 @@ public class ScriptBuilderTest {
             Assert.assertEquals(first, BtrpNumber.TRUE);
             Assert.assertEquals(second, BtrpNumber.TRUE);
             Assert.assertEquals(third.getIntValue(), 5);
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
             Assert.fail(x.getMessage(), x);
         }
     }
@@ -260,7 +260,7 @@ public class ScriptBuilderTest {
             Assert.assertEquals(h2, BtrpNumber.TRUE);
 
 
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
             Assert.fail(x.getMessage(), x);
         }
     }
@@ -277,7 +277,7 @@ public class ScriptBuilderTest {
             b.build("namespace testExport.bla; import testExport; for $n in $testExport.nodes { } for $r in $testExport.racks {}");
             b.build("namespace sysadmin; import testExport; for $n in $testExport.nodes { } for $r in $testExport.racks {} for $n in $testExport {}");
 
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
             Assert.fail(x.getMessage(), x);
         }
 
@@ -285,19 +285,19 @@ public class ScriptBuilderTest {
         try {
             b.build("namespace zog; import testExport; for $n in $nodes { }");
             Assert.fail();
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
         }
 
         try {
             b.build("namespace sysadmin.foo; import testExport; for $n in $nodes { }");
             Assert.fail();
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
         }
 
         try {
             b.build("namespace sysadmin.foo; import testExport; for $v in $testExport { }");
             Assert.fail();
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
         }
     }
 
@@ -307,7 +307,7 @@ public class ScriptBuilderTest {
             Script v = b.build("namespace foo; VM[1..5] : tiny;\nVM[6..10] : small;\n lonely($me); ");
             SatConstraint cs = v.getConstraints().iterator().next();
             Assert.assertEquals(cs.getInvolvedVMs().size(), 10);
-        } catch (Exception x) {
+        } catch (ScriptBuilderException x) {
             Assert.fail(x.getMessage(), x);
         }
     }

@@ -25,7 +25,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
  * This class provides an empty implementation of {@link CstrSpecListener},
- * which can be extended to create a listener which only needs to handle a subset
+ * which can be extended to create a listener which only needs to handle a randomSubset
  * of the available methods.
  */
 public class CstrSpecBaseListener implements CstrSpecListener {

@@ -22,7 +22,7 @@ import org.btrplace.safeplace.spec.term.Term;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.term.Var;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.*;
 
@@ -50,7 +50,6 @@ public class ForAll implements Proposition {
 
     @Override
     public Boolean eval(Context m) {
-        boolean ret = true;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
             Collection<Object> o = from.eval(m);
@@ -63,15 +62,16 @@ public class ForAll implements Proposition {
         for (Object[] tuple : tg) {
             for (int i = 0; i < tuple.length; i++) {
                 m.setValue(vars.get(i).label(), tuple[i]);
-                //vars.get(i).set(m, tuple[i]);
             }
             Boolean r = prop.eval(m);
             if (r == null) {
                 return null;
             }
-            ret &= r;
+            if (!r) {
+                return false;
+            }
         }
-        return ret;
+        return true;
     }
 
     public String toString() {

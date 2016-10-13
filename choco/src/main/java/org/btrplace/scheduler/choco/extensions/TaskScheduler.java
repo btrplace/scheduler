@@ -183,20 +183,13 @@ public class TaskScheduler extends Constraint {
             watchHosts = new BitSet(nbHosts);
         }
 
-        @Override
-        public ESat isEntailed() {
-
-            //A hashmap to save the changes of each node (relatives to the previous moment) and each dimension
-            TIntIntHashMap[][] changes = new TIntIntHashMap[nbHosts][nbDims];
-            int[][] initFree = new int[nbHosts][];
-            for (int h = 0; h < nbHosts; h++) {
-                for (int d = 0; d < nbDims; d++) {
-                    changes[h][d] = new TIntIntHashMap();
-                }
-                initFree[h] = Arrays.copyOf(capacities[h], capacities[h].length);
-            }
-
-            // check dStart[dt] >= earlyStart[dHost[dt]] for all dTasks
+        /**
+         * check dStart[dt] >= earlyStart[dHost[dt]] for all dTasks
+         *
+         * @param changes the profile. Will be updated with the dSlices value
+         * @return the satisfaction status
+         */
+        private ESat checkDSlices(TIntIntHashMap[][] changes) {
             for (int dt = 0; dt < dHosters.length; dt++) {
                 if (!dHosters[dt].isInstantiated() || !dStarts[dt].isInstantiated()) {
                     return ESat.UNDEFINED;
@@ -210,8 +203,18 @@ public class TaskScheduler extends Constraint {
                     changes[h][d].put(t, changes[h][d].get(t) - dUsages[dt][d]);
                 }
             }
+            return ESat.TRUE;
+        }
 
-            // check cEnd[ct] <= lastEnd[cHost[ct]] for all cTasks
+        /**
+         * check cEnd[ct] <= lastEnd[cHost[ct]] for all cTasks.
+         *
+         * @param changes  will be modified
+         * @param initFree the initial amount of free resources
+         * @return the satisfaction status
+         */
+        private ESat checkCSlices(TIntIntHashMap[][] changes, int[][] initFree) {
+
             for (int ct = 0; ct < cHosters.length; ct++) {
                 if (!cHosters[ct].isInstantiated() || !cEnds[ct].isInstantiated()) {
                     return ESat.UNDEFINED;
@@ -226,8 +229,17 @@ public class TaskScheduler extends Constraint {
                     initFree[h][d] -= cUsages[ct][d];
                 }
             }
+            return ESat.TRUE;
+        }
 
-            // check resource profile on each host
+        /**
+         * check resource profile on each host
+         *
+         * @param changes  the resource profiles
+         * @param initFree the initial amount of free resources
+         * @return the satisfaction status
+         */
+        private ESat checkProfiles(TIntIntHashMap[][] changes, int[][] initFree) {
             boolean ok = true;
             for (int h = 0; h < nbHosts; h++) {
                 TIntObjectHashMap<int[]> myChanges = myChanges(changes[h]);
@@ -248,6 +260,32 @@ public class TaskScheduler extends Constraint {
                 }
             }
             return ESat.eval(ok);
+        }
+
+        @Override
+        public ESat isEntailed() {
+
+            //A hashmap to save the changes of each node (relatives to the previous moment) and each dimension
+            TIntIntHashMap[][] changes = new TIntIntHashMap[nbHosts][nbDims];
+            int[][] initFree = new int[nbHosts][];
+            for (int h = 0; h < nbHosts; h++) {
+                for (int d = 0; d < nbDims; d++) {
+                    changes[h][d] = new TIntIntHashMap();
+                }
+                initFree[h] = Arrays.copyOf(capacities[h], capacities[h].length);
+            }
+
+            ESat sat = checkDSlices(changes);
+            if (ESat.TRUE != sat) {
+                return sat;
+            }
+
+            sat = checkCSlices(changes, initFree);
+            if (ESat.TRUE != sat) {
+                return sat;
+            }
+
+            return checkProfiles(changes, initFree);
         }
 
         @Override

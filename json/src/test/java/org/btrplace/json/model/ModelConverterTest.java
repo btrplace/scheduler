@@ -18,6 +18,7 @@
 
 package org.btrplace.json.model;
 
+import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.json.model.view.ModelViewsConverter;
 import org.btrplace.model.*;
@@ -65,5 +66,29 @@ public class ModelConverterTest {
         Assert.assertEquals(res, mo);
         Assert.assertTrue(res.contains(n1));
         Assert.assertTrue(res.contains(vm1));
+    }
+
+    @Test
+    public void testCompleteMapping() throws JSONConverterException {
+        Model mo = new DefaultModel();
+        Mapping c = mo.getMapping();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        c.addOnlineNode(n1);
+        c.addOfflineNode(n2);
+        c.addRunningVM(vm1, n1);
+        c.addSleepingVM(vm2, n1);
+        c.addReadyVM(vm3);
+        c.addOnlineNode(n3);
+        c.addRunningVM(vm4, n3);
+        ModelConverter conv = new ModelConverter();
+        JSONObject o = conv.toJSON(mo);
+        System.out.println(o);
+        Assert.assertEquals(conv.fromJSON(o), mo);
     }
 }

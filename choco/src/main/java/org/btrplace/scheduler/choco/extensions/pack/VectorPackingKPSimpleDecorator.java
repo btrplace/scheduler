@@ -91,7 +91,7 @@ public class VectorPackingKPSimpleDecorator {
             if (p.bins[i].contains(bin) && p.iSizes[dim][i] > 0) {
                 p.bins[i].removeValue(bin, p);
                 candidate.get(bin).clear(i);
-                p.potentialLoad[dim][bin].add(-1 * p.iSizes[dim][i]);
+                p.potentialLoad[dim][bin].add(-p.iSizes[dim][i]);
                 if (p.bins[i].isInstantiated()) {
                     p.assignItem(i, p.bins[i].getValue());
                 }

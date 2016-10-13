@@ -18,16 +18,18 @@
 
 package org.btrplace.safeplace.spec.term.func;
 
+import org.btrplace.model.Node;
+import org.btrplace.model.view.ShareableResource;
 import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.StringType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Capa extends DefaultFunction<Integer> {
+public class Capa implements Function<Integer> {
 
     @Override
     public String id() {
@@ -36,13 +38,13 @@ public class Capa extends DefaultFunction<Integer> {
 
     @Override
     public Integer eval(Context mo, Object... args) {
-        throw new UnsupportedOperationException();
-        /*String rc = args.get(1).toString();
-        ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
+        String rc = (String) args[1];
+        ShareableResource r = (ShareableResource) mo.getModel().getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             throw new RuntimeException("View '" + ShareableResource.VIEW_ID_BASE + rc + "' is missing");
         }
-        return r.getCapacity((Node) args.get(0)); */
+        return r.getCapacity((Node) args[0]);
+
     }
 
     @Override

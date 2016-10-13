@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"v : vms", "id : string", "qty : int"}, inv = "vmState(v) = running --> cons(v, id) <= qty")
 public class Preserve implements SatConstraint, ResourceRelated {
 
     private VM vm;

@@ -20,14 +20,18 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.ResourceCapacity;
 
+import java.util.HashSet;
+
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link ResourceCapacityConverter}.
  *
  * @author Fabien Hermenier
  */
-public class ResourceCapacityConverter extends ConstraintConverter<ResourceCapacity> {
+public class ResourceCapacityConverter implements ConstraintConverter<ResourceCapacity> {
 
     @Override
     public Class<ResourceCapacity> getSupportedConstraint() {
@@ -40,9 +44,9 @@ public class ResourceCapacityConverter extends ConstraintConverter<ResourceCapac
     }
 
     @Override
-    public ResourceCapacity fromJSON(JSONObject o) throws JSONConverterException {
+    public ResourceCapacity fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new ResourceCapacity(requiredNodes(o, "nodes"),
+        return new ResourceCapacity(new HashSet<>(requiredNodes(mo, o, "nodes")),
                 requiredString(o, "rc"),
                 requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));

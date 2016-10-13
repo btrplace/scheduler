@@ -21,20 +21,21 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.Among;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
+import static org.btrplace.json.JSONs.*;
 
 /**
  * JSON converter for the {@link Among} constraint.
  *
  * @author Fabien Hermenier
  */
-public class AmongConverter extends ConstraintConverter<Among> {
+public class AmongConverter implements ConstraintConverter<Among> {
+
 
     @Override
     public Class<Among> getSupportedConstraint() {
@@ -47,20 +48,11 @@ public class AmongConverter extends ConstraintConverter<Among> {
     }
 
     @Override
-    public Among fromJSON(JSONObject o) throws JSONConverterException {
-        checkKeys(o, "parts");
+    public Among fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        Set<Collection<Node>> nodes = new HashSet<>();
-        Object x = o.get("parts");
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of int sets expected at key 'parts'");
-        }
-        for (Object obj : (JSONArray) x) {
-            nodes.add(nodesFromJSON((JSONArray) obj));
-        }
 
-        return new Among(requiredVMs(o, "vms"),
-                nodes,
+        return new Among(requiredVMs(mo, o, "vms"),
+                requiredNodePart(mo, o, "parts"),
                 requiredBoolean(o, "continuous"));
     }
 

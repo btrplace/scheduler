@@ -22,12 +22,12 @@ import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMStateType;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class VMState extends DefaultFunction<VMStateType.Type> {
+public class VMState implements Function<VMStateType.Type> {
 
     @Override
     public VMStateType type() {

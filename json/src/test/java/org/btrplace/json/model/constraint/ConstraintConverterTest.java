@@ -20,6 +20,7 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import org.testng.annotations.Test;
  */
 public class ConstraintConverterTest {
 
-    private class Mock<E extends Constraint> extends ConstraintConverter<E> {
+    private class Mock<E extends Constraint> implements ConstraintConverter<E> {
 
         private String id;
 
@@ -49,12 +50,12 @@ public class ConstraintConverterTest {
         }
 
         @Override
-        public E fromJSON(JSONObject in) throws JSONConverterException {
+        public E fromJSON(Model mo, JSONObject in) throws JSONConverterException {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public JSONObject toJSON(E e) throws JSONConverterException {
+        public JSONObject toJSON(E e) {
             throw new UnsupportedOperationException();
         }
     }

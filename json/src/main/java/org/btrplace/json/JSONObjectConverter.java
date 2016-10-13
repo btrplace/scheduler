@@ -19,9 +19,11 @@
 package org.btrplace.json;
 
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
-import java.io.File;
 import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * Specify a converter between a JSON formatted message and a object.
@@ -49,22 +51,17 @@ public interface JSONObjectConverter<E> {
     JSONObject toJSON(E e) throws JSONConverterException;
 
     /**
-     * Un-serialize an object from a file.
-     *
-     * @param path the file path
-     * @return the resulting object
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    E fromJSON(File path) throws JSONConverterException;
-
-    /**
      * Un-serialize an object from a string.
      *
      * @param buf the string to parse
      * @return the resulting object
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    E fromJSON(String buf) throws JSONConverterException;
+    default E fromJSON(String buf) throws JSONConverterException {
+        try (StringReader in = new StringReader(buf)) {
+            return fromJSON(in);
+        }
+    }
 
     /**
      * Un-serialize an object from a stream.
@@ -74,7 +71,18 @@ public interface JSONObjectConverter<E> {
      * @return the resulting object
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    E fromJSON(Reader r) throws JSONConverterException;
+    default E fromJSON(Reader r) throws JSONConverterException {
+        try {
+            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+            Object o = p.parse(r);
+            if (!(o instanceof JSONObject)) {
+                throw new JSONConverterException("Unable to parse a JSON object");
+            }
+            return fromJSON((JSONObject) o);
+        } catch (ParseException ex) {
+            throw new JSONConverterException(ex);
+        }
+    }
 
     /**
      * Serialize an object to a string.
@@ -83,23 +91,7 @@ public interface JSONObjectConverter<E> {
      * @return the JSON message
      * @throws JSONConverterException if an error occurred while converting the object
      */
-    String toJSONString(E o) throws JSONConverterException;
-
-    /**
-     * Serialize an object to an appendable stream.
-     *
-     * @param e the object to serialize
-     * @param w the stream to append to
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    void toJSON(E e, Appendable w) throws JSONConverterException;
-
-    /**
-     * Serialize an object to a file.
-     *
-     * @param e    the object
-     * @param path the path name
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    void toJSON(E e, File path) throws JSONConverterException;
+    default String toJSONString(E o) throws JSONConverterException {
+        return toJSON(o).toJSONString();
+    }
 }

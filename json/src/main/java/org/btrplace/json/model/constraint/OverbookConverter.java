@@ -20,14 +20,16 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Overbook;
 
+import static org.btrplace.json.JSONs.*;
 /**
  * JSON Converter for the constraint {@link OverbookConverter}.
  *
  * @author Fabien Hermenier
  */
-public class OverbookConverter extends ConstraintConverter<Overbook> {
+public class OverbookConverter implements ConstraintConverter<Overbook> {
 
     @Override
     public Class<Overbook> getSupportedConstraint() {
@@ -40,9 +42,9 @@ public class OverbookConverter extends ConstraintConverter<Overbook> {
     }
 
     @Override
-    public Overbook fromJSON(JSONObject o) throws JSONConverterException {
+    public Overbook fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Overbook(requiredNode(o, "node"),
+        return new Overbook(requiredNode(mo, o, "node"),
                 requiredString(o, "rc"),
                 requiredDouble(o, "ratio"),
                 requiredBoolean(o, "continuous"));
@@ -52,7 +54,7 @@ public class OverbookConverter extends ConstraintConverter<Overbook> {
     public JSONObject toJSON(Overbook o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("node", toJSON(o.getInvolvedNodes().iterator().next()));
+        c.put("node", elementToJSON(o.getInvolvedNodes().iterator().next()));
         c.put("rc", o.getResource());
         c.put("ratio", o.getRatio());
         c.put("continuous", o.isContinuous());

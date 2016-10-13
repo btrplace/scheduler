@@ -40,20 +40,10 @@ public class Running extends SimpleConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vm the VM to make running
+     * @param vm         the VM to make running
      */
     public Running(VM vm) {
-        this(vm, false);
-    }
-
-    /**
-     * Make a new constraint.
-     *
-     * @param vm         the VM to make running
-     * @param continuous {@code true} for a continuous restriction
-     */
-    public Running(VM vm, boolean continuous) {
-        super(continuous);
+        super(false);
         this.vm = vm;
     }
 
@@ -71,13 +61,12 @@ public class Running extends SimpleConstraint {
             return false;
         }
         Running running = (Running) o;
-        return isContinuous() == running.isContinuous() &&
-                Objects.equals(vm, running.vm);
+        return Objects.equals(vm, running.vm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vm, isContinuous());
+        return Objects.hash(vm);
     }
 
     @Override
@@ -86,8 +75,13 @@ public class Running extends SimpleConstraint {
     }
 
     @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
+
+    @Override
     public String toString() {
-        return "running(vms=" + vm + ", " + (isContinuous() ? "continuous" : "discrete") + ")";
+        return "running(vms=" + vm + ")";
     }
 
     /**

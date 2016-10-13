@@ -37,9 +37,9 @@ public class NoDelayConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         NoDelayConverter conv = new NoDelayConverter();
-        conv.setModel(mo);
+
         NoDelay nd = new NoDelay(mo.newVM());
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(nd)), nd);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(nd)), nd);
         System.out.println(conv.toJSONString(nd));
     }
 }

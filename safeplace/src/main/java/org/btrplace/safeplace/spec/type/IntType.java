@@ -18,6 +18,8 @@
 
 package org.btrplace.safeplace.spec.type;
 
+import net.minidev.json.JSONObject;
+import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.term.Constant;
 
 /**
@@ -25,13 +27,9 @@ import org.btrplace.safeplace.spec.term.Constant;
  */
 public class IntType extends Atomic {
 
-    private int inf, sup;
+    private static final IntType instance = new IntType();
 
-    private static final IntType instance = new IntType(0, 5);
-
-    private IntType(int lb, int ub) {
-        this.inf = lb;
-        this.sup = ub;
+    private IntType() {
     }
 
     public static IntType getInstance() {
@@ -51,6 +49,21 @@ public class IntType extends Atomic {
     @Override
     public Constant parse(String n) {
         return new Constant(Integer.parseInt(n), IntType.getInstance());
+    }
+
+    @Override
+    public Object toJSON(Object value) {
+        return value;
+    }
+
+    @Override
+    public String encode() {
+        return toString();
+    }
+
+    @Override
+    public Integer fromJSON(Object value) {
+        return (Integer) value;
     }
 
 }

@@ -18,13 +18,17 @@
 
 package org.btrplace.scheduler.choco.runner;
 
+import org.btrplace.model.Instance;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
+import org.chocosolver.solver.search.measure.IMeasures;
+import org.chocosolver.solver.search.measure.MeasuresRecorder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Statistics to aggregate the statistics of a multi-stage resolution.
+ * Aggregate the statistics of a multi-stage resolution.
  *
  * @author Fabien Hermenier
  */
@@ -35,11 +39,18 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     /**
      * Make a new statistic.
      */
-    public StagedSolvingStatistics() {
+    public StagedSolvingStatistics(SolvingStatistics firstStage) {
         stages = new ArrayList<>();
+        stages.add(firstStage);
     }
 
 
+    /**
+     * Append statistics.
+     *
+     * @param stats the statistics to add
+     * @return {@code this}
+     */
     public StagedSolvingStatistics append(SolvingStatistics stats) {
         stages.add(stats);
         return this;
@@ -53,27 +64,22 @@ public class StagedSolvingStatistics implements SolvingStatistics {
         return stages.get(0);
     }
 
+    /**
+     * Get the number of stages.
+     * @return a positive integer
+     */
     public int getNbStages() {
         return stages.size();
     }
 
-    public SolvingStatistics getAtState(int st) {
-        return stages.get(st);
-    }
-
-    @Override
-    public int getNbConstraints() {
-        return last().getNbConstraints();
-    }
-
     /**
-     * Return the aggregated solving duration.
+     * Get the statistics associated to a given stage
      *
-     * @return a long
+     * @param st the stage
+     * @return the resulting statistics if any. {@code null} otherwise
      */
-    @Override
-    public long getSolvingDuration() {
-        return stages.stream().mapToLong(SolvingStatistics::getSolvingDuration).sum();
+    public SolvingStatistics getStage(int st) {
+        return stages.get(st);
     }
 
     /**
@@ -82,8 +88,8 @@ public class StagedSolvingStatistics implements SolvingStatistics {
      * @return a long
      */
     @Override
-    public long getCoreRPBuildDuration() {
-        return stages.stream().mapToLong(SolvingStatistics::getCoreRPBuildDuration).sum();
+    public long getCoreBuildDuration() {
+        return stages.stream().mapToLong(SolvingStatistics::getCoreBuildDuration).sum();
     }
 
     /**
@@ -92,46 +98,18 @@ public class StagedSolvingStatistics implements SolvingStatistics {
      * @return a long
      */
     @Override
-    public long getSpeRPDuration() {
-        return stages.stream().mapToLong(SolvingStatistics::getSpeRPDuration).sum();
+    public long getSpecializationDuration() {
+        return stages.stream().mapToLong(SolvingStatistics::getSpecializationDuration).sum();
     }
 
     /**
      * Return the timestamp of the first phase.
      *
-     * @return a timestamp
+     * @return a timestamp. -1 if not started yet
      */
     @Override
     public long getStart() {
         return first().getStart();
-    }
-
-    /**
-     * Return the aggregated number of search nodes.
-     *
-     * @return a long
-     */
-    @Override
-    public long getNbSearchNodes() {
-        return stages.stream().mapToLong(SolvingStatistics::getNbSearchNodes).sum();
-    }
-
-    /**
-     * Return the aggregated number of backtracks.
-     *
-     * @return a long
-     */
-    @Override
-    public long getNbBacktracks() {
-        return stages.stream().mapToLong(SolvingStatistics::getNbBacktracks).sum();
-    }
-
-    /**
-     * Return the status of the last stage.
-     */
-    @Override
-    public boolean hitTimeout() {
-        return last().hitTimeout();
     }
 
     /**
@@ -145,18 +123,8 @@ public class StagedSolvingStatistics implements SolvingStatistics {
     }
 
     @Override
-    public int getNbVMs() {
-        return last().getNbConstraints();
-    }
-
-    @Override
-    public int getNbNodes() {
-        return last().getNbConstraints();
-    }
-
-    @Override
     public int getNbManagedVMs() {
-        return last().getNbConstraints();
+        return last().getNbManagedVMs();
     }
 
     @Override
@@ -179,5 +147,80 @@ public class StagedSolvingStatistics implements SolvingStatistics {
             i++;
         }
         return b.toString();
+    }
+
+    @Override
+    public IMeasures getMeasures() {
+        MeasuresRecorder mr = (MeasuresRecorder) first().getMeasures().duplicate();
+        for (int i = 1; i < stages.size(); i++) {
+            IMeasures m = stages.get(i).getMeasures();
+            mr.backtrackCount += m.getBackTrackCount();
+            mr.failCount += m.getFailCount();
+            mr.nodeCount += m.getNodeCount();
+            mr.readingTimeCount += m.getReadingTimeCount();
+            mr.restartCount += m.getRestartCount();
+            mr.timeCount += m.getTimeCount() * 1000 * 1000 * 1000f; //Because it is expressed in nanoseconds
+            mr.objectiveOptimal = mr.objectiveOptimal && m.isObjectiveOptimal();
+            mr.hasObjective = mr.hasObjective && m.hasObjective();
+        }
+        return mr;
+    }
+
+    @Override
+    public Instance getInstance() {
+        return first().getInstance();
+    }
+
+    @Override
+    public boolean completed() {
+        return last().completed();
+    }
+
+    @Override
+    public ReconfigurationPlan lastSolution() {
+        return last().lastSolution();
+    }
+
+    /**
+     * Print the statistics as a CSV line.
+     * Statistics are computed wrt. the different stages:
+     * - the maximum number of managed VMs
+     * - the cumulative getCoreBuildDuration()
+     * - the cumulative getSpecializationDuration()
+     * - the cumulative getMeasures().getTimeCount() * 1000 (so in milliseconds)
+     * - the number of solutions for the last stage or 0 if any of the stages does not have at least a solution
+     * - completed ? 1 if all the stages are completed
+     *
+     * @return a CSV formatted string
+     */
+    @Override
+    public String toCSV() {
+        int nbManagedVMs = -1;
+        long core = 0;
+        long spe = 0;
+        long d = 0;
+        int solutions = 0;
+        if (!stages.isEmpty()) {
+            solutions = stages.get(stages.size() - 1).getSolutions().size();
+        }
+        boolean completed = true;
+        for (SolvingStatistics sol : stages) {
+            nbManagedVMs = Math.max(nbManagedVMs, sol.getNbManagedVMs());
+            core += sol.getCoreBuildDuration();
+            spe += sol.getSpecializationDuration();
+            d += sol.getMeasures().getElapsedTimeInNanoseconds() / 1000;
+            completed &= sol.completed();
+            if (sol.getSolutions().isEmpty()) {
+                solutions = 0;
+            }
+        }
+
+        return String.format("%d;%d;%d;%d;%d;%d", nbManagedVMs,
+                core,
+                spe,
+                d,
+                solutions,
+                completed ? 1 : 0);
+
     }
 }

@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
  * This class provides an empty implementation of {@link CstrSpecVisitor},
- * which can be extended to create a visitor which only needs to handle a subset
+ * which can be extended to create a visitor which only needs to handle a randomSubset
  * of the available methods.
  *
  * @param <T> The return type of the visit operation. Use {@link Void} for

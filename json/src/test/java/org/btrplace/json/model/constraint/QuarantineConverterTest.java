@@ -36,10 +36,10 @@ public class QuarantineConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         QuarantineConverter conv = new QuarantineConverter();
-        conv.setModel(mo);
+
         Quarantine d = new Quarantine(mo.newNode());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

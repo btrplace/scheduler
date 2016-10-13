@@ -21,19 +21,21 @@ package org.btrplace.json.model.view;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Element;
+import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.NamingService;
 
 import java.util.Map;
 
+import static org.btrplace.json.JSONs.*;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.NamingService}.
  *
  * @author Fabien Hermenier
  */
-public class NamingServiceConverter extends ModelViewConverter<NamingService> {
+public class NamingServiceConverter implements ModelViewConverter<NamingService> {
 
     @Override
     public Class<NamingService> getSupportedView() {
@@ -60,7 +62,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
     }
 
     @Override
-    public NamingService<? extends Element> fromJSON(JSONObject o) throws JSONConverterException {
+    public NamingService<? extends Element> fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
             return null;
@@ -84,7 +86,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String n = e.getKey();
             int v = Integer.parseInt(e.getValue().toString());
-            Element el = VM.TYPE.equals(type) ? getVM(v) : getNode(v);
+            Element el = VM.TYPE.equals(type) ? getVM(mo, v) : getNode(mo, v);
             if (!ns.register(el, n)) {
                 throw new JSONConverterException("Duplicated name '" + n + "'");
             }

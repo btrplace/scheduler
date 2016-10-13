@@ -22,14 +22,14 @@ import org.btrplace.plan.event.Action;
 import org.btrplace.safeplace.spec.type.ActionType;
 import org.btrplace.safeplace.spec.type.TimeType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * Get the moment an action ends.
  *
  * @author Fabien Hermenier
  */
-public class End extends DefaultFunction<Integer> {
+public class End implements Function<Integer> {
 
     @Override
     public TimeType type() {

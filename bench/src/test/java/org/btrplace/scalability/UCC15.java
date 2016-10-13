@@ -92,7 +92,7 @@ public class UCC15 {
     public double duration(SolvingStatistics s) {
         SolutionStatistics x = s.getSolutions().get(0);
         System.out.println(s);
-        return x.getTime() + s.getCoreRPBuildDuration() + s.getSpeRPDuration();
+        return x.getMeasures().getTimeCount() * 1000 + s.getCoreBuildDuration() + s.getSpecializationDuration();
     }
 
     public SolvingStatistics decommissioning_10gb() throws SchedulerException {
@@ -178,7 +178,7 @@ public class UCC15 {
             }
         }
 
-        // Add resource views
+        // Add resource decorators
         ShareableResource rcMem = new ShareableResource("mem", 0, 0);
         ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         for (Node n : srcNodes) {
@@ -329,7 +329,7 @@ public class UCC15 {
             }
         }
 
-        // Add resource views
+        // Add resource decorators
         ShareableResource rcMem = new ShareableResource("mem", 0, 0);
         ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         for (Node n : srcNodes) {
@@ -487,7 +487,7 @@ public class UCC15 {
             }
         }
 
-        // Add resource views
+        // Add resource decorators
         ShareableResource rcMem = new ShareableResource("mem", 0, 0);
         ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         for (Node n : srcNodes) {
@@ -658,7 +658,7 @@ public class UCC15 {
             }
         }
 
-        // Add resource views
+        // Add resource decorators
         ShareableResource rcMem = new ShareableResource("mem", 0, 0);
         ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         for (Node n : srcNodes) {

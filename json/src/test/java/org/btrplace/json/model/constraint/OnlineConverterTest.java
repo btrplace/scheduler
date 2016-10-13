@@ -36,10 +36,10 @@ public class OnlineConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         OnlineConverter conv = new OnlineConverter();
-        conv.setModel(mo);
+
         Online d = new Online(mo.newNode());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

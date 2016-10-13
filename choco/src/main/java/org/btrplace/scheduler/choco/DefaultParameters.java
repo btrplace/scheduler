@@ -25,6 +25,8 @@ import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives;
 import org.btrplace.scheduler.choco.view.DefaultCumulatives;
 import org.btrplace.scheduler.choco.view.VectorPacking;
+import org.chocosolver.memory.IEnvironment;
+import org.chocosolver.memory.trailing.EnvironmentTrailing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +36,14 @@ import java.util.List;
  * <ul>
  * <li>repair mode is disabled</li>
  * <li>no time limit</li>
+ * <li>a default horizon of 1 hour</li>
  * <li>the transition factory comes from {@link org.btrplace.scheduler.choco.transition.TransitionFactory#newBundle()}</li>
  * <li>the duration evaluator is {@link org.btrplace.scheduler.choco.duration.DurationEvaluators#newBundle()}</li>
  * <li>the api to choco element mapper is {@link ChocoMapper#newBundle()}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Packing} constraint is {@link org.btrplace.scheduler.choco.view.VectorPacking}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.Cumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultCumulatives}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.AliasedCumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives}</li>
+ * <li>The {@link IEnvironment} is the default choco trailing environment. For large scale experiment, use</li>
  * </ul>
  *
  * @author Fabien Hermenier
@@ -49,6 +53,8 @@ public class DefaultParameters implements Parameters {
     private ChocoMapper mapper;
 
     private TransitionFactory amf;
+
+    private EnvironmentFactory envf;
 
     private boolean optimize = false;
 
@@ -64,7 +70,10 @@ public class DefaultParameters implements Parameters {
 
     private DurationEvaluators durationEvaluators;
 
-    private int maxEnd = DefaultReconfigurationProblem.DEFAULT_MAX_TIME;
+    /**
+     * Defautl horizon is one hour.
+     */
+    private int maxEnd = 3600;
 
     private int verbosityLevel;
 
@@ -75,13 +84,19 @@ public class DefaultParameters implements Parameters {
         mapper = ChocoMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
         amf = TransitionFactory.newBundle();
-        //Default solver views
+        envf = mo -> new EnvironmentTrailing();
+        //Default solver decorators
         views = new ArrayList<>();
         views.add(VectorPacking.class);
         views.add(DefaultCumulatives.class);
         views.add(DefaultAliasedCumulatives.class);
     }
 
+    /**
+     * Copy constructor for the parameters.
+     *
+     * @param ps the parameters to copy
+     */
     public DefaultParameters(Parameters ps) {
         seed = ps.getRandomSeed();
         amf = ps.getTransitionFactory();
@@ -94,6 +109,7 @@ public class DefaultParameters implements Parameters {
         verbosityLevel = ps.getVerbosity();
         views = ps.getChocoViews();
         mapper = ps.getMapper();
+        envf = ps.getEnvironmentFactory();
     }
 
     @Override
@@ -200,7 +216,7 @@ public class DefaultParameters implements Parameters {
         try {
             c.getDeclaredConstructor();
             return views.add(c);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("No default constructor available for '" + c.getName() + "'", e);
         }
     }
@@ -213,5 +229,16 @@ public class DefaultParameters implements Parameters {
     @Override
     public List<Class<? extends ChocoView>> getChocoViews() {
         return views;
+    }
+
+    @Override
+    public EnvironmentFactory getEnvironmentFactory() {
+        return envf;
+    }
+
+    @Override
+    public Parameters setEnvironmentFactory(EnvironmentFactory f) {
+        envf = f;
+        return this;
     }
 }

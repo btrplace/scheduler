@@ -101,11 +101,11 @@ public class DurationEvaluators {
     public int evaluate(Model mo, Class<? extends Action> a, Element e) throws SchedulerException {
         ActionDurationEvaluator<Element> ev = durations.get(a);
         if (ev == null) {
-            throw new SchedulerException(null, "Unable to estimate the action duration related to '" + e + "'");
+            throw new SchedulerException(null, "Unable to estimate the duration of action '" + a.getSimpleName() + "' related to '" + e + "'");
         }
         int d = ev.evaluate(mo, e);
         if (d <= 0) {
-            throw new SchedulerException(null, "Unable to estimate the action duration related to '" + e + "'");
+            throw new SchedulerException(null, "The duration for action " + a.getSimpleName() + " over '" + e + "' has been evaluated to a negative value (" + d + "). Unsupported");
         }
         return d;
     }

@@ -19,10 +19,8 @@
 package org.btrplace.safeplace.spec.prop;
 
 import org.btrplace.safeplace.spec.term.Term;
-import org.btrplace.safeplace.util.AllPackingsGenerator;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,18 +47,6 @@ public class NoPackings extends AtomicProp {
         }
         //there is duplicates
         return nb != left.size();
-    }
-
-    private Set<Set<Set<Object>>> allPacking(Collection<Object> args) {
-        AllPackingsGenerator<Object> pg = new AllPackingsGenerator<>(Object.class, args);
-        Set<Set<Set<Object>>> packings = new HashSet<>();
-        while (pg.hasNext()) {
-            Set<Set<Object>> s = pg.next();
-            if (!s.isEmpty()) {
-                packings.add(s);
-            }
-        }
-        return packings;
     }
 
     @Override

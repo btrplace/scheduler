@@ -18,7 +18,10 @@
 
 package org.btrplace.safeplace.spec.type;
 
+import net.minidev.json.JSONArray;
 import org.btrplace.safeplace.spec.term.Constant;
+
+import java.util.Collection;
 
 /**
  * @author Fabien Hermenier
@@ -81,6 +84,16 @@ public class ColType implements Type {
 
     public Type enclosingType() {
         return type;
+    }
+
+    @Override
+    public JSONArray toJSON(Object c) {
+        JSONArray a = new JSONArray();
+        //return ((VM)value).id();
+        for (Object o : (Collection) c) {
+            a.add(type.toJSON(o));
+        }
+        return a;
     }
 
 }

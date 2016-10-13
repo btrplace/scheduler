@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.type.ActionType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class Actions extends DefaultFunction<Set<Action>> {
+public class Actions implements Function<Set<Action>> {
 
     @Override
     public Type type() {

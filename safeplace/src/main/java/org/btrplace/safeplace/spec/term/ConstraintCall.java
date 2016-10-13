@@ -18,12 +18,12 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import org.btrplace.safeplace.Constraint;
+import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.prop.Not;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,7 +51,7 @@ public class ConstraintCall implements Proposition {
 
     @Override
     public Boolean eval(Context m) {
-        List<UserVar> ps = c.getParameters();
+        List<UserVar> ps = c.args();
         List<Object> ins = new ArrayList<>(ps.size());
         for (Term t : args) {
             Object o = t.eval(m);
@@ -64,7 +64,7 @@ public class ConstraintCall implements Proposition {
     }
 
     private static void check(Constraint f, List<Term> args) {
-        Type[] expected = f.signature(/*args*/);
+        Type[] expected = f.signature();
         if (expected.length != args.size()) {
             throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f.toString());
         }

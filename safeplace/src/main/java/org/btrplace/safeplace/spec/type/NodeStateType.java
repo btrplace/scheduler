@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.term.Constant;
  */
 public class NodeStateType extends Atomic {
 
-    public static enum Type {online, booting, halting, offline}
+    public enum Type {online, booting, halting, offline}
 
     private static NodeStateType instance = new NodeStateType();
 

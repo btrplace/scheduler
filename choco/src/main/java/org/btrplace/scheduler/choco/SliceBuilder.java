@@ -21,9 +21,6 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -84,30 +81,13 @@ public class SliceBuilder {
             duration = makeDuration();
         }
 
-        Solver s = rp.getSolver();
-
         //UB for the time variables
         if (!start.isInstantiatedTo(0)) {
             //enforces start <= end, duration <= end, start + duration == end
-            new TaskMonitor(start, duration, end);
-        } else {
-            //start == 0 --> start <= end. No need to add ticksSooner
-            ticksSooner(s, duration, end);
+            TaskMonitor.build(start, duration, end);
         }
+        //start == 0 --> start <= end. duration = end enforced by TaskScheduler
         return new Slice(vm, start, end, duration, hoster);
-    }
-
-    /**
-     * Ensure the time variable t1 ticks before or at moment t2.
-     *
-     * @param s  the solver
-     * @param t1 first variable
-     * @param t2 second variable
-     */
-    private static void ticksSooner(Solver s, IntVar t1, IntVar t2) {
-        if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
-            s.post(new Arithmetic(t1, Operator.LE, t2));
-        }
     }
 
     /**
@@ -128,9 +108,7 @@ public class SliceBuilder {
             inf = 0;
         }
         int sup = end.getUB() - start.getLB();
-        IntVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
-        VF.task(start, d, end);
-        return d;
+        return rp.makeDuration(sup, inf, lblPrefix, "_duration");
     }
 
     /**

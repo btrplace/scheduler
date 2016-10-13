@@ -68,7 +68,7 @@ public class SuspendVM extends Action implements VMStateTransition {
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
         return map.isRunning(vm) &&
-                map.getVMLocation(vm) == src &&
+                map.getVMLocation(vm).equals(src) &&
                 map.addSleepingVM(vm, dst);
     }
 

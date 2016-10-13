@@ -20,14 +20,19 @@ package org.btrplace.json.model.constraint;
 
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.model.Model;
 import org.btrplace.model.constraint.RunningCapacity;
+
+import java.util.HashSet;
+
+import static org.btrplace.json.JSONs.*;
 
 /**
  * JSON Converter for the constraint {@link RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class RunningCapacityConverter extends ConstraintConverter<RunningCapacity> {
+public class RunningCapacityConverter implements ConstraintConverter<RunningCapacity> {
 
     @Override
     public Class<RunningCapacity> getSupportedConstraint() {
@@ -41,9 +46,9 @@ public class RunningCapacityConverter extends ConstraintConverter<RunningCapacit
 
 
     @Override
-    public RunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
+    public RunningCapacity fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new RunningCapacity(requiredNodes(o, "nodes"),
+        return new RunningCapacity(new HashSet<>(requiredNodes(mo, o, "nodes")),
                 requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }

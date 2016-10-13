@@ -23,6 +23,7 @@ import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.extensions.env.ChunkedTrailing;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
@@ -60,6 +61,9 @@ public class DefaultChocoSchedulerTest {
 
         cra.setVerbosity(3);
         Assert.assertEquals(cra.getVerbosity(), 3);
+
+        cra.setEnvironmentFactory(mo -> new ChunkedTrailing());
+        Assert.assertTrue(cra.getEnvironmentFactory().build(null) instanceof ChunkedTrailing);
     }
 
     @Test(expectedExceptions = {SchedulerException.class})
@@ -82,8 +86,7 @@ public class DefaultChocoSchedulerTest {
             Assert.assertNotNull(stats);
             System.out.println(stats);
             Assert.assertTrue(stats.getSolutions().isEmpty());
-            Assert.assertEquals(stats.getNbNodes(), 1000);
-            Assert.assertEquals(stats.getNbVMs(), 10000);
+            Assert.assertEquals(stats.getInstance().getModel(), mo);
             throw e;
         }
     }
@@ -102,9 +105,7 @@ public class DefaultChocoSchedulerTest {
             SolvingStatistics stats = cra.getStatistics();
             Assert.assertNotNull(stats);
             Assert.assertTrue(stats.getSolutions().isEmpty());
-            Assert.assertEquals(stats.getNbNodes(), 1);
-            Assert.assertEquals(stats.getNbVMs(), 1);
-            Assert.assertFalse(stats.hitTimeout());
+        //       Assert.assertFalse(stats.hitTimeout());
     }
 
     /*@Test

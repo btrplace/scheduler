@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.ListType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Lists extends DefaultFunction<List> {
+public class Lists implements Function<List> {
 
     @Override
     public Type type() {

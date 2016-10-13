@@ -40,7 +40,7 @@ public class OnlineTest {
         Assert.assertTrue(o.getInvolvedNodes().contains(n));
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());
-        Assert.assertTrue(o.setContinuous(true));
+        Assert.assertTrue(o.setContinuous(false));
         System.out.println(o);
     }
 

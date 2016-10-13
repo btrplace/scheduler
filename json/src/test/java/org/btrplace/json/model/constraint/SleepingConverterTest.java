@@ -36,10 +36,9 @@ public class SleepingConverterTest {
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
         SleepingConverter conv = new SleepingConverter();
-        conv.setModel(mo);
         Sleeping d = new Sleeping(mo.newVM());
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         System.out.println(conv.toJSONString(d));
     }
 }

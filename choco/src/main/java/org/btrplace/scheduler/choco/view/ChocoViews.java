@@ -35,12 +35,12 @@ public class ChocoViews {
 
     }
     /**
-     * Flatten the views while considering their dependencies.
-     * Operations over the views that respect the iteration order, satisfies the dependencies.
+     * Flatten the decorators while considering their dependencies.
+     * Operations over the decorators that respect the iteration order, satisfies the dependencies.
      *
      * @param mo    the model
-     * @param views the associated solver views
-     * @return the list of views, dependency-free
+     * @param views the associated solver decorators
+     * @return the list of decorators, dependency-free
      * @throws SchedulerException if there is a cyclic dependency
      */
     public static List<ChocoView> resolveDependencies(Model mo, List<ChocoView> views, Collection<String> base) throws SchedulerException {

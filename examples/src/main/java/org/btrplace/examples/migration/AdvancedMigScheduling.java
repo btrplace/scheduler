@@ -93,7 +93,7 @@ public class AdvancedMigScheduling implements Example {
 
         Model mo = makeModel();
 
-        // Create, define, and attach CPU and Mem resource views for nodes and VMs
+        // Create, define, and attach CPU and Mem resource decorators for nodes and VMs
         int memSrc = 8;
         int cpuSrc = 4;
         int memDst = 16;

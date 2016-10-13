@@ -18,15 +18,10 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.Model;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.Scheduler;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
-
-import java.util.Collection;
 
 /**
  * A scheduler based on the Choco constraint solver.
@@ -42,18 +37,6 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      * @return some statistics, {@code null} if no problem has been solved for the moment
      */
     SolvingStatistics getStatistics() throws SchedulerException;
-
-    /**
-     * Compute a reconfiguration plan to reach a solution to the model.
-     * The {@link org.btrplace.model.constraint.MinMTTR} optimization constraint is used
-     *
-     * @param i     the current model
-     * @param cstrs the satisfaction-oriented constraints that must be considered
-     * @return the plan to execute to reach the new solution or {@code null} if there is no
-     * solution.
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred while trying to solve the problem
-     */
-    ReconfigurationPlan solve(Model i, Collection<? extends SatConstraint> cstrs) throws SchedulerException;
 
     /**
      * Get the solver used to solve a problem.

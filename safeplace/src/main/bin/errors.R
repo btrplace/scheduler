@@ -2,25 +2,22 @@
 library(ggplot2)
 library(reshape2)
 
-#plot
 args <- commandArgs(T)
 par(mar=c(3, 3.2, 1, 1),mgp=c(1.8,0.6,0), cex=1.3)
-data <- read.table(args[1], header=F)
+dta <- read.table(args[1], header=T, sep=";",quote="")
+#Get rid of useless elements there
+dta <- dta[,c("constraint","result")]
+#Count per factor
+dta <- dcast(dta, constraint ~ result, value.var="result")
 
-#Keep only meaningful columns
-data <- data[, c("V4","V9","V10")];
+#error rate
+dta$total <- dta$failure + dta$falseNegative + dta$falsePositive + dta$success
+dta$failure <- dta$failure / dta$total * 100
+dta$falseNegative <- dta$falseNegative / dta$total * 100
+dta$falsePositive <- dta$falsePositive / dta$total * 100
+dta <- dta[,c("constraint","falseNegative","falsePositive","failure")]
+dta <- melt(dta, by="constraint")
 
-data$elements <- data$V9 + data$V10
-colnames(data) <- c("error","nodes","vms","elements")
-data <- data[,c("error","elements")]
-agg <- aggregate(data, by=list(data$error,data$elements), FUN=length)
-agg <- agg[,c("Group.1","Group.2","error")]
-colnames(agg) <- c("kind","elements","value")
-
-d <- dcast(agg, elements ~ kind , value.var="value", na.rm = TRUE)
-d$errorPct = (d$failure + d$falsePositive + d$falseNegative) / (d$failure + d$falsePositive + d$falseNegative + d$success) * 100
-d <- d[,c("elements","errorPct")]
-
-pdf(file=args[2], width=8, height=4)
-ggplot(d,aes(x=elements,y=errorPct)) + geom_line() + theme_bw() + ylim(0,50) + ylab("% of errors") + xlab("VMs + nodes")
-foo <- dev.off()
+p <- ggplot(dta, aes(constraint, value)) + geom_bar(aes(fill=variable), stat="identity")
+p <- p + theme_bw() + theme(axis.text.x  = element_text(angle=45,hjust=1))  + ylim(0, 100) + ylab("percentage")
+ggsave(args[2],p, width=8, height=4)

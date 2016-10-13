@@ -23,12 +23,12 @@ import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
  */
-public class Host extends DefaultFunction<Node> {
+public class Host implements Function<Node> {
 
     @Override
     public String id() {

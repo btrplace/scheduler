@@ -18,6 +18,14 @@
 
 package org.btrplace.safeplace.spec.type;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import org.btrplace.model.VM;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Fabien Hermenier
  */
@@ -38,6 +46,11 @@ public class SetType extends ColType {
             return true;
         }
         return type.equals(setType.type);
+    }
+
+    @Override
+    public String encode() {
+        return "set " + type.encode();
     }
 
     @Override
@@ -65,4 +78,12 @@ public class SetType extends ColType {
         return type;
     }
 
+    @Override
+    public Object fromJSON(Object c) {
+        Set s = new HashSet<>();
+        for (Object o : (Collection) c) {
+            s.add(type.fromJSON(o));
+        }
+        return s;
+    }
 }

@@ -21,7 +21,7 @@ package org.btrplace.safeplace.spec.term.func;
 import org.btrplace.safeplace.spec.term.Term;
 import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.verification.spec.Context;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.List;
 
