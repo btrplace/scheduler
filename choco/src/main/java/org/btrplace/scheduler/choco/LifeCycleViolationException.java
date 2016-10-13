@@ -24,16 +24,32 @@ import org.btrplace.scheduler.SchedulerException;
 import java.util.Set;
 
 /**
+ * Signals there is no model for a required transition.
  * @author Fabien Hermenier
  */
 public class LifeCycleViolationException extends SchedulerException {
 
+    /**
+     * An exception related to a VM state transition.
+     *
+     * @param mo  the source model
+     * @param v   the involved VM
+     * @param cur the current state
+     * @param dst the expected destination state
+     */
     public LifeCycleViolationException(Model mo, VM v, VMState cur, VMState dst) {
-        super(mo, "No model available for VM transition " + cur + " -> " + dst);
+        super(mo, "No model available for VM '" + v + "' state transition " + cur + " -> " + dst);
     }
 
+    /**
+     * An exception related to a Node state transition.
+     * @param mo the source model
+     * @param n the involved node
+     * @param cur the current state
+     * @param dst the expected destination state
+     */
     public LifeCycleViolationException(Model mo, Node n, NodeState cur, Set<NodeState> dst) {
-        super(mo, "No model available for Node transition " + n + " -> " + dst);
+        super(mo, "No model available for node '" + n + "' state transition " + cur + " -> " + dst);
     }
 
 }
