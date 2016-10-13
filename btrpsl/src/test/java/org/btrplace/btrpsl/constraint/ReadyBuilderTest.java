@@ -63,7 +63,7 @@ public class ReadyBuilderTest {
     public Object[][] getGoodSignatures() {
         return new Object[][]{
                 new Object[]{">>ready(VM1);", 1, false},
-                new Object[]{"ready(VM[1..10]);", 10, true}
+                new Object[]{">>ready(VM[1..10]);", 10, false}
         };
     }
 
