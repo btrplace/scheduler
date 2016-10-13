@@ -61,7 +61,7 @@ public class OfflineBuilderTest {
     @DataProvider(name = "goodOfflines")
     public Object[][] getGoodSignatures() {
         return new Object[][]{
-                new Object[]{"offline(@N1);", 1, true},
+                new Object[]{">>offline(@N1);", 1, false},
                 new Object[]{">>offline(@N[1..10]);", 10, false}
         };
     }

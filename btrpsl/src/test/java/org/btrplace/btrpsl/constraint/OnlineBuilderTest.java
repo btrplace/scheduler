@@ -41,7 +41,7 @@ public class OnlineBuilderTest {
     @DataProvider(name = "badOnlines")
     public Object[][] getBadSignatures() {
         return new String[][]{
-                new String[]{"online({});"},
+                new String[]{">>online({});"},
                 new String[]{">>online({VM7});"},
                 new String[]{"online({@N[1..5]});"},
         };
@@ -61,7 +61,7 @@ public class OnlineBuilderTest {
     @DataProvider(name = "goodOnlines")
     public Object[][] getGoodSignatures() {
         return new Object[][]{
-                new Object[]{"online(@N1);", 1, true},
+                new Object[]{">>online(@N1);", 1, false},
                 new Object[]{">>online(@N[1..10]);", 10, false}
         };
     }

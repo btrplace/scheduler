@@ -263,7 +263,7 @@ public class CShareableResourceTest {
     //Issue124
     @Test
     public void testEmpty() throws SchedulerException {
-        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"decorators\":[{\"defConsumption\":0,\"nodes\":{},\"rcId\":\"CPU\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{}}]},\"constraints\":[{\"continuous\":false,\"id\":\"spread\",\"vms\":[0,1]}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{},\"rcId\":\"CPU\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{}}]},\"constraints\":[{\"continuous\":false,\"id\":\"spread\",\"vms\":[0,1]}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
         Instance i = JSON.readInstance(new StringReader(buf));
         System.out.println(i.getModel());
         ChocoScheduler s = new DefaultChocoScheduler();

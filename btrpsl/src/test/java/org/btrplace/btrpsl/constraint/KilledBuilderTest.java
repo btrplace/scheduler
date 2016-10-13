@@ -42,9 +42,9 @@ public class KilledBuilderTest {
     @DataProvider(name = "badKilleds")
     public Object[][] getBadSignatures() {
         return new String[][]{
-                new String[]{"killed({});"},
+                new String[]{">>killed({});"},
                 new String[]{"killed({@N1});"},
-                new String[]{"killed({VM[1..5]});"},
+                new String[]{">>killed({VM[1..5]});"},
         };
     }
 
@@ -63,7 +63,7 @@ public class KilledBuilderTest {
     public Object[][] getGoodSignatures() {
         return new Object[][]{
                 new Object[]{">>killed(VM1);", 1, false},
-                new Object[]{"killed(VM[1..10]);", 10, true}
+                new Object[]{">>killed(VM[1..10]);", 10, false}
         };
     }
 

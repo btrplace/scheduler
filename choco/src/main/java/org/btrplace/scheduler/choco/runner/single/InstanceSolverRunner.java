@@ -221,7 +221,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             rpb.setManageableVMs(toManage);
         }
 
-        //The core decorators have been instantiated and available through rp.getViews()
+        //The core views have been instantiated and available through rp.getViews()
         //Set the maximum duration
         ReconfigurationProblem p = rpb.build();
         try {

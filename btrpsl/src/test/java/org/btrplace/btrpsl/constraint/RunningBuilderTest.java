@@ -42,9 +42,9 @@ public class RunningBuilderTest {
     @DataProvider(name = "badRunnings")
     public Object[][] getBadSignatures() {
         return new String[][]{
-                new String[]{"running({});"},
-                new String[]{"running({@N1});"},
-                new String[]{"running({VM[1..5]});"},
+                new String[]{">>running({});"},
+                new String[]{">>running({@N1});"},
+                new String[]{">>running({VM[1..5]});"},
         };
     }
 
@@ -62,7 +62,7 @@ public class RunningBuilderTest {
     @DataProvider(name = "goodRunnings")
     public Object[][] getGoodSignatures() {
         return new Object[][]{
-                new Object[]{"running(VM1);", 1, true},
+                new Object[]{">>running(VM1);", 1, false},
                 new Object[]{">>running(VM[1..10]);", 10, false}
         };
     }

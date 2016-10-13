@@ -47,7 +47,7 @@ public class ModelConverter implements JSONObjectConverter<Model> {
     /**
      * Key to indicate the decorators.
      */
-    public static final String VIEWS_LABEL = "decorators";
+    public static final String VIEWS_LABEL = "views";
 
     /**
      * Key to indicate the attributes.

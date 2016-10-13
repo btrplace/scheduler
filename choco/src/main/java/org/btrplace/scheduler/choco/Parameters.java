@@ -219,9 +219,9 @@ public interface Parameters {
     boolean removeChocoView(Class<? extends ChocoView> v);
 
     /**
-     * Get the standalone decorators.
+     * Get the standalone views.
      *
-     * @return a list of decorators that may be empty
+     * @return a list of views that may be empty
      */
     List<Class<? extends ChocoView>> getChocoViews();
 }

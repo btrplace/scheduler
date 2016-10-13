@@ -85,7 +85,7 @@ public class DefaultParameters implements Parameters {
         durationEvaluators = DurationEvaluators.newBundle();
         amf = TransitionFactory.newBundle();
         envf = mo -> new EnvironmentTrailing();
-        //Default solver decorators
+        //Default solver views
         views = new ArrayList<>();
         views.add(VectorPacking.class);
         views.add(DefaultCumulatives.class);

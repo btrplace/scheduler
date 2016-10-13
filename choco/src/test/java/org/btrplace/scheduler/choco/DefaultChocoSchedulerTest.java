@@ -291,7 +291,7 @@ public class DefaultChocoSchedulerTest {
      *
      * @throws org.btrplace.scheduler.SchedulerException
      */
-    @Test(expectedExceptions = {SchedulerException.class})
+    @Test
     public void testTransitionFactoryCustomisation() throws SchedulerException {
         ChocoScheduler cra = new DefaultChocoScheduler();
         TransitionFactory tf = cra.getTransitionFactory();
@@ -300,6 +300,6 @@ public class DefaultChocoSchedulerTest {
         Model mo = new DefaultModel();
         VM v = mo.newVM();
         mo.getMapping().addReadyVM(v);
-        cra.solve(mo, Collections.singletonList(new Running(v)));
+        Assert.assertNull(cra.solve(mo, Collections.singletonList(new Running(v))));
     }
 }

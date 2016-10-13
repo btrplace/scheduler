@@ -73,7 +73,7 @@ public class CSyncTest {
         ma.addRunningVM(vm1, srcNode1);
         ma.addRunningVM(vm2, srcNode2);
 
-        // Attach CPU and Mem resource decorators and assign nodes capacity and VMs consumption
+        // Attach CPU and Mem resource views and assign nodes capacity and VMs consumption
         int mem_vm = 8, cpu_vm = 4, mem_src = 8, cpu_src = 4, mem_dst = 16, cpu_dst = 8;
         ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
         mo.attach(rcMem);
@@ -148,7 +148,7 @@ public class CSyncTest {
         ma.addRunningVM(vm1, srcNode1);
         ma.addRunningVM(vm2, srcNode2);
 
-        // Attach CPU and Mem resource decorators and assign nodes capacity and VMs consumption
+        // Attach CPU and Mem resource views and assign nodes capacity and VMs consumption
         int mem_vm = 8, cpu_vm = 4, mem_src = 8, cpu_src = 4, mem_dst = 16, cpu_dst = 8;
         ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
         mo.attach(rcMem);

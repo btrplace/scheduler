@@ -42,9 +42,9 @@ public class SleepingBuilderTest {
     @DataProvider(name = "badsleepings")
     public Object[][] getBadSignatures() {
         return new String[][]{
-                new String[]{"sleeping({});"},
-                new String[]{"sleeping({@N1});"},
-                new String[]{"sleeping({VM[1..5]});"},
+                new String[]{">>sleeping({});"},
+                new String[]{">>sleeping({@N1});"},
+                new String[]{">>sleeping({VM[1..5]});"}
         };
     }
 
@@ -62,7 +62,7 @@ public class SleepingBuilderTest {
     @DataProvider(name = "goodsleepings")
     public Object[][] getGoodSignatures() {
         return new Object[][]{
-                new Object[]{"sleeping(VM1);", 1, true},
+                new Object[]{">>sleeping(VM1);", 1, false},
                 new Object[]{">>sleeping(VM[1..10]);", 10, false}
         };
     }
