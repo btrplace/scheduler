@@ -24,7 +24,6 @@ import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Offline;
 
-import static org.btrplace.json.JSONs.requiredBoolean;
 import static org.btrplace.json.JSONs.requiredNode;
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.Online}.
