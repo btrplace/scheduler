@@ -1,8 +1,0 @@
-digraph G{		
-	Offline
-	Online
-
-	Offline -> Online [label="booting"]
-	
-	Online -> Offline [label="halting"]
-}

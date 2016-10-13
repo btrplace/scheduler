@@ -1,4 +1,0 @@
-Spread:
-2 bugs:
-- runtime due to possible transition omission (cspread-fix1)
-- false positive due to an aggressive optimisation
