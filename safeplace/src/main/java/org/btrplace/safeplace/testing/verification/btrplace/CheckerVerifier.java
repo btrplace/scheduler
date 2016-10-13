@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,13 +19,14 @@
 package org.btrplace.safeplace.testing.verification.btrplace;
 
 import org.btrplace.model.constraint.SatConstraintChecker;
-//import org.btrplace.plan.ReconfigurationPlanCheckerException;
 import org.btrplace.plan.ReconfigurationPlanChecker;
 import org.btrplace.plan.SatConstraintViolationException;
 import org.btrplace.safeplace.testing.TestCase;
-import org.btrplace.safeplace.testing.verification.VerifierResult;
 import org.btrplace.safeplace.testing.verification.Verifier;
+import org.btrplace.safeplace.testing.verification.VerifierResult;
 import org.btrplace.scheduler.SchedulerException;
+
+//import org.btrplace.plan.ReconfigurationPlanCheckerException;
 
 /**
  * @author Fabien Hermenier

@@ -10,18 +10,19 @@
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General License for more details.
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General License
+ * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.btrplace.safeplace.testing;
 
-import org.btrplace.safeplace.testing.fuzzer.ReconfigurationPlanParams;
 import org.btrplace.safeplace.spec.Constraint;
+import org.btrplace.safeplace.testing.fuzzer.ReconfigurationPlanParams;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**

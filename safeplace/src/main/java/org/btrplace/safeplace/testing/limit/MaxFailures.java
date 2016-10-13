@@ -18,8 +18,8 @@
 
 package org.btrplace.safeplace.testing.limit;
 
-import org.btrplace.safeplace.testing.TestCaseResult;
 import org.btrplace.safeplace.testing.Result;
+import org.btrplace.safeplace.testing.TestCaseResult;
 
 import java.util.function.Predicate;
 

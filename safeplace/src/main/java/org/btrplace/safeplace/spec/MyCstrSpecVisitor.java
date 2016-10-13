@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,13 +22,13 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.btrplace.safeplace.spec.antlr.CstrSpecParser;
 import org.btrplace.safeplace.spec.prop.*;
 import org.btrplace.safeplace.spec.term.*;
 import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
 import org.btrplace.safeplace.spec.term.func.ValueAt;
 import org.btrplace.safeplace.spec.type.*;
-import org.btrplace.safeplace.spec.antlr.*;
 
 import java.util.ArrayList;
 import java.util.List;

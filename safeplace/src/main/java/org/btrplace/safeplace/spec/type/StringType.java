@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,6 @@
 
 package org.btrplace.safeplace.spec.type;
 
-import net.minidev.json.JSONObject;
 import org.btrplace.safeplace.spec.term.Constant;
 
 /**

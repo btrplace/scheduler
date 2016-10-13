@@ -18,9 +18,9 @@
 
 package org.btrplace.safeplace.testing;
 
-import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.SpecScanner;
+import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

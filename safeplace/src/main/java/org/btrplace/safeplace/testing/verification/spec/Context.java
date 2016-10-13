@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,10 +21,10 @@ package org.btrplace.safeplace.testing.verification.spec;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.safeplace.testing.DefaultDomain;
-import org.btrplace.safeplace.testing.Domain;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.VMType;
+import org.btrplace.safeplace.testing.DefaultDomain;
+import org.btrplace.safeplace.testing.Domain;
 
 import java.util.*;
 

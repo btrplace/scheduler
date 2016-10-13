@@ -19,7 +19,6 @@
 package org.btrplace.safeplace.testing;
 
 import com.google.common.io.Files;
-import com.google.protobuf.TextFormat;
 import net.minidev.json.parser.ParseException;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.safeplace.spec.Constraint;
@@ -27,7 +26,6 @@ import org.btrplace.safeplace.testing.fuzzer.ReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;

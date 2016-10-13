@@ -24,13 +24,13 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.safeplace.spec.term.func.Function;
-import org.btrplace.scheduler.CoreConstraint;
 import org.btrplace.model.constraint.SideConstraint;
 import org.btrplace.safeplace.spec.antlr.CstrSpecLexer;
 import org.btrplace.safeplace.spec.antlr.CstrSpecParser;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.UserVar;
+import org.btrplace.safeplace.spec.term.func.Function;
+import org.btrplace.scheduler.CoreConstraint;
 import org.btrplace.scheduler.CoreConstraints;
 
 import java.io.IOException;

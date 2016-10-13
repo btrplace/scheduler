@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,13 +19,13 @@
 package org.btrplace.safeplace.spec.term;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import org.btrplace.safeplace.testing.Domain;
 import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.NoneType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.util.AllTuplesGenerator;
+import org.btrplace.safeplace.testing.Domain;
 import org.btrplace.safeplace.testing.verification.spec.Context;
+import org.btrplace.safeplace.util.AllTuplesGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;

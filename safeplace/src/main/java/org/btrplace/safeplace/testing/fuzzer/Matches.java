@@ -18,10 +18,10 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
-import org.btrplace.safeplace.testing.TestCaseResult;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.Result;
 import org.btrplace.safeplace.testing.TestCase;
+import org.btrplace.safeplace.testing.TestCaseResult;
 import org.btrplace.safeplace.testing.Tester;
 
 import java.util.ArrayList;
