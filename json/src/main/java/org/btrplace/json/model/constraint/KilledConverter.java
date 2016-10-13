@@ -25,7 +25,6 @@ import org.btrplace.json.JSONs;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Killed;
 
-import static org.btrplace.json.JSONs.requiredBoolean;
 import static org.btrplace.json.JSONs.requiredVM;
 /**
  * JSON Converter for the constraint {@link org.btrplace.model.constraint.Killed}.
