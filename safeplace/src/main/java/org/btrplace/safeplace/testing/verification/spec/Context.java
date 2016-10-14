@@ -23,7 +23,7 @@ import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.testing.DefaultDomain;
+import org.btrplace.safeplace.testing.ConstantDomain;
 import org.btrplace.safeplace.testing.Domain;
 
 import java.util.ArrayList;
@@ -61,8 +61,8 @@ public class Context {
         stack = new LinkedList<>();
         stack.add(new HashMap<>());
         //default domains
-        add(new DefaultDomain<>("nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes())));
-        add(new DefaultDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs())));
+        add(new ConstantDomain<>("nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes())));
+        add(new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs())));
     }
 
     public Model getModel() {

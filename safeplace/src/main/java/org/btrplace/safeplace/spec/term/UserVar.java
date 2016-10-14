@@ -91,8 +91,7 @@ public class UserVar<T> implements Var<T> {
     public List<Constant> domain(Context mo) {
         Collection col = (Collection) backend.eval(mo);
         if ("<:".equals(op) || "/<:".equals(op)) {
-            List<Object> s = new ArrayList<>();
-            col.forEach(s::add);
+            List<Object> s = new ArrayList<>(col);
             List<List<Object>> tuples = s.stream().map(o -> s).collect(Collectors.toList());
             AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, tuples);
             Set<Constant> res = new HashSet<>();

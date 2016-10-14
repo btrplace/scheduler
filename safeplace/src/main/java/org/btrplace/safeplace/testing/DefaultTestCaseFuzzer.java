@@ -92,9 +92,9 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
         }
         SetType back = (SetType) v.getBackend().type();
         if (back.enclosingType().equals(NodeType.getInstance())) {
-            return new DefaultDomain<>("nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes()));
+            return new ConstantDomain<>("nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes()));
         } else if (back.enclosingType().equals(VMType.getInstance())) {
-            return new DefaultDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs()));
+            return new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs()));
         }
         throw new IllegalArgumentException("No domain value attached to argument '" + v.label() + "'");
     }
@@ -174,7 +174,7 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
 
     @Override
     public TestCaseFuzzer with(String var, int val) {
-        Domain d = new DefaultDomain<>("int", IntType.getInstance(), Collections.singletonList(val));
+        Domain d = new ConstantDomain<>("int", IntType.getInstance(), Collections.singletonList(val));
         return with(var, d);
     }
 
@@ -184,24 +184,24 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
         for (int m = min; m <= max; m++) {
             s.add(m);
         }
-        return with(var, new DefaultDomain<>("int", IntType.getInstance(), s));
+        return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
     }
 
     @Override
     public TestCaseFuzzer with(String var, int [] vals) {
         List<Integer> s = new ArrayList(Arrays.asList(vals));
-        return with(var, new DefaultDomain<>("int", IntType.getInstance(), s));
+        return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
     }
 
     @Override
     public TestCaseFuzzer with(String var, String val) {
         List<String> s = new ArrayList<>(Collections.singleton(val));
-        return with(var, new DefaultDomain<>("int", IntType.getInstance(), s));
+        return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
     }
 
     @Override
     public TestCaseFuzzer with(String var,  String[] vals) {
-        Domain d = new DefaultDomain<>("int", IntType.getInstance(), Arrays.asList(vals));
+        Domain d = new ConstantDomain<>("int", IntType.getInstance(), Arrays.asList(vals));
         doms.put(var, d);
         return this;
     }

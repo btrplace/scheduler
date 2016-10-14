@@ -24,7 +24,6 @@ import org.btrplace.safeplace.testing.Domain;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,7 +35,7 @@ public class Primitive<T> implements Var<Set<T>> {
 
     private String lbl;
 
-    private Set cache = null;
+    private Set<T> cache = null;
 
     public Primitive(String name, Type enclosingType) {
         lbl = name;
@@ -45,19 +44,15 @@ public class Primitive<T> implements Var<Set<T>> {
 
     @Override
     public Set<T> eval(Context mo, Object... args) {
-        Domain dom = mo.domain(label());
+        Domain<T> dom = mo.domain(label());
         if (dom.constant()) {
 
             if (cache == null) {
-                cache = new HashSet(dom.values());
+                cache = new HashSet<>(dom.values());
             }
             return cache;
         }
-        List s = dom.values();
-        if (s == null) {
-            throw new UnsupportedOperationException("No domainValue for variable '" + label() + "'");
-        }
-        return new HashSet(s);
+        return new HashSet<>(dom.values());
     }
 
     @Override

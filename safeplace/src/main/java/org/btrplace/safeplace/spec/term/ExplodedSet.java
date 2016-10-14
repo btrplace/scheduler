@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@ import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,16 +57,9 @@ public class ExplodedSet implements Term<Set> {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("{");
-        Iterator ite = terms.iterator();
-        if (ite.hasNext()) {
-            b.append(ite.next().toString());
-        }
-        while (ite.hasNext()) {
-            b.append(", ").append(ite.next());
-        }
-        b.append('}');
-        return b.toString();
+        return terms.stream()
+                .map(Term::toString)
+                .collect(Collectors.joining(", ", "{", "}"));
     }
 
 }

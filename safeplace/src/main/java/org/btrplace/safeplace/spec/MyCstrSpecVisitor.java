@@ -321,15 +321,6 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         return p == null ? null : new ProtectedProposition(p);
     }
 
-    /*@Override
-    public Proposition visitNot(@NotNull CstrSpecParser.NotContext ctx) {
-        Proposition p = (Proposition) visit(ctx.formula());
-        if (p == null) {
-            return null;
-        }
-        return p.not();
-    }*/
-
     @Override
     public Term visitArrayTerm(@NotNull CstrSpecParser.ArrayTermContext ctx) {
         String lbl = ctx.ID().getText();

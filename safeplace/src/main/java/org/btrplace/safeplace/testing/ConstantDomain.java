@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * @author Fabien Hermenier
  */
-public class DefaultDomain<T> implements Domain<T> {
+public class ConstantDomain<T> implements Domain<T> {
 
     private List<T> dom;
 
@@ -37,7 +37,8 @@ public class DefaultDomain<T> implements Domain<T> {
     private Random rnd = new Random();
 
     private String name;
-    public DefaultDomain(String name, Type t, List<T> dom) {
+
+    public ConstantDomain(String name, Type t, List<T> dom) {
         this.dom = dom;
         this.t = t;
         this.name = name;
