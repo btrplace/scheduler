@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class IntType extends Atomic {
+public class IntType extends Atomic implements Litteral {
 
     private static final IntType instance = new IntType();
 

@@ -18,8 +18,6 @@
 
 package org.btrplace.safeplace.spec.type;
 
-import org.btrplace.safeplace.spec.term.Constant;
-
 /**
  * @author Fabien Hermenier
  */
@@ -38,10 +36,4 @@ public class ActionType extends Atomic {
     public String toString() {
         return "action";
     }
-
-    @Override
-    public Constant parse(String n) {
-        throw new RuntimeException();
-    }
-
 }

@@ -19,9 +19,9 @@
 package org.btrplace.safeplace.spec.type;
 
 import net.minidev.json.JSONArray;
-import org.btrplace.safeplace.spec.term.Constant;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Fabien Hermenier
@@ -32,6 +32,10 @@ public class ColType implements Type {
 
     public ColType(Type t) {
         type = t;
+    }
+
+    public String collectionLabel() {
+        return "col";
     }
 
     @Override
@@ -46,24 +50,17 @@ public class ColType implements Type {
             return true;
         }
         ColType colType = (ColType) o;
-
         return type.equals(colType.type);
-
     }
 
     @Override
     public int hashCode() {
-        return type.hashCode();
-    }
-
-    @Override
-    public Constant parse(String n) {
-        throw new UnsupportedOperationException();
+        return Objects.hash(type);
     }
 
     @Override
     public String toString() {
-        return "col<" + (type == null ? "?" : type.label()) + ">";
+        return collectionLabel() + "<" + (type == null ? "?" : type.label()) + ">";
     }
 
     public Type inside() {
@@ -72,6 +69,11 @@ public class ColType implements Type {
 
     public Type enclosingType() {
         return type;
+    }
+
+    @Override
+    public String encode() {
+        return collectionLabel() + " " + type.encode();
     }
 
     @Override

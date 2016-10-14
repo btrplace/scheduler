@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class NodeStateType extends Atomic {
+public class NodeStateType extends Atomic implements Litteral {
 
     public enum Type {online, booting, halting, offline}
 

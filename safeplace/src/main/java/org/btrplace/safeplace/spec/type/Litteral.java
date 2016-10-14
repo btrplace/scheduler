@@ -23,34 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class RealType extends Atomic {
+public interface Litteral {
 
-    private static final RealType instance = new RealType();
-
-    private RealType() {
-    }
-
-    public static RealType getInstance() {
-        return instance;
-    }
-
-    @Override
-    public String toString() {
-        return "real";
-    }
-
-    @Override
-    public String encode() {
-        return toString();
-    }
-
-    @Override
-    public Object toJSON(Object value) {
-        return value;
-    }
-
-    @Override
-    public Constant parse(String n) {
-        return new Constant(Double.parseDouble(n), RealType.getInstance());
-    }
+    Constant parse(String n);
 }

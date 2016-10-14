@@ -33,34 +33,8 @@ public class SetType extends ColType {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SetType setType = (SetType) o;
-        if (type == null) {
-            return true;
-        }
-        return type.equals(setType.type);
-    }
-
-    @Override
-    public String encode() {
-        return "set " + type.encode();
-    }
-
-    @Override
-    public int hashCode() {
-        return type.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "set<" + (type == null ? "?" : type.label()) + ">";
-    }
-
-    public Type enclosingType() {
-        return type;
+    public String collectionLabel() {
+        return "set";
     }
 
     @Override

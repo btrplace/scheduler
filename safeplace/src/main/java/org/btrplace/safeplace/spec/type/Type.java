@@ -18,8 +18,6 @@
 
 package org.btrplace.safeplace.spec.type;
 
-import org.btrplace.safeplace.spec.term.Constant;
-
 /**
  * @author Fabien Hermenier
  */
@@ -28,8 +26,6 @@ public interface Type {
     default String label() {
         return toString();
     }
-
-    Constant parse(String n);
 
     default Object toJSON(Object value) {
         throw new UnsupportedOperationException();
@@ -46,7 +42,6 @@ public interface Type {
             case "node": return NodeType.getInstance();
             case "vm": return VMType.getInstance();
             case "string": return StringType.getInstance();
-            case "real": return RealType.getInstance();
             case "list": return new ListType(decode(str.substring(str.indexOf(' ') + 1)));
             case "set": return new SetType(decode(str.substring(str.indexOf(' ') + 1)));
         }

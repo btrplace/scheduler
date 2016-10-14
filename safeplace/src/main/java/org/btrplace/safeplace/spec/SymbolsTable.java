@@ -60,7 +60,6 @@ public class SymbolsTable {
         syms.put(new Primitive("time", TimeType.getInstance()));
         syms.put(new Primitive("action", ActionType.getInstance()));
         syms.put(new Primitive("bool", BoolType.getInstance()));
-        syms.put(new Primitive("float", RealType.getInstance()));
         syms.put(new Primitive("string", StringType.getInstance()));
         return syms;
     }

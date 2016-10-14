@@ -19,7 +19,6 @@
 package org.btrplace.safeplace.spec.type;
 
 import org.btrplace.model.VM;
-import org.btrplace.safeplace.spec.term.Constant;
 
 /**
  * @author Fabien Hermenier
@@ -43,11 +42,6 @@ public class VMType extends Atomic {
     @Override
     public String encode() {
         return label();
-    }
-
-    @Override
-    public Constant parse(String n) {
-        throw new RuntimeException();
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class StringType extends Atomic {
+public class StringType extends Atomic implements Litteral {
 
     private static StringType instance = new StringType();
 

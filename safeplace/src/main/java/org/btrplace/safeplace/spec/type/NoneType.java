@@ -18,8 +18,6 @@
 
 package org.btrplace.safeplace.spec.type;
 
-import org.btrplace.safeplace.spec.term.Constant;
-
 /**
  * @author Fabien Hermenier
  */
@@ -39,10 +37,4 @@ public class NoneType implements Type {
     public String toString() {
         return "none";
     }
-
-    @Override
-    public Constant parse(String n) {
-        return null;
-    }
-
 }

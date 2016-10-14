@@ -19,7 +19,6 @@
 package org.btrplace.safeplace.spec.type;
 
 import org.btrplace.model.Node;
-import org.btrplace.safeplace.spec.term.Constant;
 
 /**
  * @author Fabien Hermenier
@@ -39,11 +38,6 @@ public class NodeType extends Atomic {
     @Override
     public String toString() {
         return "node";
-    }
-
-    @Override
-    public Constant parse(String n) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

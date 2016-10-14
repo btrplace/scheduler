@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class TimeType extends Atomic {
+public class TimeType extends Atomic implements Litteral {
 
     private static TimeType instance = new TimeType();
 

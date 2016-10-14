@@ -32,29 +32,8 @@ public class ListType extends ColType {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ListType setType = (ListType) o;
-        if (type == null) {
-            return true;
-        }
-        return type.equals(setType.type);
-    }
-
-    @Override
-    public String encode() {
-        return "list " + type.encode();
-    }
-
-    @Override
-    public String toString() {
-        return "list<" + (type == null ? "?" : type.label()) + ">";
-    }
-
-    public Type enclosingType() {
-        return type;
+    public String collectionLabel() {
+        return "list";
     }
 
     @Override
