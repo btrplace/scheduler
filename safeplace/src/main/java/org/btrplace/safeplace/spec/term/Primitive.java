@@ -45,13 +45,10 @@ public class Primitive<T> implements Var<Set<T>> {
     @Override
     public Set<T> eval(Context mo, Object... args) {
         Domain<T> dom = mo.domain(label());
-        if (dom.constant()) {
-            if (cache == null) {
-                cache = new HashSet<>(dom.values());
-            }
-            return cache;
+        if (cache == null) {
+            cache = new HashSet<>(dom.values());
         }
-        return new HashSet<>(dom.values());
+        return cache;
     }
 
     @Override

@@ -89,9 +89,4 @@ public class ConstantDomain<T> implements Domain<T> {
     public List<T> eval(Context mo, Object... args) {
         return dom;
     }
-
-    @Override
-    public boolean constant() {
-        return true;
-    }
 }
