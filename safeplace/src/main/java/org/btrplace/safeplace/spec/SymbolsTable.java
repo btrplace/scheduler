@@ -18,8 +18,7 @@
 
 package org.btrplace.safeplace.spec;
 
-import org.btrplace.safeplace.spec.term.InDomain;
-import org.btrplace.safeplace.spec.term.None;
+import org.btrplace.safeplace.spec.term.Primitive;
 import org.btrplace.safeplace.spec.term.Var;
 import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.type.*;
@@ -53,17 +52,16 @@ public class SymbolsTable {
         SymbolsTable syms = new SymbolsTable(this);
         //Copy the primitives
 
-        syms.put(new InDomain<>("nodes", NodeType.getInstance()));
-        syms.put(new InDomain<>("vms", VMType.getInstance()));
-        syms.put(new InDomain<>("vmState", VMStateType.getInstance()));
-        syms.put(new InDomain<>("nodeState", NodeStateType.getInstance()));
-        syms.put(new InDomain<>("int", IntType.getInstance()));
-        syms.put(new InDomain<>("time", TimeType.getInstance()));
-        syms.put(new InDomain<>("action", ActionType.getInstance()));
-        syms.put(new InDomain<>("bool", BoolType.getInstance()));
-        syms.put(new InDomain<>("float", RealType.getInstance()));
-        syms.put(new InDomain<>("string", StringType.getInstance()));
-        syms.put(None.instance());
+        syms.put(new Primitive("nodes", NodeType.getInstance()));
+        syms.put(new Primitive("vms", VMType.getInstance()));
+        syms.put(new Primitive("vmState", VMStateType.getInstance()));
+        syms.put(new Primitive("nodeState", NodeStateType.getInstance()));
+        syms.put(new Primitive("int", IntType.getInstance()));
+        syms.put(new Primitive("time", TimeType.getInstance()));
+        syms.put(new Primitive("action", ActionType.getInstance()));
+        syms.put(new Primitive("bool", BoolType.getInstance()));
+        syms.put(new Primitive("float", RealType.getInstance()));
+        syms.put(new Primitive("string", StringType.getInstance()));
         return syms;
     }
 

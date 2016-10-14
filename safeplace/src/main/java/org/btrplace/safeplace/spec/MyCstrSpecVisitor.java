@@ -375,9 +375,6 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             c = TimeType.getInstance().parse(ref);
         }
         if (c == null) {
-            c = None.instance();
-        }
-        if (c == null) {
             report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, ctx.ID().getText(), "Unknown symbol '" + ctx.ID().getText() + "'");
         }
         return c;

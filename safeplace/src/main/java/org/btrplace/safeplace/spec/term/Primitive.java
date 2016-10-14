@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,21 +20,44 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
+import org.btrplace.safeplace.testing.Domain;
+import org.btrplace.safeplace.testing.verification.spec.Context;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public abstract class Primitive<T> implements Var<Set<T>> {
+public class Primitive<T> implements Var<Set<T>> {
 
     private Type type;
 
     private String lbl;
 
+    private Set cache = null;
+
     public Primitive(String name, Type enclosingType) {
         lbl = name;
         type = new SetType(enclosingType);
+    }
+
+    @Override
+    public Set<T> eval(Context mo, Object... args) {
+        Domain dom = mo.domain(label());
+        if (dom.constant()) {
+
+            if (cache == null) {
+                cache = new HashSet(dom.values());
+            }
+            return cache;
+        }
+        List s = dom.values();
+        if (s == null) {
+            throw new UnsupportedOperationException("No domainValue for variable '" + label() + "'");
+        }
+        return new HashSet(s);
     }
 
     @Override
@@ -50,5 +73,10 @@ public abstract class Primitive<T> implements Var<Set<T>> {
     @Override
     public String pretty() {
         return label() + ":" + type();
+    }
+
+    @Override
+    public String toString() {
+        return label();
     }
 }
