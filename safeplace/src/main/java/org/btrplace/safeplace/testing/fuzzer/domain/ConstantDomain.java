@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing;
+package org.btrplace.safeplace.testing.fuzzer.domain;
 
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;

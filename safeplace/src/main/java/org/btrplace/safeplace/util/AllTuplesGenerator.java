@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class AllTuplesGenerator<T> implements Generator<T[]> {
+public class AllTuplesGenerator<T> implements Iterator<T[]> {
 
     private T[][] doms;
 
@@ -43,7 +43,6 @@ public class AllTuplesGenerator<T> implements Generator<T[]> {
         int i = 0;
         nbStates = 1;
         this.cl = cl;
-        //System.out.println(domains);
         for (List<T> v : domains) {
             indexes[i] = 0;
 
@@ -51,18 +50,6 @@ public class AllTuplesGenerator<T> implements Generator<T[]> {
             nbStates *= doms[i].length;
             i++;
         }
-    }
-
-    public void reset() {
-        k = 0;
-    }
-
-    public int count() {
-        return nbStates;
-    }
-
-    public int done() {
-        return k;
     }
 
     @Override
@@ -90,10 +77,5 @@ public class AllTuplesGenerator<T> implements Generator<T[]> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterator<T[]> iterator() {
-        return this;
     }
 }

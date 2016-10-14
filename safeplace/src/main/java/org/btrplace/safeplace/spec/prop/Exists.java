@@ -59,7 +59,8 @@ public class Exists implements Proposition {
             values.add(new ArrayList<>(o));
         }
         AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, values);
-        for (Object[] tuple : tg) {
+        while (tg.hasNext()) {
+            Object[] tuple = tg.next();
             for (int i = 0; i < tuple.length; i++) {
                 m.setValue(vars.get(i).label(), tuple[i]);
             }

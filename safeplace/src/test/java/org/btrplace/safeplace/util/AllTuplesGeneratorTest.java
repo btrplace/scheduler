@@ -41,7 +41,8 @@ public class AllTuplesGeneratorTest {
         l.add(cnt);
         double nb = 0;
         AllTuplesGenerator<Integer> tg = new AllTuplesGenerator<>(Integer.class, l);
-        for (Integer[] t : tg) {
+        while (tg.hasNext()) {
+            Integer[] t = tg.next();
             //System.out.println(t);
             nb++;
         }

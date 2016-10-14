@@ -16,14 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing;
+package org.btrplace.safeplace.testing.fuzzer;
 
 import com.google.common.io.Files;
 import net.minidev.json.parser.ParseException;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.safeplace.spec.Constraint;
-import org.btrplace.safeplace.testing.fuzzer.ReconfigurationPlanFuzzer;
+import org.btrplace.safeplace.testing.TestCase;
+import org.btrplace.safeplace.testing.Tester;
 import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
+import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;

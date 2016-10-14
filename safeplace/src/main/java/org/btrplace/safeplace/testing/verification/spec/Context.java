@@ -23,8 +23,8 @@ import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.testing.ConstantDomain;
-import org.btrplace.safeplace.testing.Domain;
+import org.btrplace.safeplace.testing.fuzzer.domain.ConstantDomain;
+import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;

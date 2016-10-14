@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -16,10 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.invariant;
+package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.spec.prop.Iff;
-import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -28,21 +26,36 @@ import org.testng.annotations.Test;
 /**
  * @author Fabien Hermenier
  */
-public class IffTest {
+public class OrTest {
+
+    @Test
+    public void testInstantiation() {
+        Or a = new Or(Proposition.False, Proposition.True);
+        Assert.assertEquals(a.first(), Proposition.False);
+        Assert.assertEquals(a.second(), Proposition.True);
+    }
 
     @DataProvider(name = "input")
     public Object[][] getInputs() {
         return new Object[][]{
                 {Proposition.True, Proposition.True, Boolean.TRUE},
-                {Proposition.True, Proposition.False, Boolean.FALSE},
-                {Proposition.False, Proposition.True, Boolean.FALSE},
-                {Proposition.False, Proposition.False, Boolean.TRUE},
+                {Proposition.True, Proposition.False, Boolean.TRUE},
+                {Proposition.False, Proposition.True, Boolean.TRUE},
+                {Proposition.False, Proposition.False, Boolean.FALSE},
         };
     }
 
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
-        Iff p = new Iff(a, b);
+        Or p = new Or(a, b);
         Assert.assertEquals(p.eval(new Context()), r);
+    }
+
+    @Test
+    public void testNot() {
+        Or or = new Or(Proposition.True, Proposition.False);
+        And o = or.not();
+        Assert.assertEquals(o.first(), Proposition.False);
+        Assert.assertEquals(o.second(), Proposition.True);
     }
 }

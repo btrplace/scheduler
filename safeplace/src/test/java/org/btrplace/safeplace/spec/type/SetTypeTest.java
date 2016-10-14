@@ -16,27 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing;
+package org.btrplace.safeplace.spec.type;
 
-import org.btrplace.safeplace.spec.term.Term;
-import org.btrplace.safeplace.spec.type.Type;
-
-import java.util.List;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * @author Fabien Hermenier
  */
-public interface Domain<T> extends Term<List<T>>{
-    List<T> values();
+public class SetTypeTest {
 
-    Type type();
-
-    String name();
-
-    T randomValue();
-
-    List<T> randomSubset();
-
-    List<List<T>> randomPacking();
-
+    @Test
+    public void testSimple() {
+        SetType t = new SetType(IntType.getInstance());
+        System.out.println(t);
+        Assert.assertEquals(t.enclosingType(), IntType.getInstance());
+        SetType t2 = new SetType(t);
+        Assert.assertEquals(t2.enclosingType(), t);
+        System.out.println(t2);
+    }
 }

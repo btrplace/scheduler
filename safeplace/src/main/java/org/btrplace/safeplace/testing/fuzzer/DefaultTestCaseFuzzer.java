@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing;
+package org.btrplace.safeplace.testing.fuzzer;
 
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
@@ -28,9 +28,11 @@ import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.NodeType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.VMType;
-import org.btrplace.safeplace.testing.fuzzer.Matches;
-import org.btrplace.safeplace.testing.fuzzer.ReconfigurationPlanFuzzer;
+import org.btrplace.safeplace.testing.TestCase;
+import org.btrplace.safeplace.testing.Tester;
 import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
+import org.btrplace.safeplace.testing.fuzzer.domain.ConstantDomain;
+import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.util.*;
 import java.util.function.Supplier;

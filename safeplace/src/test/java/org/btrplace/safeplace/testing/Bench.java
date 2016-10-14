@@ -18,6 +18,8 @@
 
 package org.btrplace.safeplace.testing;
 
+import org.btrplace.safeplace.testing.fuzzer.Replay;
+import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.btrplace.safeplace.testing.reporting.DefaultReporting;
 import org.btrplace.safeplace.testing.reporting.Reporting;

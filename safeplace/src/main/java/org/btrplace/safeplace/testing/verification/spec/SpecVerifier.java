@@ -25,8 +25,8 @@ import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.testing.Domain;
 import org.btrplace.safeplace.testing.TestCase;
+import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.VerifierResult;
 

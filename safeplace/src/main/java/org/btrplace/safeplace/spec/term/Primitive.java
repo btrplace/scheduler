@@ -20,7 +20,7 @@ package org.btrplace.safeplace.spec.term;
 
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.testing.Domain;
+import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.HashSet;

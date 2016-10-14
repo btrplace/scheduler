@@ -21,6 +21,8 @@ package org.btrplace.safeplace.testing;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.SpecScanner;
 import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
+import org.btrplace.safeplace.testing.fuzzer.DefaultTestCaseFuzzer;
+import org.btrplace.safeplace.testing.fuzzer.TestCaseFuzzer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

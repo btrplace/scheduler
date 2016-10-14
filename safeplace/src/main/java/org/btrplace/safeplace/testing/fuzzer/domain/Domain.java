@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -16,18 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.util;
+package org.btrplace.safeplace.testing.fuzzer.domain;
 
-import java.util.Iterator;
+import org.btrplace.safeplace.spec.term.Term;
+import org.btrplace.safeplace.spec.type.Type;
+
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public interface Generator<T> extends Iterator<T>, Iterable<T> {
+public interface Domain<T> extends Term<List<T>>{
+    List<T> values();
 
-    int count();
+    Type type();
 
-    int done();
+    String name();
 
-    void reset();
+    T randomValue();
+
+    List<T> randomSubset();
+
+    List<List<T>> randomPacking();
+
 }

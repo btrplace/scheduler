@@ -23,6 +23,8 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
+import org.btrplace.safeplace.testing.fuzzer.DefaultTestCaseFuzzer;
+import org.btrplace.safeplace.testing.fuzzer.TestCaseFuzzer;
 import org.btrplace.safeplace.testing.limit.RunnerLimit;
 import org.btrplace.safeplace.testing.reporting.DefaultReporting;
 import org.btrplace.safeplace.testing.reporting.Reporting;

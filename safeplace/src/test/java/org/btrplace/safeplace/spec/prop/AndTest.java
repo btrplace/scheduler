@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -16,11 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.invariant;
+package org.btrplace.safeplace.spec.prop;
 
-import org.btrplace.safeplace.spec.prop.And;
-import org.btrplace.safeplace.spec.prop.Or;
-import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;

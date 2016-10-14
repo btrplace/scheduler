@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.NoneType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
-import org.btrplace.safeplace.testing.Domain;
+import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
 
@@ -95,7 +95,8 @@ public class UserVar<T> implements Var<T> {
             List<List<Object>> tuples = s.stream().map(o -> s).collect(Collectors.toList());
             AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, tuples);
             Set<Constant> res = new HashSet<>();
-            for (Object[] tuple : tg) {
+            while (tg.hasNext()) {
+                Object[] tuple = tg.next();
                 res.add(new Constant(new HashSet(Arrays.asList(tuple)), backend.type()));
             }
             return new ArrayList<>(res);

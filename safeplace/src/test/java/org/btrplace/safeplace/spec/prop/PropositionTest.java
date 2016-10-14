@@ -16,13 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing;
+package org.btrplace.safeplace.spec.prop;
+
+import org.btrplace.safeplace.testing.verification.spec.Context;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * @author Fabien Hermenier
  */
-public enum Restriction {
+public class PropositionTest {
 
-    discrete,
-    continuous,
+    @Test
+    public void testTrue() {
+        Proposition t = Proposition.True;
+        Assert.assertEquals(t.eval(new Context()), Boolean.TRUE);
+        Assert.assertEquals(t.toString(), "true");
+    }
+
+    @Test
+    public void testFalse() {
+        Proposition t = Proposition.False;
+        Assert.assertEquals(t.toString(), "false");
+        Assert.assertEquals(t.eval(new Context()), Boolean.FALSE);
+    }
 }
