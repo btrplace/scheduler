@@ -16,27 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.fuzzer;
+package org.btrplace.safeplace.util;
 
-import org.btrplace.model.Instance;
-import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.scheduler.choco.ChocoScheduler;
-import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class FuzzTesting {
+public class AllTuplesGeneratorTest {
 
-    public Result crashTest(Instance i) {
-        ChocoScheduler sched = new DefaultChocoScheduler();
-        ReconfigurationPlan plan = null;
-        Exception res = null;
-        try {
-            plan = sched.solve(i);
-        } catch (Exception e) {
-            res = e;
+    @Test
+    public void test() {
+        List<List<Integer>> l = new ArrayList<>();
+        List<Integer> cnt = new ArrayList<>();
+        for (int i = 0; i < 300; i++) {
+            cnt.add(i);
         }
-        return new Result(i, plan, res);
+        l.add(cnt);
+        l.add(cnt);
+        l.add(cnt);
+        double nb = 0;
+        AllTuplesGenerator<Integer> tg = new AllTuplesGenerator<>(Integer.class, l);
+        for (Integer[] t : tg) {
+            //System.out.println(t);
+            nb++;
+        }
+        Assert.assertEquals(nb, Math.pow(cnt.size(), l.size()));
     }
 }

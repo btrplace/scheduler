@@ -40,12 +40,10 @@ public class JSONsTest {
             f.constraint(c);
             f.with("nb", 5).with("id", "cpu");
             TestCase tc = f.get();
-            System.out.println(tc.args());
             String s = tc.toJSON();
             System.out.println(s);
             TestCase tc2 = TestCase.fromJSON(l, s);
             Assert.assertEquals(tc, tc2);
-            System.out.println(tc2);
         }
     }
 

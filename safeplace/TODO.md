@@ -2,7 +2,7 @@
 
 OK side constraints from views
 OK check the suitability of resource oriented constraints
-- Store the generated test cases for a later replay
+OK Store the generated test cases for a later replay
 - Fuzzer satisfying core constraints to complete speed evaluation
 - test with problem instead of solved instances
 
