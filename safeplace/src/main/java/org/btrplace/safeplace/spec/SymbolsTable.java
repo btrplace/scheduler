@@ -18,13 +18,13 @@
 
 package org.btrplace.safeplace.spec;
 
-import org.btrplace.safeplace.spec.term.*;
+import org.btrplace.safeplace.spec.term.InDomain;
+import org.btrplace.safeplace.spec.term.None;
+import org.btrplace.safeplace.spec.term.Var;
 import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.type.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,9 +38,7 @@ public class SymbolsTable {
 
     private SymbolsTable parent;
 
-    private List<Primitive> primitives;
-
-    private Map<String, Constraint> cstrs;
+    //private Map<String, Constraint> cstrs;
 
     public SymbolsTable() {
         this(null);
@@ -50,8 +48,7 @@ public class SymbolsTable {
         table = new HashMap<>();
         this.funcs = new HashMap<>();
         parent = p;
-        primitives = new ArrayList<>();
-        cstrs = new HashMap<>();
+        //cstrs = new HashMap<>();
     }
 
 
@@ -105,13 +102,13 @@ public class SymbolsTable {
         return true;
     }
 
-    public boolean put(Constraint c) {
+    /*public boolean put(Constraint c) {
         if (cstrs.containsKey(c.id())) {
             return false;
         }
         cstrs.put(c.id(), c);
         return true;
-    }
+    }*/
 
     public Function getFunction(String id) {
         if (funcs.containsKey(id)) {
@@ -123,7 +120,7 @@ public class SymbolsTable {
         return null;
     }
 
-    public Constraint getConstraint(String id) {
+    /*public Constraint getConstraint(String id) {
         if (cstrs.containsKey(id)) {
             return cstrs.get(id);
         }
@@ -131,9 +128,9 @@ public class SymbolsTable {
             return parent.getConstraint(id);
         }
         return null;
-    }
+    }*/
 
-    private boolean putVar(Var v) {
+    public boolean put(Var v) {
         if (table.containsKey(v.label())) {
             return false;
         }
@@ -149,15 +146,5 @@ public class SymbolsTable {
             return parent.getVar(n);
         }
         return null;
-    }
-
-    public void put(Primitive p) {
-        if (putVar(p)) {
-            primitives.add(p);
-        }
-    }
-
-    public boolean put(UserVar v) {
-        return putVar(v);
     }
 }

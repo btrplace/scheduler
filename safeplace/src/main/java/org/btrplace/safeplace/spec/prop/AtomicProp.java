@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@
 package org.btrplace.safeplace.spec.prop;
 
 import org.btrplace.safeplace.spec.term.Term;
-import org.btrplace.safeplace.testing.verification.spec.Context;
 
 /**
  * @author Fabien Hermenier
@@ -39,10 +38,5 @@ public abstract class AtomicProp implements Proposition {
     @Override
     public String toString() {
         return a.toString() + " " + op + " " + b.toString();
-    }
-
-    @Override
-    public Proposition simplify(Context m) {
-        return this;
     }
 }

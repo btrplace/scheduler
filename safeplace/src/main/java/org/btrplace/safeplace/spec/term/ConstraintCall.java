@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,30 +18,24 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.prop.Not;
 import org.btrplace.safeplace.spec.prop.Proposition;
+import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
-import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class ConstraintCall implements Proposition {
+public class ConstraintCall extends FunctionCall<Boolean> implements Proposition {
 
-    private Constraint c;
+    private Function<Boolean> c;
 
-    private List<Term> args;
-
-    public ConstraintCall(Constraint c, List<Term> args) {
-        check(c, args);
-        this.c = c;
-        this.args = args;
+    public ConstraintCall(Function<Boolean> c, List<Term> args) {
+        super(c, args, Moment.any);
     }
 
     @Override
@@ -51,9 +45,8 @@ public class ConstraintCall implements Proposition {
 
     @Override
     public Boolean eval(Context m) {
-        List<UserVar> ps = c.args();
-        List<Object> ins = new ArrayList<>(ps.size());
-        for (Term t : args) {
+        List<Object> ins = new ArrayList<>();
+        for (Term t : args()) {
             Object o = t.eval(m);
             ins.add(o);
         }
@@ -61,36 +54,5 @@ public class ConstraintCall implements Proposition {
         Boolean ret = c.eval(m, ins);
         m.restoreStack();
         return ret;
-    }
-
-    private static void check(Constraint f, List<Term> args) {
-        Type[] expected = f.signature();
-        if (expected.length != args.size()) {
-            throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f.toString());
-        }
-        for (int i = 0; i < expected.length; i++) {
-            if (!expected[i].equals(args.get(i).type())) {
-                throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f.toString());
-            }
-        }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append(c.id()).append('(');
-        Iterator<Term> ite = args.iterator();
-        while (ite.hasNext()) {
-            b.append(ite.next().toString());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
-        }
-        return b.append(')').toString();
-    }
-
-    @Override
-    public Proposition simplify(Context m) {
-        return this;
     }
 }

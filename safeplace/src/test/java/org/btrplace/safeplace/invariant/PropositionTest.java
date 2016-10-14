@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -31,7 +31,6 @@ public class PropositionTest {
     @Test
     public void testTrue() {
         Proposition t = Proposition.True;
-        Assert.assertEquals(t.not(), Proposition.False);
         Assert.assertEquals(t.eval(new Context()), Boolean.TRUE);
         Assert.assertEquals(t.toString(), "true");
     }
@@ -40,7 +39,6 @@ public class PropositionTest {
     public void testFalse() {
         Proposition t = Proposition.False;
         Assert.assertEquals(t.toString(), "false");
-        Assert.assertEquals(t.not(), Proposition.True);
         Assert.assertEquals(t.eval(new Context()), Boolean.FALSE);
     }
 }

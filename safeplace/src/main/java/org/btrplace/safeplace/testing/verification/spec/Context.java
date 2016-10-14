@@ -26,7 +26,10 @@ import org.btrplace.safeplace.spec.type.VMType;
 import org.btrplace.safeplace.testing.DefaultDomain;
 import org.btrplace.safeplace.testing.Domain;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -53,7 +56,6 @@ public class Context {
 
     public Context(Model mo) {
         this.mo = mo;
-        //System.out.println(mo);
         sm = new SpecMapping(mo.getMapping());
         vDoms = new HashMap<>();
         stack = new LinkedList<>();
@@ -83,14 +85,6 @@ public class Context {
         vDoms.put(d.name(), d);
     }
 
-    public List domainValue(String lbl) {
-        Domain v = vDoms.get(lbl);
-        if (v == null) {
-            return null;
-        }
-        return v.values();
-    }
-
     public Domain domain(String lbl) {
         return vDoms.get(lbl);
     }
@@ -111,8 +105,12 @@ public class Context {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Context context = (Context) o;
 

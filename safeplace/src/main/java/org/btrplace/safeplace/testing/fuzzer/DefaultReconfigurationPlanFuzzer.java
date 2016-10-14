@@ -151,7 +151,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         return n;
     }
 
-    private void addNode(Node n, ReconfigurationPlan p) {
+    private boolean addNode(Node n, ReconfigurationPlan p) {
         double src = rnd.nextDouble();
         double dst = rnd.nextDouble();
         int [] bounds = schedule();
@@ -160,6 +160,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
             if (dst > dstOffNodes) {
                 p.add(new BootNode(n, bounds[0], bounds[1]));
                 p.getOrigin().getAttributes().put(n, "boot", bounds[1] - bounds[0]);
+                return true;
             }
         } else {
             p.getOrigin().getMapping().addOnlineNode(n);
@@ -168,6 +169,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
                 p.getOrigin().getAttributes().put(n, "shutdown", bounds[1] - bounds[0]);
             }
         }
+        return false;
     }
 
     private void addVM(VM v, ReconfigurationPlan p) {
@@ -230,8 +232,12 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         Model mo = new DefaultModel();
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
 
+        Set<Node> onlines = new HashSet<>();
         for (int i = 0; i < nbNodes; i++) {
-            addNode(mo.newNode(), p);
+            Node n = mo.newNode();
+            if (addNode(n, p)) {
+                onlines.add(n);
+            }
         }
         for (int i = 0; i < nbVMs; i++) {
             addVM(mo.newVM(), p);

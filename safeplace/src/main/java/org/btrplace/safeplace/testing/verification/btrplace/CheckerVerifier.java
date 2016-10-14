@@ -34,11 +34,6 @@ import org.btrplace.scheduler.SchedulerException;
 public class CheckerVerifier implements Verifier {
 
     @Override
-    public Verifier clone() {
-        return new CheckerVerifier();
-    }
-
-    @Override
     public VerifierResult verify(TestCase tc) {
         if (tc.impl() == null) {
             return VerifierResult.newOk();

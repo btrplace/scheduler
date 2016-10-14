@@ -22,6 +22,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.term.UserVar;
+import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.type.BoolType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;
@@ -35,7 +36,7 @@ import java.util.stream.Stream;
 /**
  * @author Fabien Hermenier
  */
-public class Constraint {
+public class Constraint implements Function<Boolean> {
 
     private String name;
 

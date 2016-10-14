@@ -157,7 +157,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             ps.add(tm);
         }
 
-        Constraint ref = symbols.getConstraint(lbl);
+        Function<Boolean> ref = symbols.getFunction(lbl);
         if (ref == null) {
             report(ctx.call().ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, lbl, "Cannot resolve symbol '" + lbl + "'");
             return null;
@@ -321,14 +321,14 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         return p == null ? null : new ProtectedProposition(p);
     }
 
-    @Override
+    /*@Override
     public Proposition visitNot(@NotNull CstrSpecParser.NotContext ctx) {
         Proposition p = (Proposition) visit(ctx.formula());
         if (p == null) {
             return null;
         }
         return p.not();
-    }
+    }*/
 
     @Override
     public Term visitArrayTerm(@NotNull CstrSpecParser.ArrayTermContext ctx) {

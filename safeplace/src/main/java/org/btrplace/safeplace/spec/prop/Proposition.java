@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -46,11 +46,6 @@ public interface Proposition {
         public String toString() {
             return "false";
         }
-
-        @Override
-        public Proposition simplify(Context m) {
-            return this;
-        }
     };
 
     Proposition True = new Proposition() {
@@ -68,12 +63,5 @@ public interface Proposition {
         public String toString() {
             return "true";
         }
-
-        @Override
-        public Proposition simplify(Context m) {
-            return this;
-        }
     };
-
-    Proposition simplify(Context m);
 }

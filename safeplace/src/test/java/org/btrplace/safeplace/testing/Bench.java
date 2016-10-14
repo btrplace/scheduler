@@ -64,7 +64,7 @@ public class Bench {
         tc.limits().tests(population);
         tc.constraint(cstr);
         tc.fuzz().restriction(EnumSet.allOf(Restriction.class));
-        tc.fuzz().vms(4 * scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
+        tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
         tc.fuzz().with("nb", 1, 10);
 
         if (mode == Mode.SAVE) {

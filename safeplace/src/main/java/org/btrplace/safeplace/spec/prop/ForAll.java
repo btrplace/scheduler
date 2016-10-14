@@ -89,30 +89,4 @@ public class ForAll implements Proposition {
         return b.append(") ").append(prop).toString();
     }
 
-    @Override
-    public Proposition simplify(Context m) {
-        And tail = null;
-
-        List<List<Object>> values = new ArrayList<>(vars.size());
-        for (int i = 0; i < vars.size(); i++) {
-            Collection<Object> o = from.eval(m);
-            if (o == null) {
-                return null;
-            }
-            values.add(new ArrayList<>(o));
-        }
-        AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, values);
-        for (Object[] tuple : tg) {
-            for (int i = 0; i < tuple.length; i++) {
-                m.setValue(vars.get(i).label(), tuple[i]);
-            }
-            if (tail == null) {
-                tail = new And(prop.simplify(m), Proposition.True);
-            } else {
-                tail = new And(tail, prop.simplify(m));
-            }
-            //System.err.println("With " + Arrays.toString(tuple) + ": " + tail);
-        }
-        return tail;
-    }
 }

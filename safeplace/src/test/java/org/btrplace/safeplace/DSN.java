@@ -125,7 +125,7 @@ public class DSN {
     public void errors() throws Exception {
      //   Bench.mode = Bench.Mode.SAVE;
         TestScanner sc = newScanner();
-        Bench.population = 20;
+        Bench.population = 1;
         Bench.scale = 3;
         Path p = Paths.get(root,"errors.csv");
         Files.deleteIfExists(p);

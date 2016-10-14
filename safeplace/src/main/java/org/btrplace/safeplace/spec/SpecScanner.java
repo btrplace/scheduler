@@ -75,7 +75,9 @@ public class SpecScanner {
         scanner.scan(Runtime.getRuntime().availableProcessors() - 1);
 
         for (Class<? extends Function> f : funcs) {
-            functions.add(f.newInstance());
+            if (!f.equals(Constraint.class)) {
+                functions.add(f.newInstance());
+            }
         }
 
         scanner.matchClassesImplementing(Function.class, c -> {
@@ -167,8 +169,8 @@ public class SpecScanner {
     }
 
     private static class Side {
-        SideConstraint s;
-        Class<? extends SatConstraint> impl;
+        protected SideConstraint s;
+        protected Class<? extends SatConstraint> impl;
 
         public Side(SideConstraint c, Class<? extends SatConstraint> impl) {
             s = c;
@@ -177,8 +179,8 @@ public class SpecScanner {
     }
 
     private static class Node {
-        Side s;
-        List<String> pre;
+        protected Side s;
+        protected List<String> pre;
 
         public Node(Side s) {
             this.s = s;

@@ -90,7 +90,7 @@ public class UserVar<T> implements Var<T> {
 
     public List<Constant> domain(Context mo) {
         Collection col = (Collection) backend.eval(mo);
-        if (op.equals("<:") || op.equals("/<:")) {
+        if ("<:".equals(op) || "/<:".equals(op)) {
             List<Object> s = new ArrayList<>();
             col.forEach(s::add);
             List<List<Object>> tuples = s.stream().map(o -> s).collect(Collectors.toList());

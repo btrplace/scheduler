@@ -46,7 +46,7 @@ GT:'>';
 GEQ:'>=';
 TRUE:'true';
 FALSE:'false';
-NOT:'~';
+//NOT:'~';
 LBRACK: '[';
 RBRACK: ']';
 STRING: '"' (~('\\'|'"'))* '"';
@@ -80,7 +80,6 @@ arg: ID op=(IN|INCL|PART) i2=term;
 formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison
-       |NOT formula     #not
        |ALL LPARA typedef RPARA formula #all
        |EXISTS LPARA typedef RPARA formula #exists
        |TRUE        #trueFormula

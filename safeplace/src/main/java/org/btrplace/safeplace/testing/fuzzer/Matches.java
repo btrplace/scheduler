@@ -68,12 +68,14 @@ public class Matches implements Predicate<TestCase> {
                 TestCaseResult res = tester.test(tc);
                 if (res.result() != Result.success) {
                     duration += System.currentTimeMillis();
-                /*System.out.println("Fail for " + c.id());
-                System.out.println(tc.instance().getSatConstraints());
+                    System.out.println("Fail for " + c.id());
+                /*System.out.println(tc.instance().getSatConstraints());
                 System.out.println(tc.instance().getModel().getMapping());
                 System.out.println(tc.plan());
                 System.out.println("----");*/
                     return false;
+                } else {
+                    System.out.println("Ok for " + c.id());
                 }
             }
         }

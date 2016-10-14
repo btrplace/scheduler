@@ -32,7 +32,6 @@ import org.btrplace.safeplace.testing.verification.VerifierResult;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Fabien Hermenier
@@ -48,13 +47,6 @@ public class SpecVerifier implements Verifier {
 
     public SpecVerifier() {
         this(Collections.emptyList());
-    }
-
-    @Override
-    public Verifier clone() {
-        SpecVerifier s = new SpecVerifier();
-        s.vDoms.addAll(vDoms.stream().map(Domain::clone).collect(Collectors.toList()));
-        return s;
     }
 
     public void fillArguments(Context mo, TestCase tc) {
