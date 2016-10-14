@@ -44,24 +44,13 @@ public class ListType extends ColType {
     }
 
     @Override
-    public String label() {
-        StringBuilder b = new StringBuilder("list<");
-        if (type == null) {
-            b.append('?');
-        } else {
-            b.append(type.label());
-        }
-        return b.append('>').toString();
-    }
-
-    @Override
     public String encode() {
         return "list " + type.encode();
     }
 
     @Override
     public String toString() {
-        return label();
+        return "list<" + (type == null ? "?" : type.label()) + ">";
     }
 
     public Type enclosingType() {

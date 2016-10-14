@@ -36,11 +36,6 @@ public class IntType extends Atomic {
 
     @Override
     public String toString() {
-        return label();
-    }
-
-    @Override
-    public String label() {
         return "int";
     }
 

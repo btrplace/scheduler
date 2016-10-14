@@ -59,14 +59,12 @@ public class ListBuilder<T> implements Term<List<T>> {
         List res = new ArrayList();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
-            //v.set(mo, c.eval(mo));
             mo.setValue(v.label(), c.eval(mo));
             Boolean ok = p.eval(mo);
             if (ok) {
                 res.add(t.eval(mo));
             }
         }
-        //v.unset();
         return res;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -34,7 +34,6 @@ public class ColType implements Type {
         type = t;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -58,24 +57,13 @@ public class ColType implements Type {
     }
 
     @Override
-    public String label() {
-        StringBuilder b = new StringBuilder("col<");
-        if (type == null) {
-            b.append('?');
-        } else {
-            b.append(type.label());
-        }
-        return b.append('>').toString();
-    }
-
-    @Override
     public Constant parse(String n) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String toString() {
-        return label();
+        return "col<" + (type == null ? "?" : type.label()) + ">";
     }
 
     public Type inside() {

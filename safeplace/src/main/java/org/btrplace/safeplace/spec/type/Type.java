@@ -25,7 +25,9 @@ import org.btrplace.safeplace.spec.term.Constant;
  */
 public interface Type {
 
-    String label();
+    default String label() {
+        return toString();
+    }
 
     Constant parse(String n);
 

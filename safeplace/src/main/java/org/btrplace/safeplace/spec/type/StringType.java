@@ -33,13 +33,8 @@ public class StringType extends Atomic {
     }
 
     @Override
-    public String label() {
-        return "string";
-    }
-
-    @Override
     public String toString() {
-        return label();
+        return "string";
     }
 
     public static StringType getInstance() {

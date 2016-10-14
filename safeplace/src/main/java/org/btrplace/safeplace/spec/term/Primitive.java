@@ -46,7 +46,6 @@ public class Primitive<T> implements Var<Set<T>> {
     public Set<T> eval(Context mo, Object... args) {
         Domain<T> dom = mo.domain(label());
         if (dom.constant()) {
-
             if (cache == null) {
                 cache = new HashSet<>(dom.values());
             }

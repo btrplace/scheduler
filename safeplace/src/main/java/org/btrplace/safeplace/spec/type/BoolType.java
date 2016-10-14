@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,17 +20,11 @@ package org.btrplace.safeplace.spec.type;
 
 import org.btrplace.safeplace.spec.term.Constant;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * @author Fabien Hermenier
  */
 public class BoolType extends Atomic {
 
-    public static final Set<Boolean> DOMAIN = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Boolean.TRUE, Boolean.FALSE)));
 
     private static BoolType instance = new BoolType();
 
@@ -43,7 +37,7 @@ public class BoolType extends Atomic {
 
     @Override
     public String toString() {
-        return label();
+        return "bool";
     }
 
     @Override

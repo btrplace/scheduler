@@ -55,19 +55,8 @@ public class SetType extends ColType {
     }
 
     @Override
-    public String label() {
-        StringBuilder b = new StringBuilder("set<");
-        if (type == null) {
-            b.append('?');
-        } else {
-            b.append(type.label());
-        }
-        return b.append('>').toString();
-    }
-
-    @Override
     public String toString() {
-        return label();
+        return "set<" + (type == null ? "?" : type.label()) + ">";
     }
 
     public Type enclosingType() {

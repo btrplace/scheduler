@@ -37,11 +37,6 @@ public class VMType extends Atomic {
 
     @Override
     public String toString() {
-        return label();
-    }
-
-    @Override
-    public String label() {
         return "vm";
     }
 
