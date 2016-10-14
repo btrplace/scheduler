@@ -52,10 +52,6 @@ public class DefaultDomain<T> implements Domain<T> {
         return t;
     }
 
-    public DefaultDomain<T> clone() {
-        return new DefaultDomain<>(name, t, dom);
-    }
-
     @Override
     public List<T> values() {
         return dom;

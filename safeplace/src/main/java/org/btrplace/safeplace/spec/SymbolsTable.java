@@ -38,8 +38,6 @@ public class SymbolsTable {
 
     private SymbolsTable parent;
 
-    //private Map<String, Constraint> cstrs;
-
     public SymbolsTable() {
         this(null);
     }
@@ -48,7 +46,6 @@ public class SymbolsTable {
         table = new HashMap<>();
         this.funcs = new HashMap<>();
         parent = p;
-        //cstrs = new HashMap<>();
     }
 
 
@@ -102,14 +99,6 @@ public class SymbolsTable {
         return true;
     }
 
-    /*public boolean put(Constraint c) {
-        if (cstrs.containsKey(c.id())) {
-            return false;
-        }
-        cstrs.put(c.id(), c);
-        return true;
-    }*/
-
     public Function getFunction(String id) {
         if (funcs.containsKey(id)) {
             return funcs.get(id);
@@ -119,16 +108,6 @@ public class SymbolsTable {
         }
         return null;
     }
-
-    /*public Constraint getConstraint(String id) {
-        if (cstrs.containsKey(id)) {
-            return cstrs.get(id);
-        }
-        if (parent != null) {
-            return parent.getConstraint(id);
-        }
-        return null;
-    }*/
 
     public boolean put(Var v) {
         if (table.containsKey(v.label())) {

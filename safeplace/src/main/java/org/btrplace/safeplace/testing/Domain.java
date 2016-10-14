@@ -33,8 +33,6 @@ public interface Domain<T> extends Term<List<T>>{
 
     String name();
 
-    Domain<T> clone();
-
     T randomValue();
 
     List<T> randomSubset();
