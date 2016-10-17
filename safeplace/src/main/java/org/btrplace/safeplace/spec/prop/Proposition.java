@@ -25,11 +25,16 @@ import org.btrplace.safeplace.testing.verification.spec.Context;
  *
  * @author Fabien Hermenier
  */
-public interface Proposition {
+public interface Proposition /*extends Term<Boolean>*/ {
 
     Proposition not();
 
     Boolean eval(Context m);
+
+    /*@Override
+    default BoolType type() {
+        return BoolType.getInstance();
+    }*/
 
     Proposition False = new Proposition() {
         @Override
@@ -38,7 +43,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean eval(Context m) {
+        public Boolean eval(Context m/*, Object ...params*/) {
             return Boolean.FALSE;
         }
 
@@ -55,7 +60,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean eval(Context m) {
+        public Boolean eval(Context m/*, Object ...params*/) {
             return Boolean.TRUE;
         }
 

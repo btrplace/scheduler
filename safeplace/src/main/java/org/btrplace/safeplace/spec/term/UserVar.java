@@ -20,7 +20,6 @@ package org.btrplace.safeplace.spec.term;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.btrplace.safeplace.spec.type.ColType;
-import org.btrplace.safeplace.spec.type.NoneType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
@@ -66,7 +65,7 @@ public class UserVar<T> implements Var<T> {
                 return new SetType(backend.type());
 
         }
-        return NoneType.getInstance();
+        throw new IllegalArgumentException(op);
     }
 
     @Override

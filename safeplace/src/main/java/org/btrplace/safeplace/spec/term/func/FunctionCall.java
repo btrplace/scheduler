@@ -58,7 +58,6 @@ public class FunctionCall<T> implements Term<T> {
     private Moment moment;
 
     public FunctionCall(Function<T> c, List<Term> args, Moment m) {
-        check(c, args);
         this.c = c;
         this.args = args;
         this.moment = m;
@@ -83,18 +82,6 @@ public class FunctionCall<T> implements Term<T> {
     public String toString() {
         return args.stream().map(Object::toString)
                 .collect(Collectors.joining(", ", moment + c.id() + "(", ")"));
-    }
-
-    private static void check(Function f, List<Term> args) {
-        Type[] expected = f.signature();
-        if (expected.length != args.size()) {
-            throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + Function.toString(f));
-        }
-        for (int i = 0; i < expected.length; i++) {
-            if (!expected[i].equals(args.get(i).type())) {
-                throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + Function.toString(f));
-            }
-        }
     }
 
     public List<Term> args() {

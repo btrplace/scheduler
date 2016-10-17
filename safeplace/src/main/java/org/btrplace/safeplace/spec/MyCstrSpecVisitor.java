@@ -32,6 +32,7 @@ import org.btrplace.safeplace.spec.type.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -42,8 +43,6 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     private SymbolsTable symbols;
 
     private String filename;
-
-    private SpecException err = null;
 
     public MyCstrSpecVisitor() {
         symbols = new SymbolsTable();
@@ -68,119 +67,86 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     public Proposition getProposition(String name, ParseTree t) throws SpecException {
         symbols = symbols.enterSpec();
         filename = name;
-
-        Proposition p = (Proposition) visit(t);
-        if (err != null) {
-            throw err;
+        try {
+            return (Proposition) visit(t);
+        } catch (SpecException2 ex) {
+            System.err.println(t.getText());
+            throw new SpecException(ex);
+        } finally {
+            symbols = symbols.leaveScope();
         }
-        symbols = symbols.leaveScope();
-        return p;
     }
 
     public UserVar getUserVar(String name, ParseTree t) throws SpecException {
         symbols = symbols.enterSpec();
         filename = name;
-        List<UserVar> l = (List) visit(t);
-        if (err != null) {
-            throw err;
+        try {
+            return ((List<UserVar>) visit(t)).get(0);
+        } catch (SpecException2 ex) {
+            throw new SpecException(ex);
+        } finally {
+            symbols = symbols.leaveScope();
         }
-        UserVar v = l.get(0);
-        symbols = symbols.leaveScope();
-        return v;
     }
 
     @Override
     public Proposition visitAll(@NotNull CstrSpecParser.AllContext ctx) {
         List<UserVar> vars = visitTypedef(ctx.typedef());
-        if (vars == null) {
-            return null;
-        }
-
         Proposition p = (Proposition) visit(ctx.formula());
-        if (p == null) {
-            return null;
-        }
         return new ForAll(vars, p);
     }
 
     @Override
-    public Object visitExists(@NotNull CstrSpecParser.ExistsContext ctx) {
+    public Exists visitExists(@NotNull CstrSpecParser.ExistsContext ctx) {
         List<UserVar> vars = visitTypedef(ctx.typedef());
-        if (vars == null) {
-            return null;
-        }
         Proposition p = (Proposition) visit(ctx.formula());
-        if (p == null) {
-            return null;
-        }
         return new Exists(vars, p);
     }
 
-    public FunctionCall visitCall(@NotNull CstrSpecParser.CallContext ctx) {
-        String id = ctx.ID().getText();
-        List<Term> ps = new ArrayList<>();
-        for (CstrSpecParser.TermContext t : ctx.term()) {
-            Term tm = (Term) visit(t);
-            if (tm == null) {
-                return null;
-            }
-            ps.add(tm);
-        }
-
-        Function f = symbols.getFunction(id);
+    private Function resolveFunction(Token t, List<Term> args) {
+        Function f = symbols.getFunction(t.getText());
         if (f == null) {
-            report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, id, "Cannot resolve symbol '" + id + "'");
-            return null;
+            throw SpecException2.unknownSymbol(filename, t);
         }
 
-        try {
-            FunctionCall.Moment m = FunctionCall.Moment.any;
-            if (ctx.BEGIN() != null) {
-                m = FunctionCall.Moment.begin;
-            }
-            return new FunctionCall(f, ps, m);
-        } catch (IllegalArgumentException ex) {
-            report(ctx.ID().getSymbol(), ex.getMessage());
-            return null;
+        Type[] expected = f.signature();
+        if (expected.length != args.size()) {
+            throw SpecException2.badFunctionCall(filename, t, f, args);
         }
+        for (int i = 0; i < expected.length; i++) {
+            if (!expected[i].equals(args.get(i).type())) {
+                throw SpecException2.badFunctionCall(filename, t, f, args);
+            }
+        }
+
+        return f;
+    }
+
+    public FunctionCall visitCall(@NotNull CstrSpecParser.CallContext ctx) {
+
+        List<Term> ps = ctx.term().stream().map(t -> (Term) visit(t)).collect(Collectors.toList());
+        Function f = resolveFunction(ctx.ID().getSymbol(), ps);
+
+        FunctionCall.Moment m = FunctionCall.Moment.any;
+        if (ctx.BEGIN() != null) {
+            m = FunctionCall.Moment.begin;
+        }
+        return new FunctionCall(f, ps, m);
     }
 
     @Override
     public ConstraintCall visitCstrCall(@NotNull CstrSpecParser.CstrCallContext ctx) {
-        String lbl = ctx.call().ID().getText();
-        List<Term> ps = new ArrayList<>();
-        for (CstrSpecParser.TermContext t : ctx.call().term()) {
-            Term tm = (Term) visit(t);
-            if (tm == null) {
-                return null;
-            }
-            ps.add(tm);
-        }
-
-        Function<Boolean> ref = symbols.getFunction(lbl);
-        if (ref == null) {
-            report(ctx.call().ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, lbl, "Cannot resolve symbol '" + lbl + "'");
-            return null;
-        }
-
-        try {
-            return new ConstraintCall(ref, ps);
-        } catch (IllegalArgumentException ex) {
-            report(ctx.call().ID().getSymbol(), ex.getMessage());
-            return null;
-        }
+        List<Term> ps = ctx.call().term().stream().map(t -> (Term) visit(t)).collect(Collectors.toList());
+        Function f = resolveFunction(ctx.call().ID().getSymbol(), ps);
+        return new ConstraintCall(f, ps);
     }
 
     @Override
     public List<UserVar> visitTypedef(@NotNull CstrSpecParser.TypedefContext ctx) {
 
         Term parent = (Term) visit(ctx.term());
-        if (parent == null) {
-            return null;
-        }
         if (parent.type() instanceof Atomic) {
-            report(ctx.op, "Unsupported operation: '" + parent + "' is an atomic type");
-            return null;
+            throw new SpecException2(filename, ctx.op.getCharPositionInLine(), "The right-hand side must be a collection");
         }
         List<UserVar> vars = new ArrayList<>();
         for (TerminalNode n : ctx.ID()) {
@@ -195,12 +161,8 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     @Override
     public UserVar visitArg(CstrSpecParser.ArgContext ctx) {
         Term parent = (Term) visit(ctx.term());
-        if (parent == null) {
-            return null;
-        }
         if (parent.type() instanceof Atomic) {
-            report(ctx.op, "Unsupported operation: '" + parent + "' is an atomic type");
-            return null;
+            throw new SpecException2(filename, ctx.op.getCharPositionInLine(), "The right-hand side must be a collection");
         }
         String lbl = ctx.ID().getText();
         UserVar v = new UserVar(lbl, ctx.op.getText(), parent);
@@ -211,13 +173,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     @Override
     public Proposition visitFormulaOp(@NotNull CstrSpecParser.FormulaOpContext ctx) {
         Proposition p1 = (Proposition) visit(ctx.f1);
-        if (p1 == null) {
-            return null;
-        }
         Proposition p2 = (Proposition) visit(ctx.f2);
-        if (p2 == null) {
-            return null;
-        }
         switch (ctx.op.getType()) {
             case CstrSpecParser.AND:
                 return new And(p1, p2);
@@ -228,19 +184,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             case CstrSpecParser.IFF:
                 return new Iff(p1, p2);
         }
-        report(ctx.op, "Unsupported operation: " + ctx.op.getText());
-        return null;
-    }
-
-    private void report(Token t, String msg) {
-        report(t, SpecException.ErrType.UNKNOWN, "", msg);
-    }
-
-    private void report(Token t, SpecException.ErrType type, String val, String msg) {
-        int l = t.getLine();
-        int c = t.getCharPositionInLine();
-        err = new SpecException(type, "[" + filename + " " + l + ":" + c + "] " + msg);
-        err.value = val;
+        throw SpecException2.unsupportedOperation(filename, BoolType.getInstance(), ctx.op, BoolType.getInstance());
     }
 
     @Override
@@ -249,16 +193,10 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         Type ty = null;
         for (CstrSpecParser.TermContext t : ctx.term()) {
             Term tr = (Term) visit(t);
-            if (tr == null) {
-                return null;
-            } else if (ty == null) {
+            if (ty == null) {
                 ty = tr.type();
-            } else {
-                if (!ty.equals(tr.type())) {
-                    report(t.start, "A Set of '" + ty + "' cannot embed a " + tr.type());
-                    return null;
-                }
             }
+            assertEqualsTypes(t.getStart(), ty, tr.type());
             s.add(tr);
         }
         return new ExplodedSet(s, ty);
@@ -267,29 +205,19 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     @Override
     public Term visitProtectedTerm(@NotNull CstrSpecParser.ProtectedTermContext ctx) {
         Term t = (Term) visit(ctx.term());
-        return t == null ? null : new ProtectedTerm(t);
+        return new ProtectedTerm(t);
     }
-
 
     @Override
     public SetBuilder visitSetInComprehension(@NotNull CstrSpecParser.SetInComprehensionContext ctx) {
         //Get the binder
         List<UserVar> v = visitTypedef(ctx.typedef());
-        if (v == null) {
-            return null;
-        }
 
         Proposition p = Proposition.True;
         if (ctx.COMMA() != null) {
             p = (Proposition) visit(ctx.formula());
-            if (p == null) {
-                return null;
-            }
         }
         Term t = (Term) visit(ctx.term());
-        if (t == null) {
-            return null;
-        }
         return new SetBuilder(t, v.get(0), p);
     }
 
@@ -297,28 +225,19 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     public ListBuilder visitListInComprehension(@NotNull CstrSpecParser.ListInComprehensionContext ctx) {
         //Get the binder
         List<UserVar> v = visitTypedef(ctx.typedef());
-        if (v == null) {
-            return null;
-        }
 
         Proposition p = Proposition.True;
         if (ctx.COMMA() != null) {
             p = (Proposition) visit(ctx.formula());
-            if (p == null) {
-                return null;
-            }
         }
         Term t = (Term) visit(ctx.term());
-        if (t == null) {
-            return null;
-        }
         return new ListBuilder(t, v.get(0), p);
     }
 
     @Override
     public Proposition visitProtectedFormula(@NotNull CstrSpecParser.ProtectedFormulaContext ctx) {
         Proposition p = (Proposition) visit(ctx.formula());
-        return p == null ? null : new ProtectedProposition(p);
+        return new ProtectedProposition(p);
     }
 
     @Override
@@ -326,27 +245,16 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         String lbl = ctx.ID().getText();
         Var v = symbols.getVar(lbl);
         if (v == null) {
-            report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, lbl, "Unknown symbol '" + lbl + "'");
-            return null;
+            throw SpecException2.unknownSymbol(filename, ctx.ID().getSymbol());
         }
         //Type check
         if (!(v.type() instanceof ListType)) {
-            report(ctx.ID().getSymbol(), "'" + lbl + "' must be a list (currently: '" + v.type() + "')");
-            return null;
+            throw new SpecException2(filename, ctx.ID().getSymbol().getCharPositionInLine(), "List expected. Got '" + v.type() + "')");
         }
 
         Term idx = (Term) visit(ctx.term());
-        if (!(idx.type() instanceof IntType)) {
-            report(ctx.ID().getSymbol(), "The index must be an integer (currently: '" + v.type() + "')");
-            return null;
-        }
-
-        try {
-            return new ValueAt(v, idx);
-        } catch (IllegalArgumentException ex) {
-            report(ctx.ID().getSymbol(), ex.getMessage());
-            return null;
-        }
+        assertEqualsTypes(ctx.term().getStart(), IntType.getInstance(), idx.type());
+        return new ValueAt(v, idx);
     }
 
     @Override
@@ -356,17 +264,12 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         if (v != null) {
             return v;
         }
-
-        Term c;
-        c = VMStateType.getInstance().parse(ref);
+        Term c = VMStateType.getInstance().parse(ref);
         if (c == null) {
             c = NodeStateType.getInstance().parse(ref);
         }
         if (c == null) {
-            c = TimeType.getInstance().parse(ref);
-        }
-        if (c == null) {
-            report(ctx.ID().getSymbol(), SpecException.ErrType.SYMBOL_NOT_FOUND, ctx.ID().getText(), "Unknown symbol '" + ctx.ID().getText() + "'");
+            throw SpecException2.unknownSymbol(filename, ctx.ID().getSymbol());
         }
         return c;
     }
@@ -377,92 +280,79 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     }
 
     @Override
-    public Object visitStringTerm(@NotNull CstrSpecParser.StringTermContext ctx) {
+    public Constant visitStringTerm(@NotNull CstrSpecParser.StringTermContext ctx) {
         String txt = ctx.STRING().getText();
         return StringType.getInstance().parse(txt.substring(1, txt.length()));
     }
 
-
-    private boolean sameType(Token to, Term t1, Term t2) {
-        if (t1.type().equals(NoneType.getInstance()) || t2.type().equals(NoneType.getInstance())) {
-            return true;
+    private void assertEqualsTypes(Token to, Type expected, Type... got) {
+        for (Type t : got) {
+            if (!expected.equals(t)) {
+                throw SpecException2.typeMismatch(filename, to.getCharPositionInLine(), expected, t);
+            }
         }
-        if (!t1.type().equals(t2.type())) {
-            report(to, "Incompatible types: expecting '" + t2.type() + " " + to.getText() + " " + t2.type() +
-                    "' but was '" + t1.type() + " " + to.getText() + " " + t2.type() + "'");
-            return false;
-        }
-        return true;
     }
 
-    private boolean sameType(Token to, Term t1, Term t2, Type t) {
-        if (t1.type().equals(NoneType.getInstance()) || t2.type().equals(NoneType.getInstance())) {
-            return true;
-        }
-        if (!t1.type().equals(t2.type())) {
-            report(to, "Incompatible types: expecting '" + t + " " + to.getText() + " " + t +
-                    "' but was '" + t1.type() + " " + to.getText() + " " + t2.type() + "'");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isIn(Token to, Term t1, Term t2) {
+    private void assertIn(Token to, Term t1, Term t2) {
         Type t = t2.type();
         if (!(t instanceof SetType)) {
-            report(to, t2 + " is supposed to be a set instead of a '" + t + "'");
-            return false;
+            throw new SpecException2(filename, to.getCharPositionInLine(), "The right-hand side must be a collection. Got '" + t2.type() + "'");
         }
         SetType st = (SetType) t;
         if (!st.enclosingType().equals(t1.type())) {
-            report(to, "Incompatible types: expecting '" + st.enclosingType() + " " + to.getText() + " " + st +
-                    "' but was '" + t1.type() + " " + to.getText() + " " + t2.type() + "'");
-            return false;
+            throw new SpecException2(filename, to.getCharPositionInLine(),
+                    "Type mismatch. Expected '" + st.enclosingType() + "' for left-hand side. Got '" + t1.type() + "'");
+
         }
-        return true;
     }
 
     @Override
     public Proposition visitTermComparison(@NotNull CstrSpecParser.TermComparisonContext c) {
         CstrSpecParser.ComparisonContext ctx = c.comparison();
         Term t1 = (Term) visit(ctx.t1);
-        if (t1 == null) {
-            return null;
-        }
         Term t2 = (Term) visit(ctx.t2);
-        if (t2 == null) {
-            return null;
-        }
 
         switch (ctx.op.getType()) {
 
-            case CstrSpecParser.EQ:
-                return sameType(ctx.op, t1, t2) ? new Eq(t1, t2) : null;
-            case CstrSpecParser.NOT_EQ:
-                return sameType(ctx.op, t1, t2) ? new NEq(t1, t2) : null;
-            case CstrSpecParser.IN:
-                return isIn(ctx.op, t1, t2) ? new In(t1, t2) : null;
-            case CstrSpecParser.NOT_IN:
-                return isIn(ctx.op, t1, t2) ? new NIn(t1, t2) : null;
             case CstrSpecParser.INCL:
-                return sameType(ctx.op, t1, t2) ? new Inc(t1, t2) : null;
+                assertEqualsTypes(ctx.op, t1.type(), t2.type());
+                return new Inc(t1, t2);
             case CstrSpecParser.NOT_INCL:
-                return sameType(ctx.op, t1, t2) ? new NInc(t1, t2) : null;
-            case CstrSpecParser.PART:
-                return isIn(ctx.op, t2, t1) ? new Packings(t1, t2) : null;
-            case CstrSpecParser.NOT_PART:
-                return isIn(ctx.op, t2, t1) ? new NoPackings(t1, t2) : null;
+                assertEqualsTypes(ctx.op, t1.type(), t2.type());
+                return new NInc(t1, t2);
+            case CstrSpecParser.EQ:
+                assertEqualsTypes(ctx.op, t1.type(), t2.type());
+                return new Eq(t1, t2);
+            case CstrSpecParser.NOT_EQ:
+                assertEqualsTypes(ctx.op, t1.type(), t2.type());
+                return new NEq(t1, t2);
             case CstrSpecParser.LT:
-                return sameType(ctx.op, t1, t2, IntType.getInstance()) ? new Lt(t1, t2) : null;
+                assertEqualsTypes(ctx.op, IntType.getInstance(), t1.type(), t2.type());
+                return new Lt(t1, t2);
             case CstrSpecParser.LEQ:
-                return sameType(ctx.op, t1, t2, IntType.getInstance()) ? new Leq(t1, t2) : null;
+                assertEqualsTypes(ctx.op, IntType.getInstance(), t1.type(), t2.type());
+                return new Leq(t1, t2);
             case CstrSpecParser.GT:
-                return sameType(ctx.op, t1, t2, IntType.getInstance()) ? new Lt(t2, t1) : null;
+                assertEqualsTypes(ctx.op, IntType.getInstance(), t1.type(), t2.type());
+                return new Lt(t2, t1);
             case CstrSpecParser.GEQ:
-                return sameType(ctx.op, t1, t2, IntType.getInstance()) ? new Leq(t2, t1) : null;
+                assertEqualsTypes(ctx.op, IntType.getInstance(), t1.type(), t2.type());
+                return new Leq(t2, t1);
+
+            case CstrSpecParser.IN:
+                assertIn(ctx.op, t1, t2);
+                return new In(t1, t2);
+            case CstrSpecParser.NOT_IN:
+                assertIn(ctx.op, t1, t2);
+                return new NIn(t1, t2);
+            case CstrSpecParser.PART:
+                assertIn(ctx.op, t2, t1);
+                return new Packings(t1, t2);
+            case CstrSpecParser.NOT_PART:
+                assertIn(ctx.op, t2, t1);
+                return new NoPackings(t1, t2);
         }
-        report(ctx.op, "Unsupported operation: " + ctx.op.getText());
-        return null;
+        throw SpecException2.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
     }
 
     @Override
@@ -478,36 +368,27 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     @Override
     public Term visitTermOp(@NotNull CstrSpecParser.TermOpContext ctx) {
         Term t1 = (Term) visit(ctx.t1);
-        if (t1 == null) {
-            return null;
-        }
         Term t2 = (Term) visit(ctx.t2);
-        if (t2 == null) {
-            return null;
-        }
 
+        assertEqualsTypes(ctx.op, t1.type(), t2.type());
         switch (ctx.op.getType()) {
             case CstrSpecParser.PLUS:
-                if (t1.type() == IntType.getInstance() && sameType(ctx.op, t1, t2)) {
+                if (t1.type() == IntType.getInstance()) {
                     return new IntPlus(t1, t2);
-                } else if (t1.type() instanceof SetType && sameType(ctx.op, t1, t2)) {
+                } else if (t1.type() instanceof SetType) {
                     return new SetPlus(t1, t2);
                 }
                 break;
             case CstrSpecParser.MINUS:
-                if (t1.type() == IntType.getInstance() && sameType(ctx.op, t1, t2)) {
+                if (t1.type() == IntType.getInstance()) {
                     return new IntMinus(t1, t2);
-                } else if (t1.type() instanceof SetType && sameType(ctx.op, t1, t2)) {
+                } else if (t1.type() instanceof SetType) {
                     return new SetMinus(t1, t2);
                 }
                 break;
             case CstrSpecParser.MULT:
                 return new Mult(t1, t2);
-            default:
-                report(ctx.op, "Unsupported operation: " + ctx.op.getText());
-                return null;
         }
-        report(ctx.op, "Unsupported operation: " + t1.type() + " " + ctx.op.getText() + " " + t2.type());
-        return null;
+        throw SpecException2.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
     }
 }

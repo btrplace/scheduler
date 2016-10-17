@@ -48,8 +48,6 @@ public class Constant implements Term {
     public String toString() {
         if (o instanceof Collection) {
             return ((Collection) o).stream().map(Object::toString).collect(Collectors.joining(", ","{","}")).toString();
-        } else if (type().equals(TimeType.getInstance())) {
-            return "t" + o;
         }
         return o.toString();
     }

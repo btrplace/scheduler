@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 University Nice Sophia Antipolis
+ * Copyright (c) 2016 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@ package org.btrplace.safeplace.spec.term.func;
 
 import org.btrplace.plan.event.Action;
 import org.btrplace.safeplace.spec.type.ActionType;
-import org.btrplace.safeplace.spec.type.TimeType;
+import org.btrplace.safeplace.spec.type.IntType;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
@@ -32,8 +32,8 @@ import org.btrplace.safeplace.testing.verification.spec.Context;
 public class End implements Function<Integer> {
 
     @Override
-    public TimeType type() {
-        return TimeType.getInstance();
+    public IntType type() {
+        return IntType.getInstance();
     }
 
     @Override
