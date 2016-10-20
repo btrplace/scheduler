@@ -16,20 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.constraint;
+package org.btrplace.model.constraint;
 
 /**
- * Specify the choco implementation of an objective
+ * An objective that just minimizes the number of migrations to perform inside a reconfiguration.
  *
  * @author Fabien Hermenier
  */
-public interface CObjective extends ChocoConstraint {
+public class MinMigrations extends OptConstraint {
 
-    /**
-     * Post the constraints related to the objective.
-     * This method is decoupled from {@link ChocoConstraint#inject(org.btrplace.scheduler.choco.Parameters, org.btrplace.scheduler.choco.ReconfigurationProblem)}
-     * to allow to postpone the constraint posting to the last moment.
-     */
-    default void postCostConstraints() {
+    @Override
+    public String id() {
+        return "minimizeMigrations";
     }
 }

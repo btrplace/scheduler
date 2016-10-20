@@ -82,6 +82,7 @@ public class ChocoMapper {
         map.mapConstraint(MaxOnline.class, CMaxOnline.class);
         map.mapConstraint(MinMTTR.class, CMinMTTR.class);
         map.mapConstraint(MinMTTRMig.class, CMinMTTRMig.class);
+        map.mapConstraint(MinMigrations.class, CMinMigrations.class);
         map.mapConstraint(NoDelay.class, CNoDelay.class);
         map.mapConstraint(Deadline.class, CDeadline.class);
         map.mapConstraint(Precedence.class, CPrecedence.class);

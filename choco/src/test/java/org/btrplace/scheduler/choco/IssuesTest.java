@@ -555,4 +555,25 @@ public class IssuesTest {
         Assert.assertNotNull(p);
         System.out.println(p);
     }
+
+    @Test
+    public void testNtnx() {
+        String root = "/Users/fhermeni/Documents/Research/Projects/BtrPlace/Nutanix/instances/instance-";
+        for (int nb = 1; nb <= 5; nb++) {
+            System.out.println("Instance " + nb);
+            Instance i = JSON.readInstance(new File(root + nb + "/instance_clean.json"));
+            ChocoScheduler s = new DefaultChocoScheduler();
+            /*for (VM v : i.getModel().getMapping().getAllVMs()) {
+                i.getSatConstraints().add(new NoDelay(v));
+            }*/
+            //s.setVerbosity(3);
+            s.doOptimize(true);
+            //s.setTimeLimit(10);
+            //s.doRepair(true);
+            ReconfigurationPlan p = s.solve(i);
+            System.out.println(s.getStatistics());
+            //System.out.println(p);
+            System.out.println();
+        }
+    }
 }

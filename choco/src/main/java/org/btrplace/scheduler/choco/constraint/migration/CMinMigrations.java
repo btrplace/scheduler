@@ -16,26 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.constraint.mttr;
+package org.btrplace.scheduler.choco.constraint.migration;
 
 import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.MinMigrations;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
+import org.btrplace.scheduler.choco.constraint.mttr.*;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.loop.SLF;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
@@ -45,57 +44,43 @@ import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * An objective that minimizes the time to repair a non-viable model.
+ * Implements {@link MinMigrations}.
+ * Currently, same heuristics that with MinMttr but a different objective
  *
  * @author Fabien Hermenier
  */
-public class CMinMTTR implements CObjective {
-
-    private List<Constraint> costConstraints;
-
-    private boolean costActivated = false;
+public class CMinMigrations implements CObjective {
 
     private ReconfigurationProblem rp;
 
     /**
      * Make a new objective.
      */
-    public CMinMTTR(MinMTTR m) {
-        costConstraints = new ArrayList<>();
+    public CMinMigrations(MinMigrations m) {
     }
 
-    public CMinMTTR() {
+    public CMinMigrations() {
         this(null);
     }
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
-        costActivated = false;
         List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
         mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
-        IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
-        Solver s = p.getSolver();
-        IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
 
-        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);
-        costConstraints.clear();
-        costConstraints.add(costConstraint);
-
-//        p.setObjective(true, cost);
-        minMigs(rp);
+        IntVar cost = minMigs(rp);
         injectPlacementHeuristic(p, ps, cost);
         return true;
     }
 
-    private void minMigs(ReconfigurationProblem rp) {
+    private IntVar minMigs(ReconfigurationProblem rp) {
         List<IntVar> stays = new ArrayList<>();
         for (VMTransition t : rp.getVMActions()) {
             if (t instanceof RelocatableVM) {
@@ -105,6 +90,7 @@ public class CMinMTTR implements CObjective {
         IntVar s = VF.bounded("migs", 0, stays.size(), rp.getSolver());
         rp.getSolver().post(ICF.sum(stays.toArray(new IntVar[stays.size()]), s));
         rp.setObjective(false, s);
+        return s;
     }
 
     private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
@@ -200,20 +186,6 @@ public class CMinMTTR implements CObjective {
     public Set<VM> getMisPlacedVMs(Instance i) {
         return Collections.emptySet();
     }
-
-    /**
-     * Post the constraints related to the objective.
-     */
-    @Override
-    public void postCostConstraints() {
-        //TODO: Delay insertion
-        if (!costActivated) {
-            rp.getLogger().debug("Post the cost-oriented constraints");
-            costActivated = true;
-            costConstraints.forEach(rp.getSolver()::post);
-        }
-    }
-
 
     private static Stream<Slice> dSlices(List<VMTransition> l) {
         return l.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
