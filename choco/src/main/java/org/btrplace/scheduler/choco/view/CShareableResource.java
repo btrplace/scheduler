@@ -614,4 +614,43 @@ public class CShareableResource implements ChocoView {
         return Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID);
     }
 
+    /**
+     * Estimate the weight of each VMs with regards to multiple dimensions.
+     * In practice, it sums the normalised size of each VM against the total capacity
+     *
+     * @param rp  the problem to solve
+     * @param rcs the resources to consider
+     * @return a weight per VM
+     */
+    public static Map<VM, Integer> getWeights(ReconfigurationProblem rp, List<CShareableResource> rcs) {
+        Model mo = rp.getSourceModel();
+
+        int[] capa = new int[rcs.size()];
+        int[] cons = new int[rcs.size()];
+        Map<VM, Integer> cost = new HashMap<>();
+        for (Node n : mo.getMapping().getAllNodes()) {
+            for (int i = 0; i < rcs.size(); i++) {
+                capa[i] += rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n)).getLB();
+            }
+        }
+
+        for (VM v : mo.getMapping().getAllVMs()) {
+            for (int i = 0; i < rcs.size(); i++) {
+                cons[i] += rcs.get(i).vmAllocation.get(rp.getVM(v)).getLB();
+            }
+        }
+
+        for (VM v : mo.getMapping().getAllVMs()) {
+            double sum = 0;
+            for (int i = 0; i < rcs.size(); i++) {
+                double ratio = 0;
+                if (cons[i] > 0) {
+                    ratio = 1.0 * rcs.get(i).vmAllocation.get(rp.getVM(v)).getLB() / capa[i];
+                }
+                sum += ratio;
+            }
+            cost.put(v, (int) (sum * 10000));
+        }
+        return cost;
+    }
 }

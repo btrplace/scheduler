@@ -23,15 +23,18 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
+import org.btrplace.scheduler.choco.extensions.MyFirstFail;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
@@ -130,12 +133,16 @@ public class CMinMTTR implements CObjective {
                     actions.add(p.getVMAction(vm));
                 }
             }
-
-            IntVar[] scopes = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
-
-            strategies.add(new IntStrategy(scopes, new MovingVMs(p, map, actions), new RandomVMPlacement(p, pla, true, ps.getRandomSeed())));
+            placeVMs(ps, strategies, actions, schedHeuristic, pla);
         }
 
+        List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
+                .filter(v -> v instanceof ShareableResource)
+                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
+                .collect(Collectors.toList());
+        Map<VM, Integer> costs = CShareableResource.getWeights(rp, rcs);
+        badActions = badActions.stream().sorted((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM())).collect(Collectors.toList());
+        goodActions = goodActions.stream().sorted((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM())).collect(Collectors.toList());
         placeVMs(ps, strategies, badActions, schedHeuristic, pla);
         placeVMs(ps, strategies, goodActions, schedHeuristic, pla);
 
@@ -146,12 +153,12 @@ public class CMinMTTR implements CObjective {
                 migs.add(((RelocatableVM) t).getRelocationMethod());
             }
         }
-        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.max_value_selector(), migs.toArray(new IntVar[migs.size()])));
+        strategies.add(ISF.custom(ISF.minDomainSize_var_selector(), ISF.max_value_selector(), migs.toArray(new IntVar[migs.size()])));
 
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
             IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
-            strategies.add(new IntStrategy(starts, new MyInputOrder<>(s), new IntDomainMin()));
+            strategies.add(new IntStrategy(starts, new MyFirstFail(s), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
