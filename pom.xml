@@ -23,7 +23,7 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>scheduler</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
     <name>scheduler</name>
     <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
@@ -41,7 +41,7 @@
         <module>api</module>
         <module>examples</module>
         <module>btrpsl</module>
-        <module>safeplace</module>
+        <!--<module>safeplace</module>-->
         <module>bench</module>
         <module>split</module>
     </modules>

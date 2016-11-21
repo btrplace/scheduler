@@ -25,6 +25,9 @@ import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
 /**
+ * Tuned version of choco FirstFail.
+ * Remember the index of the last instantiated variable to avoid to start iterating at 0.
+ * Stop with the first domain of size 2.
  * @author Fabien Hermenier
  */
 public class MyFirstFail implements VariableSelector<IntVar>, VariableEvaluator<IntVar> {
