@@ -356,16 +356,6 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     }
 
     @Override
-    public Proposition visitFalseFormula(@NotNull CstrSpecParser.FalseFormulaContext ctx) {
-        return Proposition.False;
-    }
-
-    @Override
-    public Proposition visitTrueFormula(@NotNull CstrSpecParser.TrueFormulaContext ctx) {
-        return Proposition.True;
-    }
-
-    @Override
     public Term visitTermOp(@NotNull CstrSpecParser.TermOpContext ctx) {
         Term t1 = (Term) visit(ctx.t1);
         Term t2 = (Term) visit(ctx.t2);

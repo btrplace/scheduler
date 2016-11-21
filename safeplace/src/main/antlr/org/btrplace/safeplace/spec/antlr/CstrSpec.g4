@@ -44,16 +44,11 @@ LT:'<';
 LEQ:'<=';
 GT:'>';
 GEQ:'>=';
-TRUE:'true';
-FALSE:'false';
 //NOT:'~';
 LBRACK: '[';
 RBRACK: ']';
 STRING: '"' (~('\\'|'"'))* '"';
 BEGIN: '^';
-DISCRETE: 'discrete';
-CORE: 'core';
-CONSTRAINT: 'constraint';
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
@@ -82,13 +77,7 @@ formula: LPARA formula RPARA   #protectedFormula
        |comparison #termComparison
        |ALL LPARA typedef RPARA formula #all
        |EXISTS LPARA typedef RPARA formula #exists
-       |TRUE        #trueFormula
-       |FALSE       #falseFormula
        |call        #cstrCall
        ;
        
 call: BEGIN? ID LPARA term (COMMA term)* RPARA;
-
-constraint: CORE? DISCRETE? CONSTRAINT ID LPARA (arg (COMMA arg)*)? RPARA DEF_CONTENT formula;
-
-spec: constraint+;
