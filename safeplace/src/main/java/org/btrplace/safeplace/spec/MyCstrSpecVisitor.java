@@ -159,18 +159,6 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     }
 
     @Override
-    public UserVar visitArg(CstrSpecParser.ArgContext ctx) {
-        Term parent = (Term) visit(ctx.term());
-        if (parent.type() instanceof Atomic) {
-            throw new SpecException2(filename, ctx.op.getCharPositionInLine(), "The right-hand side must be a collection");
-        }
-        String lbl = ctx.ID().getText();
-        UserVar v = new UserVar(lbl, ctx.op.getText(), parent);
-        symbols.put(v);
-        return v;
-    }
-
-    @Override
     public Proposition visitFormulaOp(@NotNull CstrSpecParser.FormulaOpContext ctx) {
         Proposition p1 = (Proposition) visit(ctx.f1);
         Proposition p2 = (Proposition) visit(ctx.f2);
