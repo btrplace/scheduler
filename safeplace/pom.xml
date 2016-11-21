@@ -63,6 +63,13 @@
             <artifactId>scheduler-choco</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.9.10</version>
+            <type>jar</type>
+            <optional>false</optional>
+        </dependency>
     </dependencies>
 
     <build>

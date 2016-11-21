@@ -36,6 +36,7 @@ import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
+import org.testng.Assert;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -146,7 +147,9 @@ public class TestCampaign implements Tester {
                 reporting.with(res);
             } while (limits.test(res));
 
-            return reporting.done();
+            int failures = reporting.done();
+            Assert.fail(failures + " test(s) failed");
+            return failures;
         } finally {
             store("]\n");
         }
