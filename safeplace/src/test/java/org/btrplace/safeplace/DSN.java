@@ -259,7 +259,7 @@ public class DSN {
         Files.deleteIfExists(path);
         for (boolean repair : new boolean[]{false, true}) {
                 System.out.println("--- Repair: " + repair + " ---");
-                Bench.reporting = new CSVReporting(path, repair ? "repair" : "rebuild");
+                Bench.reporting = new CSVReporting(path, repair ? "enabled" : "disabled");
                 System.out.println(sc.test(Bench.class).stream().mapToInt(x -> {x.schedulerParams().doRepair(repair); return x.go();}).sum());
         }
     }
