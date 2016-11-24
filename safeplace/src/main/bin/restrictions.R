@@ -24,17 +24,20 @@ ggsave(paste0(args[2],"-fine.pdf"),p, width=8, height=4)
 
 
 #Corse grain: error type wrt. the restriction
-fine <- dcast(dta, restriction ~ result, value.var="result")
-fine$total <- fine$failure + fine$falseNegative + fine$falsePositive + fine$success
-fine$falseNegative = fine$falseNegative / fine$total * 100
-fine$falsePositive = fine$falsePositive / fine$total * 100
-fine$failure = fine$failure / fine$total * 100
-fine <- fine[,c("restriction","failure","falseNegative","falsePositive")]
-fine <- melt(fine, by="restriction")
+fine <- dcast(dta, result  ~ restriction, value.var="result")
 
-p <- ggplot(fine, aes(restriction, value)) + geom_bar(aes(fill=variable), stat="identity")
-p <- p + theme_bw() + ylab("errors (%)")
-ggsave(paste0(args[2],"-coarse.pdf"),p, width=5, height=4)
+total = sum(fine$continuous)
+fine <- fine[!fine$result=="success",]
+fine <- melt(fine, c("result"))
+
+cat(length(unique(byCstr$constraint)), " constraint(s)\n")
+cat("continuous error rate : ", sum(fine[fine$variable=="continuous",]$value) / total * 100, "%\n")
+cat("discrete error rate : ", sum(fine[fine$variable=="discrete",]$value) / total * 100, "%\n")
+fine$value = fine$value / total * 100
+names(fine) <- c("result","verifier","value")
+p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=verifier), position="dodge")
+p <- p + theme_bw() + ylab("errors (%)") + scale_x_discrete("Error type", labels = c("crashes","over-filtering","under-filtering"))
+ggsave(paste0(args[2],"-coarse.pdf"),p, width=8, height=4)
 
 
 

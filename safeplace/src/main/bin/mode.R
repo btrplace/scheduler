@@ -14,7 +14,6 @@ names(dta)[names(dta)=="label"] <- "mode"
 ## Fine grain: number of errors per constraint wrt. the mode
 #Count per factor
 byCstr <- dcast(dta, mode + constraint ~ result, value.var="result")
-
 #error rate
 byCstr$errors <- (byCstr$failure + byCstr$falseNegative + byCstr$falsePositive) / (byCstr$failure + byCstr$falseNegative + byCstr$falsePositive + byCstr$success) * 100
 byCstr <- byCstr[,c("errors","constraint","mode")]
@@ -24,18 +23,21 @@ p <- p + theme_bw() + theme(axis.text.x  = element_text(angle=45,hjust=1))  + yl
 ggsave(paste0(args[2],"-fine.pdf"),p, width=8, height=4)
 
 
-#Corse grain: error type wrt. the mode
-fine <- dcast(dta, mode ~ result, value.var="result")
-fine$total <- fine$failure + fine$falseNegative + fine$falsePositive + fine$success
-fine$falseNegative = fine$falseNegative / fine$total * 100
-fine$falsePositive = fine$falsePositive / fine$total * 100
-fine$failure = fine$failure / fine$total * 100
-fine <- fine[,c("mode","failure","falseNegative","falsePositive")]
-fine <- melt(fine, by="mode")
+#Corse grain: error type wrt. the verifier
+fine <- dcast(dta, result  ~ mode, value.var="result")
+total = sum(fine$repair)
+fine <- fine[!fine$result=="success",]
+fine <- melt(fine, c("result"))
 
-p <- ggplot(fine, aes(mode, value)) + geom_bar(aes(fill=variable), stat="identity")
-p <- p + theme_bw()  + ylab("errors (%)")
-ggsave(paste0(args[2],"-coarse.pdf"),p, width=5, height=4)
+#Pretty
+cat(length(unique(byCstr$constraint)), " constraint(s)\n")
+cat("repair error rate : ", sum(fine[fine$variable=="repair",]$value) / total * 100, "%\n")
+cat("rebuild error rate : ", sum(fine[fine$variable=="rebuild",]$value) / total * 100, "%\n")
 
+fine$value = fine$value / total * 100
+names(fine) <- c("result","verifier","value")
 
+p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=verifier), position="dodge")
+p <- p + theme_bw() + ylab("errors (%)") + scale_x_discrete("Error type", labels = c("crashes","over-filtering","under-filtering"))
+ggsave(paste0(args[2],"-coarse.pdf"),p, width=8, height=4)
 

@@ -12,16 +12,19 @@ if [ -e $1/restriction.csv ]; then
     ${WD}/restrictions.R $1/restriction.csv ${o}/restriction
 fi
 
+if [ -e $1/verifier.csv ]; then
+    echo "-- Spec vs. Checkers --"
+    ${WD}/verifier.R $1/verifier.csv ${o}/verifier
+
+fi
+
+
 if [ -e $1/mode.csv ]; then
     echo    "-- Rebuild vs. Repair --"
     ${WD}/mode.R $1/mode.csv ${o}/mode
 fi
 
-if [ -e $1/verifier.csv ]; then
-    echo "-- Spec vs. Checkers --"
-    ${WD}/verifier.R $1/verifier.csv ${o}/verifier
-fi
-
+exit
 if [ -e $1/fuzzer.csv ]; then
     echo "-- Fuzzer --"
     ${WD}/fuzzer.R $1/fuzzer.csv ${o}/fuzzer.pdf
@@ -37,9 +40,25 @@ if [ -e $1/inv.csv ]; then
     ${WD}/specLength.R $1/inv.csv ${o}/inv-length.pdf
 fi
 
+if [ -e $1/func.csv ]; then
+    echo "-- Function length --"
+    ${WD}/funcLength.R $1/func.csv ${o}/func-length.pdf
+fi
+
+if [ -e $1/func.csv ]; then
+    echo "-- Function frequence --"
+    ${WD}/funcFreq.R $1/func-freq.csv ${o}/func-freq.pdf
+fi
+
+
 if [ -e $1/testing-speed.csv ]; then
     echo "-- Testing speed --"
-    ${WD}/testing-speed.R $1/testing-speed.csv ${o}/testing-speed.pdf
+    ${WD}/testing-speed.R $1/testing-speed-trans.csv ${o}/testing-trans
+fi
+
+if [ -e $1/testing-speed_2.csv ]; then
+    echo "-- Testing speed_2 --"
+    ${WD}/testing-speed.R $1/testing-speed-notrans.csv ${o}/testing-notrans
 fi
 
 if [ -e $1/sloc.csv ]; then

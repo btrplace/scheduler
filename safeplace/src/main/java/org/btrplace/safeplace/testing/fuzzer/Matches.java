@@ -18,14 +18,26 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
+import org.btrplace.json.JSON;
+import org.btrplace.json.model.InstanceConverter;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Model;
+import org.btrplace.model.constraint.Preserve;
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.plan.DefaultReconfigurationPlan;
+import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.Allocate;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.Result;
 import org.btrplace.safeplace.testing.TestCase;
 import org.btrplace.safeplace.testing.TestCaseResult;
 import org.btrplace.safeplace.testing.Tester;
+import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -64,24 +76,40 @@ public class Matches implements Predicate<TestCase> {
 
         if (tester != null) {
             for (Constraint c : cstrs) {
-                TestCase tc = new TestCase(o.instance(), o.plan(), c);
+                TestCase tc = purge(o, c);
                 TestCaseResult res = tester.test(tc);
                 if (res.result() != Result.success) {
                     duration += System.currentTimeMillis();
-                    System.out.println("Fail for " + c.id());
-                /*System.out.println(tc.instance().getSatConstraints());
-                System.out.println(tc.instance().getModel().getMapping());
-                System.out.println(tc.plan());
-                System.out.println("----");*/
+                    InstanceConverter ic = new InstanceConverter();
+                    ic.getConstraintsConverter().register(new ScheduleConverter());
+                    /*try {
+                        System.out.println(ic.toJSON(tc.instance()));
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                    }*/
                     return false;
-                } else {
-                    System.out.println("Ok for " + c.id());
                 }
             }
         }
         duration += System.currentTimeMillis();
         return true;
     }
+
+    private TestCase purge(TestCase o, Constraint c) {
+        //Get rid of all the views (optional so subject to un-awaited fault injection
+        /*Model m = o.instance().getModel();
+        m.getViews().clear();
+        o.plan().getOrigin().getViews().clear();
+        for (Iterator<SatConstraint> ite = o.instance().getSatConstraints().iterator(); ite.hasNext(); ) {
+            SatConstraint cstr = ite.next();
+            if (cstr instanceof Preserve) {
+                ite.remove();
+            }
+        }
+        */
+        return new TestCase(o.instance(), o.plan(), c);
+    }
+
 
     public long lastDuration() {
         return duration;

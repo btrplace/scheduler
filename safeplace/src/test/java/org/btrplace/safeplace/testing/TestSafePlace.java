@@ -20,10 +20,12 @@ package org.btrplace.safeplace.testing;
 
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.SpecScanner;
+import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
@@ -215,6 +217,7 @@ public class TestSafePlace {
                   .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5));
         c.limits().tests(100).failures(1);
         c.constraint("resourceCapacity");
+        c.fuzz().restriction(EnumSet.of(Restriction.continuous, Restriction.discrete));
         c.reporting().capture(reporting -> reporting.result() != Result.success);
         assertEquals(c.reporting().done(), 0);
     }

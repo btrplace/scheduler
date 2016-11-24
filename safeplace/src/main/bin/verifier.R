@@ -25,25 +25,20 @@ ggsave(paste0(args[2],"-fine.pdf"),p, width=8, height=4)
 
 
 #Corse grain: error type wrt. the verifier
-fine <- dcast(dta, verifier ~ result, value.var="result")
-fine$total <- fine$failure + fine$falseNegative + fine$falsePositive + fine$success
-fine$errs <- fine$failure + fine$falseNegative + fine$falsePositive
+fine <- dcast(dta, result  ~ verifier, value.var="result")
+total = sum(fine$checker)
+fine <- fine[!fine$result=="success",]
+fine <- melt(fine, c("result"))
 
-e1 = fine[which(fine$verifier == "checker"),]$errs
-e2 = fine[which(fine$verifier == "spec"),]$errs
-cat("Bugs with the checkers: ",e1,"\n")
-cat("Bugs with safeplace: ",e2,"\n")
-cat("Improvement: ",e2/e1,"\n")
+cat(length(unique(byCstr$constraint)), " constraint(s)\n")
+cat("spec error rate : ", sum(fine[fine$variable=="spec",]$value) / total * 100, "%\n")
+cat("checker error rate : ", sum(fine[fine$variable=="checker",]$value) / total * 100, "%\n")
+fine$value = fine$value / total * 100
+names(fine) <- c("result","verifier","value")
 
-fine$falseNegative = fine$falseNegative / fine$total * 100
-fine$falsePositive = fine$falsePositive / fine$total * 100
-fine$failure = fine$failure / fine$total * 100
-fine <- fine[,c("verifier","failure","falseNegative","falsePositive")]
-fine <- melt(fine, by="verifier")
-
-p <- ggplot(fine, aes(verifier, value)) + geom_bar(aes(fill=variable), stat="identity")
-p <- p + theme_bw() + ylab("errors (%)")
-ggsave(paste0(args[2],"-coarse.pdf"),p, width=5, height=4)
+p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=verifier), position="dodge")
+p <- p + theme_bw() + ylab("errors (%)") + scale_x_discrete("Error type", labels = c("crashes","over-filtering","under-filtering"))
+ggsave(paste0(args[2],"-coarse.pdf"),p, width=8, height=4)
 
 
 

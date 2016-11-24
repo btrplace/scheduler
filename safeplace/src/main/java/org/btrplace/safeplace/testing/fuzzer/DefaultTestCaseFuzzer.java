@@ -61,6 +61,10 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
 
     private int iterations;
 
+    private List<Constraint> cores, sides;
+
+    private ConstraintFuzzer cstrFuzzer;
+
     public DefaultTestCaseFuzzer(ReconfigurationPlanFuzzer f) {
         rnd = new Random();
         fuzzer = f;
@@ -99,6 +103,11 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
             return new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs()));
         }
         throw new IllegalArgumentException("No domain value attached to argument '" + v.label() + "'");
+    }
+
+    public ConstraintFuzzer constraint(String c) {
+        cstrFuzzer = new ConstraintFuzzer(c, cores, sides);
+        return cstrFuzzer;
     }
 
     @Override

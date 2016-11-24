@@ -39,6 +39,7 @@ public class Bench {
     public static int scale = 1;
 
     public static int population = 100;
+    public static boolean transitions = true;
 
     public enum Mode {SAVE, REPLAY, DEFAULT};
 
@@ -66,7 +67,11 @@ public class Bench {
         tc.limits().tests(population);
         tc.constraint(cstr);
         tc.fuzz().restriction(EnumSet.allOf(Restriction.class));
-        tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
+        if (transitions) {
+            tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
+        } else {
+            tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0).dstOffNodes(0).srcVMs(0, 1, 0).dstVMs(0, 1, 0);
+        }
         tc.fuzz().with("nb", 1, 10);
 
         if (mode == Mode.SAVE) {
