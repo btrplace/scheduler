@@ -77,7 +77,7 @@ public class SpecVerifier implements Verifier {
             fillArguments(mo, tc);
             SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, tc.plan());
             try {
-                System.out.println("Verify " + tc.constraint().id() + "(" + tc.args() + ")");
+                //System.out.println("Verify " + tc.constraint().id() + "(" + tc.args() + ")");
                 Action a = spc.check(good);
                 if (a != null) {
                     //System.out.println("Fail at " + a);
@@ -90,7 +90,7 @@ public class SpecVerifier implements Verifier {
                 }
                 return VerifierResult.newError(e);
             } finally {
-                System.out.println("Verif done");
+                //System.out.println("Verif done");
             }
             return VerifierResult.newOk();
         }

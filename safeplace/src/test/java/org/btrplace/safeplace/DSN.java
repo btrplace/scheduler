@@ -276,7 +276,7 @@ public class DSN {
         Bench.mode = Bench.Mode.REPLAY;
         Bench.population = 100;
         Bench.reporting = new StoredReporting(root).verbosity(3).capture(x -> !x.result().equals(Result.success));
-        Bench.scale = 10;
+        Bench.scale = 5;
 
         System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
     }

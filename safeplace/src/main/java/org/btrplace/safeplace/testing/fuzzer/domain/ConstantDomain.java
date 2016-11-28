@@ -65,7 +65,7 @@ public class ConstantDomain<T> implements Domain<T> {
 
     @Override
     public List<T> randomSubset() {
-        return values().stream().filter(i -> rnd.nextBoolean()).collect(Collectors.toList());
+        return values().stream().filter(i -> rnd.nextInt(3) == 2).collect(Collectors.toList());
     }
 
     @Override

@@ -45,7 +45,7 @@ public class ReconfigurationSimulator {
 
 
     public void start(MigrateVM a) {
-        System.out.println("Start " + a);
+        //System.out.println("Start " + a);
         mo.getMapping().state(a.getVM(), VMStateType.Type.migrating);
         mo.getMapping().host(a.getVM(), a.getDestinationNode());
         //Hosted also on distinct node (but running on the old one)
@@ -53,7 +53,7 @@ public class ReconfigurationSimulator {
 
 
     public void end(MigrateVM a) {
-        System.out.println("End " + a);
+        //System.out.println("End " + a);
         mo.getMapping().state(a.getVM(), VMStateType.Type.running);
         mo.getMapping().activateOn(a.getVM(), a.getDestinationNode());
         //No longer hosted on the source node

@@ -112,7 +112,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         if (min != max) {
             duration = rnd.nextInt(max - min) + min;
         }
-        int st = makeSpan - duration;
+        int st = rnd.nextInt(makeSpan - duration + 1);
         return new int[]{st, st + duration};
     }
 
