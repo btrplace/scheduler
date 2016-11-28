@@ -21,6 +21,7 @@ package org.btrplace.model.constraint.migration;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.SideConstraint;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.Objects;
  *
  * @author Vincent Kherbache
  */
+@SideConstraint(args = {"vs <: vms"}, inv = "!(v : vs) !(a,b : actions(v)) begin(a) = begin(b)")
 public class Sync implements SatConstraint {
 
     private Collection<VM> vms;

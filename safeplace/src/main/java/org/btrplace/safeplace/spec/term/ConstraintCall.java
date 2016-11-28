@@ -32,8 +32,6 @@ import java.util.List;
  */
 public class ConstraintCall extends FunctionCall<Boolean> implements Proposition {
 
-    private Function<Boolean> c;
-
     public ConstraintCall(Function<Boolean> c, List<Term> args) {
         super(c, args, Moment.any);
     }
@@ -51,7 +49,7 @@ public class ConstraintCall extends FunctionCall<Boolean> implements Proposition
             ins.add(o);
         }
         m.saveStack();
-        Boolean ret = c.eval(m, ins);
+        Boolean ret = c.eval(m, ins.toArray());
         m.restoreStack();
         return ret;
     }

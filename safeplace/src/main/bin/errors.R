@@ -16,8 +16,19 @@ dta$failure <- dta$failure / dta$total * 100
 dta$falseNegative <- dta$falseNegative / dta$total * 100
 dta$falsePositive <- dta$falsePositive / dta$total * 100
 dta <- dta[,c("constraint","falseNegative","falsePositive","failure")]
-dta <- melt(dta, by="constraint")
+names(dta) <- c("constraint","over-filtering","under-filtering","crashes")
 
-p <- ggplot(dta, aes(constraint, value)) + geom_bar(aes(fill=variable), stat="identity")
-p <- p + theme_bw() + theme(axis.text.x  = element_text(angle=45,hjust=1))  + ylim(0, 100) + ylab("percentage")
-ggsave(args[2],p, width=8, height=4)
+dta <- melt(dta, by="constraint")
+p <- ggplot(dta, aes(constraint, value)) + geom_bar(aes(fill=variable), stat="identity") + scale_fill_brewer(name="error")
+
+p <- p + theme_bw() + ylim(0, 100) + ylab("defect rate") + xlab("constraint")
+
+#theme(axis.text.x  = element_text(angle=45,hjust=1))
+
+big = element_text(size = 16, family="Times")
+med = element_text(size = 12, family="Times")
+lbls = element_text(angle=45,hjust=1, size=11, family="Times")
+
+p <- p + theme(panel.grid.minor = element_blank(), legend.position = c(0.85, 0.65), axis.text = med, axis.text.x = lbls, axis.title = big, axis.title = big, legend.title=med, legend.text=med)
+
+ggsave(args[2],p, width=9, height=4)

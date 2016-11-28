@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ public class Replay implements TestCaseFuzzer {
 
     private List<Constraint> constraints;
 
+    private Set<Restriction> restriction = EnumSet.allOf(Restriction.class);
     public Replay(Path path) throws IOException {
 
         in = Files.newReader(path.toFile(), Charset.defaultCharset());
@@ -86,7 +88,12 @@ public class Replay implements TestCaseFuzzer {
 
     @Override
     public TestCaseFuzzer restriction(Set<Restriction> domain) {
-        throw new UnsupportedOperationException("Not available in replay mode");
+
+        if (domain.size() != 1) {
+            throw new UnsupportedOperationException("Not available in replay mode");
+        }
+        restriction = domain;
+        return this;
     }
 
     @Override
@@ -123,6 +130,17 @@ public class Replay implements TestCaseFuzzer {
                 return null;
             }
             TestCase tc = TestCase.fromJSON(constraints, json);
+            if (restriction.size() == 1) {
+                if (restriction.contains(Restriction.continuous)) {
+                    if (!tc.impl().setContinuous(true)) {
+                        throw new IllegalArgumentException("Cannot be continuous");
+                    }
+                } else {
+                    if (!tc.impl().setContinuous(false)) {
+                        throw new IllegalArgumentException("Cannot be discrete");
+                    }
+                }
+            }
             return tc;
         } catch (IOException | ParseException | JSONConverterException e) {
             throw new RuntimeException(e);

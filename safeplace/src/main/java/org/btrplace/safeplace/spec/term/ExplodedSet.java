@@ -44,10 +44,11 @@ public class ExplodedSet implements Term<Set> {
 
     @Override
     public Set eval(Context mo, Object... args) {
-        if (cache == null) {
+        /*if (cache == null) {
             cache = terms.stream().map(t -> t.eval(mo)).collect(Collectors.toSet());
         }
-        return cache;
+        return cache;*/
+        return terms.stream().map(t -> t.eval(mo)).collect(Collectors.toSet());
     }
 
     @Override

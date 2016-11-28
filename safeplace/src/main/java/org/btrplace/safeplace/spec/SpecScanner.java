@@ -85,6 +85,7 @@ public class SpecScanner {
                 functions.add(c.newInstance());
             } catch (Exception e) {
                 System.err.println(c);
+                throw new RuntimeException(e);
             }
         });
 

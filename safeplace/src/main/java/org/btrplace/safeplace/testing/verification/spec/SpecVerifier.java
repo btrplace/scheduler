@@ -73,12 +73,14 @@ public class SpecVerifier implements Verifier {
 
         if (tc.continuous()) {
             Context mo = new Context(tc.instance().getModel());
+            mo.root = new Context(tc.instance().getModel().copy());
             fillArguments(mo, tc);
             SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, tc.plan());
-            //System.out.println(tc.plan());
             try {
+                System.out.println("Verify " + tc.constraint().id() + "(" + tc.args() + ")");
                 Action a = spc.check(good);
                 if (a != null) {
+                    //System.out.println("Fail at " + a);
                     return new VerifierResult(false, a);
                 }
 
@@ -87,9 +89,9 @@ public class SpecVerifier implements Verifier {
                     return VerifierResult.newKo(e.getMessage());
                 }
                 return VerifierResult.newError(e);
-            } /*finally {
+            } finally {
                 System.out.println("Verif done");
-            }*/
+            }
             return VerifierResult.newOk();
         }
 

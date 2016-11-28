@@ -22,7 +22,6 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.Constraint;
-import org.btrplace.safeplace.testing.fuzzer.ConstraintFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.DefaultTestCaseFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.TestCaseFuzzer;
@@ -37,7 +36,6 @@ import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
-import org.testng.Assert;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -122,7 +120,7 @@ public class TestCampaign implements Tester {
                 try {
                     if (writer != null) {
                         String json = tc.toJSON();
-                    try {
+                    /*try {
                         TestCase cpy = TestCase.fromJSON(cstrs, json);
                         if (!cpy.equals(tc)) {
                             System.err.println("DIFF");
@@ -130,7 +128,7 @@ public class TestCampaign implements Tester {
                         }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
-                    }
+                    }*/
                         store(json + "\n");
                     }
                 } catch (JSONConverterException ex) {
@@ -239,8 +237,10 @@ public class TestCampaign implements Tester {
 
     private void checkConsistency(ReconfigurationPlan got, TestCase tc) {
         if (got != null && !tc.plan().equals(got)) {
+            System.err.println("--- Instance");
                 System.err.println(tc.instance().getSatConstraints().stream().map(SatConstraint::toString).collect(Collectors.joining("\n\t","\t","")));
-                System.err.println("Bad resulting plan. Expected:\n" + tc.plan().getOrigin().getMapping() + "\n" + tc.plan() + "\nGot:\n" + got.getOrigin().getMapping() + "\n" + got);
+            System.err.println("---");
+            System.err.println("Bad resulting plan. Expected:\n" + tc.plan().getOrigin().getViews() + "\n" + tc.plan() + "\nGot:\n" + got.getOrigin().getViews() + "\n" + got);
                 System.exit(1);
         }
     }

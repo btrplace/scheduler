@@ -12,6 +12,11 @@ cat("median sloc. per legacy unit test", m2,"\n")
 cat("Reduction factor: ",factor,"\n")
 
 p <- ggplot(d, aes(sloc, color=testing)) + stat_ecdf(geom="step")
-p <- p + xlab("length (loc.)") + ylab("ratio") + theme_bw()
+p <- p + xlab("length (sloc.)") + ylab("ratio") + theme_bw()
 p <- p + theme(legend.justification=c(1,0), legend.position=c(1,0))
+
+big = element_text(size = 19, family="Times")
+med = element_text(size = 16, family="Times")
+p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)
+
 ggsave(args[2],p,width=6,height=4)

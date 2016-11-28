@@ -43,9 +43,10 @@ public class Bench {
 
     public enum Mode {SAVE, REPLAY, DEFAULT};
 
+    public static String source = ".";
     public static Mode mode = Mode.DEFAULT;
 
-    public static Reporting reporting = new DefaultReporting().verbosity(2).capture(x -> false);
+    public static Reporting reporting = new DefaultReporting().verbosity(3).capture(x -> false);
 
     public static TestCampaign thousand(TestCampaign tc, String cstr) {
         return thousand(tc, cstr, new SpecVerifier());
@@ -58,7 +59,7 @@ public class Bench {
 
         if (mode == Mode.REPLAY) {
             try {
-                tc.fuzzer(new Replay(Paths.get(cstr + ".json")));
+                tc.fuzzer(new Replay(Paths.get(source, cstr + ".json")));
             } catch (IOException e) {
                 Assert.fail(e.getMessage());
             }
@@ -75,7 +76,7 @@ public class Bench {
         tc.fuzz().with("nb", 1, 10);
 
         if (mode == Mode.SAVE) {
-            tc.save(cstr + ".json");
+            tc.save(Paths.get(source, cstr + ".json").toString());
         }
         return tc;
     }
@@ -180,7 +181,7 @@ public class Bench {
         thousand(c, "offline");
     }
 
-    @CstrTest(groups = {"resource", "sides"})
+    @CstrTest(groups = {"resource", "sides", "rc"})
     public void testResource(TestCampaign c) {
         thousand(c, "shareableresource");
         if (Bench.mode != Mode.REPLAY) {
@@ -189,13 +190,13 @@ public class Bench {
         }
     }
 
-    @CstrTest(groups = {"resource","sides"})
+    @CstrTest(groups = {"resource", "sides", "capacity"})
     public void testResourceCapacity(TestCampaign c) {
         thousand(c, "resourceCapacity");
         if (Bench.mode != Mode.REPLAY) {
             c.fuzz().with("id", "cpu")
                     .with("qty", 1, 5)
-                    .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5));
+                    .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(1));
         }
     }
 }

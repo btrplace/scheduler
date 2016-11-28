@@ -194,6 +194,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                     if (!visitAndThrowOnViolation(a, ok)) {
                         return a;
                     }
+
                     visitEvents(a, ok, Action.Hook.POST);
                     a = ends.peek();
                 }
@@ -229,6 +230,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     public boolean isConsistent(Proposition ok) {
         Context mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
+        System.out.println("ok");
         //System.out.println(ok + ": " + bOk);
         //System.out.println("--> " + mo.getMapping());
         return bOk;

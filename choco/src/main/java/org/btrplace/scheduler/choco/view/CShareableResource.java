@@ -319,6 +319,7 @@ public class CShareableResource implements ChocoView {
                     return false;
                 }
             }
+
         }
         return linkVirtualToPhysicalUsage();
     }
@@ -342,7 +343,7 @@ public class CShareableResource implements ChocoView {
                 for (Action a : p.getActions()) {
                     if (a instanceof RunningVMPlacement) {
                         RunningVMPlacement tmp = (RunningVMPlacement) a;
-                        if (tmp.getVM() == dVM) {
+                        if (tmp.getVM().equals(dVM)) {
                             if (a instanceof MigrateVM) {
                                 //For a migrated VM, we allocate once the migration over
                                 insertAllocateEvent(a, Action.Hook.POST, dVM);

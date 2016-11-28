@@ -31,6 +31,7 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.term.Constant;
+import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
 import java.io.StringReader;
@@ -143,10 +144,15 @@ public class TestCase {
         if (impl() != null && !impl().isContinuous()) {
             restriction = "discrete ";
         }
-        return "Constraint: " + restriction + cstr.toString(args) + "\n"
+        String res = "Constraint: " + restriction + cstr.toString(args) + "\n"
                 + instance.getModel().getMapping() + "\n"
-                + instance.getModel().getViews().stream().map(ModelView::toString).collect(Collectors.joining("\n","","\n"))
-                + plan + "\n";
+                + instance.getModel().getViews().stream().map(ModelView::toString).collect(Collectors.joining("\n", "", "\n"));
+
+        if (continuous() || !plan.isApplyable()) {
+            return res + "Plan:\n" + plan + "\n";
+        } else {
+            return res + "Result:\n" + plan.getResult().getMapping() + "\n";
+        }
     }
 
     public String toJSON() throws JSONConverterException {
@@ -176,7 +182,13 @@ public class TestCase {
         InstanceConverter ic = new InstanceConverter();
         ic.getConstraintsConverter().register(new ScheduleConverter());
         ReconfigurationPlanConverter rc = new ReconfigurationPlanConverter();
-        TestCase tc = new TestCase(ic.fromJSON(o.getAsString("instance")), rc.fromJSON(o.getAsString("plan")), cstr);
+
+        Instance i = ic.fromJSON(o.getAsString("instance"));
+        ReconfigurationPlan plan = rc.fromJSON(o.getAsString("plan"));
+
+        DefaultReconfigurationPlanFuzzer f = new DefaultReconfigurationPlanFuzzer();
+
+        TestCase tc = new TestCase(i, plan, cstr);
         List<Constant> l = new ArrayList<>();
         for(Object x : (JSONArray) o.get("args")) {
             l.add(Constant.fromJSON((JSONObject) x));

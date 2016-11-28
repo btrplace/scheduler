@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class FunctionCall<T> implements Term<T> {
 
-    private Function<T> c;
+    protected Function<T> c;
 
     private List<Term> args;
 
@@ -74,6 +74,10 @@ public class FunctionCall<T> implements Term<T> {
         int i = 0;
         for (Term t : args) {
             values[i++] = t.eval(m);
+        }
+
+        if (moment.equals(Moment.begin)) {
+            return c.eval(m.root, values);
         }
         return c.eval(m, values);
     }

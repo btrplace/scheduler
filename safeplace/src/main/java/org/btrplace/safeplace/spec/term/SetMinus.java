@@ -38,10 +38,14 @@ public class SetMinus extends Minus<Set> {
 
     @Override
     public Set eval(Context mo, Object... args) {
-        Collection o1 = a.eval(mo);
-        Collection o2 = b.eval(mo);
+        Collection o1 = a.eval(mo, args);
+        Collection o2 = b.eval(mo, args);
+
         Set l = new HashSet();
+        //System.out.println(a + " <-> " + o1);
+        //System.out.println(b + " <-> " + o2);
         o1.stream().filter(o -> !o2.contains(o)).forEach(l::add);
+        //System.out.println(o1 + " - " + o2 + " = " + l);
         return l;
     }
 }

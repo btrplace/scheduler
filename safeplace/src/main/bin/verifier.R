@@ -37,7 +37,11 @@ fine$value = fine$value / total * 100
 names(fine) <- c("result","verifier","value")
 
 p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=verifier), position="dodge")
-p <- p + theme_bw() + ylab("errors (%)") + scale_x_discrete("Error type", labels = c("crashes","over-filtering","under-filtering"))
+p <- p + theme_bw() + ylab("defect rate") + scale_x_discrete("defect", labels = c("crashes","over-filtering","under-filtering"))
+
+big = element_text(size = 19, family="Times")
+med = element_text(size = 16, family="Times")
+p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)
 ggsave(paste0(args[2],"-coarse.pdf"),p, width=8, height=4)
 
 
