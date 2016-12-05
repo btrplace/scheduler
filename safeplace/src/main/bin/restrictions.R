@@ -8,6 +8,7 @@ dta <- read.table(args[1], header=T, sep=";",quote="")
 
 #Get rid of useless elements there
 dta <- dta[,c("constraint","label","result")]
+dta$label = with(dta, factor(label, levels = rev(levels(label))))
 names(dta)[names(dta)=="label"] <- "restriction"
 
 
@@ -31,14 +32,13 @@ fine <- fine[!fine$result=="success",]
 fine <- melt(fine, c("result"))
 
 cat(length(unique(byCstr$constraint)), " constraint(s)\n")
-cat("continuous error rate : ", sum(fine[fine$variable=="continuous",]$value) / total * 100, "%\n")
-cat("discrete error rate : ", sum(fine[fine$variable=="discrete",]$value) / total * 100, "%\n")
-fine$value = fine$value / total * 100
+cat("continuous error : ", sum(fine[fine$variable=="continuous",]$value), "%\n")
+cat("discrete error : ", sum(fine[fine$variable=="discrete",]$value), "%\n")
 names(fine) <- c("result","restriction","value")
 print(fine)
 p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=restriction), position="dodge")
-p <- p + theme_bw() + ylab("defect rate") + scale_x_discrete("defect", labels = c("crashes","over-filtering","under-filtering"))
-
+p <- p + theme_bw() + ylab("defects") + scale_x_discrete("defect", labels = c("crashes","over-filtering","under-filtering"))
+p <- p + scale_fill_manual(values = c("#bdbdbd","#de2d26"))
 big = element_text(size = 19, family="Times")
 med = element_text(size = 16, family="Times")
 p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)

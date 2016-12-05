@@ -261,8 +261,10 @@ public class DSN {
     @Test
     public void errors() throws Exception {
         TestScanner sc = newScanner();
-        Bench.population = 500;
-        Bench.scale = 10;
+        Bench.source = "xp-dsn";
+        Bench.mode = Bench.Mode.REPLAY;
+        Bench.population = 1000;
+        Bench.scale = 5;
         Path p = Paths.get(root, "errors.csv");
         Files.deleteIfExists(p);
         Bench.reporting = new CSVReporting(p, "");
@@ -274,7 +276,7 @@ public class DSN {
         TestScanner sc = newScanner();
         Bench.source = "xp-dsn";
         Bench.mode = Bench.Mode.REPLAY;
-        Bench.population = 100;
+        Bench.population = 1000;
         Bench.reporting = new StoredReporting(root).verbosity(3).capture(x -> !x.result().equals(Result.success));
         Bench.scale = 5;
 

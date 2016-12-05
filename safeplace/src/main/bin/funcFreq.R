@@ -13,4 +13,4 @@ big = element_text(size = 19, family="Times")
 med = element_text(size = 16, family="Times")
 p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)
 
-ggsave(args[2],p,width=4,height=4)
+ggsave(args[2],p,width=4,height=3)

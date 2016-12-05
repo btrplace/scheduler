@@ -19,8 +19,10 @@
 package org.btrplace.safeplace.testing.reporting;
 
 import com.google.common.io.Files;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.Metrics;
+import org.btrplace.safeplace.testing.TestCase;
 import org.btrplace.safeplace.testing.TestCaseResult;
 
 import java.io.File;
@@ -28,7 +30,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -127,7 +131,7 @@ public class StoredReporting implements Reporting {
             globalMetrics = globalMetrics.plus(r.metrics());
         }
         if (printPredicate.test(r)) {
-            toPrint.add(r);
+                toPrint.add(r);
         }
         if (verbosity == 99) {
             System.out.println(r);

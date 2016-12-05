@@ -36,16 +36,16 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class SpecVerifier implements Verifier {
+public class SpecVerifier2 implements Verifier {
 
     private List<Domain> vDoms;
 
 
-    public SpecVerifier(List<Domain> vDoms) {
+    public SpecVerifier2(List<Domain> vDoms) {
         this.vDoms = vDoms;
     }
 
-    public SpecVerifier() {
+    public SpecVerifier2() {
         this(Collections.emptyList());
     }
 
@@ -72,20 +72,25 @@ public class SpecVerifier implements Verifier {
         Proposition good = tc.constraint().proposition();
 
         if (tc.continuous()) {
-
             Context mo = new Context(tc.instance().getModel());
             mo.root = new Context(tc.instance().getModel().copy());
             fillArguments(mo, tc);
-            Boolean res = good.eval(mo);
-            if (!Boolean.TRUE.equals(res)) {
-                return VerifierResult.newKo("Failure at the initial stage");
-            }
-            ReconfigurationSimulator2 sim = new ReconfigurationSimulator2(mo, tc.plan());
-            int x = sim.start(good);
-            if (x >= 0) {
-                for (Action a : tc.plan().getActions()) {
+            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, tc.plan());
+            try {
+                //System.out.println("Verify " + tc.constraint().id() + "(" + tc.args() + ")");
+                Action a = spc.check(good);
+                if (a != null) {
+                    //System.out.println("Fail at " + a);
+                    return new VerifierResult(false, a);
                 }
-                return VerifierResult.newKo("Failure at time '" + x + "'");
+
+            } catch (Exception e) {
+                if ("Failure at the beginning of the plan".equals(e.getMessage())) {
+                    return VerifierResult.newKo(e.getMessage());
+                }
+                return VerifierResult.newError(e);
+            } finally {
+                //System.out.println("Verif done");
             }
             return VerifierResult.newOk();
         }
@@ -100,7 +105,6 @@ public class SpecVerifier implements Verifier {
 
         }
         Context mo = new Context(res);
-        mo.root = new Context(tc.instance().getModel().copy());
         fillArguments(mo, tc);
 
         Boolean bOk = good.eval(mo);

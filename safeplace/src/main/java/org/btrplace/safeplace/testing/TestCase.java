@@ -112,25 +112,12 @@ public class TestCase {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TestCase testCase = (TestCase) o;
-        /*System.err.println("----");
-        if (!Objects.equals(instance, testCase.instance)) {
-            System.err.println(instance.getSatConstraints() + "\n" + testCase.instance.getSatConstraints());
-        }
-        System.err.println(Objects.equals(plan, testCase.plan));
-        System.err.println(Objects.equals(cstr, testCase.cstr));
-        System.err.println(Objects.equals(args, testCase.args));
-        if (!Objects.equals(impl, testCase.impl)) {
-            System.err.println(impl + "\n" + testCase.impl());
-        }*/
-
-        //System.err.println(Objects.equals(groups, testCase.groups));
 
         return Objects.equals(instance, testCase.instance) &&
                 Objects.equals(plan, testCase.plan) &&
                 Objects.equals(cstr, testCase.cstr) &&
                 Objects.equals(args, testCase.args) &&
-                Objects.equals(impl, testCase.impl) &&
-                Objects.equals(groups, testCase.groups);
+                Objects.equals(impl, testCase.impl);
     }
 
     @Override

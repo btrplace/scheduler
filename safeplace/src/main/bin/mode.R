@@ -19,7 +19,7 @@ byCstr$errors <- (byCstr$failure + byCstr$falseNegative + byCstr$falsePositive) 
 byCstr <- byCstr[,c("errors","constraint","repair")]
 
 p <- ggplot(byCstr, aes(constraint, errors)) + geom_bar(aes(fill=repair), position="dodge", stat="identity")
-p <- p + theme_bw() + theme(axis.text.x  = element_text(angle=45,hjust=1))  + ylim(0, 100)  + ylab("errors (%)")
+p <- p + theme_bw() + theme(axis.text.x  = element_text(angle=45,hjust=1))  + ylab("errors (%)")
 ggsave(paste0(args[2],"-fine.pdf"),p, width=8, height=4)
 
 
@@ -31,14 +31,13 @@ fine <- melt(fine, c("result"))
 
 #Pretty
 cat(length(unique(byCstr$constraint)), " constraint(s)\n")
-cat("repair on error rate : ", sum(fine[fine$variable=="enabled",]$value) / total * 100, "%\n")
-cat("repair off error rate : ", sum(fine[fine$variable=="disabled",]$value) / total * 100, "%\n")
+cat("repair on error : ", sum(fine[fine$variable=="enabled",]$value), "%\n")
+cat("repair off error : ", sum(fine[fine$variable=="disabled",]$value), "%\n")
 
-fine$value = fine$value / total * 100
 names(fine) <- c("result","repair","value")
 
 p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=repair), position="dodge")
-p <- p + theme_bw() + ylab("defect rate") + scale_x_discrete("Error", labels = c("crashes","over-filtering","under-filtering"))
+p <- p + theme_bw() + ylab("defect") + scale_x_discrete("Error", labels = c("crashes","over-filtering","under-filtering"))
 
 big = element_text(size = 19, family="Times")
 med = element_text(size = 16, family="Times")
