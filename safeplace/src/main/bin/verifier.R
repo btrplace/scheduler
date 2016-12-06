@@ -38,11 +38,9 @@ names(fine) <- c("result","oracle","value")
 
 p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=oracle), position="dodge")
 p <- p + theme_bw() + ylab("defects") + scale_x_discrete("defect", labels = c("crashes","over-filtering","under-filtering"))
-p <- p + scale_fill_manual(values = c("#f0f0f0", "#31a354"))
+p <- p + scale_fill_manual(values = c("#bdbdbd", "#31a354"))
 big = element_text(size = 19, family="Times")
 med = element_text(size = 16, family="Times")
 p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)
 ggsave(paste0(args[2],"-coarse.pdf"),p, width=8, height=4)
-
-
 
