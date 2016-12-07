@@ -22,7 +22,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -69,7 +68,6 @@ public class VectorPacking extends Packing {
     @Override
     public boolean beforeSolve(ReconfigurationProblem p) {
         super.beforeSolve(p);
-        Solver solver = p.getSolver();
         int[][] aSizes = new int[dim][sizes.get(0).length];
         IntVar[][] aLoads = new IntVar[dim][];
         String[] aNames = new String[dim];
@@ -90,7 +88,7 @@ public class VectorPacking extends Packing {
             }
         }
         if (!p.getFutureRunningVMs().isEmpty()) {
-            solver.post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
+            p.getModel().post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
         }
         return true;
     }

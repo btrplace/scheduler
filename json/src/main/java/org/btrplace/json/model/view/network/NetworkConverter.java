@@ -229,7 +229,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      * @return the Switch
      */
     public Switch switchFromJSON(JSONObject o) throws JSONConverterException {
-        return new Switch(requiredInt(o, "id"), requiredInt(o, CAPACITY_LABEL));
+        return new Switch(requiredInt(o, "id"), readCapacity(o));
     }
 
     /**
@@ -239,8 +239,16 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      */
     public void switchesFromJSON(Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {
-            net.newSwitch(requiredInt((JSONObject) o, "id"), requiredInt((JSONObject) o, CAPACITY_LABEL));
+            net.newSwitch(requiredInt((JSONObject) o, "id"), readCapacity((JSONObject) o));
         }
+    }
+
+    private int readCapacity(JSONObject o) throws JSONConverterException {
+        int i = requiredInt(o, CAPACITY_LABEL);
+        if (i < 0) {
+            i = Integer.MAX_VALUE;
+        }
+        return i;
     }
 
     /**
@@ -277,7 +285,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      */
     public void linkFromJSON(Model mo, Network net, JSONObject o) throws JSONConverterException {
         net.connect(requiredInt(o, "id"),
-                requiredInt(o, CAPACITY_LABEL),
+                readCapacity(o),
                 getSwitch(net, requiredInt(o, SWITCH_LABEL)),
                 physicalElementFromJSON(mo, net, (JSONObject) o.get("physicalElement"))
         );

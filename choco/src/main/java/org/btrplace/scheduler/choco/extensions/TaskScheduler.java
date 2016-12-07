@@ -160,7 +160,7 @@ public class TaskScheduler extends Constraint {
             }
 
             for (int h = 0; h < nbHosts; h++) {
-                vIns[h] = earlyStarts[0].getSolver().getEnvironment().makeIntVector(0, 0);
+                vIns[h] = earlyStarts[0].getModel().getEnvironment().makeIntVector(0, 0);
                 scheds[h] = new LocalTaskScheduler(h,
                         this.earlyStarts[h],
                         this.lastEnds[h],
@@ -179,7 +179,7 @@ public class TaskScheduler extends Constraint {
                 );
             }
 
-            watchDTask = earlyStarts[0].getSolver().getEnvironment().makeInt(0);
+            watchDTask = earlyStarts[0].getModel().getEnvironment().makeInt(0);
             watchHosts = new BitSet(nbHosts);
         }
 

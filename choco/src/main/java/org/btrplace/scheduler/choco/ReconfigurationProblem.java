@@ -26,8 +26,8 @@ import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.ResolutionPolicy;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 
@@ -250,6 +250,13 @@ public interface ReconfigurationProblem {
      * @return the Solver
      */
     Solver getSolver();
+
+    /**
+     * Get the CSP model to solve
+     *
+     * @return the model
+     */
+    org.chocosolver.solver.Model getModel();
 
     /**
      * Create a variable that indicate the placement of an element on a node.

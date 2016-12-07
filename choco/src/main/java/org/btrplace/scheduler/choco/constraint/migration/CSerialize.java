@@ -27,11 +27,9 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
-import org.chocosolver.solver.variables.VF;
 
 import java.util.*;
 
@@ -63,7 +61,7 @@ public class CSerialize implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         // Get the solver
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
 
         // Not enough VMs
         if (ser.getInvolvedVMs().size() < 2) {
@@ -89,11 +87,11 @@ public class CSerialize implements ChocoConstraint {
             tasks.add(new Task(mig.getStart(), mig.getDuration(), mig.getEnd()));
         }
         IntVar[] heights = new IntVar[tasks.size()];
-        Arrays.fill(heights, VF.fixed(1, s));
-        s.post(ICF.cumulative(
+        Arrays.fill(heights, csp.intVar(1));
+        csp.post(csp.cumulative(
                 tasks.toArray(new Task[tasks.size()]),
                 heights,
-                VF.fixed(1, s),
+                csp.intVar(1),
                 true
         ));
 

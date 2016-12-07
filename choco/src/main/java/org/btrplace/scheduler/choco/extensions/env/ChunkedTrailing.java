@@ -25,7 +25,7 @@ import org.btrplace.scheduler.choco.extensions.env.trail.chuncked.ChunkedLongTra
 import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatBoolTrail;
 import org.btrplace.scheduler.choco.extensions.env.trail.flatten.FlatOperationTrail;
 import org.chocosolver.memory.*;
-import org.chocosolver.memory.structure.Operation;
+import org.chocosolver.memory.structure.IOperation;
 
 /**
  * A trailing environment that allocate memory per world.
@@ -54,7 +54,6 @@ public final class ChunkedTrailing extends AbstractEnvironment {
      * the default stack sizes : 50000 and 1000.
      */
     public ChunkedTrailing() {
-        super(Type.FLAT);
         trails = new TraceableStorage[6];
         intTrail = new ChunkedIntTrail(1024, 1024);
         boolTrail = new FlatBoolTrail(128, 1024);
@@ -213,7 +212,7 @@ public final class ChunkedTrailing extends AbstractEnvironment {
     }
 
     @Override
-    public void save(Operation oldValue) {
+    public void save(IOperation oldValue) {
         getOperationTrail().savePreviousState(oldValue);
     }
 

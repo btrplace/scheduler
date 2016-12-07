@@ -29,7 +29,6 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
-import org.btrplace.scheduler.choco.extensions.MyFirstFail;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
@@ -37,15 +36,15 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.strategy.ISF;
-import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,10 +81,10 @@ public class CMinMTTR implements CObjective {
         List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
         mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
         IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
-        Solver s = p.getSolver();
-        IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
+        org.chocosolver.solver.Model csp = p.getModel();
+        IntVar cost = csp.intVar(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, true);
 
-        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);
+        Constraint costConstraint = csp.sum(costs, "=", cost);
         costConstraints.clear();
         costConstraints.add(costConstraint);
 
@@ -153,12 +152,15 @@ public class CMinMTTR implements CObjective {
                 migs.add(((RelocatableVM) t).getRelocationMethod());
             }
         }
-        strategies.add(ISF.custom(ISF.minDomainSize_var_selector(), ISF.max_value_selector(), migs.toArray(new IntVar[migs.size()])));
+        strategies.add(
+                Search.intVarSearch(
+                        new FirstFail(rp.getModel()), new IntDomainMax(), migs.toArray(new IntVar[migs.size()]))
+        );
 
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
             IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
-            strategies.add(new IntStrategy(starts, new MyFirstFail(s), new IntDomainMin()));
+            strategies.add(new IntStrategy(starts, new FirstFail(rp.getModel()), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
@@ -168,11 +170,11 @@ public class CMinMTTR implements CObjective {
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
         IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).toArray(IntVar[]::new);
-        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), ends));
+        strategies.add(Search.intVarSearch(new MyInputOrder<>(s), new IntDomainMin(), ends));
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
 
-        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
+        s.setSearch(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
     }
 
     /*
@@ -183,7 +185,7 @@ public class CMinMTTR implements CObjective {
         if (!actions.isEmpty()) {
             IntVar[] hosts = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
             if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(rp.getModel(), schedHeuristic), rnd));
             }
         }
     }
@@ -202,7 +204,7 @@ public class CMinMTTR implements CObjective {
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            costConstraints.forEach(rp.getSolver()::post);
+            costConstraints.forEach(rp.getModel()::post);
         }
     }
 

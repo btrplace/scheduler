@@ -39,13 +39,11 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.RoundedUpDivision;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -69,7 +67,7 @@ public class CShareableResource implements ChocoView {
 
     private ReconfigurationProblem rp;
 
-    private Solver solver;
+    private org.chocosolver.solver.Model csp;
 
     private String id;
 
@@ -104,7 +102,7 @@ public class CShareableResource implements ChocoView {
         this.rp = p;
         this.references = new HashMap<>();
         this.clones = new HashMap<>();
-        solver = p.getSolver();
+        csp = p.getModel();
         this.source = p.getSourceModel();
         List<Node> nodes = p.getNodes();
         phyRcUsage = new ArrayList<>(nodes.size());
@@ -112,9 +110,9 @@ public class CShareableResource implements ChocoView {
         this.ratios = new ArrayList<>(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
-            phyRcUsage.add(VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), p.getSolver()));
-            virtRcUsage.add(VariableFactory.bounded(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, p.getSolver()));
-            ratios.add(VariableFactory.real(p.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01, p.getSolver()));
+            phyRcUsage.add(csp.intVar(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), true));
+            virtRcUsage.add(csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, true));
+            ratios.add(csp.realVar(p.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01));
         }
         phyRcUsage = Collections.unmodifiableList(phyRcUsage);
         virtRcUsage = Collections.unmodifiableList(virtRcUsage);
@@ -131,11 +129,11 @@ public class CShareableResource implements ChocoView {
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation.add(VariableFactory.fixed(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0, s));
+                vmAllocation.add(csp.intVar(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0));
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                IntVar v = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE / 1000, s);
+                IntVar v = csp.intVar(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE / 1000, true);
                 vmAllocation.add(v);
                 notNullUsage.add(v);
                 hosts.add(slice.getHoster());
@@ -505,7 +503,7 @@ public class CShareableResource implements ChocoView {
         int maxPhy = getSourceResource().getCapacity(n);
         int maxVirt = (int) (maxPhy * r);
         if (maxVirt != 0) {
-            solver.post(new RoundedUpDivision(phyRcUsage.get(nIdx), virtRcUsage.get(nIdx), r));
+            csp.post(new RoundedUpDivision(phyRcUsage.get(nIdx), virtRcUsage.get(nIdx), r));
             return true;
         }
 
@@ -519,7 +517,7 @@ public class CShareableResource implements ChocoView {
     }
 
     private boolean noOverbook(int nIdx) {
-        solver.post(IntConstraintFactory.arithm(phyRcUsage.get(nIdx), "=", virtRcUsage.get(nIdx)));
+        csp.post(csp.arithm(phyRcUsage.get(nIdx), "=", virtRcUsage.get(nIdx)));
         try {
             virtRcUsage.get(nIdx).updateUpperBound(phyRcUsage.get(nIdx).getUB(), Cause.Null);
         } catch (ContradictionException ex) {

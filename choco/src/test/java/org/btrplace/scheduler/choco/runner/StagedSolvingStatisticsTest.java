@@ -28,8 +28,6 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.single.SingleRunnerStatistics;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.measure.IMeasures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -54,7 +52,7 @@ public class StagedSolvingStatisticsTest {
     @Test
     public void testSingle() {
         SingleRunnerStatistics s = new SingleRunnerStatistics(ps, i, st);
-        MeasuresRecorder mr = new MeasuresRecorder(new Solver());
+        MeasuresRecorder mr = new MeasuresRecorder("");
         s.setMeasures(mr);
         StagedSolvingStatistics stats = new StagedSolvingStatistics(s);
         Assert.assertEquals(stats.getSolutions().size(), 0);
@@ -70,11 +68,14 @@ public class StagedSolvingStatisticsTest {
 
     @Test
     public void testMultiple() {
+        Assert.fail();
+    }
+    /*
         SingleRunnerStatistics s1 = new SingleRunnerStatistics(ps, i, st);
         s1.setCoreBuildDuration(2);
         s1.setSpecialisationDuration(3);
         s1.setNbManagedVMs(7);
-        MeasuresRecorder r1 = new MeasuresRecorder(new Solver());
+        MeasuresRecorder r1 = new MeasuresRecorder("");
         r1.timeCount = 3;
         r1.nodeCount = 12;
         r1.backtrackCount = 7;
@@ -112,5 +113,5 @@ public class StagedSolvingStatisticsTest {
         Assert.assertEquals(res.getFailCount(), r1.getFailCount() + r2.getFailCount());
         Assert.assertTrue(res.hasObjective());
         Assert.assertFalse(res.isObjectiveOptimal());
-    }
+    }*/
 }

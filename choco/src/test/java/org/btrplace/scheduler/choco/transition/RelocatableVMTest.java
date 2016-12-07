@@ -33,10 +33,8 @@ import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -88,9 +86,8 @@ public class RelocatableVMTest {
         Assert.assertFalse(am.getDSlice().getHoster().isInstantiated());
 
         //No VMs on n1, discrete mode
-        Solver s = rp.getSolver();
 
-        s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs().get(rp.getNode(n1)), "=", 0));
+        rp.getModel().post(rp.getModel().arithm(rp.getNbRunningVMs().get(rp.getNode(n1)), "=", 0));
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -248,8 +245,9 @@ public class RelocatableVMTest {
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Solution sol = rp.getSolver().getSolutionRecorder().getLastSolution();
-        Assert.assertEquals(sol.getIntVal(am.getRelocationMethod()).intValue(), 1);
+        Solution sol = new Solution(rp.getModel());
+        sol.record();
+        Assert.assertEquals(sol.getIntVal(am.getRelocationMethod()), 1);
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();
         //Check the VM has been relocated

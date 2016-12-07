@@ -32,11 +32,10 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
+import org.chocosolver.solver.variables.Task;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -90,23 +89,23 @@ public class IssuesTest {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (Node n : map.getAllNodes()) {
-            vmsOnInvolvedNodes[i] = VF.bounded("nVMs", -1, maxVMs, rp.getSolver());
+            vmsOnInvolvedNodes[i] = rp.getModel().intVar("nVMs", -1, maxVMs, true);
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
-            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
-            solver.post(elem);
+            Constraint elem = rp.getModel().element(vmsOnInvolvedNodes[i], new IntVar[]{rp.getModel().intVar(-1), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
+            rp.getModel().post(elem);
 
             // IF the node is online and hosting VMs -> busy = 1.
-            busy[i] = VF.bool("busy" + n, rp.getSolver());
-            ChocoUtils.postIfOnlyIf(rp, busy[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], ">=", 1));
+            busy[i] = rp.getModel().boolVar("busy" + n);
+            ChocoUtils.postIfOnlyIf(rp, busy[i], rp.getModel().arithm(vmsOnInvolvedNodes[i], ">=", 1));
             i++;
         }
 
         // idle is equals the number of vmsOnInvolvedNodes with value 0. (The node without VM)
-        IntVar idle = VF.bounded("Nidles", 0, NUMBER_OF_NODE, solver);
-        solver.post(IntConstraintFactory.count(0, vmsOnInvolvedNodes, idle));
+        IntVar idle = rp.getModel().intVar("Nidles", 0, NUMBER_OF_NODE, true);
+        rp.getModel().post(rp.getModel().count(0, vmsOnInvolvedNodes, idle));
         // idle should be less than Amount for MaxSN (0, in this case)
-        solver.post(IntConstraintFactory.arithm(idle, "<=", 0));
+        rp.getModel().post(rp.getModel().arithm(idle, "<=", 0));
 
         // Extract all the state of the involved nodes (all nodes in this case)
         IntVar[] states = new IntVar[NUMBER_OF_NODE];
@@ -118,14 +117,13 @@ public class IssuesTest {
         // In case the number of VMs is inferior to the number of online nodes, some nodes have to shutdown
         // to satisfy the constraint. This could be express as:
         // The addition of the idle nodes and busy nodes should be equals the number of online nodes.
-        IntVar sumStates = VF.bounded("sumStates", 0, 1000, solver);
-        solver.post(IntConstraintFactory.sum(states, sumStates));
-        IntVar sumBusy = VF.bounded("sumBusy", 0, 1000, solver);
-        solver.post(IntConstraintFactory.sum(states, sumBusy));
-        IntVar sumIB = VF.bounded("ib", 0, 1000, solver);
-        VF.task(sumBusy, idle, sumIB);
-        //solver.post(IntConstraintFactory.arithm(sumBusy, "+", idle));
-        solver.post(IntConstraintFactory.arithm(sumStates, "=", sumIB));//solver.eq(sumStates, sumIB));
+        IntVar sumStates = rp.getModel().intVar("sumStates", 0, 1000, true);
+        rp.getModel().post(rp.getModel().sum(states, "=", sumStates));
+        IntVar sumBusy = rp.getModel().intVar("sumBusy", 0, 1000, true);
+        rp.getModel().post(rp.getModel().sum(states, "=", sumBusy));
+        IntVar sumIB = rp.getModel().intVar("ib", 0, 1000, true);
+        new Task(sumBusy, idle, sumIB);
+        rp.getModel().post(rp.getModel().arithm(sumStates, "=", sumIB));//solver.eq(sumStates, sumIB));
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
@@ -161,11 +159,11 @@ public class IssuesTest {
             nodeVM[i++] = nodes_state.get(rp.getNode(n));
         }
         Solver solver = rp.getSolver();
-        IntVar idle = VF.bounded("Nidles", 0, map.getAllNodes().size(), solver);
+        IntVar idle = rp.getModel().intVar("Nidles", 0, map.getAllNodes().size(), true);
 
-        solver.post(IntConstraintFactory.count(0, nodeVM, idle));
+        rp.getModel().post(rp.getModel().count(0, nodeVM, idle));
         // Amount of maxSpareNode =  1
-        solver.post(IntConstraintFactory.arithm(idle, "<=", 1));
+        rp.getModel().post(rp.getModel().arithm(idle, "<=", 1));
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
@@ -203,10 +201,10 @@ public class IssuesTest {
             //rp.getNodeAction(n).getState().setVal(1);
         }
         Solver solver = rp.getSolver();
-        IntVar idle = VF.bounded("Nidles", 0, map.getAllNodes().size(), solver);
+        IntVar idle = rp.getModel().intVar("Nidles", 0, map.getAllNodes().size(), true);
 
-        solver.post(IntConstraintFactory.count(0, nodeVM, idle));
-        solver.post(IntConstraintFactory.arithm(idle, "<=", 1));
+        rp.getModel().post(rp.getModel().count(0, nodeVM, idle));
+        rp.getModel().post(rp.getModel().arithm(idle, "<=", 1));
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
     }
@@ -225,7 +223,7 @@ public class IssuesTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).build();
         Solver solver = rp.getSolver();
         rp.getNodeAction(n3).getState().instantiateTo(1, Cause.Null);  // n3 goes online
-        solver.post(IntConstraintFactory.arithm(rp.getEnd(), "<=", 10));
+        rp.getModel().post(rp.getModel().arithm(rp.getEnd(), "<=", 10));
         int NUMBER_OF_NODE = map.getAllNodes().size();
         // Extract all the state of the involved nodes (all nodes in this case)
         List<IntVar> VMsOnAllNodes = rp.getNbRunningVMs();
@@ -235,20 +233,20 @@ public class IssuesTest {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (Node n : map.getAllNodes()) {
-            vmsOnInvolvedNodes[i] = VF.bounded("nVMs" + n, -1, maxVMs, solver);
+            vmsOnInvolvedNodes[i] = rp.getModel().intVar("nVMs" + n, -1, maxVMs, true);
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
-            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
-            solver.post(elem);
+            Constraint elem = rp.getModel().element(vmsOnInvolvedNodes[i], new IntVar[]{rp.getModel().intVar(-1), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
+            rp.getModel().post(elem);
             // IF number of VMs on a node is 0 -> Idle
-            idles[i] = VF.bool("idle" + n, solver);
-            ChocoUtils.postIfOnlyIf(rp, idles[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], "=", 0));
+            idles[i] = rp.getModel().boolVar("idle" + n);
+            ChocoUtils.postIfOnlyIf(rp, idles[i], rp.getModel().arithm(vmsOnInvolvedNodes[i], "=", 0));
             i++;
         }
-        IntVar sum = VF.bounded("sum", 0, 1000, solver);
-        solver.post(IntConstraintFactory.sum(idles, sum));
+        IntVar sum = rp.getModel().intVar("sum", 0, 1000, true);
+        rp.getModel().post(rp.getModel().sum(idles, "=", sum));
         // idle should be less than Amount for MaxSN (0, in this case)
-        solver.post(IntConstraintFactory.arithm(sum, "=", 0));
+        rp.getModel().post(rp.getModel().arithm(sum, "=", 0));
         System.err.flush();
         CMinMTTR obj = new CMinMTTR();
         obj.inject(new DefaultParameters(), rp);

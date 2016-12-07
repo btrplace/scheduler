@@ -21,7 +21,7 @@ package org.btrplace.scheduler.choco.runner;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.search.measure.IMeasures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
 import org.testng.Assert;
@@ -36,12 +36,13 @@ public class SolutionStatisticsTest {
 
     @Test
     public void test() {
-        Solver s = new Solver();
-        IMeasures m = new MeasuresRecorder(s);
+        Model csp = new Model();
+        IMeasures m = new MeasuresRecorder("");
         ReconfigurationPlan p = new DefaultReconfigurationPlan(new DefaultModel());
         SolutionStatistics st = new SolutionStatistics(m, p);
         Assert.assertEquals(st.getMeasures(), m);
         Assert.assertEquals(st.getReconfigurationPlan(), p);
         System.out.println(st);
+        Assert.fail();
     }
 }

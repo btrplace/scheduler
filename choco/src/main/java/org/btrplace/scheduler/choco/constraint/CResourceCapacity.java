@@ -34,11 +34,10 @@ import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -62,11 +61,11 @@ public class CResourceCapacity implements ChocoConstraint {
 
     private boolean injectWithSingleNode(CShareableResource rcm, ReconfigurationProblem rp) {
         int amount = cstr.getAmount();
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
         Node n = cstr.getInvolvedNodes().iterator().next();
         int nIdx = rp.getNode(n);
         IntVar v = rcm.getVirtualUsage().get(nIdx);
-        s.post(IntConstraintFactory.arithm(v, "<=", amount));
+        csp.post(csp.arithm(v, "<=", amount));
 
         //Continuous in practice ?
         if (cstr.isContinuous()) {
@@ -88,6 +87,7 @@ public class CResourceCapacity implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
+        Model csp = rp.getModel();
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
             throw new SchedulerException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
@@ -106,9 +106,9 @@ public class CResourceCapacity implements ChocoConstraint {
             vs.add(rcm.getVirtualUsage().get(rp.getNode(u)));
         }
         Solver s = rp.getSolver();
-        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, s);
-        s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
-        s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
+        IntVar mySum = csp.intVar(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, true);
+        csp.post(csp.sum(vs.toArray(new IntVar[vs.size()]), "=", mySum));
+        csp.post(csp.arithm(mySum, "<=", cstr.getAmount()));
         return true;
     }
 

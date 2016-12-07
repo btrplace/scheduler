@@ -32,7 +32,6 @@ import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
-import org.chocosolver.solver.variables.VF;
 
 import java.util.Collections;
 import java.util.Set;
@@ -80,7 +79,7 @@ public class CNoDelay implements ChocoConstraint {
             }
         } else {
             Arithmetic c = new Arithmetic(d.getStart(), Operator.EQ, 0);
-            BoolVar move = VF.not(((RelocatableVM) vt).isStaying());
+            BoolVar move = ((RelocatableVM) vt).isStaying().not();
             ChocoUtils.postImplies(rp, move, c);
         }
         return true;

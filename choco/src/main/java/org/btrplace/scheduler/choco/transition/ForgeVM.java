@@ -25,12 +25,10 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -80,9 +78,9 @@ public class ForgeVM implements VMTransition {
         if ("".equals(template)) {
             throw new SchedulerException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
         }
-        Solver s = rp.getSolver();
-        duration = VariableFactory.fixed(d, s);
-        state = VariableFactory.zero(s);
+        Model csp = rp.getModel();
+        duration = csp.intVar(d);
+        state = csp.boolVar(false);
         vm = e;
 
         /*
@@ -93,8 +91,8 @@ public class ForgeVM implements VMTransition {
         start = rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").start");
         end = rp.makeUnboundedDuration(VAR_PREFIX, "(", e, ").stop");
         TaskMonitor.build(start, duration, end);
-        s.post(IntConstraintFactory.arithm(duration, ">=", d));
-        s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
+        csp.post(csp.arithm(duration, ">=", d));
+        csp.post(csp.arithm(end, "<=", rp.getEnd()));
     }
 
     @Override

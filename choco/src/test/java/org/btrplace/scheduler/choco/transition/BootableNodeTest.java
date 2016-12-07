@@ -30,8 +30,6 @@ import org.btrplace.scheduler.choco.*;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -169,8 +167,8 @@ public class BootableNodeTest {
         BootableNode na2 = (BootableNode) rp.getNodeAction(n2);
         na1.getState().instantiateTo(1, Cause.Null);
         na2.getState().instantiateTo(1, Cause.Null);
-        Solver solver = rp.getSolver();
-        solver.post(IntConstraintFactory.arithm(na1.getEnd(), "=", na2.getEnd()));
+
+        rp.getModel().post(rp.getModel().arithm(na1.getEnd(), "=", na2.getEnd()));
         Assert.assertNotNull(rp.solve(0, false));
     }
 

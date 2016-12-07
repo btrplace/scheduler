@@ -20,17 +20,19 @@ package org.btrplace.scheduler.choco.extensions;
 
 
 import org.btrplace.scheduler.choco.extensions.pack.VectorPacking;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.strategy.ISF;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.chocosolver.util.ESat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -40,7 +42,7 @@ import java.util.Random;
  */
 public class VectorPackingTest {
 
-    Solver s;
+    Model s;
     IntVar[][] loads;
     int[][] sizes;
     IntVar[] bins;
@@ -80,32 +82,32 @@ public class VectorPackingTest {
         assert nRes == height.length;
         int nBins = capa[0].length;
         int nItems = height[0].length;
-        s = new Solver();
+        s = new Model();
         loads = new IntVar[nRes][nBins];
         bins = new IntVar[nItems];
         String[] name = new String[nRes];
         for (int d = 0; d < nRes; d++) {
             name[d] = "d" + d;
             for (int i = 0; i < nBins; i++) {
-                loads[d][i] = VF.bounded("l" + d + "." + i, 0, capa[d][i], s);
+                loads[d][i] = s.intVar("l" + d + "." + i, 0, capa[d][i], true);
             }
         }
         sizes = height;
-        bins = VF.enumeratedArray("b", nItems, 0, nBins, s);
+        bins = s.intVarArray("b", nItems, 0, nBins, false);
         Constraint cPack = new VectorPacking(name, loads, sizes, bins, true, true);
         s.post(cPack);
     }
 
 
     public void testPack(boolean isFeasible, String errMsg) {
-        s.findSolution();
-        Assert.assertEquals(s.isFeasible(), ESat.eval(isFeasible), errMsg);
+        s.getSolver().findSolution();
+        Assert.assertEquals(s.getSolver().isFeasible(), ESat.eval(isFeasible), errMsg);
     }
 
     public void testPack(int nbExpectedSols) {
-        long nbComputedSols = s.findAllSolutions();
-
-        Assert.assertEquals(s.isFeasible(), ESat.eval(nbExpectedSols != 0), "SAT");
+        List<Solution> sols = s.getSolver().findAllSolutions();
+        int nbComputedSols = sols.size();
+        Assert.assertEquals(s.getSolver().isFeasible(), ESat.eval(nbExpectedSols != 0), "SAT");
         if (nbExpectedSols > 0) {
             Assert.assertEquals(nbComputedSols, nbExpectedSols, "#SOL");
         }
@@ -134,8 +136,8 @@ public class VectorPackingTest {
     @Test(sequential = true)
     public void test2DGuillaume() {
         modelPack2D(2, 100, 3, 30);
-        IntVar margeLoad = VF.bounded("margeLoad", 0, 50, s);
-        s.post(IntConstraintFactory.element(margeLoad, loads[0], bins[0], 0));
+        IntVar margeLoad = s.intVar("margeLoad", 0, 50, true);
+        s.post(s.element(margeLoad, loads[0], bins[0], 0));
         testPack(2);
     }
 
@@ -167,7 +169,7 @@ public class VectorPackingTest {
         int[] capa = new int[]{16, 32};
         int[] height = new int[]{1, 1};
         modelPack(nBins, capa, nItems, height);
-        s.set(ISF.custom(ISF.lexico_var_selector(), ISF.min_value_selector(), bins));
+        s.getSolver().setSearch(Search.intVarSearch(new InputOrder<IntVar>(s), new IntDomainMin(), bins));
         testPack(true, "failed with " + Arrays.toString(height));
     }
 

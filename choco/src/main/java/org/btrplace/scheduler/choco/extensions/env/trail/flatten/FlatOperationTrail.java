@@ -19,7 +19,7 @@
 package org.btrplace.scheduler.choco.extensions.env.trail.flatten;
 
 import org.btrplace.scheduler.choco.extensions.env.trail.OperationTrail;
-import org.chocosolver.memory.structure.Operation;
+import org.chocosolver.memory.structure.IOperation;
 
 /**
  * @author Fabien Hermenier
@@ -30,7 +30,7 @@ public class FlatOperationTrail implements OperationTrail {
     /**
      * Stack of values (former values that need be restored upon backtracking).
      */
-    private Operation[] valueStack;
+    private IOperation[] valueStack;
 
 
     /**
@@ -52,7 +52,7 @@ public class FlatOperationTrail implements OperationTrail {
      */
     public FlatOperationTrail(int nUpdates, int nWorlds) {
         currentLevel = 0;
-        valueStack = new Operation[nUpdates];
+        valueStack = new IOperation[nUpdates];
         worldStartLevels = new int[nWorlds];
     }
 
@@ -107,7 +107,7 @@ public class FlatOperationTrail implements OperationTrail {
      * on the stacks.
      */
     @Override
-    public void savePreviousState(Operation oldValue) {
+    public void savePreviousState(IOperation oldValue) {
         valueStack[currentLevel] = oldValue;
         currentLevel++;
         if (currentLevel == valueStack.length) {
@@ -118,7 +118,7 @@ public class FlatOperationTrail implements OperationTrail {
     private void resizeUpdateCapacity() {
         final int newCapacity = (valueStack.length * 3) / 2;
         // First, copy the stack of former values
-        final Operation[] tmp2 = new Operation[newCapacity];
+        final IOperation[] tmp2 = new IOperation[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
     }
@@ -129,11 +129,6 @@ public class FlatOperationTrail implements OperationTrail {
         worldStartLevels = tmp;
     }
 
-    /**
-     * Returns the allocated trail size.
-     *
-     * @return a positive number
-     */
     @Override
     public int allocated() {
         return valueStack.length;

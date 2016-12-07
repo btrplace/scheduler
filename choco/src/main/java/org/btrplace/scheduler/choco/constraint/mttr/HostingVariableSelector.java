@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -37,8 +38,8 @@ public class HostingVariableSelector extends FirstFail {
      *
      * @param sched the scheduling heuristic to notify when the placement is invalidated
      */
-    public HostingVariableSelector(OnStableNodeFirst sched) {
-        super();
+    public HostingVariableSelector(Model mo, OnStableNodeFirst sched) {
+        super(mo);
         this.schedHeuristic = sched;
     }
 

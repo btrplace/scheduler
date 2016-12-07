@@ -27,13 +27,10 @@ import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -699,10 +696,10 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
+        IntVar nbNodes = rp.getModel().intVar("nbNodes", 1, map.getAllNodes().size(), true);
         Stream<Slice> dSlices = rp.getVMActions().stream().filter(t -> t.getDSlice() != null).map(VMTransition::getDSlice);
         IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
-        s.post(ICF.atmost_nvalues(hosters, nbNodes, true));
+        rp.getModel().post(rp.getModel().atMostNValues(hosters, nbNodes, true));
 
         rp.setObjective(true, nbNodes);
         ReconfigurationPlan plan = rp.solve(-1, true);
@@ -729,10 +726,10 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
+        IntVar nbNodes = rp.getModel().intVar("nbNodes", 0, 0, true);
         Stream<Slice> dSlices = rp.getVMActions().stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
         IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
-        s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
+        rp.getModel().post(rp.getModel().atMostNValues(hosters, nbNodes, true));
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = (rp1, currentValue) -> currentValue / 2;
 

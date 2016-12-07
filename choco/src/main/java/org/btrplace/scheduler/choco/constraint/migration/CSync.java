@@ -27,8 +27,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -68,7 +67,7 @@ public class CSync implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
 
         // Get all migrations involved
         for (VM vm : sec.getInvolvedVMs()) {
@@ -88,7 +87,7 @@ public class CSync implements ChocoConstraint {
                 IntVar firstMigSync = vm1.usesPostCopy() ? vm1.getStart() : vm1.getEnd();
                 IntVar secondMigSync = vm2.usesPostCopy() ? vm2.getStart() : vm2.getEnd();
 
-                s.post(ICF.arithm(firstMigSync, "=", secondMigSync));
+                csp.post(csp.arithm(firstMigSync, "=", secondMigSync));
 
             }
         }

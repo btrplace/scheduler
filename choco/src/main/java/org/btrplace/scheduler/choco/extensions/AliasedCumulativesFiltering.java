@@ -145,8 +145,8 @@ public class AliasedCumulativesFiltering {
                 lastSup = s;
             }
         }
-        this.lastCendInf = cEnds[0].getSolver().getEnvironment().makeInt(lastInf);
-        this.lastCendSup = cEnds[0].getSolver().getEnvironment().makeInt(lastSup);
+        this.lastCendInf = cEnds[0].getModel().getEnvironment().makeInt(lastInf);
+        this.lastCendSup = cEnds[0].getModel().getEnvironment().makeInt(lastSup);
     }
 
     public boolean propagate() throws ContradictionException {

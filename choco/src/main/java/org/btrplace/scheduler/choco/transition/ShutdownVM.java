@@ -25,10 +25,10 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
+
 
 /**
  * Model an action that stop a running VM.
@@ -77,8 +77,8 @@ public class ShutdownVM implements VMTransition {
         this.cSlice = new SliceBuilder(p, e, VAR_PREFIX, "(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
                 .setEnd(p.makeDuration(p.getEnd().getUB(), d, VAR_PREFIX, "(", e, ").cSlice_end"))
                 .build();
-        start = VariableFactory.offset(cSlice.getEnd(), -d);
-        state = VariableFactory.zero(rp.getSolver());
+        start = rp.getModel().intOffsetView(cSlice.getEnd(), -d);
+        state = rp.getModel().boolVar(false);
     }
 
     @Override

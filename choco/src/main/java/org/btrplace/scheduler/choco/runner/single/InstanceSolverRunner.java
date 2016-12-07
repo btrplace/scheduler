@@ -37,13 +37,12 @@ import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.ChocoViews;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.SearchState;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.measure.IMeasures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
-import org.chocosolver.solver.search.solution.Solution;
-import org.chocosolver.solver.trace.Chatterbox;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -104,7 +103,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             //If there is a violation of the cycle it is not a bug that should be propagated
             //it it just indicating there is no solution
             stats.completed();
-            stats.setMeasures(new MeasuresRecorder(new Solver()));
+            stats.setMeasures(new MeasuresRecorder(""));
             return stats;
         } finally {
             d += System.currentTimeMillis();
@@ -122,18 +121,18 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         stats.setSpecialisationDuration(d);
 
         //statistics
-        stats.setMeasures(rp.getSolver().getMeasures().duplicate());
+        stats.setMeasures(rp.getSolver().getMeasures());
         rp.getLogger().debug(stats.toString());
 
         //The solution monitor to store the measures at each solution
         rp.getSolver().plugMonitor((IMonitorSolution) () -> {
-            Solution solution = new Solution();
-            solution.record(rp.getSolver());
+            Solution solution = new Solution(rp.getModel());
+            solution.record();
 
             ReconfigurationPlan plan = rp.buildReconfigurationPlan(solution, origin);
             views.forEach(v -> v.insertActions(rp, solution, plan));
 
-            IMeasures m = rp.getSolver().getMeasures().duplicate();
+            MeasuresRecorder m = rp.getSolver().getMeasures();
             stats.addSolution(new SolutionStatistics(m, plan));
         });
 
@@ -147,17 +146,17 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
     private void setVerbosity() {
         if (params.getVerbosity() >=1) {
-            Chatterbox.showSolutions(rp.getSolver());
+            rp.getSolver().showSolutions();
         }
         if (params.getVerbosity() >= 2) {
             //every second
-            Chatterbox.showStatisticsDuringResolution(rp.getSolver(), 1000);
+            rp.getSolver().showStatisticsDuringResolution(1000);
         }
         if (params.getVerbosity() >= 3) {
-            Chatterbox.showDecisions(rp.getSolver());
+            rp.getSolver().showDecisions();
         }
         if (params.getVerbosity() >= 4) {
-            Chatterbox.showContradiction(rp.getSolver());
+            rp.getSolver().showContradiction();
         }
     }
 
@@ -293,9 +292,9 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
      */
     public SingleRunnerStatistics getStatistics() {
         if (rp != null) {
-            IMeasures m = rp.getSolver().getMeasures().duplicate();
+            IMeasures m = rp.getSolver().getMeasures();
             stats.setMeasures(m);
-            stats.setCompleted(!rp.getSolver().hasReachedLimit());
+            stats.setCompleted(m.getSearchState().equals(SearchState.TERMINATED));
         }
         return stats;
     }

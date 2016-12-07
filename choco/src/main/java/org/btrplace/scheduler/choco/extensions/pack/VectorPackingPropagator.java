@@ -150,15 +150,15 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         this.assignedLoad = new IStateInt[nbDims][nbBins];
         for (int x = 0; x < nbBins; x++) {
             for (int d = 0; d < nbDims; d++) {
-                assignedLoad[d][x] = getSolver().getEnvironment().makeInt();
-                potentialLoad[d][x] = getSolver().getEnvironment().makeInt();
+                assignedLoad[d][x] = getModel().getEnvironment().makeInt();
+                potentialLoad[d][x] = getModel().getEnvironment().makeInt();
             }
         }
         sumLoadInf = new IStateInt[nbDims];
         sumLoadSup = new IStateInt[nbDims];
         for (int d = 0; d < nbDims; d++) {
-            sumLoadInf[d] = getSolver().getEnvironment().makeInt();
-            sumLoadSup[d] = getSolver().getEnvironment().makeInt();
+            sumLoadInf[d] = getModel().getEnvironment().makeInt();
+            sumLoadSup[d] = getModel().getEnvironment().makeInt();
         }
         super.linkVariables();
     }
@@ -205,11 +205,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         return idx < bins.length ? IntEventType.all() : IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask();
     }
 
-    @Override
+/*    @Override
     protected void linkVariables() {
         // do nothing, the linking is postponed because getPropagationConditions() needs some internal data
     }
-
+*/
     /**
      * TODO: check when no propagation may occur anymore
      *
@@ -262,7 +262,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         while (noFixPoint) {
             for (int d = 0; d < nbDims; d++) {
                 if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
-                    contradiction(null, "");
+                    fails();
                 }
             }
             noFixPoint = false;
@@ -292,7 +292,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             return false;
         loads[dim][bin].updateLowerBound(newLoadInf, this);
         if (sumISizes[dim] < sumLoadInf[dim].add(delta))
-            contradiction(null, "");
+            fails();
         return true;
     }
 
@@ -312,7 +312,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
         loads[dim][bin].updateUpperBound(newLoadSup, this);
         if (sumISizes[dim] > sumLoadSup[dim].add(delta)) {
-            contradiction(null, "");
+            fails();
         }
         return true;
     }
@@ -461,7 +461,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         }
 
-        loadsHaveChanged = getSolver().getEnvironment().makeBool(false);
+        loadsHaveChanged = getModel().getEnvironment().makeBool(false);
 
         if (decoKPSimple != null) {
             decoKPSimple.postInitialize();

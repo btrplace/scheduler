@@ -87,7 +87,7 @@ public class CPrecedence implements ChocoConstraint {
         }
 
         // Post the precedence constraint (involved VMs need to be ordered)
-        s.post(new Arithmetic(migrationList.get(0).getEnd(), Operator.LE, migrationList.get(1).getStart()));
+        rp.getModel().post(new Arithmetic(migrationList.get(0).getEnd(), Operator.LE, migrationList.get(1).getStart()));
 
         return true;
     }

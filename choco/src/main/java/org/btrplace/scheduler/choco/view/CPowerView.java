@@ -28,7 +28,6 @@ import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
-import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.variables.IntVar;
 
 /**
@@ -61,7 +60,7 @@ public class CPowerView implements ChocoView {
                 IntVar powerEnd = rp.makeUnboundedDuration("NodeActionType(", n, ").Pe");
                 TaskMonitor.build(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
-                rp.getSolver().post(ICF.arithm(powerEnd,"<=",rp.getEnd()));
+                rp.getModel().post(rp.getModel().arithm(powerEnd, "<=", rp.getEnd()));
             } else if (na instanceof BootableNode) {
                 powerStarts.put(rp.getNode(n), na.getStart());
                 powerEnds.put(rp.getNode(n), rp.getEnd());

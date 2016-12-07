@@ -29,8 +29,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -105,8 +103,8 @@ public class SuspendVMTest {
         SuspendVM m1 = (SuspendVM) rp.getVMActions().get(rp.getVM(vm1));
         SuspendVM m2 = (SuspendVM) rp.getVMActions().get(rp.getVM(vm2));
         rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
-        Solver s = rp.getSolver();
-        s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
+        org.chocosolver.solver.Model csp = rp.getModel();
+        csp.post(csp.arithm(m2.getStart(), ">=", m1.getEnd()));
 
         ReconfigurationPlan p = rp.solve(0, false);
 

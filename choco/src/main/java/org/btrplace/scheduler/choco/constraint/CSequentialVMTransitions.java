@@ -27,8 +27,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.StayAwayVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.Model;
 
 import java.util.*;
 
@@ -72,10 +71,10 @@ public class CSequentialVMTransitions implements ChocoConstraint {
         if (ams.size() > 1) {
             Iterator<VMTransition> ite = ams.iterator();
             VMTransition prev = ite.next();
-            Solver s = rp.getSolver();
+            Model csp = rp.getModel();
             while (ite.hasNext()) {
                 VMTransition cur = ite.next();
-                s.post(IntConstraintFactory.arithm(prev.getEnd(), "<=", cur.getStart()));
+                csp.post(csp.arithm(prev.getEnd(), "<=", cur.getStart()));
                 prev = cur;
             }
         }

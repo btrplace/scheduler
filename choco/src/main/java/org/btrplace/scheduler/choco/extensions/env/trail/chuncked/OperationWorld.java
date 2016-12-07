@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.extensions.env.trail.chuncked;
 
-import org.chocosolver.memory.structure.Operation;
+import org.chocosolver.memory.structure.IOperation;
 
 /**
  * @author Fabien Hermenier
@@ -29,7 +29,7 @@ public class OperationWorld implements World {
     /**
      * Stack of values (former values that need be restored upon backtracking).
      */
-    private Operation[] valueStack;
+    private IOperation[] valueStack;
 
     private int now;
 
@@ -40,13 +40,13 @@ public class OperationWorld implements World {
      */
     public OperationWorld(int defaultSize) {
         now = 0;
-        valueStack = new Operation[defaultSize];
+        valueStack = new IOperation[defaultSize];
     }
 
     /**
      * Reacts when a Operation is done: push the former value on the stacks
      */
-    public void savePreviousState(Operation oldValue) {
+    public void savePreviousState(IOperation oldValue) {
         valueStack[now] = oldValue;
         now++;
         if (now == valueStack.length) {
@@ -57,7 +57,7 @@ public class OperationWorld implements World {
     @Override
     public void revert() {
         for (int i = now - 1; i >= 0; i--) {
-            Operation o = valueStack[i];
+            IOperation o = valueStack[i];
             o.undo();
         }
     }
@@ -65,7 +65,7 @@ public class OperationWorld implements World {
     private void resizeUpdateCapacity() {
         final int newCapacity = (valueStack.length * 3) / 2;
         // First, copy the stack of former values
-        final Operation[] tmp2 = new Operation[newCapacity];
+        final IOperation[] tmp2 = new IOperation[newCapacity];
         System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
         valueStack = tmp2;
     }

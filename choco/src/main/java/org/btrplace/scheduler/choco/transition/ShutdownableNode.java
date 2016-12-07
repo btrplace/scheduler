@@ -27,12 +27,10 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.FastIFFEq;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 /**
  * Model an action that allow a node to boot if necessary.
@@ -99,23 +97,23 @@ public class ShutdownableNode implements NodeTransition {
      */
     public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SchedulerException {
         this.node = e;
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
 
         /*
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, e, ").online"), rp.getSolver());
-        isOffline = VariableFactory.not(isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(e)), 0));
+        isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, e, ").online"));
+        isOffline = isOnline.not();
+        csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(e)), 0));
 
         /*
         * D = {0, d}
         * D = St * d;
         */
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
-        duration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, e, ").duration"), new int[]{0, d}, rp.getSolver());
-        s.post(new FastIFFEq(isOnline, duration, 0));
+        duration = csp.intVar(rp.makeVarLabel(PREFIX, e, ").duration"), new int[]{0, d});
+        csp.post(new FastIFFEq(isOnline, duration, 0));
 
         //The moment of shutdown action consume
         /* As */
@@ -124,7 +122,7 @@ public class ShutdownableNode implements NodeTransition {
         /* Ae */
         end = rp.makeUnboundedDuration(PREFIX, e, ").end");
 
-        s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
+        csp.post(csp.arithm(end, "<=", rp.getEnd()));
 
         /* Ae = As + D */
         TaskMonitor.build(start, duration, end);
@@ -139,7 +137,7 @@ public class ShutdownableNode implements NodeTransition {
           T = { As, RP.end}
           He = T[St]
          */
-        s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{start, rp.getEnd()}, isOnline, 0));
+        csp.post(csp.element(hostingEnd, new IntVar[]{start, rp.getEnd()}, isOnline, 0));
     }
 
 

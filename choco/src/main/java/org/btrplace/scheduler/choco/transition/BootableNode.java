@@ -26,12 +26,10 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -100,32 +98,32 @@ public class BootableNode implements NodeTransition {
         node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
 
         /*
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, nId, ").online"), s);
-        BoolVar isOffline = VariableFactory.not(isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(nId)), 0));
+        isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, nId, ").online"));
+        BoolVar isOffline = isOnline.not();
+        csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(nId)), 0));
 
 
         /*
         * D = {0, d}
         * D = St * d;
         */
-        effectiveDuration = VariableFactory.enumerated(
+        effectiveDuration = csp.intVar(
                 rp.makeVarLabel(PREFIX, nId, ").effectiveDuration")
-                , new int[]{0, d}, s);
-        s.post(IntConstraintFactory.times(isOnline, VariableFactory.fixed(d, s), effectiveDuration));
+                , new int[]{0, d});
+        csp.post(csp.times(isOnline, csp.intVar(d), effectiveDuration));
 
         /* As */
         start = rp.makeUnboundedDuration(PREFIX, nId, ").start");
         /* Ae */
         end = rp.makeUnboundedDuration(PREFIX, nId, ").end");
 
-        s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
+        csp.post(csp.arithm(end, "<=", rp.getEnd()));
         /* Ae = As + D */
         /*Task t = */
         TaskMonitor.build(start, effectiveDuration, end);
@@ -138,7 +136,7 @@ public class BootableNode implements NodeTransition {
           T = { 0, RP.end}
           He = T[St]
          */
-        s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{rp.getStart(), rp.getEnd()}, isOnline, 0));
+        csp.post(csp.element(hostingEnd, new IntVar[]{rp.getStart(), rp.getEnd()}, isOnline, 0));
     }
 
     @Override

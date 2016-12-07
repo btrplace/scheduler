@@ -98,7 +98,7 @@ public class RoundedUpDivision extends Constraint {
             filter();
             if (vars[0].getLB() != div(vars[1].getLB())
                     || vars[0].getUB() != div(vars[1].getUB())) {
-                this.contradiction(null, "");
+                this.fails();
             }
         }
 

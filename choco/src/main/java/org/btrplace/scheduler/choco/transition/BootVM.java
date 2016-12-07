@@ -26,12 +26,10 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.EnumSet;
 
@@ -78,19 +76,20 @@ public class BootVM implements VMTransition {
     public BootVM(ReconfigurationProblem p, VM e) throws SchedulerException {
         vm = e;
 
+        Model csp = p.getModel();
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.BootVM.class, e);
         this.rp = p;
         start = p.makeDuration(p.getEnd().getUB() - d, 0, VAR_PREFIX, "(", e, ").start");
-        end = VariableFactory.offset(start, d);
+        end = rp.getModel().intOffsetView(start, d);
         duration = p.makeDuration(d, d, VAR_PREFIX, "(", e, ").duration");
         dSlice = new SliceBuilder(p, e, VAR_PREFIX, "(", e, ").dSlice").setStart(start)
                 .setDuration(p.makeDuration(p.getEnd().getUB(), d, VAR_PREFIX, "(", e, ").dSlice_duration"))
                 .build();
-        Solver s = p.getSolver();
-        s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
-        s.post(IntConstraintFactory.arithm(duration, "<=", p.getEnd()));
 
-        state = VariableFactory.one(rp.getSolver());
+        csp.post(csp.arithm(end, "<=", p.getEnd()));
+        csp.post(csp.arithm(duration, "<=", p.getEnd()));
+
+        state = csp.boolVar(true);
     }
 
     @Override

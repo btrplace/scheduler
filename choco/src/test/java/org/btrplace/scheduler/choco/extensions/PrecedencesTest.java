@@ -19,9 +19,8 @@
 package org.btrplace.scheduler.choco.extensions;
 
 
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,24 +37,24 @@ public class PrecedencesTest {
      */
     @Test
     public void dummyTest() {
-        Solver s = new Solver();
+        Model s = new Model();
 
         IntVar[] ends = new IntVar[5];
         int[] others = new int[5];
         others[0] = 0;
-        ends[0] = VF.fixed(1, s);
+        ends[0] = s.intVar(1);
         others[1] = 0;
-        ends[1] = VF.fixed(3, s);
+        ends[1] = s.intVar(3);
         others[2] = 1;
-        ends[2] = VF.fixed(2, s);
+        ends[2] = s.intVar(2);
         others[3] = 1;
-        ends[3] = VF.fixed(4, s);
+        ends[3] = s.intVar(4);
         others[4] = 2;
-        ends[4] = VF.fixed(5, s);
+        ends[4] = s.intVar(5);
 
 
-        IntVar host = VF.enumerated("host", 0, 2, s);
-        IntVar start = VF.bounded("start", 0, 5, s);
+        IntVar host = s.intVar("host", 0, 2, false);
+        IntVar start = s.intVar("start", 0, 5, true);
         /*
            If host == 0, consume = 3,4,5
            If host == 1, consume = 4,5
@@ -64,7 +63,7 @@ public class PrecedencesTest {
          */
         Precedences p = new Precedences(host, start, others, ends);
         s.post(p);
-        Assert.assertEquals(6, s.findAllSolutions());
+        Assert.assertEquals(6, s.getSolver().findAllSolutions().size());
     }
 
     /**
@@ -73,16 +72,16 @@ public class PrecedencesTest {
      */
     @Test
     public void simpleTest() {
-        Solver s = new Solver();
+        Model s = new Model();
 
         IntVar[] ends = new IntVar[3];
         int[] others = new int[3];
         others[0] = 0;
-        ends[0] = VF.bounded("ends[0]", 1, 2, s);
+        ends[0] = s.intVar("ends[0]", 1, 2, true);
         others[1] = 0;
-        ends[1] = VF.bounded("ends[1]", 1, 3, s);
+        ends[1] = s.intVar("ends[1]", 1, 3, true);
         others[2] = 0;
-        ends[2] = VF.bounded("ends[2]", 1, 4, s);
+        ends[2] = s.intVar("ends[2]", 1, 4, true);
 
         /*
          on host 0, 2 * 2 * 2 -> 8
@@ -92,10 +91,10 @@ public class PrecedencesTest {
          16 * 9 * 16 + 27 * 4 * 16 + 32 * 4 * 9
          */
 
-        IntVar host = VF.enumerated("host", 0, 0, s);
-        IntVar start = VF.bounded("start", 0, 5, s);
+        IntVar host = s.intVar(0, 0);
+        IntVar start = s.intVar(0, 5, true);
         Precedences p = new Precedences(host, start, others, ends);
         s.post(p);
-        Assert.assertEquals(s.findAllSolutions(), 75); //TODO: A way to check if it is correct ? :D
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 75); //TODO: A way to check if it is correct ? :D
     }
 }
