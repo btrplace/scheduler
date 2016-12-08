@@ -188,7 +188,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            solver.addStopCriterion(new TimeCounter(csp, timeLimit * 1000L * 1000L));
+            solver.addStopCriterion(new TimeCounter(csp, timeLimit * 1000L * 1000L * 1000L));
         }
 
         appendNaiveBranchHeuristic();
