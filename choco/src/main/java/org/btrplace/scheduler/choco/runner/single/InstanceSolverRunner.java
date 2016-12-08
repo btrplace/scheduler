@@ -32,6 +32,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
+import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
@@ -41,8 +42,9 @@ import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.SearchState;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
-import org.chocosolver.solver.search.measure.IMeasures;
+import org.chocosolver.solver.search.measure.Measures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -103,7 +105,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             //If there is a violation of the cycle it is not a bug that should be propagated
             //it it just indicating there is no solution
             stats.completed();
-            stats.setMeasures(new MeasuresRecorder(""));
+            stats.setMetrics(new Metrics());
             return stats;
         } finally {
             d += System.currentTimeMillis();
@@ -121,7 +123,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         stats.setSpecialisationDuration(d);
 
         //statistics
-        stats.setMeasures(rp.getSolver().getMeasures());
+        stats.setMetrics(new Metrics(rp.getSolver().getMeasures()));
         rp.getLogger().debug(stats.toString());
 
         //The solution monitor to store the measures at each solution
@@ -133,7 +135,12 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             views.forEach(v -> v.insertActions(rp, solution, plan));
 
             MeasuresRecorder m = rp.getSolver().getMeasures();
-            stats.addSolution(new SolutionStatistics(m, plan));
+            SolutionStatistics st = new SolutionStatistics(new Metrics(m), plan);
+            IntVar obj = rp.getObjective();
+            if (obj != null) {
+                st.setObjective(solution.getIntVal(obj));
+            }
+            stats.addSolution(st);
         });
 
         setVerbosity();
@@ -292,8 +299,8 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
      */
     public SingleRunnerStatistics getStatistics() {
         if (rp != null) {
-            IMeasures m = rp.getSolver().getMeasures();
-            stats.setMeasures(m);
+            Measures m = rp.getSolver().getMeasures();
+            stats.setMetrics(new Metrics(m));
             stats.setCompleted(m.getSearchState().equals(SearchState.TERMINATED));
         }
         return stats;

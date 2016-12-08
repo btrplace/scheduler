@@ -21,6 +21,7 @@ package org.btrplace.scheduler.runner.disjoint;
 import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
+import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.chocosolver.solver.search.measure.IMeasures;
@@ -115,7 +116,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     }
 
     @Override
-    public IMeasures getMeasures() {
+    public Metrics getMetrics() {
         return null;
     }
 

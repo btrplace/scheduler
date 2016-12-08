@@ -73,7 +73,7 @@ public class CMinMTTRTest {
         Assert.assertNotNull(p);
         System.err.println(sched.getStatistics());
         //TODO: fragile. Usefull ?
-        Assert.assertTrue(sched.getStatistics().getMeasures().getBackTrackCount() < 100);
+        Assert.assertTrue(sched.getStatistics().getMetrics().backtracks() < 100);
         System.err.flush();
     }
 }

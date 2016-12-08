@@ -21,7 +21,6 @@ package org.btrplace.scheduler.choco.runner;
 import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
-import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.List;
 
@@ -81,11 +80,10 @@ public interface SolvingStatistics {
     Parameters getParameters();
 
     /**
-     * Get the measures related to the solver.
-     *
-     * @return measures. {@code null} if the solver did not run
+     * Get the metrics related to the solving phase
+     * @return metrics. {@code null} if the solver did not run
      */
-    IMeasures getMeasures();
+    Metrics getMetrics();
 
     /**
      * Check if the solver completed the search.
@@ -109,7 +107,7 @@ public interface SolvingStatistics {
      * - getNbManagedVMs()
      * - getCoreBuildDuration()
      * - getSpecializationDuration()
-     * - getMeasures().getTimeCount() * 1000 (so in milliseconds)
+     * - getMetrics().timeCount() / (1000 * 1000) (so in milliseconds)
      * - solutions.size()
      * - completed ? 1 : 0
      *

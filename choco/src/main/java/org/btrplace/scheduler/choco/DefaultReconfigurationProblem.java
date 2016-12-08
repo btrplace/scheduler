@@ -263,7 +263,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         ESat status = solver.isFeasible();
         /*System.out.println(model);
         System.out.println("isFeasible()==" + status);
-        System.out.println(solver.getMeasures());*/
+        System.out.println(solver.getMetrics());*/
         if (status == ESat.FALSE) {
             //It is certain the CSP has no solution
             return null;

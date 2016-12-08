@@ -21,9 +21,9 @@ package org.btrplace.scheduler.choco.runner.single;
 import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.Parameters;
+import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
-import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +54,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
 
     private List<SolutionStatistics> solutions;
 
-
-    private IMeasures status;
+    private Metrics metrics;
 
     /**
      * Make new statistics.
@@ -72,7 +71,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
         this.coreRPBuildDuration = -1;
         this.speRPDuration = -1;
         this.instance = i;
-        status = null;
+        metrics = null;
         completed = false;
     }
 
@@ -114,17 +113,17 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
-    public IMeasures getMeasures() {
-        return this.status;
+    public Metrics getMetrics() {
+        return this.metrics;
     }
 
     /**
-     * Set the solver measures.
+     * Set the solver metrics.
      *
-     * @param m the measures
+     * @param m the metrics
      */
-    public void setMeasures(IMeasures m) {
-        this.status = m;
+    public void setMetrics(Metrics m) {
+        this.metrics = m;
     }
 
     @Override
@@ -176,7 +175,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
             b.append("; timeout: ").append(params.getTimeLimit()).append("s");
         }
         b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core) + ").append(speRPDuration).append("ms (specialization)");
-        b.append("\nAfter ").append((long) (status.getTimeCount() * 1000)).append("ms of search");
+        b.append("\nAfter ").append(metrics.timeCount() / (1000 * 1000)).append("ms of search");
 
         if (completed) {
             b.append(" (terminated)");
@@ -185,8 +184,8 @@ public class SingleRunnerStatistics implements SolvingStatistics {
         }
 
         b.append(": ")
-                .append(status.getNodeCount()).append(" opened search node(s), ")
-                .append(status.getBackTrackCount()).append(" backtrack(s), ")
+                .append(metrics.toString())
+                .append(", ")
                 .append(solutions.size()).append(" solution(s)");
         if (!solutions.isEmpty()) {
             b.append(":\n");
@@ -231,11 +230,10 @@ public class SingleRunnerStatistics implements SolvingStatistics {
 
     @Override
     public String toCSV() {
-        long d = (long) (getMeasures().getTimeCount() * 1000);
         return String.format("%d;%d;%d;%d;%d;%d", nbManagedVMs,
                 coreRPBuildDuration,
                 speRPDuration,
-                d,
+                getMetrics().timeCount(),
                 solutions.size(),
                 completed ? 1 : 0);
     }

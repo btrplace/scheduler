@@ -53,7 +53,7 @@ public class StagedSolvingStatisticsTest {
     public void testSingle() {
         SingleRunnerStatistics s = new SingleRunnerStatistics(ps, i, st);
         MeasuresRecorder mr = new MeasuresRecorder("");
-        s.setMeasures(mr);
+        s.setMetrics(new Metrics(mr));
         StagedSolvingStatistics stats = new StagedSolvingStatistics(s);
         Assert.assertEquals(stats.getSolutions().size(), 0);
         Assert.assertEquals(stats.getStage(0), s);
@@ -68,21 +68,14 @@ public class StagedSolvingStatisticsTest {
 
     @Test
     public void testMultiple() {
-        Assert.fail();
-    }
-    /*
+
         SingleRunnerStatistics s1 = new SingleRunnerStatistics(ps, i, st);
+
         s1.setCoreBuildDuration(2);
         s1.setSpecialisationDuration(3);
         s1.setNbManagedVMs(7);
-        MeasuresRecorder r1 = new MeasuresRecorder("");
-        r1.timeCount = 3;
-        r1.nodeCount = 12;
-        r1.backtrackCount = 7;
-        r1.failCount = 9;
-        r1.hasObjective = true;
-        r1.objectiveOptimal = true;
-        s1.setMeasures(r1);
+        Metrics r1 = new Metrics(0, 3, 12, 7, 9, 8);
+        s1.setMetrics(r1);
         s1.addSolution(new SolutionStatistics(r1, p));
         StagedSolvingStatistics stats = new StagedSolvingStatistics(s1);
 
@@ -90,14 +83,14 @@ public class StagedSolvingStatisticsTest {
         s2.setCoreBuildDuration(10);
         s2.setSpecialisationDuration(20);
         s2.setNbManagedVMs(15);
-        MeasuresRecorder r2 = new MeasuresRecorder(new Solver());
-        r2.timeCount = 7;
+        Metrics r2 = new Metrics(0, 7, 28, 18, 17, 4);
+/*        r2.timeCount = 7;
         r2.backtrackCount = 18;
         r2.nodeCount = 28;
         r2.failCount = 17;
         r2.hasObjective = true;
-        r2.objectiveOptimal = false;
-        s2.setMeasures(r2);
+        r2.objectiveOptimal = false;*/
+        s2.setMetrics(r2);
         s2.addSolution(new SolutionStatistics(r2, p));
 
         stats.append(s2);
@@ -106,12 +99,14 @@ public class StagedSolvingStatisticsTest {
         Assert.assertEquals(stats.getSpecializationDuration(), 23);
         Assert.assertEquals(stats.getNbManagedVMs(), 15);
         Assert.assertEquals(stats.getSolutions(), s2.getSolutions());
-        IMeasures res = stats.getMeasures();
-        Assert.assertEquals(res.getElapsedTimeInNanoseconds(), r1.getElapsedTimeInNanoseconds() + r2.getElapsedTimeInNanoseconds());
-        Assert.assertEquals(res.getBackTrackCount(), r1.getBackTrackCount() + r2.getBackTrackCount());
-        Assert.assertEquals(res.getNodeCount(), r1.getNodeCount() + r2.getNodeCount());
-        Assert.assertEquals(res.getFailCount(), r1.getFailCount() + r2.getFailCount());
-        Assert.assertTrue(res.hasObjective());
-        Assert.assertFalse(res.isObjectiveOptimal());
-    }*/
+        Metrics res = stats.getMetrics();
+        Assert.assertEquals(res.timeCount(), r1.timeCount() + r2.timeCount());
+        Assert.assertEquals(res.backtracks(), r1.backtracks() + r2.backtracks());
+        Assert.assertEquals(res.nodes(), r1.nodes() + r2.nodes());
+        Assert.assertEquals(res.fails(), r1.fails() + r2.fails());
+        Assert.assertFalse(stats.completed());
+
+        Assert.assertEquals(stats.getSolutions().size(), 1);
+        Assert.assertEquals(stats.getSolutions().get(0), s2.getSolutions().get(0));
+    }
 }
