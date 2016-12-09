@@ -365,21 +365,6 @@ public interface ReconfigurationProblem {
     Logger getLogger();
 
     /**
-     * Get the alterer that is used to manipulate the objective value
-     * each time a solution is computed
-     *
-     * @return the alterer. By default it is an instance of {@link org.btrplace.scheduler.choco.DefaultObjectiveAlterer}.
-     */
-    ObjectiveAlterer getObjectiveAlterer();
-
-    /**
-     * Set the alterer to use for this problem
-     *
-     * @param a the alterer to use
-     */
-    void setObjectiveAlterer(ObjectiveAlterer a);
-
-    /**
      * Create a clone of a given VM.
      * The clone will take the place of the VM by the end of the reconfiguration process.
      *

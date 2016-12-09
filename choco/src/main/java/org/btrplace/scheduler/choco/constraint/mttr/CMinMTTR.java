@@ -88,7 +88,6 @@ public class CMinMTTR implements CObjective {
         costConstraints.clear();
         costConstraints.add(costConstraint);
 
-        p.setObjective(true, cost);
 
         injectPlacementHeuristic(p, ps, cost);
         return true;

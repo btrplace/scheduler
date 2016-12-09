@@ -34,7 +34,10 @@ import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -156,7 +159,6 @@ public class DefaultReconfigurationProblemTest {
                 .build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
-        Assert.assertNotNull(rp.getObjectiveAlterer());
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
@@ -708,36 +710,6 @@ public class DefaultReconfigurationProblemTest {
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }
-
-    /**
-     * Test an unsolvable optimisation problem with an alterer. No solution
-     *
-     * @throws org.btrplace.scheduler.SchedulerException
-     */
-    @Test
-    public void testUnfeasibleOptimizeWithAlterer() throws SchedulerException {
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        for (int i = 0; i < 10; i++) {
-            Node n = mo.newNode();
-            VM vm = mo.newVM();
-            map.addOnlineNode(n);
-            map.addRunningVM(vm, n);
-        }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        Solver s = rp.getSolver();
-        IntVar nbNodes = rp.getModel().intVar("nbNodes", 0, 0, true);
-        Stream<Slice> dSlices = rp.getVMActions().stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
-        IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
-        rp.getModel().post(rp.getModel().atMostNValues(hosters, nbNodes, true));
-        rp.setObjective(true, nbNodes);
-        ObjectiveAlterer alt = (rp1, currentValue) -> currentValue / 2;
-
-        rp.setObjectiveAlterer(alt);
-        ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNull(plan);
-    }
-
 
     @Test
     public void testViewAddition() throws SchedulerException {

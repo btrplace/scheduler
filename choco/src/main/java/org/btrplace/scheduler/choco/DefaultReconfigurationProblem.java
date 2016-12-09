@@ -96,7 +96,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private List<IntVar> vmsCountOnNodes;
 
-    private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
     private ResolutionPolicy solvingPolicy;
 
@@ -202,11 +201,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
-            solver.plugMonitor((IMonitorSolution) () -> {
-                int v = objective.getValue();
-                String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
-                csp.post(csp.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
-            });
             solver.findOptimalSolution(objective, solvingPolicy.equals(ResolutionPolicy.MAXIMIZE));
         }
         return makeResultingPlan();
@@ -602,16 +596,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public Logger getLogger() {
         return LOGGER;
-    }
-
-    @Override
-    public ObjectiveAlterer getObjectiveAlterer() {
-        return alterer;
-    }
-
-    @Override
-    public void setObjectiveAlterer(ObjectiveAlterer a) {
-        alterer = a;
     }
 
     @Override
