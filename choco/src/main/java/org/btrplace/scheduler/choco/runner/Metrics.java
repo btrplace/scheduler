@@ -98,10 +98,10 @@ public class Metrics implements Copyable<Metrics> {
     @Override
     public String toString() {
         float sec = 1f * (timeCount / 1000);
-        return String.format("at %.3fs, %d Nodes (%,.1f n/s), %d Backtracks, %d Fails, %d Restarts",
-                sec,
+        return String.format("at %dms, %d Nodes (%,.1f n/s), %d Backtracks, %d Fails, %d Restarts",
+                timeCount,
                 nodes,
-                nodes / sec,
+                1.0f * nodes / sec,
                 backtracks,
                 fails,
                 restarts

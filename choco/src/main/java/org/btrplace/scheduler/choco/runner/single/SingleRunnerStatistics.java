@@ -175,7 +175,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
             b.append("; timeout: ").append(params.getTimeLimit()).append("s");
         }
         b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core) + ").append(speRPDuration).append("ms (specialization)");
-        b.append("\nAfter ").append(metrics.timeCount() / (1000 * 1000)).append("ms of search");
+        b.append("\nAfter ").append(metrics.timeCount()).append("ms of search");
 
         if (completed) {
             b.append(" (terminated)");
