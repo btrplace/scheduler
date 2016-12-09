@@ -34,7 +34,6 @@ import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.limits.TimeCounter;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
@@ -141,7 +140,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         IEnvironment env = ps.getEnvironmentFactory().build(m);
         csp = new org.chocosolver.solver.Model(env, "");
         solver = csp.getSolver();
-        //solver.set(new AllSolutionsRecorder(solver));
         start = csp.intVar(makeVarLabel("RP.start"), 0);
         end = csp.intVar(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), true);
 
@@ -188,7 +186,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            solver.addStopCriterion(new TimeCounter(csp, timeLimit * 1000L * 1000L * 1000L));
+            solver.limitTime(timeLimit * 1000);
         }
 
         appendNaiveBranchHeuristic();
@@ -261,9 +259,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Check for the solution
         ESat status = solver.isFeasible();
-        /*System.out.println(model);
-        System.out.println("isFeasible()==" + status);
-        System.out.println(solver.getMetrics());*/
         if (status == ESat.FALSE) {
             //It is certain the CSP has no solution
             return null;

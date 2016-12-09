@@ -178,7 +178,7 @@ public class StagedSolvingStatistics implements SolvingStatistics {
      * - the maximum number of managed VMs
      * - the cumulative getCoreBuildDuration()
      * - the cumulative getSpecializationDuration()
-     * - the cumulative getMetrics().timeCount / (1000 * 1000) (so in milliseconds)
+     * - the cumulative getMetrics().timeCount
      * - the number of solutions for the last stage or 0 if any of the stages does not have at least a solution
      * - completed ? 1 if all the stages are completed
      *
@@ -199,7 +199,7 @@ public class StagedSolvingStatistics implements SolvingStatistics {
             nbManagedVMs = Math.max(nbManagedVMs, sol.getNbManagedVMs());
             core += sol.getCoreBuildDuration();
             spe += sol.getSpecializationDuration();
-            d += sol.getMetrics().timeCount() / (1000 * 1000); //in ms.
+            d += sol.getMetrics().timeCount();
             completed &= sol.completed();
             if (sol.getSolutions().isEmpty()) {
                 solutions = 0;

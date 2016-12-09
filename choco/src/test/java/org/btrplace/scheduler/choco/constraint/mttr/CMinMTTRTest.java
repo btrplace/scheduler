@@ -68,7 +68,6 @@ public class CMinMTTRTest {
         mo.attach(cpu);
         mo.attach(mem);
         DefaultChocoScheduler sched = new DefaultChocoScheduler();
-        //sched.setVerbosity(2);
         ReconfigurationPlan p = sched.solve(mo, l);
         Assert.assertNotNull(p);
         System.err.println(sched.getStatistics());

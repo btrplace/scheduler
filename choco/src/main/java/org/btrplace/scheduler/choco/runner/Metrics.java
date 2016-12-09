@@ -54,8 +54,8 @@ public class Metrics implements Copyable<Metrics> {
      * @param m the measures
      */
     public Metrics(Measures m) {
-        timeCount = m.getTimeCountInNanoSeconds();
-        readingTimeCount = m.getReadingTimeCountInNanoSeconds();
+        timeCount = (long) (m.getTimeCountInNanoSeconds() / 1E6d);
+        readingTimeCount = (long) (m.getReadingTimeCountInNanoSeconds() / 1E6d);
         nodes = m.getNodeCount();
         backtracks = m.getBackTrackCount();
         fails = m.getFailCount();
@@ -63,7 +63,7 @@ public class Metrics implements Copyable<Metrics> {
     }
 
     /**
-     * New metrics. Duration are expressed in nanoseconds.
+     * New metrics. Duration are expressed in milliseconds.
      *
      * @param readingTimeCount the time to read the model
      * @param timeCount        the solving duration
@@ -97,7 +97,7 @@ public class Metrics implements Copyable<Metrics> {
 
     @Override
     public String toString() {
-        float sec = 1f * (timeCount / 1000 * 1000 * 1000);
+        float sec = 1f * (timeCount / 1000);
         return String.format("at %.3fs, %d Nodes (%,.1f n/s), %d Backtracks, %d Fails, %d Restarts",
                 sec,
                 nodes,
@@ -111,7 +111,7 @@ public class Metrics implements Copyable<Metrics> {
     /**
      * Returns the time to read the model.
      *
-     * @return a duration in nanoseconds
+     * @return a duration in milliseconds
      */
     public long readingTimeCount() {
         return readingTimeCount;
@@ -120,7 +120,7 @@ public class Metrics implements Copyable<Metrics> {
     /**
      * Returns the time to solve.
      *
-     * @return a duration in nanoseconds
+     * @return a duration in milliseconds
      */
     public long timeCount() {
         return timeCount;

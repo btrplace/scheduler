@@ -35,6 +35,7 @@ import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -242,11 +243,14 @@ public class RelocatableVMTest {
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(new DefaultParameters(), rp);
 
+        Solution sol = new Solution(rp.getModel());
+        sol.record();
+        rp.getSolver().plugMonitor((IMonitorSolution) () -> {
+            sol.record();
+        });
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Solution sol = new Solution(rp.getModel());
-        sol.record();
         Assert.assertEquals(sol.getIntVal(am.getRelocationMethod()), 1);
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();

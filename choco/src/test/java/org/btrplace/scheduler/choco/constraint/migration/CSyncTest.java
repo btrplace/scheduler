@@ -184,7 +184,6 @@ public class CSyncTest {
 
         // Solve it using the Min Max Time To Repair Migration scheduling oriented objective
         ChocoScheduler sched = new DefaultChocoScheduler();
-        sched.setVerbosity(3);
         ReconfigurationPlan p = sched.solve(mo, cstrs, new MinMTTRMig());
 
         // Unable to sync two migrations on the same path !
