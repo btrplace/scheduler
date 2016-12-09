@@ -268,7 +268,7 @@ public class CNetwork implements ChocoView {
 
 
             // Only if the capacity is limited
-            if (sw.getCapacity() > 0) {
+            if (sw.getCapacity() != Integer.MAX_VALUE) {
 
                 for (VM vm : rp.getVMs()) {
                     VMTransition a = rp.getVMAction(vm);
@@ -292,6 +292,10 @@ public class CNetwork implements ChocoView {
                 }
 
                 if (!tasksList.isEmpty()) {
+                    int max = 0;
+                    for (IntVar h : heightsList) {
+                        max += h.getUB();
+                    }
                     // Post the cumulative constraint for the current switch
                     solver.post(ICF.cumulative(
                             tasksList.toArray(new Task[tasksList.size()]),
