@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.extensions.pack;
 
 
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -28,6 +29,7 @@ import org.chocosolver.solver.variables.IntVar;
  * @author Fabien Hermenier
  */
 public class VectorPacking extends Constraint {
+
 
     /**
      * constructor of the FastBinPacking global constraint
@@ -41,6 +43,10 @@ public class VectorPacking extends Constraint {
      */
     public VectorPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
         super("VectorPacking", new VectorPackingPropagator(labels, l, s, b, withHeap, withKS));
+    }
+
+    public IStateInt[][] assignedLoad() {
+        return ((VectorPackingPropagator) propagators[0]).assignedLoad();
     }
 
 

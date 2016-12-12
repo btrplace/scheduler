@@ -486,6 +486,7 @@ public class IssuesTest {
         scheduler.setTimeLimit(60000);
         ReconfigurationPlan plan = scheduler.solve(
                 model, satConstraints, optConstraint);
+        System.out.println(scheduler.getStatistics());
         Assert.assertTrue(plan.isApplyable());
 
 

@@ -34,14 +34,20 @@ public class MyFirstFail implements VariableSelector<IntVar>, VariableEvaluator<
 
     private IStateInt last;
 
+    private String label;
     /**
      * New heuristic.
      *
      * @param s the solver in use
      */
     public MyFirstFail(Solver s) {
+        last = s.getEnvironment().makeInt(0);
+    }
+
+    public MyFirstFail(Solver s, String lbl) {
 
         last = s.getEnvironment().makeInt(0);
+        this.label = lbl;
     }
 
     @Override

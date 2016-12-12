@@ -45,7 +45,7 @@ import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
-import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
+import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
 import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
@@ -298,29 +298,24 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
-        StrategiesSequencer seq;
 
-        IntStrategy strat = ISF.custom(new MyFirstFail(solver), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
-        if (solver.getSearchLoop().getStrategy() == null) {
-            seq = new StrategiesSequencer(strat);
-        } else {
-            seq = new StrategiesSequencer(
-                    solver.getSearchLoop().getStrategy(),
-                    strat);
+        if (solver.getSearchLoop().getStrategy() != null) {
+            return;
         }
+        List<AbstractStrategy> strats = new ArrayList<>();
+        strats.add(ISF.custom(new MyFirstFail(solver, "queue"),
+                ISF.min_value_selector(),
+                ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars())));
+
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new RealStrategy(rv, new Occurrence<>(), new RealDomainMiddle()));
+            strats.add(new RealStrategy(rv, new Occurrence<>(), new RealDomainMiddle()));
         }
         SetVar[] sv = solver.retrieveSetVars();
         if (sv != null && sv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new SetStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
+            strats.add(new SetStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
         }
-        solver.set(seq);
+        solver.set(new StrategiesSequencer(strats.toArray(new AbstractStrategy[strats.size()])));
     }
 
     private void addContinuousResourceCapacities() {

@@ -586,4 +586,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
         return check;
     }
+
+    public IStateInt[][] assignedLoad() {
+        return assignedLoad;
+    }
 }

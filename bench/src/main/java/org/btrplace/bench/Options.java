@@ -75,9 +75,9 @@ public class Options {
                 .doRepair(repair)
                 .doOptimize(optimize);
 
-        if (single()) {
+        // if (single()) {
             ps.setVerbosity(verbosity);
-        }
+        // }
         if (chunk) {
             ps.setEnvironmentFactory(mo -> new ChunkedTrailing());
         }

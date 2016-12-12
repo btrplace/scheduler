@@ -29,6 +29,7 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
+import org.btrplace.scheduler.choco.constraint.mttr.load.BiggestDimension;
 import org.btrplace.scheduler.choco.extensions.MyFirstFail;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
@@ -64,6 +65,9 @@ public class CMinMTTR implements CObjective {
 
     private ReconfigurationProblem rp;
 
+    private IntVar cost;
+
+    private boolean useResources = false;
     /**
      * Make a new objective.
      */
@@ -79,15 +83,7 @@ public class CMinMTTR implements CObjective {
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         costActivated = false;
-        List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
-        mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
-        IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
-        Solver s = p.getSolver();
-        IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
-
-        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);
-        costConstraints.clear();
-        costConstraints.add(costConstraint);
+        cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, rp.getSolver());
 
         p.setObjective(true, cost);
 
@@ -140,6 +136,7 @@ public class CMinMTTR implements CObjective {
                 .filter(v -> v instanceof ShareableResource)
                 .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
                 .collect(Collectors.toList());
+        useResources = !rcs.isEmpty();
         Map<VM, Integer> costs = CShareableResource.getWeights(rp, rcs);
         badActions = badActions.stream().sorted((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM())).collect(Collectors.toList());
         goodActions = goodActions.stream().sorted((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM())).collect(Collectors.toList());
@@ -169,6 +166,9 @@ public class CMinMTTR implements CObjective {
 
         IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).toArray(IntVar[]::new);
         strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), ends));
+
+        IntVar[] durations = rp.getVMActions().stream().map(Transition::getDuration).toArray(IntVar[]::new);
+        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), durations));
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
 
@@ -179,7 +179,10 @@ public class CMinMTTR implements CObjective {
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(Parameters ps, List<AbstractStrategy<?>> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
-        IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
+        IntValueSelector rnd = new WorstFit(map, rp, new BiggestDimension());
+        if (!useResources) {
+            rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
+        }
         if (!actions.isEmpty()) {
             IntVar[] hosts = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
             if (hosts.length > 0) {
@@ -202,7 +205,11 @@ public class CMinMTTR implements CObjective {
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            costConstraints.forEach(rp.getSolver()::post);
+
+            List<IntVar> mttrs = rp.getVMActions().stream().map(VMTransition::getEnd).filter(v -> !v.isInstantiatedTo(0)).collect(Collectors.toList());
+            mttrs.addAll(rp.getNodeActions().stream().map(NodeTransition::getEnd).filter(v -> !v.isInstantiatedTo(0)).collect(Collectors.toList()));
+            IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
+            rp.getSolver().post(IntConstraintFactory.sum(costs, cost));
         }
     }
 
