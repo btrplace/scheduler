@@ -35,7 +35,6 @@ import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
@@ -57,17 +56,16 @@ import java.util.stream.Stream;
  */
 public class CMinMTTR implements CObjective {
 
-    private List<Constraint> costConstraints;
-
     private boolean costActivated = false;
 
     private ReconfigurationProblem rp;
+
+    private IntVar cost;
 
     /**
      * Make a new objective.
      */
     public CMinMTTR(MinMTTR m) {
-        costConstraints = new ArrayList<>();
     }
 
     public CMinMTTR() {
@@ -78,16 +76,8 @@ public class CMinMTTR implements CObjective {
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         costActivated = false;
-        List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
-        mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
-        IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
         org.chocosolver.solver.Model csp = p.getModel();
-        IntVar cost = csp.intVar(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, true);
-
-        Constraint costConstraint = csp.sum(costs, "=", cost);
-        costConstraints.clear();
-        costConstraints.add(costConstraint);
-
+        cost = csp.intVar(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, true);
 
         injectPlacementHeuristic(p, ps, cost);
         return true;
@@ -203,7 +193,14 @@ public class CMinMTTR implements CObjective {
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            costConstraints.forEach(rp.getModel()::post);
+
+            List<IntVar> mttrs = rp.getVMActions().stream().map(VMTransition::getEnd)
+                    .filter(v -> !v.isInstantiatedTo(0))
+                    .collect(Collectors.toList());
+            mttrs.addAll(rp.getNodeActions().stream().map(NodeTransition::getEnd)
+                    .filter(v -> !v.isInstantiatedTo(0))
+                    .collect(Collectors.toList()));
+            rp.getModel().post(rp.getModel().sum(mttrs.toArray(new IntVar[mttrs.size()]), "=", cost));
         }
     }
 
