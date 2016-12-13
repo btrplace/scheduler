@@ -160,13 +160,13 @@ public class RelocatableVM implements KeepRunningVM {
             postCopy = mo.getAttributes().get(vm, "postCopy", false);
 
             // Create unbounded/large domain vars for migration duration and bandwidth
-            migrationDuration = p.makeUnboundedDuration(PREFIX, vm, ").duration");
+            migrationDuration = p.makeUnboundedDuration("migration(", vm, ").duration");
             bandwidth = VF.bounded(PREFIX + vm + ").bandwidth", 0, Integer.MAX_VALUE/100, s);
         }
         // No networking view, set the duration from the evaluator
         else {
             // The duration can still be 0 => the VM STAY !
-            migrationDuration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, vm, ").duration"),
+            migrationDuration = VariableFactory.enumerated(rp.makeVarLabel("migration(", vm, ").duration"),
                     new int[]{0, migrateDuration}, s);
             bandwidth = null;
         }
