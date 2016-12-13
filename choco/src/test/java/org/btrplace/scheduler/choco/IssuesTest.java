@@ -511,6 +511,21 @@ public class IssuesTest {
         }
     }
 
+    /**
+     * A helper to check that an instance has a solution.
+     *
+     * @param file the serialised instance. Must be in 'src/test/resources/'
+     */
+    private void computable(String file) {
+        Instance i = JSON.readInstance(new File("src/test/resources/" + file));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(i);
+        SolvingStatistics stats = s.getStatistics();
+        System.out.println(stats);
+        Assert.assertNotNull(p);
+        System.out.println(p.getSize() + " action(s)");
+    }
+
     @Test
     public void testIssue93() throws Exception {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[2]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{\"0\":{\"memUsed\":204},\"1\":{\"memUsed\":204},\"2\":{\"memUsed\":204}}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":8,\"1\":10,\"2\":10},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{\"0\":8,\"1\":1,\"2\":1}},{\"routing\":{\"type\":\"default\"},\"switches\":[{\"id\":0,\"capacity\":-1}],\"links\":[{\"physicalElement\":{\"id\":2,\"type\":\"node\"},\"id\":0,\"capacity\":1000,\"switch\":0},{\"physicalElement\":{\"id\":1,\"type\":\"node\"},\"id\":1,\"capacity\":1000,\"switch\":0},{\"physicalElement\":{\"id\":0,\"type\":\"node\"},\"id\":2,\"capacity\":1000,\"switch\":0}],\"id\":\"net\"}]},\"constraints\":[{\"rc\":\"cpu\",\"amount\":6,\"nodes\":[0],\"continuous\":false,\"id\":\"resourceCapacity\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
@@ -525,23 +540,12 @@ public class IssuesTest {
 
     @Test
     public void testIssue100() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-100.json.gz"));
-            ChocoScheduler s = new DefaultChocoScheduler();
-            ReconfigurationPlan p = s.solve(i);
-            SolvingStatistics stats = s.getStatistics();
-            Assert.assertNotNull(p);
-            System.out.println(stats);
+        computable("issue-100.json.gz");
     }
 
     @Test
     public void testIssue101() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json.gz"));
-        ChocoScheduler s = new DefaultChocoScheduler();
-        ReconfigurationPlan p = s.solve(i);
-        SolvingStatistics stats = s.getStatistics();
-        System.out.println(stats);
-        Assert.assertNotNull(p);
-        System.out.println(p);
+        computable("issue-101.json.gz");
     }
 
     @Test
@@ -560,13 +564,8 @@ public class IssuesTest {
     public void testIssue131() throws Exception {
         for (int id = 0; id <= 4; id++) {
             System.out.println("--- " + id + " ---");
-            Instance i = JSON.readInstance(new File("src/test/resources/issue-131-" + id + ".json.gz"));
-            ChocoScheduler s = new DefaultChocoScheduler();
-            ReconfigurationPlan p = s.solve(i);
-            SolvingStatistics stats = s.getStatistics();
-            System.out.println(stats);
-            Assert.assertNotNull(p);
-            System.out.println(p.getSize() + " action(s)");
+            computable("issue-131-" + id + ".json.gz");
         }
     }
+
 }
