@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <version>1.3</version>
     </parent>
     <artifactId>scheduler-choco</artifactId>
     <name>scheduler-choco</name>
