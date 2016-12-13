@@ -189,9 +189,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (timeLimit > 0) {
             SMF.limitTime(solver, timeLimit * 1000L);
         }
-
-        appendNaiveBranchHeuristic();
-
+        
         getLogger().debug("{} constraints; {} integers", solver.getNbCstrs(), solver.retrieveIntVars().length + solver.retrieveBoolVars().length);
 
 
@@ -291,36 +289,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(s, plan);
         return plan;
-    }
-
-    /**
-     * A naive heuristic to be sure every variables will be instantiated.
-     * In practice, instantiate each of the variables to its lower-bound
-     */
-    private void appendNaiveBranchHeuristic() {
-        StrategiesSequencer seq;
-
-        IntStrategy strat = ISF.custom(new MyFirstFail(solver), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
-        if (solver.getSearchLoop().getStrategy() == null) {
-            seq = new StrategiesSequencer(strat);
-        } else {
-            seq = new StrategiesSequencer(
-                    solver.getSearchLoop().getStrategy(),
-                    strat);
-        }
-        RealVar[] rv = solver.retrieveRealVars();
-        if (rv != null && rv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new RealStrategy(rv, new Occurrence<>(), new RealDomainMiddle()));
-        }
-        SetVar[] sv = solver.retrieveSetVars();
-        if (sv != null && sv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new SetStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
-        }
-        solver.set(seq);
     }
 
     private void addContinuousResourceCapacities() {
