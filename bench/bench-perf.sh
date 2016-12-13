@@ -16,14 +16,14 @@ run)
     mvn -q -f ../ clean install -DskipTests -Dgpg.skip||exit 1
     #We run 11 times and get rid of the first run because the JIT will not be activated
     echo "Running the benchmark"
-    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-n 11 -l src/test/resources/std-perf/std-perf.txt --repair --timeout 300 -v 1 -o ${OUTPUT}" ||exit 1
+    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-l src/test/resources/std-perf/std-perf.txt --repair --timeout 300 -v 1 -o ${OUTPUT}" ||exit 1
     echo "Statistics available in ${OUTPUT}. Run '$0 stats ${OUTPUT}' to generate them"
     ;;
 stats)
     #summary per bench
     for t in nr6 li6; do
         echo "---------- ${t} ----------"
-        DTA=`tail -n 10 ${OUTPUT}/scheduler.csv|grep ${t} |awk -F';' '{ core+=$3; spe +=$4; solve+=$5; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
+        DTA=`grep ${t} ${OUTPUT}/scheduler.csv|tail -n 10 |awk -F';' '{ core+=$4; spe +=$5; solve+=$6; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
         echo "${OUTPUT},${DTA}"
     done
     ;;
