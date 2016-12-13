@@ -18,7 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
-import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.variables.IntVar;
 
 /**
@@ -27,7 +27,7 @@ import org.chocosolver.solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public class HostingVariableSelector extends InputOrder<IntVar> {
+public class HostingVariableSelector extends FirstFail {
 
     private OnStableNodeFirst schedHeuristic;
 

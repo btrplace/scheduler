@@ -29,6 +29,7 @@ import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.LifeCycleViolationException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
@@ -161,14 +162,17 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
     }
 
     private boolean specialise() {
-
+        
         //Resolve the view dependencies, add them and inject them
         views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
         views.forEach(rp::addView);
+        //Inject the sat constraints, 2nd pass on the view. Then the objective for a late optimisation
+        Optional<ChocoConstraint> obj = cConstraints.stream().filter(c -> c instanceof CObjective).findFirst();
         return views.stream().allMatch(v -> v.inject(params, rp)) &&
-                cConstraints.stream().allMatch(c -> c.inject(params, rp)) &&
-                views.stream().allMatch(v -> v.beforeSolve(rp));
-
+                cConstraints.stream().filter(c -> !(c instanceof CObjective))
+                        .allMatch(c -> c.inject(params, rp)) &&
+                views.stream().allMatch(v -> v.beforeSolve(rp)) &&
+                (!obj.isPresent() || obj.isPresent() && obj.get().inject(params, rp));
     }
 
     private ReconfigurationProblem buildRP() throws SchedulerException {

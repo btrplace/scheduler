@@ -576,4 +576,15 @@ public class IssuesTest {
             System.out.println();
         }
     }
+
+    @Test
+    public void testIssue131() throws Exception {
+        Instance i = JSON.readInstance(new File("src/test/resources/issue-131.json.gz"));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(i);
+        SolvingStatistics stats = s.getStatistics();
+        System.out.println(stats);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+    }
 }

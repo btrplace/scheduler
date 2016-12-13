@@ -331,7 +331,7 @@ public class CShareableResource implements ChocoView {
             Slice dSlice = r.getVMAction(vm).getDSlice();
             Node destNode = r.getNode(s.getIntVal(dSlice.getHoster()));
 
-            if (srcMapping.isRunning(vm) && destNode == srcMapping.getVMLocation(vm)) {
+            if (srcMapping.isRunning(vm) && destNode.equals(srcMapping.getVMLocation(vm))) {
                 //Was running and stay on the same node
                 //Check if the VM has been cloned
                 //TODO: might be too late depending on the symmetry breaking on the actions schedule
@@ -342,7 +342,7 @@ public class CShareableResource implements ChocoView {
                 for (Action a : p.getActions()) {
                     if (a instanceof RunningVMPlacement) {
                         RunningVMPlacement tmp = (RunningVMPlacement) a;
-                        if (tmp.getVM() == dVM) {
+                        if (tmp.getVM().equals(dVM)) {
                             if (a instanceof MigrateVM) {
                                 //For a migrated VM, we allocate once the migration over
                                 insertAllocateEvent(a, Action.Hook.POST, dVM);
@@ -614,4 +614,43 @@ public class CShareableResource implements ChocoView {
         return Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID);
     }
 
+    /**
+     * Estimate the weight of each VMs with regards to multiple dimensions.
+     * In practice, it sums the normalised size of each VM against the total capacity
+     *
+     * @param rp  the problem to solve
+     * @param rcs the resources to consider
+     * @return a weight per VM
+     */
+    public static Map<VM, Integer> getWeights(ReconfigurationProblem rp, List<CShareableResource> rcs) {
+        Model mo = rp.getSourceModel();
+
+        int[] capa = new int[rcs.size()];
+        int[] cons = new int[rcs.size()];
+        Map<VM, Integer> cost = new HashMap<>();
+        for (Node n : mo.getMapping().getAllNodes()) {
+            for (int i = 0; i < rcs.size(); i++) {
+                capa[i] += rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n)).getLB();
+            }
+        }
+
+        for (VM v : mo.getMapping().getAllVMs()) {
+            for (int i = 0; i < rcs.size(); i++) {
+                cons[i] += rcs.get(i).vmAllocation.get(rp.getVM(v)).getLB();
+            }
+        }
+
+        for (VM v : mo.getMapping().getAllVMs()) {
+            double sum = 0;
+            for (int i = 0; i < rcs.size(); i++) {
+                double ratio = 0;
+                if (cons[i] > 0) {
+                    ratio = 1.0 * rcs.get(i).vmAllocation.get(rp.getVM(v)).getLB() / capa[i];
+                }
+                sum += ratio;
+            }
+            cost.put(v, (int) (sum * 10000));
+        }
+        return cost;
+    }
 }
