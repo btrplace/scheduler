@@ -35,20 +35,7 @@ import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
-import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
-import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
-import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
-import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
-import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
-import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
-import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
-import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.RealVar;
-import org.chocosolver.solver.variables.SetVar;
 import org.chocosolver.util.ESat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,8 +175,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.limitTime(timeLimit * 1000);
         }
 
-        appendNaiveBranchHeuristic();
-
         getLogger().debug("{} constraints; {} integers", csp.getNbCstrs(), csp.retrieveIntVars(true).length);
 
         solver.plugMonitor((IMonitorSolution) () -> {
@@ -289,39 +274,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(s, plan);
         return plan;
-    }
-
-    /**
-     * A naive heuristic to be sure every variables will be instantiated.
-     * In practice, instantiate each of the variables to its lower-bound
-     */
-    private void appendNaiveBranchHeuristic() {
-        StrategiesSequencer seq;
-
-        IntStrategy strat = Search.intVarSearch(
-                new FirstFail(csp),
-                new IntDomainMin(),
-                csp.retrieveIntVars(true));
-        if (solver.getSearch() == null) {
-            seq = new StrategiesSequencer(strat);
-        } else {
-            seq = new StrategiesSequencer(
-                    solver.getSearch(),
-                    strat);
-        }
-        RealVar[] rv = csp.retrieveRealVars();
-        if (rv != null && rv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new RealStrategy(rv, new Occurrence<>(), new RealDomainMiddle()));
-        }
-        SetVar[] sv = csp.retrieveSetVars();
-        if (sv != null && sv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new SetStrategy(sv, new InputOrder<>(csp), new SetDomainMin(), true));
-        }
-        solver.setSearch(seq);
     }
 
     private void addContinuousResourceCapacities() {
