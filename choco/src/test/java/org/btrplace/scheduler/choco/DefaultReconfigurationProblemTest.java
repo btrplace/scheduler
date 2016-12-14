@@ -23,6 +23,7 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.ChocoView;
@@ -615,7 +616,9 @@ public class DefaultReconfigurationProblemTest {
         }
         map.addOnlineNode(n3);
         map.addOnlineNode(n2);
+        Parameters ps = new DefaultParameters().setVerbosity(1);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setParams(ps)
                 .setNextVMsStates(new HashSet<>()
                         , map.getAllVMs()
                         , new HashSet<>()
@@ -626,6 +629,7 @@ public class DefaultReconfigurationProblemTest {
         for (IntVar capa : rp.getNbRunningVMs()) {
             capa.updateUpperBound(5, Cause.Null);
         }
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(-1, false);
         Assert.assertNotNull(p);
         //Check consistency between the counting and the hoster variables
@@ -696,7 +700,8 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        Parameters ps = new DefaultParameters().setVerbosity(1);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = rp.getModel().intVar("nbNodes", 1, map.getAllNodes().size(), true);
         Stream<Slice> dSlices = rp.getVMActions().stream().filter(t -> t.getDSlice() != null).map(VMTransition::getDSlice);

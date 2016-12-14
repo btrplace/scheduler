@@ -26,6 +26,7 @@ import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
@@ -80,6 +81,7 @@ public class BootVMTest {
         Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         org.btrplace.plan.event.BootVM a = (org.btrplace.plan.event.BootVM) p.getActions().iterator().next();
@@ -123,6 +125,7 @@ public class BootVMTest {
         Solver s = rp.getSolver();
         rp.getModel().post(rp.getModel().arithm(m2.getStart(), ">=", m1.getEnd()));
 
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Iterator<Action> ite = p.iterator();

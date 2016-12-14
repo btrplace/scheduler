@@ -205,6 +205,9 @@ public class RelocatableVM implements KeepRunningVM {
         // If the VM stay (src host == dst host), then duration = 0
         csp.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         csp.post(new FastIFFEq(stay, duration, 0));
+        //We have to force the migration duration equals to 0 if it stays
+        //otherwise, the variable will be free
+        csp.post(new FastIFFEq(stay, migrationDuration, 0));
 
         // Create the task ('default' cumulative constraint with a height of 1)
         migrationTask = new Task(start, duration, end);

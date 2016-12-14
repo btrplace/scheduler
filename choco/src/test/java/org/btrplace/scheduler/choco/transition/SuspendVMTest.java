@@ -26,6 +26,7 @@ import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
@@ -54,7 +55,7 @@ public class SuspendVMTest {
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
-        Parameters ps = new DefaultParameters();
+        Parameters ps = new DefaultParameters().setVerbosity(1);
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -69,6 +70,7 @@ public class SuspendVMTest {
         Assert.assertTrue(m.getState().isInstantiatedTo(0));
         Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
 
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         org.btrplace.plan.event.SuspendVM a = (org.btrplace.plan.event.SuspendVM) p.getActions().iterator().next();
         Assert.assertEquals(n1, a.getSourceNode());
@@ -106,6 +108,7 @@ public class SuspendVMTest {
         org.chocosolver.solver.Model csp = rp.getModel();
         csp.post(csp.arithm(m2.getStart(), ">=", m1.getEnd()));
 
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);
