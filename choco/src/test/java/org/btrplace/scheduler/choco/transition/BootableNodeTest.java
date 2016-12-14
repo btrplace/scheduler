@@ -27,6 +27,7 @@ import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.*;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
@@ -171,6 +172,7 @@ public class BootableNodeTest {
         na2.getState().instantiateTo(1, Cause.Null);
         Solver solver = rp.getSolver();
         solver.post(IntConstraintFactory.arithm(na1.getEnd(), "=", na2.getEnd()));
+        new CMinMTTR().inject(ps, rp);
         Assert.assertNotNull(rp.solve(0, false));
     }
 
@@ -190,6 +192,7 @@ public class BootableNodeTest {
         BootableNode ma2 = (BootableNode) rp.getNodeAction(n2);
         ma2.getState().instantiateTo(1, Cause.Null);
         ma2.getStart().updateLowerBound(5, Cause.Null);
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);
@@ -222,6 +225,7 @@ public class BootableNodeTest {
         BootableNode bn4 = (BootableNode) rp.getNodeAction(n4);
         bn4.getState().instantiateTo(0, Cause.Null);
 
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);

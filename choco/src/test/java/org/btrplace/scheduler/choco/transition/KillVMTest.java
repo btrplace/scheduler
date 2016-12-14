@@ -22,8 +22,11 @@ import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
+import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
@@ -67,9 +70,12 @@ public class KillVMTest {
         Set<VM> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(org.btrplace.plan.event.KillVM.class, new ConstantActionDuration<>(1));
+        Parameters ps = new DefaultParameters().setVerbosity(1);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
+                .setParams(ps)
                 .build();
+
 
         rp.getNodeAction(n1).getState().instantiateTo(rp.getVM(vm1), Cause.Null);
         //Common stuff
@@ -91,6 +97,7 @@ public class KillVMTest {
         Assert.assertNotNull(rp.getVMAction(vm1).getCSlice());
         System.out.println(rp.getVMAction(vm1).getCSlice() + " " + rp.getNode(n1));
         Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
 

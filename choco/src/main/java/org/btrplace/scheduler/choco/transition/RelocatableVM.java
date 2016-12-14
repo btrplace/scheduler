@@ -197,6 +197,7 @@ public class RelocatableVM implements KeepRunningVM {
 
             // Be sure that doReinstantiation will be instantiated
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
+            //s.post(new FastIFFEq(doReinstantiation.not(), migrationDuration, 0));
         }
         // The VM either migrate or stay but won't be re-instantiated for sure
         else {
@@ -207,6 +208,9 @@ public class RelocatableVM implements KeepRunningVM {
         // If the VM stay (src host == dst host), then duration = 0
         s.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         s.post(new FastIFFEq(stay, duration, 0));
+        //We have to force the migration duration equals to 0 if it stays
+        //otherwise, the variable will be free
+        s.post(new FastIFFEq(stay, migrationDuration, 0));
 
         // Create the task ('default' cumulative constraint with a height of 1)
         migrationTask = VariableFactory.task(start, duration, end);

@@ -36,7 +36,6 @@ import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
@@ -58,17 +57,15 @@ import java.util.stream.Stream;
  */
 public class CMinMTTR implements CObjective {
 
-    private List<Constraint> costConstraints;
-
     private boolean costActivated = false;
 
     private ReconfigurationProblem rp;
 
+    private IntVar cost;
     /**
      * Make a new objective.
      */
     public CMinMTTR(MinMTTR m) {
-        costConstraints = new ArrayList<>();
     }
 
     public CMinMTTR() {
@@ -79,15 +76,9 @@ public class CMinMTTR implements CObjective {
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
         costActivated = false;
-        List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
-        mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
-        IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
-        Solver s = p.getSolver();
-        IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
 
-        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);
-        costConstraints.clear();
-        costConstraints.add(costConstraint);
+        Solver s = p.getSolver();
+        cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
 
         p.setObjective(true, cost);
 
@@ -141,8 +132,8 @@ public class CMinMTTR implements CObjective {
                 .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
                 .collect(Collectors.toList());
         Map<VM, Integer> costs = CShareableResource.getWeights(rp, rcs);
-        badActions = badActions.stream().sorted((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM())).collect(Collectors.toList());
-        goodActions = goodActions.stream().sorted((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM())).collect(Collectors.toList());
+        badActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
+        goodActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
         placeVMs(ps, strategies, badActions, schedHeuristic, pla);
         placeVMs(ps, strategies, goodActions, schedHeuristic, pla);
 
@@ -157,17 +148,17 @@ public class CMinMTTR implements CObjective {
 
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
-            IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
+            IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
             strategies.add(new IntStrategy(starts, new MyFirstFail(s), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
-        IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).toArray(IntVar[]::new);
+        IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
         strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
-        IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).toArray(IntVar[]::new);
+        IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
         strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), ends));
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
@@ -181,9 +172,9 @@ public class CMinMTTR implements CObjective {
     private void placeVMs(Parameters ps, List<AbstractStrategy<?>> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
         if (!actions.isEmpty()) {
-            IntVar[] hosts = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
+            IntVar[] hosts = dSlices(actions).map(Slice::getHoster).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
             if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(rp.getSolver(), schedHeuristic), rnd));
             }
         }
     }
@@ -200,9 +191,17 @@ public class CMinMTTR implements CObjective {
     public void postCostConstraints() {
         //TODO: Delay insertion
         if (!costActivated) {
-            rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            costConstraints.forEach(rp.getSolver()::post);
+            rp.getLogger().debug("Post the cost-oriented constraints");
+            List<IntVar> mttrs = rp.getVMActions().stream().map(VMTransition::getEnd)
+                    .filter(v -> !v.isInstantiatedTo(0))
+                    .collect(Collectors.toList());
+            mttrs.addAll(rp.getNodeActions().stream().map(NodeTransition::getEnd)
+                    .filter(v -> !v.isInstantiatedTo(0))
+                    .collect(Collectors.toList()));
+            IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
+            rp.getSolver().post(IntConstraintFactory.sum(costs, cost));
+
         }
     }
 
