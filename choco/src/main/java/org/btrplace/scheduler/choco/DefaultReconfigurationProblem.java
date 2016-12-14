@@ -530,10 +530,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SchedulerException(model, "Unknown node '" + nId + "'");
         }
-        /*if (useLabels) {
-            return csp.intVar(makeVarLabel(n), idx);
-        }
-        return csp.intVar("cste -- ", idx);*/
         return fixed(idx, makeVarLabel(n));
     }
 
