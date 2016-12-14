@@ -28,9 +28,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.variables.RealVar;
 
 import java.util.Collections;
 import java.util.Set;
@@ -64,14 +61,14 @@ public class COverbook implements ChocoConstraint {
         }
 
         Node u = cstr.getInvolvedNodes().iterator().next();
-        RealVar v = rcm.getOverbookRatio(rp.getNode(u));
-
-        try {
+        //RealVar v = rcm.getOverbookRatio(rp.getNode(u));
+        rcm.capOverbookRatio(rp.getNode(u), cstr.getRatio());
+        /*try {
             v.updateUpperBound(cstr.getRatio(), Cause.Null);
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to restrict " + u + " overbook to up to " + cstr.getRatio() + " for resource " + cstr.getResource(), ex);
             return false;
-        }
+        }*/
         return true;
     }
 

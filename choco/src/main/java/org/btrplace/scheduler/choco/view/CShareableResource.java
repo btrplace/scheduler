@@ -18,6 +18,8 @@
 
 package org.btrplace.scheduler.choco.view;
 
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.TObjectIntMap;
@@ -43,7 +45,6 @@ import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.RealVar;
 
 import java.util.*;
 
@@ -63,7 +64,7 @@ public class CShareableResource implements ChocoView {
 
     private List<IntVar> vmAllocation;
 
-    private List<RealVar> ratios;
+    private TDoubleList ratios;
 
     private ReconfigurationProblem rp;
 
@@ -79,6 +80,7 @@ public class CShareableResource implements ChocoView {
     private TObjectDoubleMap<Node> wantedRatios;
     private TObjectIntMap<VM> wantedAmount;
     private TObjectIntMap<Node> wantedCapacity;
+
     /**
      * The default value of ratio is not logical to detect an unchanged value
      */
@@ -107,16 +109,15 @@ public class CShareableResource implements ChocoView {
         List<Node> nodes = p.getNodes();
         phyRcUsage = new ArrayList<>(nodes.size());
         virtRcUsage = new ArrayList<>(nodes.size());
-        this.ratios = new ArrayList<>(nodes.size());
+        this.ratios = new TDoubleArrayList(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
             phyRcUsage.add(csp.intVar(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), true));
             virtRcUsage.add(csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, true));
-            ratios.add(csp.realVar(p.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01));
+            ratios.add(UNCHECKED_RATIO);//csp.realVar(p.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01));
         }
         phyRcUsage = Collections.unmodifiableList(phyRcUsage);
         virtRcUsage = Collections.unmodifiableList(virtRcUsage);
-        ratios = Collections.unmodifiableList(ratios);
 
         //Bin packing for the node vmAllocation
         Solver s = p.getSolver();
@@ -240,23 +241,27 @@ public class CShareableResource implements ChocoView {
 
     /**
      * Get the overbooking ratio for a node.
-     * <b>WARNING: it is only allowed to reduce the upper-bound of the ratio using {@code #setSup(x)} methods</b>
      *
      * @param nId the node identifier
-     * @return an array of ratios.
+     * @return a ratio >= 1
      */
-    public RealVar getOverbookRatio(int nId) {
+    public double getOverbookRatio(int nId) {
         return ratios.get(nId);
     }
 
     /**
-     * Get the overbooking ratios for every nodes.
-     * <b>WARNING: it is only allowed to reduce the upper-bound of the ratio using {@code #setSup(x)} methods</b>
-     *
-     * @return an array of ratios.
+     * Cap the overbooking ratio for a given node.
+     * @param nIdx the node
+     * @param d the new ratio. {@code >= 1}
+     * @return the resulting ratio. Will be lower than {@code d} if a previous cap stated a lower value
      */
-    public List<RealVar> getOverbookRatios() {
-        return ratios;
+    public double capOverbookRatio(int nIdx, double d) {
+        if (d < 1) {
+            return ratios.get(nIdx);
+        }
+        double v = Math.min(ratios.get(nIdx), d);
+        ratios.set(nIdx, v);
+        return v;
     }
 
     /**
@@ -391,13 +396,13 @@ public class CShareableResource implements ChocoView {
      * Reduce the cardinality wrt. the worst case scenario.
      *
      * @param nIdx the node index
-     * @param min  the min (but > 0 ) consumptionfor a VM
+     * @param min  the min (but > 0 ) consumption for a VM
      * @param nbZeroes the number of VMs consuming 0
      * @return {@code false} if the problem no longer has a solution
      */
     private boolean capHosting(int nIdx, int min, int nbZeroes) {
         Node n = rp.getNode(nIdx);
-        double capa = getSourceResource().getCapacity(n) * getOverbookRatio(nIdx).getLB();
+        double capa = getSourceResource().getCapacity(n) * getOverbookRatio(nIdx)/*.getLB()*/;
         int card = (int) (capa / min + 1) + nbZeroes;
         try {
             //Restrict the hosting capacity.
@@ -463,7 +468,7 @@ public class CShareableResource implements ChocoView {
         //Seems to me we don't support ratio change
         for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
             int nIdx = rp.getNode(n);
-            double ratio = getOverbookRatio(nIdx).getLB();
+            double ratio = getOverbookRatio(nIdx)/*.getLB()*/;
             double capa = getSourceResource().getCapacity(n) * ratio;
             int usage = 0;
             for (VM vm : rp.getSourceModel().getMapping().getRunningVMs(n)) {
@@ -479,23 +484,20 @@ public class CShareableResource implements ChocoView {
 
 
     private boolean linkVirtualToPhysicalUsage(int nIdx) {
-        double r = ratios.get(nIdx).getUB();
+        double r = ratios.get(nIdx)/*.getUB()*/;
         if (r == UNCHECKED_RATIO) {
             //Default overbooking ratio is 1.
             r = 1;
+            capOverbookRatio(nIdx, r);
+            return noOverbook(nIdx);
         }
 
-        try {
+        /*try {
             ratios.get(nIdx).updateBounds(r, r, Cause.Null);
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to set '" + ratios.get(nIdx) + " ' to " + r, ex);
             return false;
-        }
-
-
-        if (r == 1) {
-            return noOverbook(nIdx);
-        }
+        }*/
         return overbook(nIdx, r);
     }
 
@@ -629,7 +631,7 @@ public class CShareableResource implements ChocoView {
         Map<VM, Integer> cost = new HashMap<>();
         for (Node n : mo.getMapping().getAllNodes()) {
             for (int i = 0; i < rcs.size(); i++) {
-                capa[i] += rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n)).getLB();
+                capa[i] += rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n))/*.getLB()*/;
             }
         }
 
