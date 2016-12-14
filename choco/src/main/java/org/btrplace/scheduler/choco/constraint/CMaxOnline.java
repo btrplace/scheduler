@@ -93,7 +93,7 @@ public class CMaxOnline implements ChocoConstraint {
                 nodeIdx[i++] = rp.getNode(n);
             }
 
-            IntVar capacity = csp.intVar("capacity", constraint.getAmount());
+            IntVar capacity = rp.fixed(constraint.getAmount(), "capacity");
 
             // The state of the node:
             IntVar[] heights = new IntVar[numberOfTasks];

@@ -150,7 +150,7 @@ public class CAmong implements ChocoConstraint {
             }
         } else {
             //As the group is already known, it's now just a fence constraint
-            vmGrpId = rp.getModel().intVar(rp.makeVarLabel(GROUP_LABEL), selected);
+            vmGrpId = rp.fixed(selected, GROUP_LABEL);
             if (!fence(ps, rp, running, groups.get(selected))) {
                 return false;
             }

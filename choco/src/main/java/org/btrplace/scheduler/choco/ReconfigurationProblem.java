@@ -349,6 +349,16 @@ public interface ReconfigurationProblem {
     String makeVarLabel(Object... lbl);
 
     /**
+     * Make a constant.
+     * This methods allows to cache constant if variable labelling is disabled.
+     *
+     * @param v   the constant
+     * @param lbl the label to make
+     * @return the variable
+     */
+    IntVar fixed(int v, Object... lbl);
+
+    /**
      * Get the VMs managed by the solver.
      * This set contains all the VMs that will have their state changed
      * plus the set of manageable running VMs that was passed to the constructor.

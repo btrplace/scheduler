@@ -137,7 +137,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         IEnvironment env = ps.getEnvironmentFactory().build(m);
         csp = new org.chocosolver.solver.Model(env, "");
         solver = csp.getSolver();
-        start = csp.intVar(makeVarLabel("RP.start"), 0);
+        start = fixed(0, "RP.start");
         end = csp.intVar(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), true);
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
@@ -530,10 +530,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SchedulerException(model, "Unknown node '" + nId + "'");
         }
-        if (useLabels) {
+        /*if (useLabels) {
             return csp.intVar(makeVarLabel(n), idx);
         }
-        return csp.intVar("cste -- ", idx);
+        return csp.intVar("cste -- ", idx);*/
+        return fixed(idx, makeVarLabel(n));
     }
 
     @Override
@@ -562,6 +563,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
         return b.toString();
+    }
+
+    @Override
+    public IntVar fixed(int v, Object... lbl) {
+        if (useLabels) {
+            return csp.intVar(makeVarLabel(lbl), v);
+        }
+        return csp.intVar(v);
     }
 
     @Override

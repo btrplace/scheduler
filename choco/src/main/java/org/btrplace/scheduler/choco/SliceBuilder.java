@@ -160,7 +160,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.getModel().intVar("cste -- " + rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v);
+        this.hoster = rp.fixed(v, lblPrefix, "_hoster(", vm, ")");
         return this;
     }
 }

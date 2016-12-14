@@ -129,7 +129,8 @@ public class CShareableResource implements ChocoView {
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation.add(csp.intVar(p.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0));
+                IntVar x = rp.fixed(0, "vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'");
+                vmAllocation.add(x);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
