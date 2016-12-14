@@ -29,7 +29,6 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
-import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -190,21 +189,17 @@ public class CMinMTTR implements CObjective {
      */
     @Override
     public void postCostConstraints() {
-        //TODO: Delay insertion
         if (!costActivated) {
             costActivated = true;
             rp.getLogger().debug("Post the cost-oriented constraints");
-            List<IntVar> mttrs = rp.getVMActions().stream().map(VMTransition::getEnd)
+            IntVar[] mttrs = Stream.concat(rp.getVMActions().stream(), rp.getNodeActions().stream())
+                    .map(Transition::getEnd)
                     .filter(v -> !v.isInstantiatedTo(0))
-                    .collect(Collectors.toList());
-            mttrs.addAll(rp.getNodeActions().stream().map(NodeTransition::getEnd)
-                    .filter(v -> !v.isInstantiatedTo(0))
-                    .collect(Collectors.toList()));
+                    .toArray(IntVar[]::new);
 
-            rp.getModel().post(rp.getModel().sum(mttrs.toArray(new IntVar[mttrs.size()]), "=", cost));
+            rp.getModel().post(rp.getModel().sum(mttrs, "=", cost));
         }
     }
-
 
     private static Stream<Slice> dSlices(List<VMTransition> l) {
         return l.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
