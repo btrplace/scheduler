@@ -69,7 +69,7 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
         JSONArray a = (JSONArray) o.get("routes");
         for (Object ao : a) {
             StaticRouting.NodesMap nm = nodesMapFromJSON(mo, (JSONObject) ((JSONObject) ao).get("nodes_map"));
-            LinkedHashMap<Link, Boolean> links = new LinkedHashMap<>();
+            Map<Link, Boolean> links = new LinkedHashMap<>();
             JSONArray aoa = (JSONArray) ((JSONObject) ao).get("links");
             for (Object aoao : aoa) {
                 links.put(idToLink.get(requiredInt((JSONObject)aoao, "link")),

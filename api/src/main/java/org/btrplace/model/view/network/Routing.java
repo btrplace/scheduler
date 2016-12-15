@@ -22,8 +22,8 @@ import org.btrplace.Copyable;
 import org.btrplace.model.Node;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A routing must be associated to a network view, it provides methods to get the path between two nodes and the
@@ -58,7 +58,7 @@ public abstract class Routing implements Copyable<Routing> {
     }
 
     protected Network net;
-    protected LinkedHashMap<Link, Boolean>[][] routingCache;
+    protected Map<Link, Boolean>[][] routingCache;
 
     /**
      * Set the network view (recursively).
