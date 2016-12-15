@@ -267,11 +267,11 @@ public class CShareableResource implements ChocoView {
         }
 
         IntVar[] host = new IntVar[p.getFutureRunningVMs().size()];
-        IntVar[] demand = new IntVar[host.length];
+        int[] demand = new int[host.length];
         int i = 0;
         for (VM vm : p.getFutureRunningVMs()) {
             host[i] = rp.getVMAction(vm).getDSlice().getHoster();
-            demand[i] = rp.fixed(getVMAllocation(p.getVM(vm)), "vmAllocation('", rc.getResourceIdentifier(), "', '", vm, "'");
+            demand[i] = getVMAllocation(p.getVM(vm));
             i++;
         }
         ((Packing) v).addDim(rc.getResourceIdentifier(),

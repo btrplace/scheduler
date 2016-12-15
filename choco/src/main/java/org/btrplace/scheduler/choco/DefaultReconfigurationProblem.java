@@ -324,10 +324,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void linkCardinalityWithSlices() {
         Stream<Slice> s = vmActions.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
         IntVar[] ds = s.map(Slice::getHoster).toArray(IntVar[]::new);
-        IntVar[] usages = new IntVar[ds.length];
-        for (int i = 0; i < ds.length; i++) {
-            usages[i] = csp.intVar(1);
-        }
+        int[] usages = new int[ds.length];
+        Arrays.fill(usages, 1);
         ChocoView v = getView(Packing.VIEW_ID);
         if (v == null) {
             throw new SchedulerException(model, "View '" + Packing.VIEW_ID + "' is required but missing");

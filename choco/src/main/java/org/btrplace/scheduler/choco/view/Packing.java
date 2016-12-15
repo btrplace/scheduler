@@ -44,9 +44,9 @@ public abstract class Packing implements ChocoView {
      * Add a new dimension.
      *
      * @param name the dimension label
-     * @param l    the load of each VM. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getVM(org.btrplace.model.VM)}.
-     * @param s    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
-     * @param b    the placement variable for each VM. Same order than for {@code l}
+     * @param l    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
+     * @param s    The VM consumption
+     * @param b    the placement variable for each VM. Same order than for {@code s}
      */
-    public abstract void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b);
+    public abstract void addDim(String name, List<IntVar> l, int[] s, IntVar[] b);
 }

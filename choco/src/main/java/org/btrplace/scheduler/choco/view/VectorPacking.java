@@ -38,7 +38,7 @@ public class VectorPacking extends Packing {
 
     private List<IntVar[]> bins;
 
-    private List<IntVar[]> sizes;
+    private List<int[]> sizes;
 
     private List<String> names;
 
@@ -55,14 +55,9 @@ public class VectorPacking extends Packing {
     }
 
     @Override
-    public void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b) {
+    public void addDim(String name, List<IntVar> l, int[] s, IntVar[] b) {
         this.loads.add(l);
         this.sizes.add(s);
-        for (IntVar v : s) {
-            if (!v.isInstantiated()) {
-                throw new RuntimeException("not instantiated");
-            }
-        }
         this.bins.add(b);
         this.names.add(name);
         this.dim++;
@@ -78,11 +73,8 @@ public class VectorPacking extends Packing {
             aLoads[d] = loads.get(d).toArray(new IntVar[loads.get(d).size()]);
             assert bins.get(d).length == 0 || bins.get(d)[0].equals(bins.get(0)[0]);
             aNames[d] = names.get(d);
-            IntVar[] s = sizes.get(d);
-            int x = 0;
-            for (IntVar ss : s) {
-                aSizes[d][x++] = ss.getLB();
-            }
+            int[] s = sizes.get(d);
+            aSizes[d] = s;
         }
         if (!p.getFutureRunningVMs().isEmpty()) {
             p.getModel().post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
