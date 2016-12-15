@@ -1,0 +1,163 @@
+From 0e57eba308c7b60792991c2add165f77d8c972e7 Mon Sep 17 00:00:00 2001
+From: Aditya Ramesh <aramesh@nutanix.com>
+Date: Wed, 14 Dec 2016 21:18:59 -0800
+Subject: [PATCH] More changes.
+
+Use StringBuilder instead of iterating through a collection and printing
+a delimiter if it is not the last element.
+Removed one instance of getting the size of the keyset where we can
+get directly length of the map.
+Used String.format instead of StringBuilder in certain instances as it
+is cleaner to see what is going on.
+---
+ .../java/org/btrplace/model/DefaultAttributes.java | 10 ++-------
+ .../org/btrplace/model/view/NamingService.java     | 15 ++++++-------
+ .../org/btrplace/model/view/ShareableResource.java | 25 ++++++++--------------
+ .../model/view/network/DefaultRouting.java         |  2 +-
+ .../btrplace/plan/DependencyBasedPlanApplier.java  |  2 +-
+ 5 files changed, 19 insertions(+), 35 deletions(-)
+
+diff --git a/api/src/main/java/org/btrplace/model/DefaultAttributes.java b/api/src/main/java/org/btrplace/model/DefaultAttributes.java
+index ed8d39c9..92978242 100644
+--- a/api/src/main/java/org/btrplace/model/DefaultAttributes.java
++++ b/api/src/main/java/org/btrplace/model/DefaultAttributes.java
+@@ -156,16 +156,10 @@ public class DefaultAttributes implements Attributes {
+     public String toString() {
+         StringBuilder b = new StringBuilder();
+         for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
+-            b.append(e.getKey());
+-            b.append(':');
+-            b.append(stringify(e.getValue()));
+-            b.append('\n');
++            b.append(String.format("%s:%s\n", e.getKey(), stringify(e.getValue())));
+         }
+         for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
+-            b.append(e.getKey());
+-            b.append(':');
+-            b.append(stringify(e.getValue()));
+-            b.append('\n');
++            b.append(String.format("%s:%s\n", e.getKey(), stringify(e.getValue())));
+         }
+         return b.toString();
+     }
+diff --git a/api/src/main/java/org/btrplace/model/view/NamingService.java b/api/src/main/java/org/btrplace/model/view/NamingService.java
+index 6f140ab2..eceaab04 100644
+--- a/api/src/main/java/org/btrplace/model/view/NamingService.java
++++ b/api/src/main/java/org/btrplace/model/view/NamingService.java
+@@ -24,9 +24,10 @@ import org.btrplace.model.Node;
+ import org.btrplace.model.VM;
+ 
+ import java.util.HashMap;
+-import java.util.Iterator;
+ import java.util.Map;
++import java.util.Map.Entry;
+ import java.util.Set;
++import java.util.StringJoiner;
+ 
+ /**
+  * A simple service to name VMs or nodes.
+@@ -178,15 +179,11 @@ public final class NamingService<E extends Element> implements ModelView {
+ 
+     @Override
+     public String toString() {
+-        StringBuilder b = new StringBuilder();
+-        for (Iterator<Map.Entry<E, String>> ite = rev.entrySet().iterator(); ite.hasNext(); ) {
+-            Map.Entry<E, String> e = ite.next();
+-            b.append(e.getKey()).append("<->").append(e.getValue());
+-            if (ite.hasNext()) {
+-                b.append(", ");
+-            }
++        StringJoiner joiner = new StringJoiner(", ");
++        for (Entry<E, String> entry : rev.entrySet()) {
++            joiner.add(String.format("%s<->%s", entry.getKey(), entry.getValue()));
+         }
+-        return b.toString();
++        return joiner.toString();
+     }
+ 
+     /**
+diff --git a/api/src/main/java/org/btrplace/model/view/ShareableResource.java b/api/src/main/java/org/btrplace/model/view/ShareableResource.java
+index 6f1e934a..7b075498 100644
+--- a/api/src/main/java/org/btrplace/model/view/ShareableResource.java
++++ b/api/src/main/java/org/btrplace/model/view/ShareableResource.java
+@@ -26,9 +26,9 @@ import org.btrplace.model.VM;
+ import org.btrplace.model.constraint.SideConstraint;
+ 
+ import java.util.Collection;
+-import java.util.Iterator;
+ import java.util.Objects;
+ import java.util.Set;
++import java.util.StringJoiner;
+ 
+ /**
+  * A view to denote a resource that nodes share among the VMs they host
+@@ -186,7 +186,6 @@ public class ShareableResource implements ModelView {
+         nodesCapacity.remove(n);
+     }
+ 
+-
+     /**
+      * Check if the resource consumption is defined for a VM.
+      *
+@@ -284,24 +283,18 @@ public class ShareableResource implements ModelView {
+ 
+     @Override
+     public String toString() {
+-        StringBuilder buf = new StringBuilder("rc:").append(rcId).append(':');
+-        for (Iterator<Node> ite = nodesCapacity.keySet().iterator(); ite.hasNext(); ) {
+-            Node n = ite.next();
++        StringJoiner joiner = new StringJoiner(",", String.format("rc:%s:", rcId), "");
++        for (Node n : nodesCapacity.keySet()) {
+             int c = nodesCapacity.get(n);
+-            buf.append("<node ").append(n).append(',').append(c).append('>');
+-            if (ite.hasNext()) {
+-                buf.append(',');
+-            }
++            joiner.add(String.format("<node %s,%d>", n, c));
+         }
+-        for (Iterator<VM> ite = vmsConsumption.keySet().iterator(); ite.hasNext(); ) {
+-            VM vm = ite.next();
++
++        StringJoiner vmJoiner = new StringJoiner(",");
++        for (VM vm : vmsConsumption.keySet()) {
+             int c = vmsConsumption.get(vm);
+-            buf.append("<VM ").append(vm).append(',').append(c).append('>');
+-            if (ite.hasNext()) {
+-                buf.append(',');
+-            }
++            vmJoiner.add(String.format("<VM %s,%d>", vm, c));
+         }
+-        return buf.toString();
++        return String.format("%s%s", joiner, vmJoiner);
+     }
+ 
+     @Override
+diff --git a/api/src/main/java/org/btrplace/model/view/network/DefaultRouting.java b/api/src/main/java/org/btrplace/model/view/network/DefaultRouting.java
+index 20af7007..98d21ae7 100644
+--- a/api/src/main/java/org/btrplace/model/view/network/DefaultRouting.java
++++ b/api/src/main/java/org/btrplace/model/view/network/DefaultRouting.java
+@@ -50,7 +50,7 @@ public class DefaultRouting extends Routing {
+         // Iterate through the current switch's links
+         for (Link l : net.getConnectedLinks(sw)) {
+             // Wrong link
+-            if (currentPath.keySet().contains(l)) {
++            if (currentPath.containsKey(l)) {
+                 continue;
+             }
+ 
+diff --git a/api/src/main/java/org/btrplace/plan/DependencyBasedPlanApplier.java b/api/src/main/java/org/btrplace/plan/DependencyBasedPlanApplier.java
+index a190764e..55b9ba1d 100644
+--- a/api/src/main/java/org/btrplace/plan/DependencyBasedPlanApplier.java
++++ b/api/src/main/java/org/btrplace/plan/DependencyBasedPlanApplier.java
+@@ -63,7 +63,7 @@ public class DependencyBasedPlanApplier extends DefaultPlanApplier {
+     public String toString(ReconfigurationPlan p) {
+         StringBuilder b = new StringBuilder();
+         for (Action a : p) {
+-            b.append(p.getDirectDependencies(a)).append(" -> ").append(a).append("\n");
++            b.append(String.format("%s -> %s\n", p.getDirectDependencies(a), a));
+         }
+         return b.toString();
+     }
+-- 
+2.11.0
+
