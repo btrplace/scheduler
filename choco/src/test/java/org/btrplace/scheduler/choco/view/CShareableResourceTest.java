@@ -68,9 +68,9 @@ public class CShareableResourceTest {
         CShareableResource rcm = new CShareableResource(rc);
         rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation().get(rp.getVM(vm1)).getLB());
-        Assert.assertEquals(-1, rcm.getVMsAllocation().get(rp.getVM(vm2)).getLB());
-        Assert.assertEquals(0, rcm.getVMsAllocation().get(rp.getVM(vm3)).getUB()); //Will not be running so 0
+        Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm1)).getLB());
+        Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm2)).getLB());
+        Assert.assertEquals(0, rcm.getVMsAllocation(rp.getVM(vm3)).getUB()); //Will not be running so 0
         IntVar pn1 = rcm.getPhysicalUsage().get(rp.getNode(n1));
         IntVar pn2 = rcm.getPhysicalUsage().get(rp.getNode(n2));
         Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);

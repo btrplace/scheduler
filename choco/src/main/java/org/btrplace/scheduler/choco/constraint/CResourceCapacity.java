@@ -135,7 +135,7 @@ public class CResourceCapacity implements ChocoConstraint {
                 cUse.add(rcm.getSourceResource().getConsumption(vmId));
             }
             if (d != null) {
-                dUse.add(rcm.getVMsAllocation().get(rp.getVM(vmId)));
+                dUse.add(rcm.getVMsAllocation(rp.getVM(vmId)));
             }
         }
         ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
