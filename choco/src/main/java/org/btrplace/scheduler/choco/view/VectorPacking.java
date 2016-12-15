@@ -21,8 +21,6 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -60,6 +58,11 @@ public class VectorPacking extends Packing {
     public void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b) {
         this.loads.add(l);
         this.sizes.add(s);
+        for (IntVar v : s) {
+            if (!v.isInstantiated()) {
+                throw new RuntimeException("not instantiated");
+            }
+        }
         this.bins.add(b);
         this.names.add(name);
         this.dim++;
@@ -79,12 +82,6 @@ public class VectorPacking extends Packing {
             int x = 0;
             for (IntVar ss : s) {
                 aSizes[d][x++] = ss.getLB();
-                try {
-                    ss.instantiateTo(ss.getLB(), Cause.Null);
-                } catch (ContradictionException ex) {
-                    p.getLogger().error("Unable post the vector packing constraint", ex);
-                    return false;
-                }
             }
         }
         if (!p.getFutureRunningVMs().isEmpty()) {

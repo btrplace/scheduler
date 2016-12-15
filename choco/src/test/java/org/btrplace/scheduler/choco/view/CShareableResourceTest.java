@@ -68,9 +68,12 @@ public class CShareableResourceTest {
         CShareableResource rcm = new CShareableResource(rc);
         rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm1)).getLB());
-        Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm2)).getLB());
-        Assert.assertEquals(0, rcm.getVMsAllocation(rp.getVM(vm3)).getUB()); //Will not be running so 0
+        //Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm1)).getLB());
+        Assert.assertEquals(-1, rcm.getVMAllocation(rp.getVM(vm1)));
+        //Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm2)).getLB());
+        Assert.assertEquals(-1, rcm.getVMAllocation(rp.getVM(vm2)));
+        //Assert.assertEquals(0, rcm.getVMsAllocation(rp.getVM(vm3)).getUB()); //Will not be running so 0
+        Assert.assertEquals(0, rcm.getVMAllocation(rp.getVM(vm3))); //Will not be running so 0
         IntVar pn1 = rcm.getPhysicalUsage().get(rp.getNode(n1));
         IntVar pn2 = rcm.getPhysicalUsage().get(rp.getNode(n2));
         Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
@@ -129,15 +132,12 @@ public class CShareableResourceTest {
     @Test
     public void testMaintainResourceUsage() throws SchedulerException {
         Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
 
         Node n1 = mo.newNode();
 
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
+        mo.getMapping().on(n1).run(n1, vm1, vm2);
         ShareableResource rc = new ShareableResource("foo");
         rc.setConsumption(vm1, 5);
         rc.setConsumption(vm2, 7);
@@ -146,6 +146,7 @@ public class CShareableResourceTest {
         mo.attach(rc);
 
         ChocoScheduler s = new DefaultChocoScheduler();
+        s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
 
@@ -255,8 +256,8 @@ public class CShareableResourceTest {
         s.doRepair(true);
         ReconfigurationPlan p = s.solve(mo, l);
         Assert.assertEquals(s.getStatistics().getNbManagedVMs(), 0);
-        Assert.assertEquals(p.getResult().getMapping(), mo.getMapping());
         Assert.assertNotNull(p);
+        Assert.assertEquals(p.getResult().getMapping(), mo.getMapping());
         Assert.assertEquals(p.getSize(), 2);
     }
 
