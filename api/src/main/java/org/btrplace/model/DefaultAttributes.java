@@ -156,10 +156,10 @@ public class DefaultAttributes implements Attributes {
     public String toString() {
         StringBuilder b = new StringBuilder();
         for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
-            b.append(String.format("%s:%s\n", e.getKey(), stringify(e.getValue())));
+            b.append(String.format("%s:%s%n", e.getKey(), stringify(e.getValue())));
         }
         for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
-            b.append(String.format("%s:%s\n", e.getKey(), stringify(e.getValue())));
+            b.append(String.format("%s:%s%n", e.getKey(), stringify(e.getValue())));
         }
         return b.toString();
     }

@@ -27,7 +27,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 
@@ -62,9 +61,6 @@ public class CPrecedence implements ChocoConstraint {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-
-        // Get the solver
-        Solver s = rp.getSolver();
 
         // Not enough / too much VMs
         if (pr.getInvolvedVMs().size() != 2) {

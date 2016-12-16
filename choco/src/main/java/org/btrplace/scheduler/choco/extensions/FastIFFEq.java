@@ -55,9 +55,11 @@ public class FastIFFEq extends Constraint {
         this.c = c;
     }
 
+    @Override
     public String toString() {
         return "iffeq(" + b + " <-> " + v + " = " + c + ")";
     }
+
     /**
      * Propagator for {@link org.btrplace.scheduler.choco.extensions.FastIFFEq}
      */

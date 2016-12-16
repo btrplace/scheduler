@@ -63,7 +63,7 @@ public class DependencyBasedPlanApplier extends DefaultPlanApplier {
     public String toString(ReconfigurationPlan p) {
         StringBuilder b = new StringBuilder();
         for (Action a : p) {
-            b.append(String.format("%s -> %s\n", p.getDirectDependencies(a), a));
+            b.append(String.format("%s -> %s%n", p.getDirectDependencies(a), a));
         }
         return b.toString();
     }

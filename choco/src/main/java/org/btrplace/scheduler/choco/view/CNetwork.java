@@ -289,10 +289,6 @@ public class CNetwork implements ChocoView {
                 }
 
                 if (!tasksList.isEmpty()) {
-                    int max = 0;
-                    for (IntVar h : heightsList) {
-                        max += h.getUB();
-                    }
                     // Post the cumulative constraint for the current switch
                     csp.post(csp.cumulative(
                             tasksList.toArray(new Task[tasksList.size()]),

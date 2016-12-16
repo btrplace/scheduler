@@ -44,8 +44,10 @@ public class Metrics implements Copyable<Metrics> {
 
     /**
      * New empty metrics.
+     * Every value are zeroed
      */
     public Metrics() {
+        //values are zeroed
     }
 
     /**
@@ -86,6 +88,12 @@ public class Metrics implements Copyable<Metrics> {
         return new Metrics(readingTimeCount, timeCount, nodes, backtracks, fails, restarts);
     }
 
+    /**
+     * Add metrics.
+     * All the metrics are aggregated to the current instance
+     *
+     * @param m the metrics to add
+     */
     public void add(Metrics m) {
         timeCount += m.timeCount;
         readingTimeCount += m.readingTimeCount;

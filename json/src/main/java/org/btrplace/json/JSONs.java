@@ -53,6 +53,18 @@ public class JSONs {
         }
     };
 
+    /**
+     * Utility class.
+     * No instantiation
+     */
+    private JSONs() {
+    }
+
+    /**
+     * Reset the cache of element sets.
+     *
+     * @param size the new cache size
+     */
     public static void resetCaches(int size) {
         nodesCache = new LinkedHashMap<String, List<Node>>() {
             @Override
@@ -60,15 +72,13 @@ public class JSONs {
                 return size() == size;
             }
         };
+
         vmsCache = new LinkedHashMap<String, List<VM>>() {
             @Override
             protected boolean removeEldestEntry(Map.Entry<String, List<VM>> foo) {
                 return size() == size;
             }
         };
-    }
-
-    private JSONs() {
     }
 
     /**

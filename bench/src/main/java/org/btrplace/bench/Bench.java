@@ -97,7 +97,7 @@ public class Bench {
             try {
                 s.solve(i);
             } catch (SchedulerException ex) {
-                //Don't propagate away
+                throw new RuntimeException(ex);
             }
             if (opts.single()) {
                 System.out.println(s.getStatistics());
@@ -141,7 +141,7 @@ public class Bench {
 
     private static UUID uniqueFile(File base) {
         UUID u;
-        File f = null;
+        File f;
         do {
             u = UUID.randomUUID();
             f = toFile(base, u);

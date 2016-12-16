@@ -35,7 +35,6 @@ import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -105,7 +104,7 @@ public class CResourceCapacity implements ChocoConstraint {
         for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rcm.getVirtualUsage().get(rp.getNode(u)));
         }
-        Solver s = rp.getSolver();
+
         IntVar mySum = csp.intVar(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, true);
         csp.post(csp.sum(vs.toArray(new IntVar[vs.size()]), "=", mySum));
         csp.post(csp.arithm(mySum, "<=", cstr.getAmount()));

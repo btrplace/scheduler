@@ -183,7 +183,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            solver.limitTime(timeLimit * 1000);
+            solver.limitTime(timeLimit * 1000L);
         }
 
         getLogger().debug("{} constraints; {} integers", csp.getNbCstrs(), csp.retrieveIntVars(true).length);
