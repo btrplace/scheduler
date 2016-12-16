@@ -70,9 +70,6 @@ public class BootVMTest {
                 .build();
         rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
-        for (Node n : rp.getNodes()) {
-            System.out.println(n + " " + rp.getNode(n));
-        }
         BootVM m = (BootVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());

@@ -146,7 +146,6 @@ public class CShareableResourceTest {
         mo.attach(rc);
 
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(mo, new ArrayList<>());
         Assert.assertNotNull(p);
 
@@ -212,7 +211,6 @@ public class CShareableResourceTest {
         cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        System.out.println(p);
     }
 
     @Test
@@ -266,10 +264,8 @@ public class CShareableResourceTest {
     public void testEmpty() throws SchedulerException {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{},\"rcId\":\"CPU\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{}}]},\"constraints\":[{\"continuous\":false,\"id\":\"spread\",\"vms\":[0,1]}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
         Instance i = JSON.readInstance(new StringReader(buf));
-        System.out.println(i.getModel());
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
     }
 }

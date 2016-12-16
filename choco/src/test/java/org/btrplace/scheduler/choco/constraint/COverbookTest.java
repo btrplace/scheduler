@@ -230,7 +230,7 @@ public class COverbookTest {
         cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Assert.assertEquals(p.getSize(), 2);
         Action al = p.getActions().stream().filter(s -> s instanceof Allocate).findAny().get();
         Action sh = p.getActions().stream().filter(s -> s instanceof ShutdownVM).findAny().get();

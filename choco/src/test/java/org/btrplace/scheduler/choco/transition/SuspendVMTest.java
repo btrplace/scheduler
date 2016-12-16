@@ -55,7 +55,7 @@ public class SuspendVMTest {
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
-        Parameters ps = new DefaultParameters().setVerbosity(1);
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(org.btrplace.plan.event.SuspendVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)

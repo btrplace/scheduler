@@ -616,7 +616,7 @@ public class DefaultReconfigurationProblemTest {
         }
         map.addOnlineNode(n3);
         map.addOnlineNode(n2);
-        Parameters ps = new DefaultParameters().setVerbosity(1);
+        Parameters ps = new DefaultParameters();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .setNextVMsStates(new HashSet<>()
@@ -700,7 +700,7 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        Parameters ps = new DefaultParameters().setVerbosity(1);
+        Parameters ps = new DefaultParameters();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = rp.getModel().intVar("nbNodes", 1, map.getAllNodes().size(), true);

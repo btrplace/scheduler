@@ -77,7 +77,6 @@ public class BootableNodeTest {
         na.getState().instantiateTo(1, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertEquals(na.getDuration().getValue(), 5);
         Assert.assertEquals(na.getStart().getValue(), 0);
         Assert.assertEquals(na.getEnd().getValue(), 5);
@@ -193,8 +192,6 @@ public class BootableNodeTest {
         ReconfigurationPlan p = rp.solve(0, false);
         //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);
-        System.out.println(p);
-        System.out.flush();
     }
 
     /**
@@ -225,7 +222,6 @@ public class BootableNodeTest {
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertEquals(bn4.getStart().getValue(), 0);
         Assert.assertEquals(bn4.getDuration().getValue(), 0);
         Assert.assertEquals(bn4.getEnd().getValue(), 0);

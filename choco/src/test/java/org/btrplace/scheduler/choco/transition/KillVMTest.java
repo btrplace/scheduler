@@ -70,7 +70,7 @@ public class KillVMTest {
         Set<VM> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(org.btrplace.plan.event.KillVM.class, new ConstantActionDuration<>(1));
-        Parameters ps = new DefaultParameters().setVerbosity(1);
+        Parameters ps = new DefaultParameters();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
                 .setParams(ps)
@@ -95,7 +95,6 @@ public class KillVMTest {
 
         //The running VM has a CSlice
         Assert.assertNotNull(rp.getVMAction(vm1).getCSlice());
-        System.out.println(rp.getVMAction(vm1).getCSlice() + " " + rp.getNode(n1));
         Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);

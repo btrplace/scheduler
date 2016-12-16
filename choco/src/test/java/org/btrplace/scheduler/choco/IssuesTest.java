@@ -252,8 +252,6 @@ public class IssuesTest {
         obj.inject(new DefaultParameters(), rp);
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
-        System.out.println(plan.getResult());
     }
 
     /**
@@ -342,8 +340,6 @@ public class IssuesTest {
         i.getModel().detach(ShareableResource.get(i.getModel(), "cpu"));
         List<SatConstraint> cstrs = new ArrayList<>();
         ReconfigurationPlan p = s.solve(i.getModel(), cstrs, i.getOptConstraint());
-        System.out.println(p);
-
         Assert.assertTrue(p.getActions().isEmpty());
     }
 
@@ -376,11 +372,9 @@ public class IssuesTest {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
-        System.out.println(i.getModel());
         s.doOptimize(false);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertTrue(p.getActions().isEmpty());
         s.doRepair(true);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
@@ -392,11 +386,11 @@ public class IssuesTest {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
-        System.out.println(i.getModel());
+
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Assert.assertTrue(p.getActions().isEmpty());
         s.doRepair(true);
         p = s.solve(i);
@@ -418,13 +412,11 @@ public class IssuesTest {
         cstrs.addAll(mo.getMapping().getOnlineNodes().stream().map(n -> new RunningCapacity(n, 1)).collect(Collectors.toList()));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
         ChocoScheduler s = new DefaultChocoScheduler();
-        System.out.println(i.getModel());
         s.doOptimize(false);
         s.doRepair(false);
         ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertNotNull(p);
         Assert.assertEquals(3, p.getActions().size());
-        System.out.println(p);
         s.doRepair(true);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertNotNull(p);
@@ -438,10 +430,8 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);
-        System.out.println(p);
     }
 
     public static void main(String[] args) throws Exception {
@@ -518,8 +508,6 @@ public class IssuesTest {
         Instance i = JSON.readInstance(new File("src/test/resources/" + file));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
-        SolvingStatistics stats = s.getStatistics();
-        System.out.println(stats);
         Assert.assertNotNull(p);
         System.out.println(p.getSize() + " action(s)");
     }
@@ -531,9 +519,7 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
-        System.out.println(p);
     }
 
     @Test
@@ -553,9 +539,7 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
-        System.out.println(stats);
         Assert.assertNotNull(p);
-        System.out.println(p);
     }
 
     @Test

@@ -122,7 +122,7 @@ public class VectorPackingTest {
         for (int i = 0; i < nItems; i++) {
             height[i] = rnd.nextInt(4);
         }
-        System.out.println("Test with " + Arrays.toString(height));
+
         modelPack2D(5, 20, height);
         testPack(true, "failed with heights " + Arrays.toString(height));
     }

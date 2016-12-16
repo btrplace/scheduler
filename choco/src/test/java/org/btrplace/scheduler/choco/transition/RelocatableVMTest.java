@@ -89,10 +89,10 @@ public class RelocatableVMTest {
         //No VMs on n1, discrete mode
 
         rp.getModel().post(rp.getModel().arithm(rp.getNbRunningVMs().get(rp.getNode(n1)), "=", 0));
-        new CMinMTTR().inject(new DefaultParameters().setVerbosity(1), rp);
+        new CMinMTTR().inject(new DefaultParameters(), rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Model m = p.getResult();
         Assert.assertEquals(n2, m.getMapping().getVMLocation(vm1));
 
@@ -116,7 +116,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        Parameters ps = new DefaultParameters().setVerbosity(1);
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration<>(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -252,7 +252,7 @@ public class RelocatableVMTest {
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Assert.assertEquals(sol.getIntVal(am.getRelocationMethod()), 1);
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();
@@ -303,7 +303,7 @@ public class RelocatableVMTest {
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
@@ -325,7 +325,7 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        Parameters ps = new DefaultParameters().setVerbosity(1);
+        Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration<>(20));
         dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));
@@ -345,7 +345,7 @@ public class RelocatableVMTest {
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(1));
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();
@@ -401,7 +401,6 @@ public class RelocatableVMTest {
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
@@ -448,7 +447,7 @@ public class RelocatableVMTest {
         cra.doOptimize(true);
         try {
             ReconfigurationPlan p = cra.solve(mo, cstrs);
-            System.out.println(p);
+
             Assert.assertNotNull(p);
         } catch (SchedulerException e) {
             Assert.fail(e.getMessage(), e);
@@ -467,7 +466,7 @@ public class RelocatableVMTest {
         map.addRunningVM(vm1, n1);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setParams(new DefaultParameters().setVerbosity(1))
+                .setParams(new DefaultParameters())
                 .setManageableVMs(Collections.emptySet())
                 .build();
         Assert.assertEquals(rp.getVMAction(vm1).getClass(), RelocatableVM.class);
