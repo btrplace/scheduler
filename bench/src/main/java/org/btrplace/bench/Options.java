@@ -111,6 +111,7 @@ public class Options {
         if (single()) {
             return Collections.singletonList(instance(new File(instance))).stream();
         }
+
         Stream<String> s = Files.lines(Paths.get(instances), StandardCharsets.UTF_8);
         return s.map(x -> instance(new File(x)));
     }

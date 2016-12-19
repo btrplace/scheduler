@@ -274,7 +274,6 @@ public class Precedences extends Constraint {
         private void checkHorizonForHost(int h) throws ContradictionException {
             if (start.getUB() < horizonLB[h].get()) {
                 fails();
-                //this.contradiction(start, "");
             }
         }
 

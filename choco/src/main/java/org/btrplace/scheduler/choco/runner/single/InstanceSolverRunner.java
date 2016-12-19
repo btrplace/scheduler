@@ -24,11 +24,9 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.Scheduler;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
-import org.btrplace.scheduler.choco.LifeCycleViolationException;
-import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.*;
 import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
@@ -136,9 +134,9 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
             MeasuresRecorder m = rp.getSolver().getMeasures();
             SolutionStatistics st = new SolutionStatistics(new Metrics(m), plan);
-            IntVar obj = rp.getObjective();
-            if (obj != null) {
-                st.setObjective(solution.getIntVal(obj));
+            IntVar o = rp.getObjective();
+            if (o != null) {
+                st.setObjective(solution.getIntVal(o));
             }
             stats.addSolution(st);
         });
@@ -173,12 +171,12 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
         views.forEach(rp::addView);
         //Inject the sat constraints, 2nd pass on the view. Then the objective for a late optimisation
-        Optional<ChocoConstraint> obj = cConstraints.stream().filter(c -> c instanceof CObjective).findFirst();
+        Optional<ChocoConstraint> o = cConstraints.stream().filter(c -> c instanceof CObjective).findFirst();
         return views.stream().allMatch(v -> v.inject(params, rp)) &&
                 cConstraints.stream().filter(c -> !(c instanceof CObjective))
                         .allMatch(c -> c.inject(params, rp)) &&
                 views.stream().allMatch(v -> v.beforeSolve(rp)) &&
-                (!obj.isPresent() || obj.isPresent() && obj.get().inject(params, rp));
+                (!o.isPresent() || o.isPresent() && o.get().inject(params, rp));
     }
 
     private ReconfigurationProblem buildRP() throws SchedulerException {

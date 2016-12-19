@@ -91,10 +91,10 @@ public class ShareableResource implements ModelView {
         vmsConsumption = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defConsumption);
         nodesCapacity = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defCapacity);
         if (defCapacity < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' default capacity must be >= 0");
+            throw new IllegalArgumentException(String.format("The %s default capacity must be >= 0", rcId));
         }
         if (defConsumption < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' default consumption must be >= 0");
+            throw new IllegalArgumentException(String.format("The %s default consumption must be >= 0", rcId));
         }
 
 
@@ -148,7 +148,7 @@ public class ShareableResource implements ModelView {
      */
     public ShareableResource setConsumption(VM vm, int val) {
         if (val < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' consumption of '" + vm + "' must be >= 0");
+            throw new IllegalArgumentException(String.format("The '%s' consumption of VM '%s' must be >= 0", rcId, vm));
         }
         vmsConsumption.put(vm, val);
         return this;
@@ -163,7 +163,7 @@ public class ShareableResource implements ModelView {
      */
     public ShareableResource setCapacity(Node n, int val) {
         if (val < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' capacity of '" + n + "' must be >= 0");
+            throw new IllegalArgumentException(String.format("The '%s' capacity of node '%s' must be >= 0", rcId, n));
         }
         nodesCapacity.put(n, val);
         return this;

@@ -103,7 +103,6 @@ public class ChocoMapper {
      * @throws IllegalArgumentException if there is no suitable constructor for the choco implementation
      */
     public void mapConstraint(Class<? extends Constraint> c, Class<? extends ChocoConstraint> cc) {
-        //checkInstantiable(c, cc);
         constraints.put(c, cc);
     }
 
