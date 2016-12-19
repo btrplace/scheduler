@@ -24,8 +24,6 @@ import org.btrplace.safeplace.spec.term.Var;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
 
-import java.util.*;
-
 /**
  * @author Fabien Hermenier
  */

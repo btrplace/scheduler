@@ -87,6 +87,7 @@ public class ShareableResource implements ModelView {
      * @param defConsumption the VM default consumption
      */
     public ShareableResource(String id, int defCapacity, int defConsumption) {
+        this.rcId = id;
         vmsConsumption = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defConsumption);
         nodesCapacity = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defCapacity);
         if (defCapacity < 0) {
@@ -96,7 +97,7 @@ public class ShareableResource implements ModelView {
             throw new IllegalArgumentException("The '" + rcId + "' default consumption must be >= 0");
         }
 
-        this.rcId = id;
+
         this.viewId = VIEW_ID_BASE + rcId;
     }
 
