@@ -24,7 +24,6 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
-import org.chocosolver.solver.search.measure.IMeasures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +50,6 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
     private long core = -1;
     private long spe = -1;
-
-    private IMeasures status;
-
 
     /**
      * Make the statistics.

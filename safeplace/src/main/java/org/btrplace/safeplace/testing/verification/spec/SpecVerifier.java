@@ -36,10 +36,6 @@ import java.util.List;
  */
 public class SpecVerifier implements Verifier {
 
-    public SpecVerifier() {
-
-    }
-
     public void fillArguments(Context mo, TestCase tc) {
         Constraint c = tc.constraint();
         List<Constant> values = tc.args();
