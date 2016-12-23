@@ -1,12 +1,27 @@
 Release notes
 ======================
 
-version 1.3 - soon come
+version 1.4 - soon come
+----------------------
+See milestone [1.4](https://github.com/btrplace/scheduler/milestones/1.4)
+
+This version moved from Choco-3.x to Choco-4.x. It removed custom hacks
+and some extensions that are now mainstream. We are mostly back to
+the performance of the 1.2 version of BtrPlace.
+
+The CSP model has been tuned to shrink it in terms of variables. There
+is now much more constants. This reduces the memory usage of the
+scheduler for large problems.
+More improvements to come in the next version
+
+
+version 1.3 - 13 Dec 2016
 -----------------------
 See milestone [1.3](https://github.com/btrplace/scheduler/milestones/1.3)
 
-- Issue #131. The solver should be more robust now with heavily constrained
+- Issue #131. The solver is now more robust with heavily constrained
   placement variables.
+- Fix minor issue #132
 
 
 version 1.2 - 02 Nov 2016
@@ -399,6 +414,8 @@ inform nodes about additional operations to execute
 
 #### version 0.3 - 08 Feb 2013 ####
 - Synchronize with solver-api
+
+
 
 
 

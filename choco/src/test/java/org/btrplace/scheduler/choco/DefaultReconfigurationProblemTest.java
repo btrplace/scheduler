@@ -23,21 +23,22 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -159,7 +160,6 @@ public class DefaultReconfigurationProblemTest {
                 .build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
-        Assert.assertNotNull(rp.getObjectiveAlterer());
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
@@ -616,7 +616,9 @@ public class DefaultReconfigurationProblemTest {
         }
         map.addOnlineNode(n3);
         map.addOnlineNode(n2);
+        Parameters ps = new DefaultParameters();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setParams(ps)
                 .setNextVMsStates(new HashSet<>()
                         , map.getAllVMs()
                         , new HashSet<>()
@@ -627,6 +629,7 @@ public class DefaultReconfigurationProblemTest {
         for (IntVar capa : rp.getNbRunningVMs()) {
             capa.updateUpperBound(5, Cause.Null);
         }
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(-1, false);
         Assert.assertNotNull(p);
         //Check consistency between the counting and the hoster variables
@@ -697,12 +700,13 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        Parameters ps = new DefaultParameters();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
+        IntVar nbNodes = rp.getModel().intVar("nbNodes", 1, map.getAllNodes().size(), true);
         Stream<Slice> dSlices = rp.getVMActions().stream().filter(t -> t.getDSlice() != null).map(VMTransition::getDSlice);
         IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
-        s.post(ICF.atmost_nvalues(hosters, nbNodes, true));
+        rp.getModel().post(rp.getModel().atMostNValues(hosters, nbNodes, true));
 
         rp.setObjective(true, nbNodes);
         ReconfigurationPlan plan = rp.solve(-1, true);
@@ -711,36 +715,6 @@ public class DefaultReconfigurationProblemTest {
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }
-
-    /**
-     * Test an unsolvable optimisation problem with an alterer. No solution
-     *
-     * @throws org.btrplace.scheduler.SchedulerException
-     */
-    @Test
-    public void testUnfeasibleOptimizeWithAlterer() throws SchedulerException {
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        for (int i = 0; i < 10; i++) {
-            Node n = mo.newNode();
-            VM vm = mo.newVM();
-            map.addOnlineNode(n);
-            map.addRunningVM(vm, n);
-        }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        Solver s = rp.getSolver();
-        IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
-        Stream<Slice> dSlices = rp.getVMActions().stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
-        IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
-        s.post(IntConstraintFactory.atmost_nvalues(hosters, nbNodes, true));
-        rp.setObjective(true, nbNodes);
-        ObjectiveAlterer alt = (rp1, currentValue) -> currentValue / 2;
-
-        rp.setObjectiveAlterer(alt);
-        ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNull(plan);
-    }
-
 
     @Test
     public void testViewAddition() throws SchedulerException {

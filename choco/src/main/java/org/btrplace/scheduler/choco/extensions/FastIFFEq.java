@@ -36,6 +36,11 @@ import org.chocosolver.util.ESat;
  */
 public class FastIFFEq extends Constraint {
 
+    private BoolVar b;
+
+    private IntVar v;
+
+    private int c;
     /**
      * New constraint.
      *
@@ -45,6 +50,14 @@ public class FastIFFEq extends Constraint {
      */
     public FastIFFEq(BoolVar b, IntVar var, int c) {
         super("IFFEq", new FastIFFEqProp(b, var, c));
+        this.b = b;
+        this.v = var;
+        this.c = c;
+    }
+
+    @Override
+    public String toString() {
+        return "iffeq(" + b + " <-> " + v + " = " + c + ")";
     }
 
     /**

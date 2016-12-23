@@ -26,9 +26,9 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SideConstraint;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  * A view to denote a resource that nodes share among the VMs they host
@@ -87,16 +87,17 @@ public class ShareableResource implements ModelView {
      * @param defConsumption the VM default consumption
      */
     public ShareableResource(String id, int defCapacity, int defConsumption) {
+        this.rcId = id;
         vmsConsumption = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defConsumption);
         nodesCapacity = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, defCapacity);
         if (defCapacity < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' default capacity must be >= 0");
+            throw new IllegalArgumentException(String.format("The %s default capacity must be >= 0", rcId));
         }
         if (defConsumption < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' default consumption must be >= 0");
+            throw new IllegalArgumentException(String.format("The %s default consumption must be >= 0", rcId));
         }
 
-        this.rcId = id;
+
         this.viewId = VIEW_ID_BASE + rcId;
     }
 
@@ -147,7 +148,7 @@ public class ShareableResource implements ModelView {
      */
     public ShareableResource setConsumption(VM vm, int val) {
         if (val < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' consumption of '" + vm + "' must be >= 0");
+            throw new IllegalArgumentException(String.format("The '%s' consumption of VM '%s' must be >= 0", rcId, vm));
         }
         vmsConsumption.put(vm, val);
         return this;
@@ -162,7 +163,7 @@ public class ShareableResource implements ModelView {
      */
     public ShareableResource setCapacity(Node n, int val) {
         if (val < 0) {
-            throw new IllegalArgumentException("The '" + rcId + "' capacity of '" + n + "' must be >= 0");
+            throw new IllegalArgumentException(String.format("The '%s' capacity of node '%s' must be >= 0", rcId, n));
         }
         nodesCapacity.put(n, val);
         return this;
@@ -185,7 +186,6 @@ public class ShareableResource implements ModelView {
     public void unset(Node n) {
         nodesCapacity.remove(n);
     }
-
 
     /**
      * Check if the resource consumption is defined for a VM.
@@ -284,24 +284,18 @@ public class ShareableResource implements ModelView {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder("rc:").append(rcId).append(':');
-        for (Iterator<Node> ite = nodesCapacity.keySet().iterator(); ite.hasNext(); ) {
-            Node n = ite.next();
+        StringJoiner joiner = new StringJoiner(",", String.format("rc:%s:", rcId), "");
+        for (Node n : nodesCapacity.keySet()) {
             int c = nodesCapacity.get(n);
-            buf.append("<node ").append(n).append(',').append(c).append('>');
-            if (ite.hasNext()) {
-                buf.append(',');
-            }
+            joiner.add(String.format("<node %s,%d>", n, c));
         }
-        for (Iterator<VM> ite = vmsConsumption.keySet().iterator(); ite.hasNext(); ) {
-            VM vm = ite.next();
+
+        StringJoiner vmJoiner = new StringJoiner(",");
+        for (VM vm : vmsConsumption.keySet()) {
             int c = vmsConsumption.get(vm);
-            buf.append("<VM ").append(vm).append(',').append(c).append('>');
-            if (ite.hasNext()) {
-                buf.append(',');
-            }
+            vmJoiner.add(String.format("<VM %s,%d>", vm, c));
         }
-        return buf.toString();
+        return String.format("%s%s", joiner, vmJoiner);
     }
 
     @Override

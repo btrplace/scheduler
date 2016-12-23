@@ -78,9 +78,9 @@ public class VectorPackingHeapDecorator {
     }
 
     private void checkReHeap(boolean forceReHeap) {
-        int currentWorld = p.getSolver().getEnvironment().getWorldIndex();
-        long currentBt = p.getSolver().getMeasures().getBackTrackCount();
-        long currentRestart = p.getSolver().getMeasures().getRestartCount();
+        int currentWorld = p.getModel().getEnvironment().getWorldIndex();
+        long currentBt = p.getModel().getSolver().getMeasures().getBackTrackCount();
+        long currentRestart = p.getModel().getSolver().getMeasures().getRestartCount();
         if (forceReHeap || currentWorld < lastWorld || currentBt != lastNbOfBacktracks || currentRestart > lastNbOfRestarts) {
             reHeap();
         }
@@ -121,7 +121,7 @@ public class VectorPackingHeapDecorator {
     public void fixPoint(boolean loadsHaveChanged) throws ContradictionException {
         for (int d = 0; d < p.nbDims; d++) {
             if (p.sumISizes[d] > p.sumLoadSup[d].get() || p.sumISizes[d] < p.sumLoadInf[d].get()) {
-                p.contradiction(null, "");
+                p.fails();
             }
         }
         checkReHeap(loadsHaveChanged);
@@ -138,24 +138,24 @@ public class VectorPackingHeapDecorator {
                     nChanges += filterLoads(d, (int) deltaFromInf, true);
                     deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
                     if (deltaToSup < 0) {
-                        p.contradiction(null, "");
+                        p.fails();
                     }
                     nChanges += filterLoads(d, (int) deltaToSup, false);
                     deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
                     if (deltaFromInf < 0) {
-                        p.contradiction(null, "");
+                        p.fails();
                     }
 
                 } else {
                     nChanges += filterLoads(d, (int) deltaToSup, false);
                     deltaFromInf = p.sumISizes[d] - p.sumLoadInf[d].get();
                     if (deltaFromInf < 0) {
-                        p.contradiction(null, "");
+                        p.fails();
                     }
                     nChanges += filterLoads(d, (int) deltaFromInf, true);
                     deltaToSup = p.sumLoadSup[d].get() - p.sumISizes[d];
                     if (deltaToSup < 0) {
-                        p.contradiction(null, "");
+                        p.fails();
                     }
 
                 }

@@ -28,13 +28,11 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 
 import java.util.*;
 
@@ -61,13 +59,13 @@ public class CSpread implements ChocoConstraint {
 
         List<IntVar> running = placementVariables(rp);
 
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
         if (running.isEmpty()) {
             return true;
         }
 
         //The lazy spread implementation for the placement
-        s.post(IntConstraintFactory.alldifferent(running.toArray(new IntVar[running.size()]), "BC"));
+        csp.post(csp.allDifferent(running.toArray(new IntVar[running.size()]), "BC"));
 
         if (cstr.isContinuous()) {
             List<VM> vms = new ArrayList<>(cstr.getInvolvedVMs());
@@ -105,12 +103,12 @@ public class CSpread implements ChocoConstraint {
      * Establish the precedence constraint {@code c.getEnd() <= d.getStart()} if the two slices may overlap.
      */
     private static void precedenceIfOverlap(ReconfigurationProblem rp, Slice d, Slice c) {
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
         //No need to place the constraints if the slices do not have a chance to overlap
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
-            BoolVar eq = VF.bool(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"), s);
+            BoolVar eq = csp.boolVar(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"));
             new Arithmetic(d.getHoster(), Operator.EQ, c.getHoster()).reifyWith(eq);
             Arithmetic leqCstr = new Arithmetic(c.getEnd(), Operator.LE, d.getStart());
             ChocoUtils.postImplies(rp, eq, leqCstr);

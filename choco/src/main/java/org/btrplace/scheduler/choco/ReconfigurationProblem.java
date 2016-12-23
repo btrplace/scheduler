@@ -26,8 +26,8 @@ import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.ResolutionPolicy;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.slf4j.Logger;
 
@@ -252,6 +252,13 @@ public interface ReconfigurationProblem {
     Solver getSolver();
 
     /**
+     * Get the CSP model to solve
+     *
+     * @return the model
+     */
+    org.chocosolver.solver.Model getModel();
+
+    /**
      * Create a variable that indicate the placement of an element on a node.
      *
      * @param n the variable label as a possible concatenation of objects
@@ -342,6 +349,16 @@ public interface ReconfigurationProblem {
     String makeVarLabel(Object... lbl);
 
     /**
+     * Make a constant.
+     * This methods allows to cache constant if variable labelling is disabled.
+     *
+     * @param v   the constant
+     * @param lbl the label to make
+     * @return the variable
+     */
+    IntVar fixed(int v, Object... lbl);
+
+    /**
      * Get the VMs managed by the solver.
      * This set contains all the VMs that will have their state changed
      * plus the set of manageable running VMs that was passed to the constructor.
@@ -356,21 +373,6 @@ public interface ReconfigurationProblem {
      * @return well, the logger
      */
     Logger getLogger();
-
-    /**
-     * Get the alterer that is used to manipulate the objective value
-     * each time a solution is computed
-     *
-     * @return the alterer. By default it is an instance of {@link org.btrplace.scheduler.choco.DefaultObjectiveAlterer}.
-     */
-    ObjectiveAlterer getObjectiveAlterer();
-
-    /**
-     * Set the alterer to use for this problem
-     *
-     * @param a the alterer to use
-     */
-    void setObjectiveAlterer(ObjectiveAlterer a);
 
     /**
      * Create a clone of a given VM.

@@ -31,8 +31,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -191,8 +189,7 @@ public class ShutdownableNodeTest {
         ma1.getState().instantiateTo(0, Cause.Null);
         ma2.getState().instantiateTo(0, Cause.Null);
 
-        Solver solver = rp.getSolver();
-        solver.post(IntConstraintFactory.arithm(ma2.getStart(), "=", ma1.getEnd()));
+        rp.getModel().post(rp.getModel().arithm(ma2.getStart(), "=", ma1.getEnd()));
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -248,8 +245,8 @@ public class ShutdownableNodeTest {
         BootableNode ma2 = (BootableNode) rp.getNodeAction(n2);
         ma1.getState().instantiateTo(0, Cause.Null);
         ma2.getState().instantiateTo(1, Cause.Null);
-        Solver solver = rp.getSolver();
-        solver.post(IntConstraintFactory.arithm(ma1.getEnd(), "=", ma2.getStart()));
+
+        rp.getModel().post(rp.getModel().arithm(ma1.getEnd(), "=", ma2.getStart()));
         ReconfigurationPlan p = rp.solve(0, false);
         //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);

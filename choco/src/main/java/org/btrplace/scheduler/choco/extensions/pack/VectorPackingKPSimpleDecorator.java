@@ -52,7 +52,7 @@ public class VectorPackingKPSimpleDecorator {
         this.p = p;
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i = 0; i < p.nbBins; i++) {
-            candidate.add(new S64BitSet(p.getSolver().getEnvironment(), p.bins.length));
+            candidate.add(new S64BitSet(p.getModel().getEnvironment(), p.bins.length));
         }
     }
 

@@ -20,10 +20,7 @@ package org.btrplace.model.view.network;
 
 import org.btrplace.model.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Default implementation of {@link Routing}.
@@ -45,12 +42,12 @@ public class DefaultRouting extends Routing {
      * @param   dst the destination node to reach
      * @return  the ordered list of links that make the path to dst
      */
-    private LinkedHashMap<Link, Boolean> getFirstPhysicalPath(LinkedHashMap<Link, Boolean> currentPath, Switch sw, Node dst) {
+    private Map<Link, Boolean> getFirstPhysicalPath(Map<Link, Boolean> currentPath, Switch sw, Node dst) {
 
         // Iterate through the current switch's links
         for (Link l : net.getConnectedLinks(sw)) {
             // Wrong link
-            if (currentPath.keySet().contains(l)) {
+            if (currentPath.containsKey(l)) {
                 continue;
             }
 
@@ -70,7 +67,7 @@ public class DefaultRouting extends Routing {
             }
             else {
                 // Go to the next switch
-                LinkedHashMap<Link, Boolean>  recall = getFirstPhysicalPath(
+                Map<Link, Boolean> recall = getFirstPhysicalPath(
                         currentPath, l.getSwitch().equals(sw) ? (Switch) l.getElement() : l.getSwitch(), dst);
                 // Return the complete path if found
                 if (!recall.isEmpty()) {
@@ -99,7 +96,7 @@ public class DefaultRouting extends Routing {
         // Fill the cache if needed
         if (routingCache[n1.id()][n2.id()] == null) {
             // Create an initial path from the node to its switch => true : UpLink
-            LinkedHashMap<Link, Boolean> initialPath = new LinkedHashMap<>();
+            Map<Link, Boolean> initialPath = new LinkedHashMap<>();
             initialPath.put(net.getConnectedLinks(n1).get(0), true);
             // Get the first physical path found between the two nodes
             routingCache[n1.id()][n2.id()] =

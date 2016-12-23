@@ -29,7 +29,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.Disjoint;
 import org.btrplace.scheduler.choco.extensions.Precedences;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
@@ -70,7 +70,7 @@ public class CLonely implements ChocoConstraint {
             }
         }
         //Link the assignment variables with the set
-        Solver s = rp.getSolver();
+        Model s = rp.getModel();
         s.post(new Disjoint(myHosts.toArray(new IntVar[myHosts.size()]),
                 otherHosts.toArray(new IntVar[otherHosts.size()]),
                 rp.getNodes().size()));

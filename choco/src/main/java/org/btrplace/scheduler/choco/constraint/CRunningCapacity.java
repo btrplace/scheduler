@@ -29,10 +29,8 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.Cumulatives;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -56,7 +54,7 @@ public class CRunningCapacity implements ChocoConstraint {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
         if (cstr.getInvolvedNodes().size() == 1) {
             return filterWithSingleNode(rp);
         }
@@ -70,17 +68,18 @@ public class CRunningCapacity implements ChocoConstraint {
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
         //if involved nodes == all the nodes, then sum == nb of running VMs
-        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbRunning"), 0, rp.getFutureRunningVMs().size(), rp.getSolver());
-        s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
-        s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
+        IntVar mySum = csp.intVar(rp.makeVarLabel("nbRunning"), 0, rp.getFutureRunningVMs().size(), true);
+        csp.post(csp.sum(vs.toArray(new IntVar[vs.size()]), "=", mySum));
+        csp.post(csp.arithm(mySum, "<=", cstr.getAmount()));
 
         if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
-            s.post(IntConstraintFactory.arithm(mySum, "=", rp.getFutureRunningVMs().size()));
+            csp.post(csp.arithm(mySum, "=", rp.getFutureRunningVMs().size()));
         }
         return true;
     }
 
     private boolean injectContinuous(ReconfigurationProblem rp) throws SchedulerException {
+        Model csp = rp.getModel();
         //The constraint must be already satisfied
         if (!cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
@@ -98,7 +97,7 @@ public class CRunningCapacity implements ChocoConstraint {
         int[] cUse = new int[nbRunning];
         IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
         Arrays.fill(cUse, 1);
-        Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
+        Arrays.fill(dUse, csp.intVar(1));
 
         ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
         if (v == null) {
@@ -111,8 +110,8 @@ public class CRunningCapacity implements ChocoConstraint {
     private boolean filterWithSingleNode(ReconfigurationProblem rp) {
         Node n = cstr.getInvolvedNodes().iterator().next();
         IntVar v = rp.getNbRunningVMs().get(rp.getNode(n));
-        Solver s = rp.getSolver();
-        s.post(IntConstraintFactory.arithm(v, "<=", cstr.getAmount()));
+        Model csp = rp.getModel();
+        csp.post(csp.arithm(v, "<=", cstr.getAmount()));
 
 
         return !cstr.isContinuous() || injectContinuous(rp);

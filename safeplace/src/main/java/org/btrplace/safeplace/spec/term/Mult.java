@@ -43,7 +43,7 @@ public class Mult implements Term {
         if (o1 instanceof Integer) {
             return (Integer) o1 * (Integer) o2;
         }
-        throw new RuntimeException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
+        throw new IllegalArgumentException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
     }
 
     @Override

@@ -21,7 +21,7 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
+import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelector;
 import org.chocosolver.solver.variables.Variable;
 
 /**

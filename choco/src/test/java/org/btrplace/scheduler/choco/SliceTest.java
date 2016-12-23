@@ -21,9 +21,7 @@ package org.btrplace.scheduler.choco;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,11 +39,11 @@ public class SliceTest {
     public void testInstantiation() {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
-        Solver s = new Solver();
-        IntVar st = VF.fixed("start", 1, s);
-        IntVar ed = VF.fixed("end", 3, s);
-        IntVar duration = VF.fixed("duration", 2, s);
-        IntVar hoster = VF.fixed("hoster", 4, s);
+        org.chocosolver.solver.Model m = new org.chocosolver.solver.Model("");
+        IntVar st = m.intVar("start", 1);
+        IntVar ed = m.intVar("end", 3);
+        IntVar duration = m.intVar("duration", 2);
+        IntVar hoster = m.intVar("hoster", 4);
         Slice sl = new Slice(vm1, st, ed, duration, hoster);
         Assert.assertEquals(vm1, sl.getSubject());
         Assert.assertEquals(st, sl.getStart());
@@ -53,7 +51,7 @@ public class SliceTest {
         Assert.assertEquals(hoster, sl.getHoster());
         Assert.assertEquals(duration, sl.getDuration());
         Assert.assertFalse(sl.toString().contains("null"));
-        duration = VF.bounded("duration", 3, 5, s);
+        duration = m.intVar("duration", 3, 5, true);
         sl = new Slice(vm1, st, ed, duration, hoster);
         Assert.assertFalse(sl.toString().contains("null"));
     }

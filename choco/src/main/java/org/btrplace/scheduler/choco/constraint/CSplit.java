@@ -31,7 +31,7 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.DisjointMultiple;
 import org.btrplace.scheduler.choco.extensions.Precedences;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
@@ -73,13 +73,13 @@ public class CSplit implements ChocoConstraint {
                 vmGroups.add(vl);
             }
         }
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
         int nbNodes = rp.getNodes().size();
         IntVar[][] vars = new IntVar[groups.size()][];
         for (int i = 0; i < groups.size(); i++) {
             vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
         }
-        s.post(new DisjointMultiple(vars, nbNodes));
+        csp.post(new DisjointMultiple(vars, nbNodes));
 
         return !(cstr.isContinuous() && !injectContinuous(rp, vmGroups));
     }
@@ -110,7 +110,7 @@ public class CSplit implements ChocoConstraint {
                     VMTransition a = rp.getVMAction(vm);
                     IntVar myPos = a.getDSlice().getHoster();
                     IntVar myStart = a.getDSlice().getStart();
-                    rp.getSolver().post(new Precedences(myPos,
+                    rp.getModel().post(new Precedences(myPos,
                             myStart,
                             otherPositions[i].toArray(),
                             otherEnds[i].toArray(new IntVar[otherEnds[i].size()])));

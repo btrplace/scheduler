@@ -160,9 +160,5 @@ public class CSpreadTest {
         s.setMaxEnd(3);
         s.doRepair(true);
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(i.getModel().getMapping());
-        System.out.println(i.getSatConstraints());
-        System.out.println(p);
-        System.out.println(s.getStatistics());
     }
 }

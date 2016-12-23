@@ -32,12 +32,9 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
-import org.chocosolver.solver.variables.VF;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +56,7 @@ public class CNetwork implements ChocoView {
      */
     public static final String VIEW_ID = "NetworkView";
     private Network net;
-    private Solver solver;
+    private org.chocosolver.solver.Model csp;
     private Model source;
 
     /**
@@ -73,7 +70,7 @@ public class CNetwork implements ChocoView {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-        solver = rp.getSolver();
+        csp = rp.getModel();
         source = rp.getSourceModel();
 
         return true;
@@ -228,10 +225,10 @@ public class CNetwork implements ChocoView {
             if (!tasksListUp.isEmpty()) {
 
                 // Post the cumulative constraint for the current UpLink
-                solver.post(ICF.cumulative(
+                csp.post(csp.cumulative(
                         tasksListUp.toArray(new Task[tasksListUp.size()]),
                         heightsListUp.toArray(new IntVar[heightsListUp.size()]),
-                        VF.fixed(l.getCapacity(), solver),
+                        csp.intVar(l.getCapacity()),
                         true
                 ));
 
@@ -241,10 +238,10 @@ public class CNetwork implements ChocoView {
             if (!tasksListDown.isEmpty()) {
 
                 // Post the cumulative constraint for the current DownLink
-                solver.post(ICF.cumulative(
+                csp.post(csp.cumulative(
                         tasksListDown.toArray(new Task[tasksListDown.size()]),
                         heightsListDown.toArray(new IntVar[heightsListDown.size()]),
-                        VF.fixed(l.getCapacity(), solver),
+                        csp.intVar(l.getCapacity()),
                         true
                 ));
 
@@ -268,7 +265,7 @@ public class CNetwork implements ChocoView {
 
 
             // Only if the capacity is limited
-            if (sw.getCapacity() > 0) {
+            if (sw.getCapacity() != Integer.MAX_VALUE) {
 
                 for (VM vm : rp.getVMs()) {
                     VMTransition a = rp.getVMAction(vm);
@@ -293,10 +290,10 @@ public class CNetwork implements ChocoView {
 
                 if (!tasksList.isEmpty()) {
                     // Post the cumulative constraint for the current switch
-                    solver.post(ICF.cumulative(
+                    csp.post(csp.cumulative(
                             tasksList.toArray(new Task[tasksList.size()]),
                             heightsList.toArray(new IntVar[heightsList.size()]),
-                            VF.fixed(sw.getCapacity(), solver),
+                            csp.intVar(sw.getCapacity()),
                             true
                     ));
 

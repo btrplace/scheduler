@@ -102,9 +102,9 @@ public class DisjointMultiple extends Constraint {
             for (int g = 0; g < nbGroups; g++) {
                 idx += vs[g].length;
                 groupIdx[g + 1] = idx;
-                required[g] = getSolver().getEnvironment().makeBitSet(c);
+                required[g] = getModel().getEnvironment().makeBitSet(c);
                 for (int v = 0; v < c; v++) {
-                    candidates[g][v] = getSolver().getEnvironment().makeInt(0);
+                    candidates[g][v] = getModel().getEnvironment().makeInt(0);
                 }
             }
 
@@ -217,7 +217,7 @@ public class DisjointMultiple extends Constraint {
                 if (g != group) {
                     if (required[g].get(val)) {
                         //The value is used in the other group. It's a contradiction
-                        contradiction(null, "");
+                        fails();
                     }
                     if (candidates[g][val].get() > 0) {
                         //The value was possible for the other group, so we remove it from its variable

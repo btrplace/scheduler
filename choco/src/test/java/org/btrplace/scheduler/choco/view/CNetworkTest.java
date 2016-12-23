@@ -132,6 +132,6 @@ public class CNetworkTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(mo, Collections.singletonList(new Fence(v, n2)));
         Assert.assertNotNull(p);
-        System.out.println(p);
+
     }
 }

@@ -85,7 +85,7 @@ public class StaticRouting extends Routing {
         // Check for a static route
         Map<Link, Boolean> route = routes.get(new NodesMap(n1, n2));
         if (route == null) {
-            return null;
+            return Collections.emptyList();
         }
         // Return the list of links
         return new ArrayList<>(route.keySet());

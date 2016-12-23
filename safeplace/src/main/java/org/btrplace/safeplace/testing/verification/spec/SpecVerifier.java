@@ -26,28 +26,15 @@ import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.TestCase;
-import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.VerifierResult;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
 public class SpecVerifier implements Verifier {
-
-    private List<Domain> vDoms;
-
-
-    public SpecVerifier(List<Domain> vDoms) {
-        this.vDoms = vDoms;
-    }
-
-    public SpecVerifier() {
-        this(Collections.emptyList());
-    }
 
     public void fillArguments(Context mo, TestCase tc) {
         Constraint c = tc.constraint();

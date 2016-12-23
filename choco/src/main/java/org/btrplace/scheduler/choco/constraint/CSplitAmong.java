@@ -27,8 +27,7 @@ import org.btrplace.model.constraint.SplitAmong;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.Collection;
@@ -64,7 +63,7 @@ public class CSplitAmong implements ChocoConstraint {
 
         Collection<Collection<VM>> vGroups = cstr.getGroupsOfVMs();
         Collection<Collection<Node>> pGroups = cstr.getGroupsOfNodes();
-        Solver s = rp.getSolver();
+        Model csp = rp.getModel();
 
         IntVar[] grpVars = new IntVar[vGroups.size()];
         //VM is assigned on a node <-> group variable associated to the VM
@@ -85,7 +84,7 @@ public class CSplitAmong implements ChocoConstraint {
         }
 
         //forces all the vGroups to use different group of nodes
-        s.post(IntConstraintFactory.alldifferent(grpVars, "DEFAULT"));
+        csp.post(csp.allDifferent(grpVars, "DEFAULT"));
         return true;
     }
 

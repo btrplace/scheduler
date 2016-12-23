@@ -24,7 +24,7 @@ import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
+import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
         this.map = m;
         this.actions = actions;
         this.rp = s;
-        this.idx = s.getSolver().getEnvironment().makeInt(0);
+        this.idx = s.getModel().getEnvironment().makeInt(0);
     }
 
     private boolean setToNextMovingVM(IntVar[] scopes) {

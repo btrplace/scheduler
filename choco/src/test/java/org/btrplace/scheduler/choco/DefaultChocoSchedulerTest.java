@@ -23,7 +23,6 @@ import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.extensions.env.ChunkedTrailing;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
@@ -61,9 +60,6 @@ public class DefaultChocoSchedulerTest {
 
         cra.setVerbosity(3);
         Assert.assertEquals(cra.getVerbosity(), 3);
-
-        cra.setEnvironmentFactory(mo -> new ChunkedTrailing());
-        Assert.assertTrue(cra.getEnvironmentFactory().build(null) instanceof ChunkedTrailing);
     }
 
     @Test(expectedExceptions = {SchedulerException.class})

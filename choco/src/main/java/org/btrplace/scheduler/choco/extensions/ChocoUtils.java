@@ -20,16 +20,11 @@ package org.btrplace.scheduler.choco.extensions;
 
 
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
-import org.chocosolver.solver.variables.VF;
-import org.chocosolver.solver.variables.VariableFactory;
-
-import static org.chocosolver.solver.constraints.LogicalConstraintFactory.and;
-import static org.chocosolver.solver.constraints.LogicalConstraintFactory.or;
 
 /**
  * Utility class to ease the creation of some constraints on Choco.
@@ -50,14 +45,14 @@ public final class ChocoUtils {
      * @param c2 the second constraint
      */
     public static void postImplies(ReconfigurationProblem rp, BoolVar b1, Constraint c2) {
-        Solver s = rp.getSolver();
-        BoolVar bC2 = VF.bool(rp.makeVarLabel(c2.toString(), " satisfied"), s);
+        Model s = rp.getModel();
+        BoolVar bC2 = s.boolVar(rp.makeVarLabel(c2.toString(), " satisfied"));
         c2.reifyWith(bC2);
 
-        BoolVar notB1 = VariableFactory.not(b1);
+        BoolVar notB1 = b1.not();
         s.post(new Arithmetic(b1, Operator.NQ, notB1));
 
-        s.post(or(notB1, bC2));
+        s.post(rp.getModel().or(notB1, bC2));
     }
 
     /**
@@ -68,11 +63,11 @@ public final class ChocoUtils {
      * @param c2 the second constraint
      */
     public static void postIfOnlyIf(ReconfigurationProblem rp, BoolVar b1, Constraint c2) {
-        Solver s = rp.getSolver();
-        BoolVar notBC1 = VariableFactory.not(b1);
-        BoolVar bC2 = VF.bool(rp.makeVarLabel(c2.toString(), " satisfied"), s);
+        Model csp = rp.getModel();
+        BoolVar notBC1 = b1.not();
+        BoolVar bC2 = csp.boolVar(rp.makeVarLabel(c2.toString(), " satisfied"));
         c2.reifyWith(bC2);
         BoolVar notBC2 = bC2.not();
-        s.post(or(and(b1, bC2), and(notBC1, notBC2)));
+        csp.post(rp.getModel().or(rp.getModel().or(b1, bC2), rp.getModel().or(notBC1, notBC2)));
     }
 }

@@ -23,7 +23,6 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.*;
 
 import java.util.Random;
 import java.util.Set;
@@ -63,19 +62,7 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
 
     @Override
     public void decorate(Model mo) {
-        throw new RuntimeException("foo");
-        /*ShareableResource rc = new ShareableResource(id);
-        for (VM v : mo.getMapping().getAllVMs()) {
-            int c = rnd.nextInt(maxCons - minCons + 1) + minCons;
-            rc.setConsumption(v, c);
-        }
-
-        for (Node n : mo.getMapping().getAllNodes()) {
-            int c = rnd.nextInt(maxCapa - minCapa + 1) + minCapa;
-            rc.setCapacity(n, c);
-        }
-
-        mo.attach(rc);*/
+        throw new UnsupportedOperationException();
     }
 
     @Override

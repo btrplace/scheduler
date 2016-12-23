@@ -25,7 +25,6 @@ import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.btrplace.scheduler.choco.extensions.MyFirstFail;
 import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
@@ -33,16 +32,14 @@ import org.btrplace.scheduler.choco.view.Cumulatives;
 import org.btrplace.scheduler.choco.view.Packing;
 import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.solver.ResolutionPolicy;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.objective.ObjectiveManager;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
-import org.chocosolver.solver.search.loop.monitors.SMF;
-import org.chocosolver.solver.search.solution.AllSolutionsRecorder;
-import org.chocosolver.solver.search.solution.Solution;
-import org.chocosolver.solver.search.strategy.ISF;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 import org.chocosolver.solver.search.strategy.selectors.values.RealDomainMiddle;
 import org.chocosolver.solver.search.strategy.selectors.values.SetDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.search.strategy.selectors.variables.Occurrence;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
@@ -50,11 +47,7 @@ import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
 import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.RealVar;
-import org.chocosolver.solver.variables.SetVar;
-import org.chocosolver.solver.variables.VariableFactory;
 import org.chocosolver.util.ESat;
-import org.chocosolver.util.tools.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +69,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private Model model;
 
     private Solver solver;
+    private org.chocosolver.solver.Model csp;
 
     private Set<VM> ready;
     private Set<VM> running;
@@ -100,13 +94,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private List<IntVar> vmsCountOnNodes;
 
-    private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
     private ResolutionPolicy solvingPolicy;
 
     private TransitionFactory amFactory;
 
     private Map<String, ChocoView> coreViews;
+
+    private List<Solution> solutions;
 
     /**
      * Make a new RP where the next state for every VM is indicated.
@@ -140,14 +135,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = ps.getDurationEvaluators();
 
         IEnvironment env = ps.getEnvironmentFactory().build(m);
-        solver = new Solver(env, "");
-        solver.set(new AllSolutionsRecorder(solver));
-        start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
-        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), solver);
+        csp = new org.chocosolver.solver.Model(env, "");
+        solver = csp.getSolver();
+        start = fixed(0, "RP.start");
+        end = csp.intVar(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), true);
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
 
+        this.solutions = new ArrayList<>();
 
         fillElements();
 
@@ -187,26 +183,24 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            SMF.limitTime(solver, timeLimit * 1000L);
+            solver.limitTime(timeLimit * 1000L);
         }
 
-        appendNaiveBranchHeuristic();
+        getLogger().debug("{} constraints; {} integers", csp.getNbCstrs(), csp.retrieveIntVars(true).length);
+        if (solver.getSearch() == null) {
+            defaultHeuristic();
+        }
 
-        getLogger().debug("{} constraints; {} integers", solver.getNbCstrs(), solver.retrieveIntVars().length + solver.retrieveBoolVars().length);
-
+        solver.plugMonitor((IMonitorSolution) () -> {
+            Solution s = new Solution(csp);
+            s.record();
+            solutions.add(s);
+        });
 
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
-            solver.plugMonitor((IMonitorSolution) () -> {
-                int v = objective.getValue();
-                String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
-                solver.post(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
-            });
-            if (!solver.getObjectiveManager().isOptimization()) {
-                solver.set(new ObjectiveManager<IntVar, Integer>(objective, solvingPolicy, true));
-            }
-            solver.findOptimalSolution(solvingPolicy, objective);
+            solver.findOptimalSolution(objective, solvingPolicy.equals(ResolutionPolicy.MAXIMIZE));
         }
         return makeResultingPlan();
     }
@@ -249,7 +243,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public List<ReconfigurationPlan> getComputedSolutions() throws SchedulerException {
-        return solver.getSolutionRecorder().getSolutions().stream()
+        return solutions.stream()
                 .map(s -> buildReconfigurationPlan(s, model))
                 .collect(Collectors.toList());
     }
@@ -266,7 +260,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw new SchedulerException(model, "Unable to state about the problem feasibility.");
         }
 
-        Solution s = solver.getSolutionRecorder().getLastSolution();
+        Solution s = null;
+        if (!solutions.isEmpty()) {
+            s = solutions.get(solutions.size() - 1);
+        }
         return buildReconfigurationPlan(s, model.copy());
     }
 
@@ -295,32 +292,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     /**
      * A naive heuristic to be sure every variables will be instantiated.
-     * In practice, instantiate each of the variables to its lower-bound
      */
-    private void appendNaiveBranchHeuristic() {
-        StrategiesSequencer seq;
-
-        IntStrategy strat = ISF.custom(new MyFirstFail(solver), ISF.min_value_selector(), ArrayUtils.append(solver.retrieveBoolVars(), solver.retrieveIntVars()));
-        if (solver.getSearchLoop().getStrategy() == null) {
-            seq = new StrategiesSequencer(strat);
-        } else {
-            seq = new StrategiesSequencer(
-                    solver.getSearchLoop().getStrategy(),
-                    strat);
-        }
-        RealVar[] rv = solver.retrieveRealVars();
-        if (rv != null && rv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new RealStrategy(rv, new Occurrence<>(), new RealDomainMiddle()));
-        }
-        SetVar[] sv = solver.retrieveSetVars();
-        if (sv != null && sv.length > 0) {
-            seq = new StrategiesSequencer(
-                    seq,
-                    new SetStrategy(sv, new InputOrder<>(), new SetDomainMin(), true));
-        }
-        solver.set(seq);
+    private void defaultHeuristic() {
+        IntStrategy intStrat = Search.intVarSearch(new FirstFail(csp), new IntDomainMin(), csp.retrieveIntVars(true));
+        SetStrategy setStrat = new SetStrategy(csp.retrieveSetVars(), new InputOrder<>(csp), new SetDomainMin(), true);
+        RealStrategy realStrat = new RealStrategy(csp.retrieveRealVars(), new Occurrence<>(), new RealDomainMiddle());
+        solver.setSearch(new StrategiesSequencer(intStrat, realStrat, setStrat));
     }
 
     private void addContinuousResourceCapacities() {
@@ -329,7 +306,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int j = 0; j < getVMs().size(); j++) {
             VMTransition a = vmActions.get(j);
             if (a.getDSlice() != null) {
-                iUse.add(VariableFactory.one(solver));
+                iUse.add(csp.intVar(1));
             }
             if (a.getCSlice() != null) {
                 cUse.add(1);
@@ -347,10 +324,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void linkCardinalityWithSlices() {
         Stream<Slice> s = vmActions.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
         IntVar[] ds = s.map(Slice::getHoster).toArray(IntVar[]::new);
-        IntVar[] usages = new IntVar[ds.length];
-        for (int i = 0; i < ds.length; i++) {
-            usages[i] = VariableFactory.one(solver);
-        }
+        int[] usages = new int[ds.length];
+        Arrays.fill(usages, 1);
         ChocoView v = getView(Packing.VIEW_ID);
         if (v == null) {
             throw new SchedulerException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
@@ -365,7 +340,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmsCountOnNodes = new ArrayList<>(nodes.size());
         int nbVMs = vms.size();
         for (Node n : nodes) {
-            vmsCountOnNodes.add(VariableFactory.bounded(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, solver));
+            vmsCountOnNodes.add(csp.intVar(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, true));
         }
         vmsCountOnNodes = Collections.unmodifiableList(vmsCountOnNodes);
     }
@@ -529,8 +504,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public org.chocosolver.solver.Model getModel() {
+        return csp;
+    }
+
+    @Override
     public IntVar makeHostVariable(Object... n) {
-        return VariableFactory.enumerated(makeVarLabel(n), 0, nodes.size() - 1, solver);
+        return csp.intVar(makeVarLabel(n), 0, nodes.size() - 1, false);
     }
 
     @Override
@@ -548,20 +528,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SchedulerException(model, "Unknown node '" + nId + "'");
         }
-        if (useLabels) {
-            return VariableFactory.fixed(makeVarLabel(n), idx, solver);
-        }
-        return VariableFactory.fixed("cste -- ", idx, solver);
+        return fixed(idx, makeVarLabel(n));
     }
 
     @Override
     public IntVar makeUnboundedDuration(Object... n) {
-        return VariableFactory.bounded(makeVarLabel(n), 0, end.getUB(), solver);
+        return csp.intVar(makeVarLabel(n), 0, end.getUB(), true);
     }
 
     @Override
     public IntVar makeDuration(int ub, int lb, Object... n) throws SchedulerException {
-        return VariableFactory.bounded(makeVarLabel(n), lb, ub, solver);
+        return csp.intVar(makeVarLabel(n), lb, ub, true);
     }
 
     @Override
@@ -583,6 +560,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public IntVar fixed(int v, Object... lbl) {
+        if (useLabels) {
+            return csp.intVar(makeVarLabel(lbl), v);
+        }
+        return csp.intVar(v);
+    }
+
+    @Override
     public Set<VM> getManageableVMs() {
         return Collections.unmodifiableSet(manageable);
     }
@@ -590,16 +575,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public Logger getLogger() {
         return LOGGER;
-    }
-
-    @Override
-    public ObjectiveAlterer getObjectiveAlterer() {
-        return alterer;
-    }
-
-    @Override
-    public void setObjectiveAlterer(ObjectiveAlterer a) {
-        alterer = a;
     }
 
     @Override

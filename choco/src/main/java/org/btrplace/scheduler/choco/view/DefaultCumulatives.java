@@ -123,7 +123,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         symmetryBreakingForStayingVMs(rp);
         IntVar[] earlyStarts = rp.getNodeActions().stream().map(NodeTransition::getHostingStart).toArray(IntVar[]::new);
         IntVar[] lastEnd = rp.getNodeActions().stream().map(NodeTransition::getHostingEnd).toArray(IntVar[]::new);
-        rp.getSolver().post(
+        rp.getModel().post(
                 new TaskScheduler(earlyStarts,
                         lastEnd,
                         capas,
@@ -199,7 +199,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                 return false;
             }
         } else {
-            rp.getSolver().post(new FastImpliesEq(stay, s.getDuration(), 0));
+            rp.getModel().post(new FastImpliesEq(stay, s.getDuration(), 0));
         }
         return true;
     }

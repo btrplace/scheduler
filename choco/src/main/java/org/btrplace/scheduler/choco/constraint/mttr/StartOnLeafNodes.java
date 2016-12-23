@@ -20,7 +20,7 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 
 import org.btrplace.model.Node;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
+import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.List;

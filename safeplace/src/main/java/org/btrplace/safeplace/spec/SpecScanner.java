@@ -35,7 +35,6 @@ import org.btrplace.scheduler.CoreConstraints;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
 import java.util.stream.Collectors;
 
 /**

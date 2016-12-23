@@ -94,11 +94,11 @@ public class Disjoint extends Constraint {
             this.nbValues = c;
             candidates = new IStateInt[2][c];
             required = new IStateBitSet[2];
-            required[0] = getSolver().getEnvironment().makeBitSet(c);
-            required[1] = getSolver().getEnvironment().makeBitSet(c);
+            required[0] = getModel().getEnvironment().makeBitSet(c);
+            required[1] = getModel().getEnvironment().makeBitSet(c);
             for (int v = 0; v < c; v++) {
-                candidates[0][v] = getSolver().getEnvironment().makeInt(0);
-                candidates[1][v] = getSolver().getEnvironment().makeInt(0);
+                candidates[0][v] = getModel().getEnvironment().makeInt(0);
+                candidates[1][v] = getModel().getEnvironment().makeInt(0);
             }
             idms = new IIntDeltaMonitor[vars.length];
             int i = 0;
@@ -234,7 +234,7 @@ public class Disjoint extends Constraint {
 
             if (required[other].get(val)) {
                 //The value is used in the other group. It's a contradiction
-                contradiction(null, "");
+                fails();
             }
             if (candidates[other][val].get() > 0) {
                 //The value was possible for the other group, so we remove it from its variable

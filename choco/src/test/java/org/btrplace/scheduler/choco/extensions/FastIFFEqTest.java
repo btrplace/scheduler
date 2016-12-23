@@ -18,10 +18,9 @@
 
 package org.btrplace.scheduler.choco.extensions;
 
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,72 +32,72 @@ import org.testng.annotations.Test;
 
     @Test
     public void test1() {
-        Solver s = new Solver();
+        Model csp = new Model();
         //SMF.log(s, true, true);
-        BoolVar b = VF.bool("b", s);
-        IntVar x = VF.bounded("x", 0, 3, s);
+        BoolVar b = csp.boolVar("b");
+        IntVar x = csp.intVar("x", 0, 3, true);
         int c = 2;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(4, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(4, csp.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test2() {
-        Solver s = new Solver();
-        BoolVar b = VF.bool("b", s);
-        IntVar x = VF.enumerated("x", 0, 3, s);
+        Model csp = new Model();
+        BoolVar b = csp.boolVar("b");
+        IntVar x = csp.intVar("x", 0, 3, false);
         int c = 2;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(4, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(4, csp.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test3() {
-        Solver s = new Solver();
-        BoolVar b = VF.bool("b", s);
-        IntVar x = VF.bounded("x", 0, 2, s);
+        Model csp = new Model();
+        BoolVar b = csp.boolVar("b");
+        IntVar x = csp.intVar("x", 0, 2, true);
         int c = 3;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(3, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(3, csp.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test4() {
-        Solver s = new Solver();
-        BoolVar b = VF.one(s);
-        IntVar x = VF.bounded("x", 0, 2, s);
+        Model csp = new Model();
+        BoolVar b = csp.boolVar(true);
+        IntVar x = csp.intVar("x", 0, 2);
         int c = 3;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(0, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(0, csp.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test5() {
-        Solver s = new Solver();
-        BoolVar b = VF.one(s);
-        IntVar x = VF.bounded("x", 0, 3, s);
+        Model csp = new Model();
+        BoolVar b = csp.boolVar(true);
+        IntVar x = csp.intVar("x", 0, 3);
         int c = 2;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(1, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(1, csp.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test6() {
-        Solver s = new Solver();
-        BoolVar b = VF.zero(s);
-        IntVar x = VF.bounded("x", 0, 3, s);
+        Model csp = new Model();
+        BoolVar b = csp.boolVar(false);
+        IntVar x = csp.intVar("x", 0, 3, true);
         int c = 2;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(3, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(3, csp.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test7() {
-        Solver s = new Solver();
-        BoolVar b = VF.zero(s);
-        IntVar x = VF.bounded("x", 0, 2, s);
+        Model csp = new Model();
+        BoolVar b = csp.boolVar(false);
+        IntVar x = csp.intVar("x", 0, 2, true);
         int c = 3;
-        s.post(new FastIFFEq(b, x, c));
-        Assert.assertEquals(3, s.findAllSolutions());
+        csp.post(new FastIFFEq(b, x, c));
+        Assert.assertEquals(3, csp.getSolver().findAllSolutions().size());
     }
 }

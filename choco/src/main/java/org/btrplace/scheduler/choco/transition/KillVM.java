@@ -27,10 +27,9 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.EnumSet;
 
@@ -77,7 +76,7 @@ public class KillVM implements VMTransition {
         this.from = from;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
-        state = VariableFactory.zero(rp.getSolver());
+        state = rp.getModel().boolVar(false);
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), org.btrplace.plan.event.KillVM.class, e);
 
@@ -85,11 +84,11 @@ public class KillVM implements VMTransition {
             cSlice = new SliceBuilder(rp, e, "killVM('" + e + "').cSlice")
                     .setStart(rp.getStart())
                     .setHoster(rp.getCurrentVMLocation(rp.getVM(vm)))
-                    .setEnd(VariableFactory.fixed(d, rp.getSolver()))
+                    .setEnd(rp.getModel().intVar(d))
                     .build();
             end = cSlice.getEnd();
         } else {
-            end = VariableFactory.fixed(d, rp.getSolver());
+            end = rp.getModel().intVar(d);
         }
         start = rp.getStart();
     }

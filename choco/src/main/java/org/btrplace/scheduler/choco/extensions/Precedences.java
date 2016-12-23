@@ -133,7 +133,7 @@ public class Precedences extends Constraint {
 
             TIntArrayList[] l = new TIntArrayList[endsByHost.length];
 
-            IEnvironment env = getSolver().getEnvironment();
+            IEnvironment env = getModel().getEnvironment();
             for (int i = 0; i < horizonUB.length; i++) {
                 horizonLB[i] = env.makeInt(0);
                 horizonUB[i] = env.makeInt(0);
@@ -273,7 +273,7 @@ public class Precedences extends Constraint {
 
         private void checkHorizonForHost(int h) throws ContradictionException {
             if (start.getUB() < horizonLB[h].get()) {
-                this.contradiction(start, "");
+                fails();
             }
         }
 

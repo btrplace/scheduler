@@ -103,7 +103,6 @@ public class ChocoMapper {
      * @throws IllegalArgumentException if there is no suitable constructor for the choco implementation
      */
     public void mapConstraint(Class<? extends Constraint> c, Class<? extends ChocoConstraint> cc) {
-        //checkInstantiable(c, cc);
         constraints.put(c, cc);
     }
 
@@ -116,16 +115,7 @@ public class ChocoMapper {
      * @throws IllegalArgumentException if there is no suitable constructor for the choco implementation
      */
     public void mapView(Class<? extends ModelView> c, Class<? extends ChocoView> cc) {
-        //checkInstantiable(c, cc);
         views.put(c, cc);
-    }
-
-    private static void checkInstantiable(Class<?> c, Class<?> cc) {
-        try {
-            cc.getDeclaredConstructor(c);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getSimpleName() + ")' available", e);
-        }
     }
 
     /**

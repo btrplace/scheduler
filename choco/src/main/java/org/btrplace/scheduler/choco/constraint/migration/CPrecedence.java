@@ -27,7 +27,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Operator;
 
@@ -63,9 +62,6 @@ public class CPrecedence implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
-        // Get the solver
-        Solver s = rp.getSolver();
-
         // Not enough / too much VMs
         if (pr.getInvolvedVMs().size() != 2) {
             rp.getLogger().error("Unable to inject the constraint '" + pr + "', the amount of involved VMs must be 2.");
@@ -87,7 +83,7 @@ public class CPrecedence implements ChocoConstraint {
         }
 
         // Post the precedence constraint (involved VMs need to be ordered)
-        s.post(new Arithmetic(migrationList.get(0).getEnd(), Operator.LE, migrationList.get(1).getStart()));
+        rp.getModel().post(new Arithmetic(migrationList.get(0).getEnd(), Operator.LE, migrationList.get(1).getStart()));
 
         return true;
     }

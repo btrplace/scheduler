@@ -22,7 +22,6 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.TimedBasedActionComparator;
-import org.btrplace.plan.event.*;
 import org.btrplace.safeplace.spec.prop.Proposition;
 
 import java.util.PriorityQueue;

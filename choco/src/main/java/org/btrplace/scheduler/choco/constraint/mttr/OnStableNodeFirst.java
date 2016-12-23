@@ -25,7 +25,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.solver.search.strategy.selectors.VariableSelector;
+import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelector;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
      */
     public OnStableNodeFirst(ReconfigurationProblem rp) {
 
-        firstFree = rp.getSolver().getEnvironment().makeInt(0);
+        firstFree = rp.getModel().getEnvironment().makeInt(0);
         Mapping cfg = rp.getSourceModel().getMapping();
 
         List<VMTransition> vmActions = rp.getVMActions();
