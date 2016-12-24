@@ -26,8 +26,7 @@ import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 
 import java.util.stream.Collectors;
 
-import static org.btrplace.safeplace.testing.Result.failure;
-import static org.btrplace.safeplace.testing.Result.success;
+import static org.btrplace.safeplace.testing.Result.*;
 
 /**
  * @author Fabien Hermenier
@@ -109,18 +108,18 @@ public class TestCaseResult {
             if (last == null) {
                 //but no in practice
                 if (stats.completed()) {
-                    return Result.falseNegative;
+                    return falseNegative;
                 }
-                return Result.failure;
+                return failure;
             }
             return success;
         } else if (Boolean.FALSE.equals(res.getStatus())) {
             if (last != null) {
-                return Result.falsePositive;
+                return falsePositive;
             }
             return success;
         }
-        return Result.failure;
+        return failure;
     }
 
     public String stackTraceToString(Throwable e) {

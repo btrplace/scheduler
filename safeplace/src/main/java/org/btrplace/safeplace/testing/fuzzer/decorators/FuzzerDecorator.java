@@ -29,6 +29,8 @@ public interface FuzzerDecorator extends Copyable<FuzzerDecorator> {
 
     void decorate(Model mo);
 
-    default void decorate(ReconfigurationPlan p){}
+    default void decorate(ReconfigurationPlan p) {
+        //nothing is done by default
+    }
 
 }

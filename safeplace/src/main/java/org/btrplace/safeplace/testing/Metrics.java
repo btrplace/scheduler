@@ -33,7 +33,8 @@ public class Metrics {
     public long testing;
 
     public long fuzzingIterations;
-    Map<String, Long> reductions;
+
+    public Map<String, Long> reductions;
 
     public Metrics() {
         reductions = new HashMap<>();

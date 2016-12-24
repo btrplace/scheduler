@@ -87,7 +87,7 @@ public class SpecMapping {
         vmState.put(v, t);
     }
 
-    public Set<VM> VMs() {
+    public Set<VM> vms() {
         return vmState.keySet();
     }
 

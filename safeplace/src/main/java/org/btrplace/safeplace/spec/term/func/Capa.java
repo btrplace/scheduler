@@ -39,9 +39,9 @@ public class Capa implements Function<Integer> {
     @Override
     public Integer eval(Context mo, Object... args) {
         String rc = (String) args[1];
-        ShareableResource r = (ShareableResource) mo.getModel().getView(ShareableResource.VIEW_ID_BASE + rc);
+        ShareableResource r = ShareableResource.get(mo.getModel(), rc);
         if (r == null) {
-            throw new RuntimeException("View '" + ShareableResource.VIEW_ID_BASE + rc + "' is missing");
+            throw new IllegalArgumentException("View '" + rc + "' is missing");
         }
         return r.getCapacity((Node) args[0]);
 

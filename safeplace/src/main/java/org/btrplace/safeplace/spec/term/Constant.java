@@ -19,7 +19,7 @@
 package org.btrplace.safeplace.spec.term;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.safeplace.spec.type.*;
+import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.Collection;
@@ -63,20 +63,6 @@ public class Constant implements Term {
         Type t = Type.decode(o.getAsString("type"));
         Object r = t.fromJSON(o.get("value"));
         return new Constant(r, t);
-    }
-
-    private static Type type(JSONObject o) {
-        switch(o.getAsString("type")) {
-            case "int":
-                return IntType.getInstance();
-            case "set":
-                return new SetType(type((JSONObject) o.get("value")));
-            case "list":
-                return new ListType(type((JSONObject) o.get("value")));
-            case "string":
-                return StringType.getInstance();
-        }
-        throw new IllegalArgumentException(o.getAsString("type"));
     }
 
     @Override

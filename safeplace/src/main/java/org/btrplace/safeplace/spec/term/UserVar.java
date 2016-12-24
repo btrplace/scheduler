@@ -26,6 +26,7 @@ import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 import org.btrplace.safeplace.util.AllTuplesGenerator;
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

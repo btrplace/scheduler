@@ -22,6 +22,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.TimedBasedActionComparator;
+import org.btrplace.plan.event.*;
 import org.btrplace.safeplace.spec.prop.Proposition;
 
 import java.util.PriorityQueue;
@@ -174,7 +175,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
      */
     public Action check(Proposition ok) {
         if (!isConsistent(ok)) {
-            throw new RuntimeException("Failure at the beginning of the plan");
+            throw new IllegalStateException("Failure at the beginning of the plan");
         }
 
         if (!p.getActions().isEmpty()) {
@@ -214,13 +215,12 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
             }
         }
         if (!isConsistent(ok)) {
-            throw new RuntimeException("Failure by the end");
+            throw new IllegalStateException("Failure by the end");
         }
         return null; //alright
     }
 
     private boolean visitAndThrowOnViolation(Action a, Proposition ok) {
-        //System.out.println("Visited " + a + " on " + success + " " + startingEvent);
         a.visit(this);
         return isConsistent(ok);
     }
@@ -228,11 +228,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
 
     public boolean isConsistent(Proposition ok) {
         Context mo = checkers.currentModel();
-        Boolean bOk = ok.eval(mo);
-        //System.out.println("ok");
-        //System.out.println(ok + ": " + bOk);
-        //System.out.println("--> " + mo.getMapping());
-        return bOk;
+        return ok.eval(mo);
     }
 
     private boolean visitEvents(Action a, Proposition ok, Action.Hook k) {

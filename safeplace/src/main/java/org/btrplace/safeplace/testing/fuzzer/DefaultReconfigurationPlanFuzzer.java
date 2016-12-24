@@ -18,10 +18,15 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.*;
 import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
 import org.btrplace.safeplace.testing.verification.btrplace.Schedule;
+
+import java.util.*;
 
 /**
  * @author Fabien Hermenier

@@ -20,6 +20,7 @@ package org.btrplace.safeplace.testing.verification.btrplace;
 
 import org.btrplace.model.Element;
 import org.btrplace.model.constraint.AllowAllConstraintChecker;
+import org.btrplace.plan.event.*;
 
 /**
  * @author Fabien Hermenier

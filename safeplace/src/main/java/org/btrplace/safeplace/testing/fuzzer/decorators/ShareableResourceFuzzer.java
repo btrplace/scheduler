@@ -23,6 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.plan.event.*;
 
 import java.util.Random;
 import java.util.Set;

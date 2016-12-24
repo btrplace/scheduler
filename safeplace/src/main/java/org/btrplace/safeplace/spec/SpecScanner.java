@@ -35,6 +35,7 @@ import org.btrplace.scheduler.CoreConstraints;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -151,7 +152,7 @@ public class SpecScanner {
         return args;
     }
 
-    private org.btrplace.safeplace.spec.Constraint parseSide(Side s, List<org.btrplace.safeplace.spec.Constraint> known) throws IOException, SpecException {
+    private org.btrplace.safeplace.spec.Constraint parseSide(Side s, List<Constraint> known) throws IOException, SpecException {
         List<UserVar> args = makeArgs(s.impl.getSimpleName(), s.s.args());
         CstrSpecParser parser = new CstrSpecParser(getTokens(s.s.inv()));
         ParseTree tree = parser.formula();

@@ -34,6 +34,7 @@ import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
 import org.btrplace.safeplace.testing.fuzzer.domain.ConstantDomain;
 import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 

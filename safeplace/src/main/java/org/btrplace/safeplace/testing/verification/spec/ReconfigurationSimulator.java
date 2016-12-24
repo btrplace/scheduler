@@ -20,6 +20,7 @@ package org.btrplace.safeplace.testing.verification.spec;
 
 import org.btrplace.model.Node;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.plan.event.*;
 import org.btrplace.safeplace.spec.type.NodeStateType;
 import org.btrplace.safeplace.spec.type.VMStateType;
 

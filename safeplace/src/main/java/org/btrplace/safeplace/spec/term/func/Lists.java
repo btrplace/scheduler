@@ -41,7 +41,7 @@ public class Lists implements Function<List> {
 
 
     @Override
-    public java.util.List eval(Context mo, Object... args) {
+    public List eval(Context mo, Object... args) {
         Collection c = (Collection) args[0];
         if (c == null) {
             return null;
