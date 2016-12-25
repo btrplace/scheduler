@@ -18,16 +18,7 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
-import org.btrplace.json.JSON;
 import org.btrplace.json.model.InstanceConverter;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Model;
-import org.btrplace.model.constraint.Preserve;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.plan.DefaultReconfigurationPlan;
-import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.Action;
-import org.btrplace.plan.event.Allocate;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.Result;
 import org.btrplace.safeplace.testing.TestCase;
@@ -37,7 +28,6 @@ import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 

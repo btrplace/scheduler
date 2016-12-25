@@ -170,7 +170,9 @@ public class ChocoMapper {
         if (cc == null) {
             return null;
         }
+
         try {
+
             return cc.getDeclaredConstructor(c.getClass()).newInstance(c);
         } catch (Exception ex) {
             throw new IllegalArgumentException("No constructor '" + cc.getSimpleName() + "(" + c.getClass().getSimpleName() + ")' available", ex);

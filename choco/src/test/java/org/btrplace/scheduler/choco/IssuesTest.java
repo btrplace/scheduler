@@ -19,7 +19,6 @@
 package org.btrplace.scheduler.choco;
 
 import org.btrplace.json.JSON;
-import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.model.*;
 import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
