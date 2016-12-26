@@ -36,7 +36,6 @@ import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.btrplace.CheckerVerifier;
 import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -61,7 +60,7 @@ public class DSN {
         return new TestScanner(l);
     }
 
-    @Test
+    ////@Test
     public void fuzzingSizing() throws Exception {
         TestScanner sc = newScanner();
         Path path = Paths.get(root,"fuzz.csv");
@@ -82,7 +81,7 @@ public class DSN {
         }
     }
 
-    @Test
+    //@Test
     public void fuzzingScalability() throws Exception {
         TestScanner sc = newScanner();
 
@@ -128,7 +127,7 @@ public class DSN {
         }
     }
 
-    @Test
+    //@Test
     public void specLength() throws Exception {
         SpecScanner sc = new SpecScanner();
         List<Constraint> l = sc.scan();
@@ -156,7 +155,7 @@ public class DSN {
         Files.write(path, out.getBytes());
     }
 
-    @Test
+    //@Test
     public void funcFrequency() throws Exception {
         SpecScanner sc = new SpecScanner();
         List<Constraint> l = sc.scan();
@@ -189,7 +188,7 @@ public class DSN {
 
     }
 
-    @Test
+    //@Test
     public void specVsCheckers() throws Exception {
         TestScanner sc = newScanner();
         Bench.population = 500;
@@ -210,7 +209,7 @@ public class DSN {
         }
     }
 
-    @Test
+    //@Test
     public void discreteVsContinuous() throws Exception {
         TestScanner sc = newScanner();
         Bench.population = 500;
@@ -234,7 +233,7 @@ public class DSN {
         }
     }
 
-    @Test
+    //@Test
     public void repairVsRebuild() throws Exception {
         TestScanner sc = newScanner();
         Bench.population = 500;
@@ -258,7 +257,7 @@ public class DSN {
         }
     }
 
-    @Test
+    //@Test
     public void errors() throws Exception {
         TestScanner sc = newScanner();
         Bench.source = "xp-dsn";
@@ -271,7 +270,7 @@ public class DSN {
         System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
     }
 
-    @Test
+    //@Test
     public void prettyErrors() throws Exception {
         TestScanner sc = newScanner();
         Bench.source = "xp-dsn";
@@ -284,7 +283,7 @@ public class DSN {
     }
 
 
-    @Test
+    //@Test
     //Extract the number of line of codes of tests
     public void testSloc() throws Exception {
         //Parse the legacy unit tests
@@ -323,7 +322,7 @@ public class DSN {
         @Override
         public void visit(MethodDeclaration n, Object arg) {
             if (n.getName().equals("eval")) {
-                l.add(n.getEndLine() - n.getBeginLine());
+                l.add(n.getRange().end.line - n.getRange().begin.line);
             }
             super.visit(n, arg);
         }
@@ -341,7 +340,7 @@ public class DSN {
         public void visit(MethodDeclaration n, Object arg) {
             System.out.println(n.getName());
             if (n.toStringWithoutComments().contains("solve")) {
-                l.add(n.getBody().getEndLine() - n.getBody().getBeginLine());
+                l.add(n.getBody().getRange().end.line - n.getBody().getRange().begin.line);
             }
             super.visit(n, arg);
         }
@@ -363,7 +362,7 @@ public class DSN {
                 }
             }
             System.out.println(n.getName());
-            l.add(n.getEndLine() - n.getBeginLine());
+            l.add(n.getRange().end.line - n.getRange().begin.line);
             super.visit(n, arg);
         }
     }

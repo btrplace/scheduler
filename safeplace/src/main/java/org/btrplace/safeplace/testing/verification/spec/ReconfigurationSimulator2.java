@@ -53,7 +53,7 @@ public class ReconfigurationSimulator2 implements ActionVisitor {
 
     public int start(Proposition prop) {
         //sort actions by timestamp
-        Set<Integer> s = new TreeSet<Integer>((a,b) -> {return a - b;});
+        Set<Integer> s = new TreeSet<>(Comparator.comparingInt(a -> a));
         for (Action a : p.getActions()) {
             s.add(a.getStart());
             s.add(a.getEnd());

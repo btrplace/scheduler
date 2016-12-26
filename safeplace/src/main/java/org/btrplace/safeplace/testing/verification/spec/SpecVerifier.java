@@ -19,7 +19,6 @@
 package org.btrplace.safeplace.testing.verification.spec;
 
 import org.btrplace.model.Model;
-import org.btrplace.plan.event.Action;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.Constant;
@@ -70,8 +69,6 @@ public class SpecVerifier implements Verifier {
             ReconfigurationSimulator2 sim = new ReconfigurationSimulator2(mo, tc.plan());
             int x = sim.start(good);
             if (x >= 0) {
-                for (Action a : tc.plan().getActions()) {
-                }
                 return VerifierResult.newKo("Failure at time '" + x + "'");
             }
             return VerifierResult.newOk();

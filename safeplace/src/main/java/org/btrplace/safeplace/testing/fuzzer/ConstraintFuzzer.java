@@ -26,7 +26,6 @@ import org.btrplace.safeplace.testing.fuzzer.domain.ConstantDomain;
 import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -35,8 +34,6 @@ import java.util.stream.Stream;
 public class ConstraintFuzzer {
 
     private Map<String, Domain> doms;
-
-    private List<Constraint> predicates;
 
     private Constraint toTest;
 
@@ -53,10 +50,6 @@ public class ConstraintFuzzer {
         }
         toTest = o.get();
 
-        predicates = new ArrayList<>(cores);
-        if (toTest.args().isEmpty()) {
-            predicates = predicates.stream().filter(x -> !x.id().equals(toTest.id())).collect(Collectors.toList());
-        }
     }
 
     public Domain domain(UserVar v, Model mo) {

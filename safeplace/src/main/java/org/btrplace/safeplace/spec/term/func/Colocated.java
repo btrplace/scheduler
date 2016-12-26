@@ -48,7 +48,7 @@ public class Colocated implements Function<Set<VM>> {
         Node n = mo.getMapping().host(v);
         if (n == null) {
             //System.out.println("Colocated with " + args + ": none");
-            return Collections.emptySet();
+            return Collections.<VM>emptySet();
         }
         Set<VM> vms = new HashSet<>();
         vms.addAll(mo.getMapping().sleeping(n));

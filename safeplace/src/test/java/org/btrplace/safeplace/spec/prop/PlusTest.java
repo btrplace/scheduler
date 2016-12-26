@@ -30,6 +30,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class PlusTest {
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
         Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(IntType.getInstance()));
-        Constant v2 = new Constant(new HashSet(Arrays.asList(VMStateType.getInstance().parse("running"))), new SetType(VMStateType.getInstance()));
+        Constant v2 = new Constant(new HashSet(Collections.singletonList(VMStateType.getInstance().parse("running"))), new SetType(VMStateType.getInstance()));
         new SetPlus(v1, v2);
     }
 

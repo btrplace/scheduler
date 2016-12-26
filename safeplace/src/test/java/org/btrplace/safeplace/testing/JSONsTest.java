@@ -24,7 +24,6 @@ import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.DefaultTestCaseFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.TestCaseFuzzer;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -33,7 +32,7 @@ import java.util.List;
  */
 public class JSONsTest {
 
-    @Test
+    //@Test
     public void test() throws Exception {
         SpecScanner sc = new SpecScanner();
         List<Constraint> l = sc.scan();

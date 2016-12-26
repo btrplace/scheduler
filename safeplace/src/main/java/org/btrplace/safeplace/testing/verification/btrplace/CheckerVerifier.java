@@ -46,9 +46,7 @@ public class CheckerVerifier implements Verifier {
             try {
                 chk.check(tc.plan());
                 return VerifierResult.newOk();
-            } catch (SatConstraintViolationException ex) {
-                return VerifierResult.newKo(ex.getMessage());
-            } catch (SchedulerException ex) {
+            } catch (SatConstraintViolationException | SchedulerException ex) {
                 return VerifierResult.newKo(ex.getMessage());
             }
         }

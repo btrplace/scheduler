@@ -232,12 +232,9 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         Model mo = new DefaultModel();
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
 
-        Set<Node> onlines = new HashSet<>();
         for (int i = 0; i < nbNodes; i++) {
             Node n = mo.newNode();
-            if (addNode(n, p)) {
-                onlines.add(n);
-            }
+            addNode(n, p);
         }
         for (int i = 0; i < nbVMs; i++) {
             addVM(mo.newVM(), p);

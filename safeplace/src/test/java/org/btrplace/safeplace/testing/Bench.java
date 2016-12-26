@@ -41,7 +41,7 @@ public class Bench {
     public static int population = 100;
     public static boolean transitions = true;
 
-    public enum Mode {SAVE, REPLAY, DEFAULT};
+    public enum Mode {SAVE, REPLAY, DEFAULT}
 
     public static String source = ".";
     public static Mode mode = Mode.DEFAULT;

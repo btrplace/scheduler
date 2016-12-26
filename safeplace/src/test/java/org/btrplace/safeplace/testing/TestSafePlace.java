@@ -23,7 +23,6 @@ import org.btrplace.safeplace.spec.SpecScanner;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -222,7 +221,7 @@ public class TestSafePlace {
         assertEquals(c.reporting().done(), 0);
     }
 
-    @Test
+    //@Test
     public void launcher() throws Exception {
         SpecScanner specScanner = new SpecScanner();
         List<Constraint> l = specScanner.scan();

@@ -21,7 +21,6 @@ package org.btrplace.safeplace.testing.limit;
 import org.btrplace.safeplace.testing.TestCaseResult;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -55,17 +54,10 @@ public class RunnerLimit implements Predicate<TestCaseResult> {
     public RunnerLimit success(int nb) {
         with(new MaxSuccess(nb));
         return this;
-
     }
 
     public void with(Predicate<TestCaseResult> p) {
-        for (Iterator<Predicate<TestCaseResult>> ite = limits.iterator(); ite.hasNext(); ) {
-            Predicate<TestCaseResult> r = ite.next();
-            if (r.getClass().equals(p.getClass())) {
-                ite.remove();
-            }
-
-        }
+        limits.removeIf(r -> r.getClass().equals(p.getClass()));
         limits.add(p);
     }
     public RunnerLimit clear() {

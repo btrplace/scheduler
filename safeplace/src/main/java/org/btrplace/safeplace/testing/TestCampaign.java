@@ -146,11 +146,7 @@ public class TestCampaign implements Tester {
                 reporting.with(res);
             } while (limits.test(res));
 
-            int failures = reporting.done();
-            /*if (failures > 0) {
-                Assert.fail(failures + " test(s) failed");
-            }*/
-            return failures;
+            return reporting.done();
         } finally {
             store("]\n");
         }

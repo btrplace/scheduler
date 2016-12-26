@@ -21,7 +21,6 @@ package org.btrplace.safeplace.testing;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.SpecScanner;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ import java.util.List;
  */
 public class TestScannerTest {
 
-    @Test
+    //@Test
     public void testBench() throws Exception {
         TestScanner sc = newScanner();
         List<TestCampaign> campaigns = sc.testGroups("noVMsOnOfflineNodes");
