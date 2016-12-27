@@ -47,14 +47,10 @@ public class Context {
 
     private LinkedList<Map<String, Object>> stack;
 
-    public Context root;
+    private Context root;
 
     public Context() {
         this(new DefaultModel());
-    }
-
-    public ReconfigurationPlan getPlan() {
-        return plan;
     }
 
     public Context(Model mo) {
@@ -68,8 +64,15 @@ public class Context {
         add(new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs())));
     }
 
+    public ReconfigurationPlan getPlan() {
+        return plan;
+    }
 
-    public Context getRootContent() {
+    public void setRootContext(Context root) {
+        this.root = root;
+    }
+
+    public Context getRootContext() {
         return root;
     }
 

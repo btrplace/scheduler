@@ -20,7 +20,6 @@ package org.btrplace.bench;
 
 import org.btrplace.json.JSON;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.Parameters;
@@ -52,6 +51,7 @@ public class Bench {
      */
     public static final String SCHEDULER_STATS = "scheduler.csv";
 
+    private static Options opts;
     private Bench() {
     }
 
@@ -62,7 +62,7 @@ public class Bench {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        Options opts = new Options();
+        opts = new Options();
 
         // Parse the cmdline arguments
         CmdLineParser cli = new CmdLineParser(opts);
@@ -70,55 +70,48 @@ public class Bench {
             cli.getProperties().withUsageWidth(80);
             cli.parseArgument(args);
         } catch (CmdLineException ex) {
-            System.err.println(ex.getMessage());
             cli.printUsage(System.err);
             System.exit(1);
         }
 
-        int v = opts.verbosity();
-
-        if (v > 0) {
-            Runtime runtime = Runtime.getRuntime();
-            int mb = 1024 * 1024;
-            //Print total available memory
-            System.out.println("Total Memory:" + runtime.totalMemory() / mb);
-
-            //Print Maximum available memory
-            System.out.println("Max Memory:" + runtime.maxMemory() / mb);
-        }
+        Runtime runtime = Runtime.getRuntime();
+        int mb = 1024 * 1024;
+        out(1, "Total Memory: %d%n", runtime.totalMemory() / mb);
+        out(1, "Max Memory: %d%n", runtime.maxMemory() / mb);
 
         Parameters ps = opts.parameters();
 
-        File output = opts.output();
         Iterator<LabelledInstance> ite = opts.instances().iterator();
         while (ite.hasNext()) {
             LabelledInstance i = ite.next();
-            ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
-            try {
-                s.solve(i);
-            } catch (SchedulerException ex) {
-                throw new RuntimeException(ex);
-            }
-            if (opts.single()) {
-                System.out.println(s.getStatistics());
-            } else {
-                SolvingStatistics stats = s.getStatistics();
-                if (v == 0) {
-                    if (stats.getSolutions().isEmpty()) {
-                        System.out.println(i.label + ": KO");
-                    } else {
-                        System.out.println(i.label + ": OK");
-                    }
-                } else if (v > 0) {
-                    System.out.println("----- " + i.label + " -----");
-                    System.out.println(stats);
-                    System.out.println();
-                }
-                store(i, stats, output);
-            }
+            solve(i, ps);
         }
     }
 
+    private static void solve(LabelledInstance i, Parameters ps) throws IOException {
+        ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
+        s.solve(i);
+        if (opts.single()) {
+            out(0, "%s%n", s.getStatistics());
+        } else {
+            SolvingStatistics stats = s.getStatistics();
+            if (opts.verbosity() == 0) {
+                out(0, "%s: %s%n", i.label, stats.getSolutions().isEmpty() ? "KO" : "OK");
+            } else {
+                out(1, "----- %s -----%n", i.label);
+                out(1, "%s%n", stats);
+                out(1, "%n");
+            }
+            File output = opts.output();
+            store(i, stats, output);
+        }
+    }
+
+    private static void out(int lvl, String fmt, Object... args) {
+        if (opts.verbosity() >= lvl) {
+            System.out.printf(fmt, args);
+        }
+    }
     private static void store(LabelledInstance i, SolvingStatistics stats, File base) throws IOException {
         Files.createDirectories(base.toPath());
         //Stats about the solving process

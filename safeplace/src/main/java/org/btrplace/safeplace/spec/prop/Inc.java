@@ -41,7 +41,6 @@ public class Inc extends AtomicProp {
     public Boolean eval(Context m) {
         Collection o = (Collection) a.eval(m);
         Collection c = (Collection) b.eval(m);
-        //System.out.println(o + "<: " + c + ": " + c.containsAll(o));
         if (o != null && c != null) {
             return c.containsAll(o);
         }

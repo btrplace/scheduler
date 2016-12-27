@@ -77,7 +77,7 @@ public class FunctionCall<T> implements Term<T> {
         }
 
         if (moment.equals(Moment.begin)) {
-            return c.eval(m.root, values);
+            return c.eval(m.getRootContext(), values);
         }
         return c.eval(m, values);
     }

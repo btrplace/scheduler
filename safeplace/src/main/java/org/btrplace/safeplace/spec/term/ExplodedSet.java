@@ -42,7 +42,7 @@ public class ExplodedSet implements Term<Set> {
 
     @Override
     public Set eval(Context mo, Object... args) {
-        return terms.stream().map(t -> t.eval(mo)).collect(Collectors.toSet());
+        return terms.stream().map(x -> x.eval(mo)).collect(Collectors.toSet());
     }
 
     @Override

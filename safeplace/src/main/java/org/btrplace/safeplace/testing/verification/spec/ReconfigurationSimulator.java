@@ -171,7 +171,6 @@ public class ReconfigurationSimulator implements ActionVisitor {
             co.getMapping().host(a.getVM(), a.getDestinationNode());
             return null;
         }
-        //System.out.println("End " + a);
         co.getMapping().state(a.getVM(), VMStateType.Type.running);
         co.getMapping().activateOn(a.getVM(), a.getDestinationNode());
         //No longer hosted on the source node

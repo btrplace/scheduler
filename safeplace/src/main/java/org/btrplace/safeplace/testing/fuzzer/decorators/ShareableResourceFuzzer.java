@@ -38,7 +38,10 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
 
     private Random rnd;
 
-    private int minCons, maxCons, minCapa, maxCapa;
+    private int minCons;
+    private int maxCons;
+    private int minCapa;
+    private int maxCapa;
 
     private double variability = 0.5;
 
@@ -80,7 +83,6 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
         for (VM v : mo.getMapping().getAllVMs()) {
             int c = rnd.nextInt(maxCons - minCons + 1) + minCons;
             rc.setConsumption(v, c);
-            //System.err.println(v + " src=" + rc.getConsumption(v));
         }
 
         for (Node n : mo.getMapping().getAllNodes()) {
@@ -115,7 +117,6 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
                 }
                 //For a migrated VM, we allocate once the migration over
                 a.addEvent(h, ev);
-                //System.err.println(a + " " + h + " " + ev);
                 found = true;
                 break;
             }

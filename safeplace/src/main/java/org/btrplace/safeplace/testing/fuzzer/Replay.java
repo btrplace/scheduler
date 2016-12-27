@@ -41,7 +41,7 @@ import java.util.Set;
 public class Replay implements TestCaseFuzzer {
 
 
-    public BufferedReader in;
+    private final BufferedReader in;
 
     private List<Constraint> constraints;
 

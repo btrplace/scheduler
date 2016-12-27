@@ -54,10 +54,10 @@ public class Constant implements Term {
     }
 
     public JSONObject toJSON() {
-        JSONObject o = new JSONObject();
-        o.put("type", type().encode());
-        o.put("value", type().toJSON(eval(null)));
-        return o;
+        JSONObject ob = new JSONObject();
+        ob.put("type", type().encode());
+        ob.put("value", type().toJSON(eval(null)));
+        return ob;
     }
 
     public static Constant fromJSON(JSONObject o) {
@@ -68,12 +68,16 @@ public class Constant implements Term {
 
     @Override
     public boolean equals(Object o1) {
-        if (this == o1) return true;
-        if (!(o1 instanceof Constant)) return false;
+        if (this == o1) {
+            return true;
+        }
+        if (!(o1 instanceof Constant)) {
+            return false;
+        }
 
         Constant value = (Constant) o1;
 
-        return (o.equals(value.o) && t.equals(value.t));
+        return o.equals(value.o) && t.equals(value.t);
     }
 
     @Override

@@ -26,7 +26,8 @@ import org.btrplace.safeplace.testing.verification.spec.Context;
  */
 public class Mult implements Term {
 
-    private Term a, b;
+    private Term a;
+    private Term b;
 
     public Mult(Term t1, Term t2) {
         this.a = t1;

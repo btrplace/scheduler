@@ -68,7 +68,7 @@ public class CDeadline implements ChocoConstraint {
         // Get the deadline from timestamp
         int deadline;
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        Date parsedDate = null;
+        Date parsedDate;
 
         // Relative timestamp
         if (timestamp.startsWith("+")) {

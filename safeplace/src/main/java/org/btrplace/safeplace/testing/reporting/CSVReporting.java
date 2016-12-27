@@ -40,7 +40,10 @@ public class CSVReporting implements Reporting {
 
     private int verbose;
 
-    private int failures, ok, fn, fp;
+    private int failures;
+    private int ok;
+    private int fn;
+    private int fp;
     public static final String HEADER = "constraint;label;continuous;vms;nodes;fuzzing;validation;iterations;testing;result\n";
 
     public CSVReporting(Path p, String label) {
@@ -67,10 +70,10 @@ public class CSVReporting implements Reporting {
     @Override
     public void with(TestCaseResult r) {
         try {
-            if (!Files.exists(output.getParent())) {
+            if (output.getParent().toFile().exists()) {
                 Files.createDirectories(output.getParent());
             }
-            if (!Files.exists(output)) {
+            if (!output.toFile().exists()) {
                 Files.write(output, HEADER.getBytes(), StandardOpenOption.CREATE);
             }
             //id;num;continuous;vms;nodes;fuzzing;validation;testing;result)
@@ -80,10 +83,10 @@ public class CSVReporting implements Reporting {
                     r.testCase().continuous() ? 1 : 0,
                     r.testCase().instance().getModel().getMapping().getNbVMs(),
                     r.testCase().instance().getModel().getMapping().getNbNodes(),
-                    r.metrics().fuzzing,
-                    r.metrics().validation,
-                    r.metrics().fuzzingIterations,
-                    r.metrics().testing,
+                    r.metrics().fuzzing(),
+                    r.metrics().validation(),
+                    r.metrics().fuzzingIterations(),
+                    r.metrics().testing(),
                     r.result().toString());
 
             Files.write(output, res.getBytes(), StandardOpenOption.WRITE,StandardOpenOption.APPEND);

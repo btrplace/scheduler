@@ -23,6 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface Litteral {
 
     Constant parse(String n);

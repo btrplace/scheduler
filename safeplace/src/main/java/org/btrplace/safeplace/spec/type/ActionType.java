@@ -21,7 +21,7 @@ package org.btrplace.safeplace.spec.type;
 /**
  * @author Fabien Hermenier
  */
-public class ActionType extends Atomic {
+public class ActionType implements Atomic {
 
     private static ActionType instance = new ActionType();
 

@@ -106,7 +106,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         return this;
     }
 
-    public static int [] schedule(int min, int max, int makeSpan, Random rnd) {
+    public static int[] schedule(int min, int max, int makeSpan, Random rnd) {
 
         int duration = 1;
         if (min != max) {
@@ -116,7 +116,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         return new int[]{st, st + duration};
     }
 
-    private int [] schedule() {
+    private int[] schedule() {
         int makeSpan = (maxDuration - minDuration) * (nbNodes + nbVMs);
         return schedule(minDuration, maxDuration, makeSpan, rnd);
     }
@@ -140,7 +140,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         return this;
     }
 
-    private <E extends Element>E pick(Collection<E> ns) {
+    private <E extends Element> E pick(Collection<E> ns) {
         int x = rnd.nextInt(ns.size());
         Iterator<E> ite = ns.iterator();
         E n = null;
@@ -154,7 +154,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
     private boolean addNode(Node n, ReconfigurationPlan p) {
         double src = rnd.nextDouble();
         double dst = rnd.nextDouble();
-        int [] bounds = schedule();
+        int[] bounds = schedule();
         if (src < srcOffNodes) {
             p.getOrigin().getMapping().addOfflineNode(n);
             if (dst > dstOffNodes) {
@@ -182,7 +182,8 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
             double n = rnd.nextDouble();
             if (n < srcReadyVMs) {
                 map.addReadyVM(v);
-            }if (n < srcReadyVMs + srcRunningVMs) {
+            }
+            if (n < srcReadyVMs + srcRunningVMs) {
                 host = pick(onlines);
                 map.addRunningVM(v, host);
             } else {
@@ -193,14 +194,14 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
 
         //Destination state
         double n = rnd.nextDouble();
-        int [] bounds = schedule();
+        int[] bounds = schedule();
         if (n < dstReadyVMs) {
             if (host != null) {
                 p.add(new ShutdownVM(v, host, bounds[0], bounds[1]));
                 p.getOrigin().getAttributes().put(v, "shutdown", bounds[1] - bounds[0]);
             }
         } else if (n < dstReadyVMs + dstRunningVMs) {
-            if (host == null ) {
+            if (host == null) {
                 p.add(new BootVM(v, pick(map.getAllNodes()), bounds[0], bounds[1]));
                 p.getOrigin().getAttributes().put(v, "boot", bounds[1] - bounds[0]);
             } else {
@@ -260,24 +261,33 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
         for (Action a : p.getActions()) {
 
             if (a instanceof NodeEvent) {
-                Node n = ((NodeEvent)a).getNode();
+                Node n = ((NodeEvent) a).getNode();
                 knownNodes.add(n);
                 cstrs.add(new Schedule(n, a.getStart(), a.getEnd()));
 
-                if (a instanceof BootNode) {cstrs.add(new Online(n));}
-                else if (a instanceof ShutdownNode) {cstrs.add(new Offline(n));}
-            }
-
-            else if (a instanceof VMEvent) {
-                VM v = ((VMEvent)a).getVM();
+                if (a instanceof BootNode) {
+                    cstrs.add(new Online(n));
+                } else if (a instanceof ShutdownNode) {
+                    cstrs.add(new Offline(n));
+                }
+            } else if (a instanceof VMEvent) {
+                VM v = ((VMEvent) a).getVM();
                 knownVMs.add(v);
                 cstrs.add(new Schedule(v, a.getStart(), a.getEnd()));
-                if (a instanceof BootVM) {cstrs.add(new Running(v)); cstrs.add(new Fence(v, ((BootVM) a).getDestinationNode()));}
-                else if (a instanceof MigrateVM) {cstrs.add(new Fence(v, ((MigrateVM) a).getDestinationNode()));cstrs.add(new Running(v));}
-                else if (a instanceof ShutdownVM) {cstrs.add(new Ready(v));}
-                else if (a instanceof SuspendVM) {cstrs.add(new Sleeping(v));}
-                else if (a instanceof ResumeVM) {cstrs.add(new Running(v)); cstrs.add(new Fence(v, ((ResumeVM) a).getDestinationNode()));}
-                else if (a instanceof Allocate) {
+                if (a instanceof BootVM) {
+                    cstrs.add(new Running(v));
+                    cstrs.add(new Fence(v, ((BootVM) a).getDestinationNode()));
+                } else if (a instanceof MigrateVM) {
+                    cstrs.add(new Fence(v, ((MigrateVM) a).getDestinationNode()));
+                    cstrs.add(new Running(v));
+                } else if (a instanceof ShutdownVM) {
+                    cstrs.add(new Ready(v));
+                } else if (a instanceof SuspendVM) {
+                    cstrs.add(new Sleeping(v));
+                } else if (a instanceof ResumeVM) {
+                    cstrs.add(new Running(v));
+                    cstrs.add(new Fence(v, ((ResumeVM) a).getDestinationNode()));
+                } else if (a instanceof Allocate) {
                     cstrs.add(new Preserve(v, ((Allocate) a).getResourceId(), ((Allocate) a).getAmount()));
                     cstrs.add(new Fence(v, ((Allocate) a).getHost()));
                 }
@@ -308,17 +318,17 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
             }
         }
         mo.getMapping().getAllVMs().stream().filter(v -> !knownVMs.contains(v)).forEach(
-            v -> {
-            if (mo.getMapping().isReady(v)) {cstrs.add(new Ready(v));}
-            else if (mo.getMapping().isRunning(v)) {
-                cstrs.add(new Running(v));
-                cstrs.add(new Fence(v, mo.getMapping().getVMLocation(v)));
-            }
-            else if (mo.getMapping().isSleeping(v)) {
-                cstrs.add(new Sleeping(v));
-                cstrs.add(new Fence(v, mo.getMapping().getVMLocation(v)));
-            }
-        });
+                v -> {
+                    if (mo.getMapping().isReady(v)) {
+                        cstrs.add(new Ready(v));
+                    } else if (mo.getMapping().isRunning(v)) {
+                        cstrs.add(new Running(v));
+                        cstrs.add(new Fence(v, mo.getMapping().getVMLocation(v)));
+                    } else if (mo.getMapping().isSleeping(v)) {
+                        cstrs.add(new Sleeping(v));
+                        cstrs.add(new Fence(v, mo.getMapping().getVMLocation(v)));
+                    }
+                });
 
         return new Instance(mo, cstrs, new MinMTTR());
     }

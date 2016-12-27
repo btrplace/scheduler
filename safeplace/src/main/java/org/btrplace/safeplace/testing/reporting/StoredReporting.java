@@ -40,7 +40,10 @@ public class StoredReporting implements Reporting {
 
     private Metrics globalMetrics;
 
-    private int fp, fn, failures, ok;
+    private int fp;
+    private int fn;
+    private int failures;
+    private int ok;
 
     private int verbosity;
 
@@ -139,10 +142,10 @@ public class StoredReporting implements Reporting {
         }
         if (verbosity >= 1 && globalMetrics != null) {
             double qty = ok + fp + fn + failures;
-            double fuzzing = globalMetrics.fuzzing / qty;
-            double testing = globalMetrics.testing / qty;
-            double validation = globalMetrics.validation / qty;
-            double iterations = globalMetrics.fuzzingIterations / qty;
+            double fuzzing = globalMetrics.fuzzing() / qty;
+            double testing = globalMetrics.testing() / qty;
+            double validation = globalMetrics.validation() / qty;
+            double iterations = globalMetrics.fuzzingIterations() / qty;
             double total = globalMetrics.duration() / qty;
             System.out.println("\t" + ok + " Success; " + fp + " FP(s); " + fn + " FN(s); " + failures + " failures");
 

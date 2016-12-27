@@ -25,7 +25,8 @@ package org.btrplace.safeplace.spec.prop;
  */
 public abstract class BinaryProp implements Proposition {
 
-    protected Proposition p1, p2;
+    protected Proposition p1;
+    protected Proposition p2;
 
     public BinaryProp(Proposition p1, Proposition p2) {
         this.p1 = p1;

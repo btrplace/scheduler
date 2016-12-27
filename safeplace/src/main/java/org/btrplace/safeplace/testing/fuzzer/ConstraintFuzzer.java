@@ -42,7 +42,7 @@ public class ConstraintFuzzer {
 
         String lower = name.toLowerCase();
         Optional<Constraint> o = Stream.concat(cores.stream(), sides.stream())
-                .filter(c -> lower.equals(c.id().toLowerCase()))
+                .filter(c -> lower.equalsIgnoreCase(c.id()))
                 .findFirst();
 
         if (!o.isPresent()) {

@@ -64,26 +64,34 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     }
 
 
-    public Proposition getProposition(String name, ParseTree t) throws SpecException {
+    /**
+     * @param name
+     * @param t
+     * @return
+     * @throws SpecException
+     */
+    public Proposition getProposition(String name, ParseTree t) {
         symbols = symbols.enterSpec();
         filename = name;
         try {
             return (Proposition) visit(t);
-        } catch (SpecException2 ex) {
-            System.err.println(t.getText());
-            throw new SpecException(ex);
         } finally {
             symbols = symbols.leaveScope();
         }
     }
 
-    public UserVar getUserVar(String name, ParseTree t) throws SpecException {
+    /**
+     *
+     * @param name
+     * @param t
+     * @throws SpecException
+     * @return
+     */
+    public UserVar getUserVar(String name, ParseTree t) {
         symbols = symbols.enterSpec();
         filename = name;
         try {
             return ((List<UserVar>) visit(t)).get(0);
-        } catch (SpecException2 ex) {
-            throw new SpecException(ex);
         } finally {
             symbols = symbols.leaveScope();
         }
@@ -106,16 +114,16 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     private Function resolveFunction(Token t, List<Term> args) {
         Function f = symbols.getFunction(t.getText());
         if (f == null) {
-            throw SpecException2.unknownSymbol(filename, t);
+            throw SpecException.unknownSymbol(filename, t);
         }
 
         Type[] expected = f.signature();
         if (expected.length != args.size()) {
-            throw SpecException2.badFunctionCall(filename, t, f, args);
+            throw SpecException.badFunctionCall(filename, t, f, args);
         }
         for (int i = 0; i < expected.length; i++) {
             if (!expected[i].equals(args.get(i).type())) {
-                throw SpecException2.badFunctionCall(filename, t, f, args);
+                throw SpecException.badFunctionCall(filename, t, f, args);
             }
         }
 
@@ -147,7 +155,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
 
         Term parent = (Term) visit(ctx.term());
         if (parent.type() instanceof Atomic) {
-            throw new SpecException2(filename, ctx.op.getCharPositionInLine(), "The right-hand side must be a collection");
+            throw new SpecException(filename, ctx.op.getCharPositionInLine(), "The right-hand side must be a collection");
         }
         List<UserVar> vars = new ArrayList<>();
         for (TerminalNode n : ctx.ID()) {
@@ -173,7 +181,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             case CstrSpecParser.IFF:
                 return new Iff(p1, p2);
         }
-        throw SpecException2.unsupportedOperation(filename, BoolType.getInstance(), ctx.op, BoolType.getInstance());
+        throw SpecException.unsupportedOperation(filename, BoolType.getInstance(), ctx.op, BoolType.getInstance());
     }
 
     @Override
@@ -234,11 +242,11 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         String lbl = ctx.ID().getText();
         Var v = symbols.getVar(lbl);
         if (v == null) {
-            throw SpecException2.unknownSymbol(filename, ctx.ID().getSymbol());
+            throw SpecException.unknownSymbol(filename, ctx.ID().getSymbol());
         }
         //Type check
         if (!(v.type() instanceof ListType)) {
-            throw new SpecException2(filename, ctx.ID().getSymbol().getCharPositionInLine(), "List expected. Got '" + v.type() + "')");
+            throw new SpecException(filename, ctx.ID().getSymbol().getCharPositionInLine(), "List expected. Got '" + v.type() + "')");
         }
 
         Term idx = (Term) visit(ctx.term());
@@ -258,7 +266,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             c = NodeStateType.getInstance().parse(ref);
         }
         if (c == null) {
-            throw SpecException2.unknownSymbol(filename, ctx.ID().getSymbol());
+            throw SpecException.unknownSymbol(filename, ctx.ID().getSymbol());
         }
         return c;
     }
@@ -277,7 +285,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     private void assertEqualsTypes(Token to, Type expected, Type... got) {
         for (Type t : got) {
             if (!expected.equals(t)) {
-                throw SpecException2.typeMismatch(filename, to.getCharPositionInLine(), expected, t);
+                throw SpecException.typeMismatch(filename, to.getCharPositionInLine(), expected, t);
             }
         }
     }
@@ -285,11 +293,11 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     private void assertIn(Token to, Term t1, Term t2) {
         Type t = t2.type();
         if (!(t instanceof SetType)) {
-            throw new SpecException2(filename, to.getCharPositionInLine(), "The right-hand side must be a collection. Got '" + t2.type() + "'");
+            throw new SpecException(filename, to.getCharPositionInLine(), "The right-hand side must be a collection. Got '" + t2.type() + "'");
         }
         SetType st = (SetType) t;
         if (!st.enclosingType().equals(t1.type())) {
-            throw new SpecException2(filename, to.getCharPositionInLine(),
+            throw new SpecException(filename, to.getCharPositionInLine(),
                     "Type mismatch. Expected '" + st.enclosingType() + "' for left-hand side. Got '" + t1.type() + "'");
 
         }
@@ -341,7 +349,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
                 assertIn(ctx.op, t2, t1);
                 return new NoPackings(t1, t2);
         }
-        throw SpecException2.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
+        throw SpecException.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
     }
 
     @Override
@@ -368,6 +376,6 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             case CstrSpecParser.MULT:
                 return new Mult(t1, t2);
         }
-        throw SpecException2.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
+        throw SpecException.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
     }
 }

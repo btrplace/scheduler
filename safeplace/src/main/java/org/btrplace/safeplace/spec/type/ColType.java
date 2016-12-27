@@ -79,7 +79,6 @@ public class ColType implements Type {
     @Override
     public JSONArray toJSON(Object c) {
         JSONArray a = new JSONArray();
-        //return ((VM)value).id();
         for (Object o : (Collection) c) {
             a.add(type.toJSON(o));
         }

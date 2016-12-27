@@ -26,7 +26,6 @@ import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.VerifierResult;
 import org.btrplace.scheduler.SchedulerException;
 
-//import org.btrplace.plan.ReconfigurationPlanCheckerException;
 
 /**
  * @author Fabien Hermenier

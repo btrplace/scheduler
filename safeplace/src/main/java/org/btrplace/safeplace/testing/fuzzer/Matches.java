@@ -72,11 +72,6 @@ public class Matches implements Predicate<TestCase> {
                     duration += System.currentTimeMillis();
                     InstanceConverter ic = new InstanceConverter();
                     ic.getConstraintsConverter().register(new ScheduleConverter());
-                    /*try {
-                        System.out.println(ic.toJSON(tc.instance()));
-                    } catch (Exception e) {
-                        System.err.println(e.getMessage());
-                    }*/
                     return false;
                 }
             }
@@ -86,17 +81,7 @@ public class Matches implements Predicate<TestCase> {
     }
 
     private TestCase purge(TestCase o, Constraint c) {
-        //Get rid of all the views (optional so subject to un-awaited fault injection
-        /*Model m = o.instance().getModel();
-        m.getViews().clear();
-        o.plan().getOrigin().getViews().clear();
-        for (Iterator<SatConstraint> ite = o.instance().getSatConstraints().iterator(); ite.hasNext(); ) {
-            SatConstraint cstr = ite.next();
-            if (cstr instanceof Preserve) {
-                ite.remove();
-            }
-        }
-        */
+        //TODO: Get rid of all the views (optional so subject to un-awaited fault injection
         return new TestCase(o.instance(), o.plan(), c);
     }
 

@@ -61,7 +61,8 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
 
     private int iterations;
 
-    private List<Constraint> cores, sides;
+    private List<Constraint> cores;
+    private List<Constraint> sides;
 
     private ConstraintFuzzer cstrFuzzer;
 

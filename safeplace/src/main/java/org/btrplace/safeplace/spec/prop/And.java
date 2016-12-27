@@ -45,15 +45,12 @@ public class And extends BinaryProp {
     public Boolean eval(Context m) {
 
         Boolean r1 = p1.eval(m);
-        if (r1 == null) {
+        Boolean r2 = p2.eval(m);
+        if (r1 == null || r2 == null) {
             return null;
         }
         if (!r1) {
             return false;
-        }
-        Boolean r2 = p2.eval(m);
-        if (r2 == null) {
-            return null;
         }
         return r2;
     }

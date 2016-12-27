@@ -60,7 +60,7 @@ public class SpecVerifier implements Verifier {
         if (tc.continuous()) {
 
             Context mo = new Context(tc.instance().getModel());
-            mo.root = new Context(tc.instance().getModel().copy());
+            mo.setRootContext(new Context(tc.instance().getModel().copy()));
             fillArguments(mo, tc);
             Boolean res = good.eval(mo);
             if (!Boolean.TRUE.equals(res)) {
@@ -84,7 +84,7 @@ public class SpecVerifier implements Verifier {
 
         }
         Context mo = new Context(res);
-        mo.root = new Context(tc.instance().getModel().copy());
+        mo.setRootContext(new Context(tc.instance().getModel().copy()));
         fillArguments(mo, tc);
 
         Boolean bOk = good.eval(mo);

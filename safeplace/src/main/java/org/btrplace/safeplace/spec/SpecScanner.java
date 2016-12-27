@@ -45,18 +45,21 @@ public class SpecScanner {
 
     private FastClasspathScanner scanner;
 
-    private Vector<Side> sides;
-    private Vector<Function> functions;
+    private List<Side> sides;
+    private List<Function> functions;
 
     public SpecScanner() {
 
-        functions = new Vector<>();
-        sides = new Vector<>();
+        functions = Collections.synchronizedList(new ArrayList<>());
+        sides = Collections.synchronizedList(new ArrayList<>());
 
         scanner = new FastClasspathScanner();
     }
 
-    public List<org.btrplace.safeplace.spec.Constraint> scan() throws IllegalAccessException, InstantiationException, SpecException, IOException {
+    /**
+     * @throws SpecException
+     */
+    public List<org.btrplace.safeplace.spec.Constraint> scan() throws IllegalAccessException, InstantiationException, IOException {
         Vector<CoreConstraint> coreAnnots = new Vector<>();
         Vector<Class<? extends Function>> funcs = new Vector<>();
         scanner.matchClassesImplementing(Function.class, funcs::add);
@@ -83,9 +86,8 @@ public class SpecScanner {
         scanner.matchClassesImplementing(Function.class, c -> {
             try {
                 functions.add(c.newInstance());
-            } catch (Exception e) {
-                System.err.println(c);
-                throw new RuntimeException(e);
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
             }
         });
 
@@ -132,7 +134,10 @@ public class SpecScanner {
         return order;
     }
 
-    private Constraint parseCore2(CoreConstraint core) throws IOException, SpecException {
+    /**
+     * @throws SpecException
+     */
+    private Constraint parseCore2(CoreConstraint core) throws IOException {
         CommonTokenStream tokens = getTokens(core.inv());
         CstrSpecParser parser = new CstrSpecParser(tokens);
         ParseTree tree = parser.formula();
@@ -141,7 +146,10 @@ public class SpecScanner {
         return new Constraint(core.name(), p);
     }
 
-    private List<UserVar> makeArgs(String cl, String[] strings) throws IOException, SpecException {
+    /**
+     * @throws SpecException
+     */
+    private List<UserVar> makeArgs(String cl, String[] strings) throws IOException {
         List<UserVar> args = new ArrayList<>();
         for (String arg : strings) {
             CstrSpecParser parser = new CstrSpecParser(getTokens(arg));
@@ -152,7 +160,10 @@ public class SpecScanner {
         return args;
     }
 
-    private org.btrplace.safeplace.spec.Constraint parseSide(Side s, List<Constraint> known) throws IOException, SpecException {
+    /**
+     * @throws SpecException
+     */
+    private org.btrplace.safeplace.spec.Constraint parseSide(Side s, List<Constraint> known) throws IOException {
         List<UserVar> args = makeArgs(s.impl.getSimpleName(), s.s.args());
         CstrSpecParser parser = new CstrSpecParser(getTokens(s.s.inv()));
         ParseTree tree = parser.formula();

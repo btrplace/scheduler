@@ -46,13 +46,11 @@ public class Colocated implements Function<Set<VM>> {
         }
         Node n = mo.getMapping().host(v);
         if (n == null) {
-            //System.out.println("Colocated with " + args + ": none");
             return new HashSet<>();
         }
         Set<VM> vms = new HashSet<>();
         vms.addAll(mo.getMapping().sleeping(n));
         vms.addAll(mo.getMapping().runnings(n));
-        //System.out.println("Colocated with " + Arrays.toString(args) + ": " + vms);
         return vms;
     }
 

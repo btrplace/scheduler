@@ -128,11 +128,11 @@ public class TestCampaign implements Tester {
                 long d = -System.currentTimeMillis();
                 res = test(tc);
                 d += System.currentTimeMillis();
-                res.metrics().testing = d;
-                res.metrics().validation = tcFuzzer.lastValidationDuration();
+                res.metrics().testing(d);
+                res.metrics().validation(tcFuzzer.lastValidationDuration());
                 // - validation because it is embedded
-                res.metrics().fuzzing = Math.max(0, tcFuzzer.lastFuzzingDuration() - res.metrics().validation);
-                res.metrics().fuzzingIterations = tcFuzzer.lastFuzzingIterations();
+                res.metrics().fuzzing(Math.max(0, tcFuzzer.lastFuzzingDuration() - res.metrics().validation()));
+                res.metrics().fuzzingIterations(tcFuzzer.lastFuzzingIterations());
 
                 reporting.with(res);
             } while (limits.test(res));

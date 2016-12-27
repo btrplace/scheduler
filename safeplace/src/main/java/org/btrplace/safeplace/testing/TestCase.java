@@ -31,7 +31,6 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.term.Constant;
-import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
 import java.io.StringReader;
@@ -173,7 +172,6 @@ public class TestCase {
         Instance i = ic.fromJSON(o.getAsString("instance"));
         ReconfigurationPlan plan = rc.fromJSON(o.getAsString("plan"));
 
-        DefaultReconfigurationPlanFuzzer f = new DefaultReconfigurationPlanFuzzer();
 
         TestCase tc = new TestCase(i, plan, cstr);
         List<Constant> l = new ArrayList<>();

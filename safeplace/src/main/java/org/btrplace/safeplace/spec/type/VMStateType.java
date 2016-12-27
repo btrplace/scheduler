@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class VMStateType extends Atomic implements Litteral {
+public class VMStateType implements Litteral, Atomic {
 
     public enum Type {ready, booting, running, migrating, suspending, sleeping, resuming, halting, terminated}
 
