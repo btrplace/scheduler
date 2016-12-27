@@ -18,6 +18,8 @@
 
 package org.btrplace.btrpsl.element;
 
+import java.util.Objects;
+
 /**
  * Denotes an number operand.
  * The value may an integer or a real, either positive or negative.
@@ -201,7 +203,7 @@ public class BtrpNumber extends DefaultBtrpOperand {
 
     @Override
     public int hashCode() {
-        return new Double(dVal).hashCode();
+        return Objects.hash(dVal);
     }
 
     /**

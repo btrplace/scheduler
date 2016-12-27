@@ -40,6 +40,7 @@ public class Constant implements Term {
         this.o = o;
     }
 
+    @Override
     public Type type() {
         return t;
     }

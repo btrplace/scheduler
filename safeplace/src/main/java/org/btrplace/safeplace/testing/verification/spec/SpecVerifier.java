@@ -66,7 +66,7 @@ public class SpecVerifier implements Verifier {
             if (!Boolean.TRUE.equals(res)) {
                 return VerifierResult.newKo("Failure at the initial stage");
             }
-            ReconfigurationSimulator2 sim = new ReconfigurationSimulator2(mo, tc.plan());
+            ReconfigurationSimulator sim = new ReconfigurationSimulator(mo, tc.plan());
             int x = sim.start(good);
             if (x >= 0) {
                 return VerifierResult.newKo("Failure at time '" + x + "'");

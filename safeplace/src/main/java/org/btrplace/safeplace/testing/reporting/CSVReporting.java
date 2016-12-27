@@ -42,7 +42,8 @@ public class CSVReporting implements Reporting {
 
     private int failures, ok, fn, fp;
     public static final String HEADER = "constraint;label;continuous;vms;nodes;fuzzing;validation;iterations;testing;result\n";
-    public CSVReporting(Path p, String label) throws IOException {
+
+    public CSVReporting(Path p, String label) {
         this.output = p;
         this.label = label;
         verbose = 0;

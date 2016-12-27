@@ -120,15 +120,6 @@ public class TestCampaign implements Tester {
                 try {
                     if (writer != null) {
                         String json = tc.toJSON();
-                    /*try {
-                        TestCase cpy = TestCase.fromJSON(cstrs, json);
-                        if (!cpy.equals(tc)) {
-                            System.err.println("DIFF");
-                            System.exit(1);
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }*/
                         store(json + "\n");
                     }
                 } catch (JSONConverterException ex) {
@@ -176,7 +167,7 @@ public class TestCampaign implements Tester {
     public TestCampaign constraint(String c) {
         String lower = c.toLowerCase();
         for (Constraint cstr : cstrs) {
-            if (lower.equals(cstr.id().toLowerCase())) {
+            if (lower.equalsIgnoreCase(cstr.id())) {
                 fuzz().constraint(cstr);
                 if (!cstr.args().isEmpty()) {
                     cores.forEach(x -> fuzz().validating(x, this));
@@ -233,11 +224,11 @@ public class TestCampaign implements Tester {
 
     private void checkConsistency(ReconfigurationPlan got, TestCase tc) {
         if (got != null && !tc.plan().equals(got)) {
-            System.err.println("--- Instance");
-                System.err.println(tc.instance().getSatConstraints().stream().map(SatConstraint::toString).collect(Collectors.joining("\n\t","\t","")));
-            System.err.println("---");
-            System.err.println("Bad resulting plan. Expected:\n" + tc.plan().getOrigin().getViews() + "\n" + tc.plan() + "\nGot:\n" + got.getOrigin().getViews() + "\n" + got);
-                System.exit(1);
+            String output = "--- Instance"
+                    + tc.instance().getSatConstraints().stream().map(SatConstraint::toString).collect(Collectors.joining("\n\t", "\t", ""))
+                    + " ---\n";
+            output += "Bad resulting plan. Expected:\n" + tc.plan().getOrigin().getViews() + "\n" + tc.plan() + "\nGot:\n" + got.getOrigin().getViews() + "\n" + got;
+            throw new IllegalStateException(output);
         }
     }
 }

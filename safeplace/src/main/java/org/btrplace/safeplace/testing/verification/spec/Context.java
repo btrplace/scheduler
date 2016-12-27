@@ -47,6 +47,8 @@ public class Context {
 
     private LinkedList<Map<String, Object>> stack;
 
+    public Context root;
+
     public Context() {
         this(new DefaultModel());
     }
@@ -66,7 +68,6 @@ public class Context {
         add(new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs())));
     }
 
-    public Context root;
 
     public Context getRootContent() {
         return root;

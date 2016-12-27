@@ -79,6 +79,7 @@ public class DefaultReporting implements Reporting {
         }
     }
 
+    @Override
     public int done() {
         if (i % 80 != 0 && verbosity > 1) {
             System.out.println();

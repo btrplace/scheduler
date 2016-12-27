@@ -44,6 +44,7 @@ public class ConstantDomain<T> implements Domain<T> {
         this.name = name;
     }
 
+    @Override
     public String name() {
         return name;
     }

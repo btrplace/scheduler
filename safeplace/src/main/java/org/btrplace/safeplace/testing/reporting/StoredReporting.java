@@ -80,16 +80,14 @@ public class StoredReporting implements Reporting {
         try {
             java.nio.file.Files.deleteIfExists(f.toPath());
         } catch (IOException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+            throw new IllegalArgumentException(e);
         }
 
         for (TestCaseResult res : toPrint) {
             try {
                 Files.append("--------------------------------------------------------\n" + res.toString(), f, Charset.defaultCharset());
             } catch (IOException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
+                throw new IllegalArgumentException(e);
             }
         }
         toPrint.clear();
@@ -134,6 +132,7 @@ public class StoredReporting implements Reporting {
         }
     }
 
+    @Override
     public int done() {
         if (i % 80 != 0 && verbosity > 1) {
             System.out.println();
