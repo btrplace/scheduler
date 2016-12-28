@@ -275,6 +275,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @throws SchedulerException if a error occurred
      */
     @Override
+    @SuppressWarnings("squid:S3346")
     public ReconfigurationPlan buildReconfigurationPlan(Solution s, Model src) throws SchedulerException {
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(src);
         for (NodeTransition action : nodeActions) {

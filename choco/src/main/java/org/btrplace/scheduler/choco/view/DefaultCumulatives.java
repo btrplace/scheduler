@@ -77,6 +77,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      * @return the resulting constraint
      */
     @Override
+    @SuppressWarnings("squid:S3346")
     public boolean beforeSolve(ReconfigurationProblem rp) {
         super.beforeSolve(rp);
         if (rp.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {

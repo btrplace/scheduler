@@ -77,11 +77,7 @@ public class SpecVerifier implements Verifier {
         //discrete
         Model res = tc.plan().getResult();
         if (res == null) {
-            System.err.println("NULL RES");
-            tc.plan().getResult();
-            System.err.println(tc.plan().getOrigin().getMapping());
-            System.err.println(tc.plan());
-
+            throw new IllegalStateException("no destination model");
         }
         Context mo = new Context(res);
         mo.setRootContext(new Context(tc.instance().getModel().copy()));

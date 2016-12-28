@@ -34,6 +34,7 @@ import java.util.function.Predicate;
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class StoredReporting implements Reporting {
 
     private int i;
@@ -141,12 +142,12 @@ public class StoredReporting implements Reporting {
             System.out.println();
         }
         if (verbosity >= 1 && globalMetrics != null) {
-            double qty = ok + fp + fn + failures;
-            double fuzzing = globalMetrics.fuzzing() / qty;
-            double testing = globalMetrics.testing() / qty;
-            double validation = globalMetrics.validation() / qty;
-            double iterations = globalMetrics.fuzzingIterations() / qty;
-            double total = globalMetrics.duration() / qty;
+            int qty = ok + fp + fn + failures;
+            double fuzzing = 1d * globalMetrics.fuzzing() / qty;
+            double testing = 1d * globalMetrics.testing() / qty;
+            double validation = 1d * globalMetrics.validation() / qty;
+            double iterations = 1d * globalMetrics.fuzzingIterations() / qty;
+            double total = 1d * globalMetrics.duration() / qty;
             System.out.println("\t" + ok + " Success; " + fp + " FP(s); " + fn + " FN(s); " + failures + " failures");
 
             System.out.println("\tPer test: fuzzing: " + fuzzing + " ms; validation: " + validation + " ms; iterations: " + iterations + "; testing: " + testing + " ms; Total: " + total + " ms");

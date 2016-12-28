@@ -53,7 +53,7 @@ public class DefaultReconfigurationPlanFuzzer implements ReconfigurationPlanFuzz
     private List<FuzzerDecorator> exts;
 
     public DefaultReconfigurationPlanFuzzer() {
-        //All the default values;
+        //all the default values
         nbNodes = 3;
         nbVMs = 3;
         minDuration = 1;

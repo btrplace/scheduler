@@ -108,8 +108,12 @@ public class TestCase {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         TestCase testCase = (TestCase) o;
 
         return Objects.equals(instance, testCase.instance) &&

@@ -64,6 +64,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
         this.idx = s.getModel().getEnvironment().makeInt(0);
     }
 
+    @SuppressWarnings("squid:S3346")
     private boolean setToNextMovingVM(IntVar[] scopes) {
         assert actions.size() == scopes.length;
         for (int i = idx.get(); i < scopes.length; i++) {
@@ -71,11 +72,11 @@ public class MovingVMs implements VariableSelector<IntVar> {
             if (!h.isInstantiated()) {
                 VM vm = actions.get(i).getVM();
                 Node nId = map.getVMLocation(vm);
-                    if (!h.contains(rp.getNode(nId))) {
-                        //VM was running, otherwise -1 so not inside h
-                        idx.set(i);
-                        return true;
-                    }
+                if (!h.contains(rp.getNode(nId))) {
+                    //VM was running, otherwise -1 so not inside h
+                    idx.set(i);
+                    return true;
+                }
             }
             i++;
         }

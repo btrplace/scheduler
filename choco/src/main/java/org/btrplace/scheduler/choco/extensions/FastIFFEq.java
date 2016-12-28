@@ -108,6 +108,7 @@ public class FastIFFEq extends Constraint {
         }
 
         @Override
+        @SuppressWarnings("squid:S3346")
         public void propagate(int idx, int mask) throws ContradictionException {
             if (idx == 0) {
                 assert IntEventType.isInstantiate(mask);

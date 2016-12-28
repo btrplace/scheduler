@@ -42,6 +42,7 @@ import java.util.List;
  * @author Fabien Hermenier
  * @see <a href="https://github.com/btrplace/scheduler/wiki/Customizing-a-model">btrplace website</a>
  */
+@SuppressWarnings("squid:S106")
 public class ModelCustomization implements Example {
 
     private List<VM> vms = new ArrayList<>();

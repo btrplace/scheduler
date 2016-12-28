@@ -105,6 +105,7 @@ public class TaskScheduler extends Constraint {
 
         private BitSet watchHosts;
 
+        @SuppressWarnings("squid:S3346")
         public TaskSchedulerPropagator(IntVar[] earlyStarts,
                                        IntVar[] lastEnds,
                                        int[][] capas,

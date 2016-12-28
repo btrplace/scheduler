@@ -44,6 +44,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
  * Simple benching tool.
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class Bench {
 
     /**

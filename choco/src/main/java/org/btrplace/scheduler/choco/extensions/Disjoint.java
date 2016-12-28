@@ -230,6 +230,7 @@ public class Disjoint extends Constraint {
          * @param other the other group (other = 1-group)
          * @throws ContradictionException when some variables in both groups are instantiated to the same value
          */
+        @SuppressWarnings("squid:S3346")
         public boolean setRequired(int val, int group, int other) throws ContradictionException {
 
             if (required[other].get(val)) {

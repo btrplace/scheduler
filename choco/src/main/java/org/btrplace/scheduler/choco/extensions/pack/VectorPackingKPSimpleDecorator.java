@@ -84,6 +84,7 @@ public class VectorPackingKPSimpleDecorator {
      * @param bin the full bin
      * @throws ContradictionException
      */
+    @SuppressWarnings("squid:S3346")
     private void filterFullDim(int bin, int dim) throws ContradictionException {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
             // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
@@ -109,6 +110,7 @@ public class VectorPackingKPSimpleDecorator {
      * @param item the removed item
      * @param bin  the bin
      */
+    @SuppressWarnings("squid:S3346")
     protected void postRemoveItem(int item, int bin) {
         assert candidate.get(bin).get(item);
         candidate.get(bin).clear(item);

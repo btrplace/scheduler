@@ -34,6 +34,7 @@ import java.util.EnumSet;
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class Bench {
 
     public static int scale = 1;

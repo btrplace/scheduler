@@ -175,6 +175,7 @@ public class VectorPackingHeapDecorator {
      * @return the number of bound updates
      * @throws ContradictionException if a contradiction (rule 1.1) is raised
      */
+    @SuppressWarnings("squid:S3346")
     private int filterLoads(int d, int delta, boolean isSup) throws ContradictionException {
         assert maxSlackBinHeap != null;
         int nChanges = 0;

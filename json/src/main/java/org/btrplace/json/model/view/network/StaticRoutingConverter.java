@@ -42,6 +42,7 @@ import static org.btrplace.json.JSONs.*;
  */
 public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
 
+    public static final String ROUTES_LABEL = "routes";
     @Override
     public Class<StaticRouting> getSupportedRouting() {
         return StaticRouting.class;
@@ -65,8 +66,8 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
             idToLink.put(l.id(), l);
         }
         StaticRouting r = new StaticRouting();
-        checkKeys(o, "routes");
-        JSONArray a = (JSONArray) o.get("routes");
+        checkKeys(o, ROUTES_LABEL);
+        JSONArray a = (JSONArray) o.get(ROUTES_LABEL);
         for (Object ao : a) {
             StaticRouting.NodesMap nm = nodesMapFromJSON(mo, (JSONObject) ((JSONObject) ao).get("nodes_map"));
             Map<Link, Boolean> links = new LinkedHashMap<>();
@@ -130,7 +131,7 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
             ao.put("links", links);
             a.add(ao);
         }
-        o.put("routes", a);
+        o.put(ROUTES_LABEL, a);
         return o;
     }
 }

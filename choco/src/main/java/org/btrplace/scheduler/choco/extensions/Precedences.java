@@ -214,6 +214,7 @@ public class Precedences extends Constraint {
             }
         }
 
+        @SuppressWarnings("squid:S3346")
         public void propagate() throws ContradictionException {
             assert checkHorizonConsistency();
             checkInvariant();

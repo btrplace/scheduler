@@ -148,7 +148,10 @@ public class CResourceCapacity implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
-        if (cstr.getInvolvedNodes().size() > 1) {
+        if (cstr.getInvolvedNodes().size() <= 1) {
+            //If there is only a single node, we delegate this work to CShareableResource.
+            return Collections.emptySet();
+        }
             Mapping map = i.getModel().getMapping();
             ShareableResource rc = ShareableResource.get(i.getModel(), cstr.getResource());
             if (rc == null) {
@@ -168,9 +171,6 @@ public class CResourceCapacity implements ChocoConstraint {
                 }
             }
             return bad;
-        }
-        //If there is only a single node, we delegate this work to CShareableResource.
-        return Collections.emptySet();
     }
 
     @Override

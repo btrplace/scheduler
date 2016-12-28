@@ -31,6 +31,7 @@ import java.util.function.Predicate;
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class CSVReporting implements Reporting {
 
     private Path output;

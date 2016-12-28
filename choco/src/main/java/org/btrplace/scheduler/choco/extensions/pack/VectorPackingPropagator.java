@@ -230,6 +230,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction is raised
      */
     @Override
+    @SuppressWarnings("squid:S3346")
     public void propagate(int evtMask) throws ContradictionException {
         boolean recomputeLoads;
         if ((evtMask & PropagatorEventType.FULL_PROPAGATION.getMask()) != 0) {
@@ -257,6 +258,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      *
      * @throws ContradictionException if a contradiction (rules 1) is raised
      */
+    @SuppressWarnings("squid:S3346")
     private void fixPoint() throws ContradictionException {
         boolean noFixPoint = true;
         while (noFixPoint) {
@@ -410,6 +412,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * shrink the item-to-bins assignment variables: 0 <= bins[i] < nbBins
      * shrink the bin load variables: assignedLoad <= binLoad <= potentialLoad
      */
+    @SuppressWarnings("squid:S3346")
     private void initialize() throws ContradictionException {
 
         sumISizes = new long[nbDims];
@@ -551,6 +554,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         return check;
     }
 
+    @SuppressWarnings("squid:S106")
     private boolean checkDimension(int d, int[][] rs, int[][] cs) {
         boolean check = true;
         int sli = 0;

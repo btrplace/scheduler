@@ -38,6 +38,7 @@ import java.util.*;
  * @author Fabien Hermenier
  * @see <a href="https://github.com/btrplace/scheduler/wiki/Tuning-the-Reconfiguration-Algorithm">btrplace website</a>
  */
+@SuppressWarnings("squid:S106")
 public class SolverTuning implements Example {
 
     private List<Node> nodes;

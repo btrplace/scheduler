@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class DefaultReporting implements Reporting {
 
     private int i;
@@ -51,17 +52,31 @@ public class DefaultReporting implements Reporting {
         if (verbosity >= 1) {
             System.out.println(cstr.signatureToString() + ": ");
         }
-        fp = 0; fn = 0; failures = 0; ok = 0;
+        fp = 0;
+        fn = 0;
+        failures = 0;
+        ok = 0;
     }
 
     @Override
     public void with(TestCaseResult r) {
         String op;
-        switch(r.result()) {
-            case falsePositive: op = "+"; fp++; break;
-            case falseNegative: op = "-"; fn++; break;
-            case failure: op = "x"; failures++; break;
-            default: op = "."; ok++;
+        switch (r.result()) {
+            case falsePositive:
+                op = "+";
+                fp++;
+                break;
+            case falseNegative:
+                op = "-";
+                fn++;
+                break;
+            case failure:
+                op = "x";
+                failures++;
+                break;
+            default:
+                op = ".";
+                ok++;
         }
         if (verbosity > 1 && verbosity != 99) {
             System.out.print(op);
@@ -88,18 +103,18 @@ public class DefaultReporting implements Reporting {
             System.out.println();
         }
         if (verbosity >= 1 && globalMetrics != null) {
-            double qty = ok + fp + fn + failures;
-            double fuzzing = globalMetrics.fuzzing() / qty;
-            double testing = globalMetrics.testing() / qty;
-            double validation = globalMetrics.validation() / qty;
-            double iterations = globalMetrics.fuzzingIterations() / qty;
-            double total = globalMetrics.duration() / qty;
+            int qty = ok + fp + fn + failures;
+            double fuzzing = 1d * globalMetrics.fuzzing() / qty;
+            double testing = 1d * globalMetrics.testing() / qty;
+            double validation = 1d * globalMetrics.validation() / qty;
+            double iterations = 1d * globalMetrics.fuzzingIterations() / qty;
+            double total = 1d * globalMetrics.duration() / qty;
             System.out.println("\t" + ok + " Success; " + fp + " FP(s); " + fn + " FN(s); " + failures + " failures");
 
-            System.out.println("\tPer test: fuzzing: " + fuzzing + " ms; validation: "+ validation + " ms; iterations: " + iterations + "; testing: " + testing + " ms; Total: " + total + " ms");
+            System.out.println("\tPer test: fuzzing: " + fuzzing + " ms; validation: " + validation + " ms; iterations: " + iterations + "; testing: " + testing + " ms; Total: " + total + " ms");
 
             double perSec = 1.0 * globalMetrics.duration() / 1000;
-            System.out.println("\t" + (int)( qty / perSec) + " tests/sec.");
+            System.out.println("\t" + (int) (qty / perSec) + " tests/sec.");
         }
 
         toPrint.forEach(System.out::println);

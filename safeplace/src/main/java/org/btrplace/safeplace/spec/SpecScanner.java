@@ -60,8 +60,8 @@ public class SpecScanner {
      * @throws SpecException
      */
     public List<org.btrplace.safeplace.spec.Constraint> scan() throws IllegalAccessException, InstantiationException, IOException {
-        Vector<CoreConstraint> coreAnnots = new Vector<>();
-        Vector<Class<? extends Function>> funcs = new Vector<>();
+        List<CoreConstraint> coreAnnots = Collections.synchronizedList(new ArrayList<>());
+        List<Class<? extends Function>> funcs = Collections.synchronizedList(new ArrayList<>());
         scanner.matchClassesImplementing(Function.class, funcs::add);
 
         scanner.matchClassesWithAnnotation(CoreConstraint.class,

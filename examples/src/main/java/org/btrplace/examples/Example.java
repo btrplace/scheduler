@@ -24,6 +24,7 @@ package org.btrplace.examples;
  * @author Fabien Hermenier
  */
 @FunctionalInterface
+@SuppressWarnings("squid:S106")
 public interface Example {
 
     /**

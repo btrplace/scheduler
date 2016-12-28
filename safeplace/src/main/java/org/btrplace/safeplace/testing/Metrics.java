@@ -36,7 +36,7 @@ public class Metrics {
 
     private Map<String, Long> reductions;
 
-    private Metrics() {
+    public Metrics() {
         reductions = new HashMap<>();
     }
 

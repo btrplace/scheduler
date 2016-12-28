@@ -22,15 +22,17 @@ import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Ban;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 
 /**
@@ -61,31 +63,40 @@ public class CFence implements ChocoConstraint {
 
         VM vm = cstr.getInvolvedVMs().iterator().next();
         Collection<Node> nodes = cstr.getInvolvedNodes();
-        if (rp.getFutureRunningVMs().contains(vm)) {
-            if (nodes.size() == 1) {
-                //Only 1 possible destination node, so we directly instantiate the variable.
-                Slice t = rp.getVMAction(vm).getDSlice();
-                Node n = nodes.iterator().next();
-                try {
-                    t.getHoster().instantiateTo(rp.getNode(n), Cause.Null);
-                } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to force VM '" + vm + "' to be running on node '" + n + "'", ex);
-                    return false;
-                }
+        Slice t = rp.getVMAction(vm).getDSlice();
+        if (!rp.getFutureRunningVMs().contains(vm)) {
+            return true;
+        }
+        if (nodes.size() == 1) {
+            return force(rp, t.getHoster(), vm, nodes.iterator().next());
             } else {
-                //Transformation to a ban constraint that disallow all the other nodes
-                List<Node> otherNodes = new ArrayList<>(rp.getNodes().size() - nodes.size());
                 for (Node n : rp.getNodes()) {
+                    int idx = rp.getNode(n);
                     if (!nodes.contains(n)) {
-                        otherNodes.add(n);
+                        try {
+                            t.getHoster().removeValue(idx, Cause.Null);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().error("Unable to prevent VM '" + vm + "' to run on node '" + n + "'", ex);
+                            return false;
+                        }
                     }
                 }
-                return new CBan(new Ban(vm, otherNodes)).inject(ps, rp);
-
-            }
         }
         return true;
     }
+
+
+    private boolean force(ReconfigurationProblem rp, IntVar h, VM vm, Node n) {
+        //Only 1 possible destination node, so we directly instantiate the variable.
+        try {
+            h.instantiateTo(rp.getNode(n), Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force VM '" + vm + "' to be running on node '" + n + "'", ex);
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {

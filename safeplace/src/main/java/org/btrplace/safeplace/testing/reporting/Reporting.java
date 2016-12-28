@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public interface Reporting {
 
     void start(Constraint cstr);

@@ -64,6 +64,7 @@ public class VectorPacking extends Packing {
     }
 
     @Override
+    @SuppressWarnings("squid:S3346")
     public boolean beforeSolve(ReconfigurationProblem p) {
         super.beforeSolve(p);
         int[][] aSizes = new int[dim][sizes.get(0).length];
