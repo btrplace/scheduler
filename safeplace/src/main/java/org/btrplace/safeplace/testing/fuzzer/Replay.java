@@ -143,7 +143,7 @@ public class Replay implements TestCaseFuzzer {
             }
             return tc;
         } catch (IOException | ParseException | JSONConverterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 

@@ -63,9 +63,10 @@ public class UserVar<T> implements Var<T> {
             case "<<:":
             case "/<<:":
                 return new SetType(backend.type());
+            default:
+                throw new IllegalArgumentException(op);
 
         }
-        throw new IllegalArgumentException(op);
     }
 
     @Override
@@ -116,8 +117,10 @@ public class UserVar<T> implements Var<T> {
                 return new HashSet<>(d.randomSubset());
             case "<<:":
                 return new HashSet<>(d.randomPacking());
+            default:
+                throw new IllegalArgumentException("Cannot pick a value inside " + type());
         }
-        throw new IllegalArgumentException("Cannot pick a value inside " + type());
+
     }
 
 }

@@ -77,6 +77,7 @@ public class DefaultReporting implements Reporting {
             default:
                 op = ".";
                 ok++;
+                break;
         }
         if (verbosity > 1 && verbosity != 99) {
             System.out.print(op);

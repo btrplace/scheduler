@@ -180,8 +180,9 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
                 return new Implies(p1, p2);
             case CstrSpecParser.IFF:
                 return new Iff(p1, p2);
+            default:
+                throw SpecException.unsupportedOperation(filename, BoolType.getInstance(), ctx.op, BoolType.getInstance());
         }
-        throw SpecException.unsupportedOperation(filename, BoolType.getInstance(), ctx.op, BoolType.getInstance());
     }
 
     @Override
