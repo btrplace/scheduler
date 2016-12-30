@@ -276,13 +276,14 @@ public class DSN {
     //@Test
     public void prettyErrors() throws Exception {
         TestScanner sc = newScanner();
-        Bench.source = "xp-dsn";
         Bench.mode = Bench.Mode.REPLAY;
         Bench.population = 1000;
-        Bench.report = new StoredReport(root, x -> !x.result().equals(Result.success));
         Bench.scale = 5;
 
-        sc.test(Bench.class).forEach(x -> System.out.println(x.go()));
+        sc.test(Bench.class).forEach(x -> {
+            x.reporting(new StoredReport(Paths.get("xp-dsn", "errors.txt"), r -> !r.result().equals(Result.success)));
+            System.out.println(x.go());
+        });
     }
 
 

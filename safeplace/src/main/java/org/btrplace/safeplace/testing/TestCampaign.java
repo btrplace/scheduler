@@ -43,6 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +67,8 @@ public class TestCampaign implements Tester {
 
     private Writer writer;
     private boolean printProgress;
+
+    private Consumer<TestCaseResult> defectHook = DefectHooks.failedAssertion;
 
     public TestCampaign(List<Constraint> cstrs)  {
         tcFuzzer = new DefaultTestCaseFuzzer(new DefaultReconfigurationPlanFuzzer());
@@ -130,6 +133,9 @@ public class TestCampaign implements Tester {
                 }
                 long d = -System.currentTimeMillis();
                 res = test(tc);
+                if (res.result() != Result.success) {
+                    defectHook.accept(res);
+                }
                 printProgress(res.result(), nb);
 
                 d += System.currentTimeMillis();
@@ -264,5 +270,10 @@ public class TestCampaign implements Tester {
             output += "Bad resulting plan. Expected:\n" + tc.plan().getOrigin().getViews() + "\n" + tc.plan() + "\nGot:\n" + got.getOrigin().getViews() + "\n" + got;
             throw new IllegalStateException(output);
         }
+    }
+
+    public TestCampaign onDefect(Consumer<TestCaseResult> res) {
+        this.defectHook = res;
+        return this;
     }
 }
