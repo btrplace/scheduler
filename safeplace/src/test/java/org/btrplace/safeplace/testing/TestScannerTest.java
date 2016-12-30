@@ -38,9 +38,8 @@ public class TestScannerTest {
         }
         Assert.assertEquals(campaigns.stream().mapToInt(tc -> {
             tc.fuzz().vms(5).nodes(5);
-            tc.reporting().verbosity(2);
             tc.limits().tests(1000);
-            return tc.go();
+            return tc.go().defects();
         }).sum(), 0);
     }
 

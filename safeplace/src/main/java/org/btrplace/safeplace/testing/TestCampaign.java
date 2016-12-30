@@ -26,8 +26,8 @@ import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.DefaultTestCaseFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.TestCaseFuzzer;
 import org.btrplace.safeplace.testing.limit.RunnerLimit;
-import org.btrplace.safeplace.testing.reporting.DefaultReporting;
-import org.btrplace.safeplace.testing.reporting.Reporting;
+import org.btrplace.safeplace.testing.reporting.Counting;
+import org.btrplace.safeplace.testing.reporting.Report;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.VerifierResult;
 import org.btrplace.safeplace.testing.verification.btrplace.CSchedule;
@@ -58,13 +58,14 @@ public class TestCampaign implements Tester {
 
     private TestCaseFuzzer tcFuzzer;
 
-    private Reporting reporting;
+    private Report report;
 
     private List<Constraint> cstrs;
 
     private List<Constraint> cores;
 
     private Writer writer;
+    private boolean printProgress;
 
     public TestCampaign(List<Constraint> cstrs)  {
         tcFuzzer = new DefaultTestCaseFuzzer(new DefaultReconfigurationPlanFuzzer());
@@ -74,7 +75,7 @@ public class TestCampaign implements Tester {
         params = new DefaultParameters();
         params.getMapper().mapConstraint(Schedule.class, CSchedule.class);
         oracle = new SpecVerifier();
-        reporting = new DefaultReporting();
+        report = new Counting();
     }
 
     public TestCampaign schedulerParams(Parameters ps) {
@@ -99,8 +100,10 @@ public class TestCampaign implements Tester {
         return limits;
     }
 
-    public int go() {
+    @SuppressWarnings("squid:S106")
+    public Report go() {
         TestCaseResult res;
+        int nb = 1;
         try {
             store("[\n");
             boolean first = true;
@@ -114,7 +117,7 @@ public class TestCampaign implements Tester {
                     break;
                 }
                 if (first) {
-                    reporting.start(tc.constraint());
+                    System.out.println(tc.constraint().signatureToString());
                     first = false;
                 }
                 try {
@@ -127,22 +130,49 @@ public class TestCampaign implements Tester {
                 }
                 long d = -System.currentTimeMillis();
                 res = test(tc);
+                printProgress(res.result(), nb);
+
                 d += System.currentTimeMillis();
                 res.metrics().testing(d);
                 res.metrics().validation(tcFuzzer.lastValidationDuration());
                 // - validation because it is embedded
                 res.metrics().fuzzing(Math.max(0, tcFuzzer.lastFuzzingDuration() - res.metrics().validation()));
                 res.metrics().fuzzingIterations(tcFuzzer.lastFuzzingIterations());
-
-                reporting.with(res);
+                report.with(res);
+                nb++;
             } while (limits.test(res));
-
-            return reporting.done();
+            if (printProgress && nb % 80 != 0) {
+                System.out.println();
+            }
+            return report;
         } finally {
             store("]\n");
         }
     }
 
+    @SuppressWarnings("squid:S106")
+    private void printProgress(Result res, int nb) {
+        if (!printProgress) {
+            return;
+        }
+        switch (res) {
+            case falsePositive:
+                System.out.print("-");
+                break;
+            case falseNegative:
+                System.out.print("+");
+                break;
+            case failure:
+                System.out.print("x");
+                break;
+            default:
+                System.out.print(".");
+                break;
+        }
+        if (nb % 80 == 0) {
+            System.out.println();
+        }
+    }
     private void store(String s) {
         if (writer == null) {
             return;
@@ -155,12 +185,12 @@ public class TestCampaign implements Tester {
         }
     }
 
-    public Reporting reporting() {
-        return reporting;
+    public Report reporting() {
+        return report;
     }
 
-    public TestCampaign reporting(Reporting r) {
-        reporting = r;
+    public TestCampaign reporting(Report r) {
+        report = r;
         return this;
     }
 
@@ -222,6 +252,10 @@ public class TestCampaign implements Tester {
         return new TestCaseResult(tc, sched.getStatistics(), res);
     }
 
+    public TestCampaign printProgress(boolean b) {
+        printProgress = b;
+        return this;
+    }
     private void checkConsistency(ReconfigurationPlan got, TestCase tc) {
         if (got != null && !tc.plan().equals(got)) {
             String output = "--- Instance"

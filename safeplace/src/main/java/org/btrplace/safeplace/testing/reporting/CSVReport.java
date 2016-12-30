@@ -18,58 +18,44 @@
 
 package org.btrplace.safeplace.testing.reporting;
 
-import org.btrplace.safeplace.spec.Constraint;
-import org.btrplace.safeplace.testing.Result;
 import org.btrplace.safeplace.testing.TestCaseResult;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.function.Predicate;
 
 /**
+ * A report that store the test case results inside CSV file (one file per constraint).
  * @author Fabien Hermenier
  */
-@SuppressWarnings("squid:S106")
-public class CSVReporting implements Reporting {
+public class CSVReport extends Counting {
 
     private Path output;
 
     private String label;
     private static final String fmt = "%s;%s;%d;%d;%d;%d;%d;%d;%d;%s\n";
 
-    private int verbose;
-
-    private int failures;
-    private int ok;
-    private int fn;
-    private int fp;
+    /**
+     * The default header.
+     */
     public static final String HEADER = "constraint;label;continuous;vms;nodes;fuzzing;validation;iterations;testing;result\n";
 
-    public CSVReporting(Path p, String label) {
+    /**
+     * New report
+     *
+     * @param p     the path where to store the CSV files.
+     * @param label the label for each constraint
+     */
+    public CSVReport(Path p, String label) {
         this.output = p;
         this.label = label;
-        verbose = 0;
 
-    }
-    @Override
-    public void start(Constraint cstr) {
-        System.out.println(cstr.id());
-        ok = 0;
-        fn = 0;
-        fp = 0;
-        failures = 0;
-    }
-
-    @Override
-    public Reporting verbosity(int n) {
-        verbose = n;
-        return this;
     }
 
     @Override
     public void with(TestCaseResult r) {
+        super.with(r); //to count
         try {
             if (output.getParent().toFile().exists()) {
                 Files.createDirectories(output.getParent());
@@ -91,32 +77,8 @@ public class CSVReporting implements Reporting {
                     r.result().toString());
 
             Files.write(output, res.getBytes(), StandardOpenOption.WRITE,StandardOpenOption.APPEND);
-            if (r.result() != Result.success) {
-                if (r.result() == Result.falseNegative) {
-                    fn++;
-                } else if (r.result() == Result.falsePositive) {
-                    fp++;
-                } else {
-                    failures++;
-                }
-            } else {
-                ok++;
-            }
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-    }
-
-    @Override
-    public int done() {
-        if (verbose > 0) {
-            System.out.println("\t" + ok + " Success; " + fp + " FP(s); " + fn + " FN(s); " + failures + " failures");
-        }
-        return failures + fp + fn;
-    }
-
-    @Override
-    public Reporting capture(Predicate<TestCaseResult> r) {
-        return this;
     }
 }

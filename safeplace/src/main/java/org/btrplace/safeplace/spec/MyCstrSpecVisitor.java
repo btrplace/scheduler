@@ -349,8 +349,9 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             case CstrSpecParser.NOT_PART:
                 assertIn(ctx.op, t2, t1);
                 return new NoPackings(t1, t2);
+            default:
+                throw SpecException.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
         }
-        throw SpecException.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
     }
 
     @Override

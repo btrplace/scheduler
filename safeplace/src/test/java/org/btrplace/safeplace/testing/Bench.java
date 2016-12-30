@@ -21,8 +21,8 @@ package org.btrplace.safeplace.testing;
 import org.btrplace.safeplace.testing.fuzzer.Replay;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
-import org.btrplace.safeplace.testing.reporting.DefaultReporting;
-import org.btrplace.safeplace.testing.reporting.Reporting;
+import org.btrplace.safeplace.testing.reporting.Counting;
+import org.btrplace.safeplace.testing.reporting.Report;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
 import org.testng.Assert;
@@ -47,7 +47,7 @@ public class Bench {
     public static String source = ".";
     public static Mode mode = Mode.DEFAULT;
 
-    public static Reporting reporting = new DefaultReporting().verbosity(3).capture(x -> false);
+    public static Report report = new Counting();
 
     public static TestCampaign thousand(TestCampaign tc, String cstr) {
         return thousand(tc, cstr, new SpecVerifier());
@@ -55,7 +55,7 @@ public class Bench {
 
     public static TestCampaign thousand(TestCampaign tc, String cstr, Verifier v) {
 
-        tc.reporting(reporting.verbosity(1));
+        tc.reporting(report);
         tc.verifyWith(v);
 
         if (mode == Mode.REPLAY) {
@@ -66,6 +66,7 @@ public class Bench {
             }
             return tc;
         }
+        tc.printProgress(true);
         tc.limits().tests(population);
         tc.constraint(cstr);
         tc.fuzz().restriction(EnumSet.allOf(Restriction.class));

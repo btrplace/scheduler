@@ -30,8 +30,8 @@ import org.btrplace.safeplace.testing.Result;
 import org.btrplace.safeplace.testing.TestCampaign;
 import org.btrplace.safeplace.testing.TestScanner;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
-import org.btrplace.safeplace.testing.reporting.CSVReporting;
-import org.btrplace.safeplace.testing.reporting.StoredReporting;
+import org.btrplace.safeplace.testing.reporting.CSVReport;
+import org.btrplace.safeplace.testing.reporting.StoredReport;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.btrplace.CheckerVerifier;
 import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
@@ -69,14 +69,14 @@ public class DSN {
         for (int p = 100; p <= 1000; p+=100) {
             for (int s = 2; s <= 20; s+=2) {
                 System.out.println("--- Population: " + p + " scale: " + s + " ---");
-                Bench.reporting = new CSVReporting(path, Integer.toString(p));
+                Bench.report = new CSVReport(path, Integer.toString(p));
                 Bench.population = p;
                 Bench.scale = s;
                 List<TestCampaign> campaigns = sc.testGroups("sides");
                 if (campaigns.isEmpty()) {
                     Assert.fail("Nothing to test");
                 }
-                System.out.println(campaigns.stream().mapToInt(TestCampaign::go).sum());
+                campaigns.stream().forEach(c -> System.out.println(c.go().toString()));
             }
         }
     }
@@ -96,7 +96,7 @@ public class DSN {
             Bench.population = 100;
             Bench.scale = i;
             System.out.println("--- scaling factor " + i + "; transitions= " + Bench.transitions +" ---");
-            Bench.reporting = new CSVReporting(p,"");
+            Bench.report = new CSVReport(p,"");
             System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
         }*/
 
@@ -110,8 +110,8 @@ public class DSN {
             Bench.population = 100;
             Bench.scale = i;
             System.out.println("--- scaling factor " + i + "; transitions= " + Bench.transitions + " ---");
-            Bench.reporting = new CSVReporting(p, "");
-            System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
+            Bench.report = new CSVReport(p, "");
+            sc.test(Bench.class).forEach(c -> System.out.println(c.go().toString()));
         }
 
         p = Paths.get(root, "testing-speed-trans.csv");
@@ -122,8 +122,8 @@ public class DSN {
             Bench.transitions = true;
             Bench.population = 100;
             Bench.scale = i;
-            Bench.reporting = new CSVReporting(p,"");
-            System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
+            Bench.report = new CSVReport(p, "");
+            sc.test(Bench.class).forEach(c -> System.out.println(c.go().toString()));
         }
     }
 
@@ -204,8 +204,11 @@ public class DSN {
                 Bench.mode = Bench.Mode.REPLAY;
             }
             System.out.println("--- Verifier: " + v.getClass() + " ---");
-            Bench.reporting = new CSVReporting(p, v.id());
-            System.out.println(sc.test(Bench.class).stream().mapToInt(t -> {t.verifyWith(v); return t.go();}).sum());
+            Bench.report = new CSVReport(p, v.id());
+            sc.test(Bench.class).forEach(c -> {
+                c.verifyWith(v);
+                System.out.println(c.go().toString());
+            });
         }
     }
 
@@ -225,11 +228,11 @@ public class DSN {
                 Bench.mode = Bench.Mode.REPLAY;
             }
             System.out.println("--- Restriction: " + r + "; replay= " + first + " ---");
-            Bench.reporting = new CSVReporting(path, r.toString());
-            System.out.println(sc.testGroups("bi").stream().mapToInt(x -> {
+            Bench.report = new CSVReport(path, r.toString());
+            sc.testGroups("bi").forEach(x -> {
                 x.fuzz().restriction(EnumSet.of(r));
-                return x.go();
-            }).sum());
+                System.out.println(x.go());
+            });
         }
     }
 
@@ -249,11 +252,11 @@ public class DSN {
                 Bench.mode = Bench.Mode.REPLAY;
             }
             System.out.println("--- Repair: " + repair + "; replay= " + first + " ---");
-                Bench.reporting = new CSVReporting(path, repair ? "enabled" : "disabled");
-            System.out.println(sc.test(Bench.class).stream().mapToInt(x -> {
+            Bench.report = new CSVReport(path, repair ? "enabled" : "disabled");
+            sc.test(Bench.class).forEach(x -> {
                 x.schedulerParams().doRepair(true);
-                return x.go();
-            }).sum());
+                System.out.println(x.go());
+            });
         }
     }
 
@@ -266,8 +269,8 @@ public class DSN {
         Bench.scale = 5;
         Path p = Paths.get(root, "errors.csv");
         Files.deleteIfExists(p);
-        Bench.reporting = new CSVReporting(p, "");
-        System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
+        Bench.report = new CSVReport(p, "");
+        sc.test(Bench.class).stream().forEach(x -> System.out.println(x.go()));
     }
 
     //@Test
@@ -276,10 +279,10 @@ public class DSN {
         Bench.source = "xp-dsn";
         Bench.mode = Bench.Mode.REPLAY;
         Bench.population = 1000;
-        Bench.reporting = new StoredReporting(root).verbosity(3).capture(x -> !x.result().equals(Result.success));
+        Bench.report = new StoredReport(root, x -> !x.result().equals(Result.success));
         Bench.scale = 5;
 
-        System.out.println(sc.test(Bench.class).stream().mapToInt(TestCampaign::go).sum());
+        sc.test(Bench.class).forEach(x -> System.out.println(x.go()));
     }
 
 
