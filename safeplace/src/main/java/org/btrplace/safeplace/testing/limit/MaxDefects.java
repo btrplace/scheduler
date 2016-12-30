@@ -23,25 +23,25 @@ import org.btrplace.safeplace.testing.Result;
 import java.util.function.Predicate;
 
 /**
- * A predicate to limit the number of successful tests.
+ * A predicate to limit the number of defects.
  * @author Fabien Hermenier
  */
-public class MaxSuccess implements Predicate<Result> {
+public class MaxDefects implements Predicate<Result> {
 
     private int max;
 
     /**
      * New threshold.
      *
-     * @param max the maximum number of successful tests
+     * @param max the maximum number of defects
      */
-    public MaxSuccess(int max) {
+    public MaxDefects(int max) {
         this.max = max;
     }
 
     @Override
     public boolean test(Result tc) {
-        if (tc == Result.success) {
+        if (tc != Result.success) {
             max--;
         }
         return max > 0;
@@ -49,7 +49,6 @@ public class MaxSuccess implements Predicate<Result> {
 
     @Override
     public String toString() {
-        return "successes < " + max;
+        return "defects < " + max;
     }
-
 }

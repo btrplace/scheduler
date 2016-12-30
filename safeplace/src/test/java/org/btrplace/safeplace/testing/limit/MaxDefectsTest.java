@@ -19,30 +19,25 @@
 package org.btrplace.safeplace.testing.limit;
 
 import org.btrplace.safeplace.testing.Result;
-import org.btrplace.safeplace.testing.TestCaseResult;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import java.util.function.Predicate;
 
 /**
  * @author Fabien Hermenier
  */
-public class MaxFailures implements Predicate<TestCaseResult> {
+public class MaxDefectsTest {
 
-    private int max;
-    public MaxFailures(int max) {
-        this.max = max;
+    @Test
+    public void test() {
+        MaxDefects m = new MaxDefects(3);
+        Assert.assertEquals(m.test(Result.failure), true);
+        Assert.assertEquals(m.test(Result.success), true);
+        Assert.assertEquals(m.test(Result.falsePositive), true);
+        Assert.assertEquals(m.test(Result.falseNegative), false);
+        Assert.assertEquals(m.test(Result.success), false);
+        Assert.assertEquals(m.test(Result.falseNegative), false);
+        Assert.assertEquals(m.test(Result.success), false);
     }
 
-    @Override
-    public boolean test(TestCaseResult tc) {
-        if (tc.result() != Result.success) {
-            max--;
-        }
-        return max != 0;
-    }
-
-    @Override
-    public String toString() {
-        return "failures < " + max;
-    }
 }

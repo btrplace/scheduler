@@ -30,29 +30,28 @@ import java.util.function.Consumer;
 public final class DefectHooks {
 
     /**
+     * A hook that ignore the defect
+     */
+    public static final Consumer<TestCaseResult> ignore = res -> {
+        //Ignore silently the defect
+    };
+
+    /**
+     * A hook that use an assertion to signal the defect
+     */
+    public static final Consumer<TestCaseResult> failedAssertion = res -> {
+        boolean pass = res.result().equals(Result.success);
+        assert pass : res.toString();
+    };
+
+    /**
+     * A hook that uses testng to signal a defect.
+     */
+    public static final Consumer<TestCaseResult> testNgFailure = res -> Assert.assertEquals(res.result(), Result.success, res.toString());
+
+    /**
      * Utility class. No instantiation.
      */
     private DefectHooks() {
     }
-
-    /**
-     * A hook that ignore the failure
-     */
-    public static final Consumer<TestCaseResult> ignore = res -> {
-    };
-
-    /**
-     * A hook that use an assertion to signal the failure
-     */
-    public static final Consumer<TestCaseResult> failedAssertion = res -> {
-        assert res.result() == Result.success : res.toString();
-    };
-
-    /**
-     * A hook that uses testng to signal a failure.
-     */
-    public static final Consumer<TestCaseResult> testNgFailure = res -> {
-        Assert.assertEquals(res.result(), Result.success, res.toString());
-    };
-
 }

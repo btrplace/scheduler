@@ -69,18 +69,21 @@ public class CFence implements ChocoConstraint {
         }
         if (nodes.size() == 1) {
             return force(rp, t.getHoster(), vm, nodes.iterator().next());
-            } else {
-                for (Node n : rp.getNodes()) {
-                    int idx = rp.getNode(n);
-                    if (!nodes.contains(n)) {
-                        try {
-                            t.getHoster().removeValue(idx, Cause.Null);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().error("Unable to prevent VM '" + vm + "' to run on node '" + n + "'", ex);
-                            return false;
-                        }
-                    }
+        }
+        return allBut(rp, t.getHoster(), vm, nodes);
+    }
+
+    private boolean allBut(ReconfigurationProblem rp, IntVar hoster, VM vm, Collection<Node> nodes) {
+        for (Node n : rp.getNodes()) {
+            int idx = rp.getNode(n);
+            if (!nodes.contains(n)) {
+                try {
+                    hoster.removeValue(idx, Cause.Null);
+                } catch (ContradictionException ex) {
+                    rp.getLogger().error("Unable to prevent VM '" + vm + "' to run on node '" + n + "'", ex);
+                    return false;
                 }
+            }
         }
         return true;
     }

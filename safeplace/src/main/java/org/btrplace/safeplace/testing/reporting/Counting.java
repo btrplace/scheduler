@@ -48,7 +48,6 @@ public class Counting implements Report {
             global = r.metrics();
         }
         global = global.plus(r.metrics());
-        String op;
         switch (r.result()) {
             case falsePositive:
                 under++;

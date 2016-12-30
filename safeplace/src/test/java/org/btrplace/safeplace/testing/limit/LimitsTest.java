@@ -19,37 +19,28 @@
 package org.btrplace.safeplace.testing.limit;
 
 import org.btrplace.safeplace.testing.Result;
-
-import java.util.function.Predicate;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * A predicate to limit the number of successful tests.
  * @author Fabien Hermenier
  */
-public class MaxSuccess implements Predicate<Result> {
+public class LimitsTest {
 
-    private int max;
+    @Test
+    public void testSimple() {
+        Limits l = new Limits();
+        l.failures(1);
+        Assert.assertFalse(l.test(Result.failure));
 
-    /**
-     * New threshold.
-     *
-     * @param max the maximum number of successful tests
-     */
-    public MaxSuccess(int max) {
-        this.max = max;
+        //Override
+        l.failures(3);
+        Assert.assertTrue(l.test(Result.failure));
+
+        l.tests(1);
+        Assert.assertFalse(l.test(Result.success));//because of maxtests
+
+        l.clear();
+        Assert.assertTrue(l.test(Result.failure));
     }
-
-    @Override
-    public boolean test(Result tc) {
-        if (tc == Result.success) {
-            max--;
-        }
-        return max > 0;
-    }
-
-    @Override
-    public String toString() {
-        return "successes < " + max;
-    }
-
 }

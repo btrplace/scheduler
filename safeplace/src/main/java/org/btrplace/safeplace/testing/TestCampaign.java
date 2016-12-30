@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.fuzzer.DefaultReconfigurationPlanFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.DefaultTestCaseFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.TestCaseFuzzer;
-import org.btrplace.safeplace.testing.limit.RunnerLimit;
+import org.btrplace.safeplace.testing.limit.Limits;
 import org.btrplace.safeplace.testing.reporting.Counting;
 import org.btrplace.safeplace.testing.reporting.Report;
 import org.btrplace.safeplace.testing.verification.Verifier;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public class TestCampaign implements Tester {
 
-    private RunnerLimit limits;
+    private Limits limits;
 
     private Parameters params;
 
@@ -72,7 +72,7 @@ public class TestCampaign implements Tester {
 
     public TestCampaign(List<Constraint> cstrs)  {
         tcFuzzer = new DefaultTestCaseFuzzer(new DefaultReconfigurationPlanFuzzer());
-        limits = new RunnerLimit();
+        limits = new Limits();
         this.cstrs = cstrs;
         cores = cstrs.stream().filter(c -> c.args().isEmpty()).collect(Collectors.toList());
         params = new DefaultParameters();
@@ -99,7 +99,7 @@ public class TestCampaign implements Tester {
         return oracle;
     }
 
-    public RunnerLimit limits() {
+    public Limits limits() {
         return limits;
     }
 
@@ -146,7 +146,7 @@ public class TestCampaign implements Tester {
                 res.metrics().fuzzingIterations(tcFuzzer.lastFuzzingIterations());
                 report.with(res);
                 nb++;
-            } while (limits.test(res));
+            } while (limits.test(res.result()));
             if (printProgress && nb % 80 != 0) {
                 System.out.println();
             }

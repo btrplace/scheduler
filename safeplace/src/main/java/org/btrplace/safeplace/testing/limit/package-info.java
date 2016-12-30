@@ -16,40 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing.limit;
-
-import org.btrplace.safeplace.testing.Result;
-
-import java.util.function.Predicate;
-
 /**
- * A predicate to limit the number of successful tests.
- * @author Fabien Hermenier
+ * Limitation system to control the test campaigns continuation.
  */
-public class MaxSuccess implements Predicate<Result> {
-
-    private int max;
-
-    /**
-     * New threshold.
-     *
-     * @param max the maximum number of successful tests
-     */
-    public MaxSuccess(int max) {
-        this.max = max;
-    }
-
-    @Override
-    public boolean test(Result tc) {
-        if (tc == Result.success) {
-            max--;
-        }
-        return max > 0;
-    }
-
-    @Override
-    public String toString() {
-        return "successes < " + max;
-    }
-
-}
+package org.btrplace.safeplace.testing.limit;
