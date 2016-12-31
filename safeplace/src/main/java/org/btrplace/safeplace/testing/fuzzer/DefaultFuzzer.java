@@ -18,6 +18,7 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
+import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -34,20 +35,24 @@ import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
 import org.btrplace.safeplace.testing.fuzzer.domain.ConstantDomain;
 import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * @author Fabien Hermenier
  */
-public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer {
+public class DefaultFuzzer implements ConfigurableFuzzer {
 
     private Random rnd;
 
-    private ReconfigurationPlanFuzzer fuzzer;
+    private DefaultReconfigurationPlanFuzzer fuzzer;
 
-    private Matches predicates;
+    private Validator predicates;
 
     private Map<String, Domain> doms;
 
@@ -61,17 +66,15 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
 
     private int iterations;
 
-    private List<Constraint> cores;
-    private List<Constraint> sides;
+    private Writer writer;
 
-    private ConstraintFuzzer cstrFuzzer;
-
-    public DefaultTestCaseFuzzer(ReconfigurationPlanFuzzer f) {
+    public DefaultFuzzer(Tester t, Constraint toTest, List<Constraint> pre) {
         rnd = new Random();
-        fuzzer = f;
+        fuzzer = new DefaultReconfigurationPlanFuzzer();
         doms = new HashMap<>();
         restrictions = EnumSet.allOf(Restriction.class);
-        predicates = new Matches();
+        predicates = new Validator(t, pre);
+        cstr = toTest;
     }
 
     @Override
@@ -106,16 +109,9 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
         throw new IllegalArgumentException("No domain value attached to argument '" + v.label() + "'");
     }
 
-    public ConstraintFuzzer constraint(String c) {
-        cstrFuzzer = new ConstraintFuzzer(c, cores, sides);
-        return cstrFuzzer;
-    }
-
     @Override
     public TestCase get() {
-        if (constraint() == null) {
-            throw new IllegalArgumentException("No constraint to test");
-        }
+
         ReconfigurationPlan p;
         fuzzingDuration = -System.currentTimeMillis();
         lastValidationDuration = 0;
@@ -124,17 +120,15 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
         do {
             lastValidationDuration  += predicates.lastDuration();
             p = fuzzer.get();
-            tc = new TestCase(fuzzer.toInstance(p),p, cstr);
+            tc = new TestCase(InstanceConverter.toInstance(p), p, cstr);
             iterations++;
         } while (!predicates.test(tc));
         lastValidationDuration  += predicates.lastDuration();
 
         List<Constant> specArgs = new ArrayList<>();
         for (UserVar v : cstr.args()) {
-            String lbl = v.label();
             Domain d = domain(v, p.getOrigin());
             Object o = v.pick(d);
-            tc.with(lbl, o);
             specArgs.add(new Constant(o, v.type()));
 
         }
@@ -146,6 +140,8 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
                 tc.impl(impl);
         }
         fuzzingDuration += System.currentTimeMillis();
+
+        store(tc);
         return tc;
     }
 
@@ -185,13 +181,13 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
     }
 
     @Override
-    public TestCaseFuzzer with(String var, int val) {
+    public ConfigurableFuzzer with(String var, int val) {
         Domain d = new ConstantDomain<>("int", IntType.getInstance(), Collections.singletonList(val));
         return with(var, d);
     }
 
     @Override
-    public TestCaseFuzzer with(String var, int min, int max) {
+    public ConfigurableFuzzer with(String var, int min, int max) {
         List<Integer> s = new ArrayList<>();
         for (int m = min; m <= max; m++) {
             s.add(m);
@@ -200,43 +196,64 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
     }
 
     @Override
-    public TestCaseFuzzer with(String var, int [] vals) {
+    public ConfigurableFuzzer with(String var, int[] vals) {
         List<Integer> s = new ArrayList(Arrays.asList(vals));
         return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
     }
 
     @Override
-    public TestCaseFuzzer with(String var, String val) {
+    public ConfigurableFuzzer with(String arg, String val) {
         List<String> s = new ArrayList<>(Collections.singleton(val));
-        return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
+        return with(arg, new ConstantDomain<>("int", IntType.getInstance(), s));
     }
 
     @Override
-    public TestCaseFuzzer with(String var,  String[] vals) {
+    public ConfigurableFuzzer with(String arg, String[] vals) {
         Domain d = new ConstantDomain<>("int", IntType.getInstance(), Arrays.asList(vals));
-        doms.put(var, d);
+        doms.put(arg, d);
         return this;
     }
 
     @Override
-    public TestCaseFuzzer with(String var,  Domain d) {
-        doms.put(var, d);
+    public ConfigurableFuzzer with(String arg, Domain d) {
+        doms.put(arg, d);
         return this;
     }
 
     @Override
-    public TestCaseFuzzer validating(Constraint c, Tester t) {
-        predicates.setTester(t);
-        predicates.with(c);
-        return this;
-    }
-
-    @Override
-    public TestCaseFuzzer restriction(Set<Restriction> domain) {
+    public ConfigurableFuzzer restriction(Set<Restriction> domain) {
         restrictions = domain;
         return this;
     }
 
+    private void store(TestCase tc) {
+        if (writer == null) {
+            return;
+        }
+        try {
+            writer.write(tc.toJSON());
+            writer.flush();
+        } catch (IOException | JSONConverterException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    @Override
+    public DefaultFuzzer save(Writer w) {
+        writer = w;
+        return this;
+    }
+
+    @Override
+    public DefaultFuzzer save(String path) {
+        try {
+            return save(Files.newBufferedWriter(Paths.get(path), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    //Delegation to the plan fuzzer
     @Override
     public ReconfigurationPlanFuzzer vms(int nb) {
         return fuzzer.vms(nb);
@@ -277,19 +294,4 @@ public class DefaultTestCaseFuzzer implements Supplier<TestCase>, TestCaseFuzzer
         return fuzzer.durations(min, max);
     }
 
-    @Override
-    public TestCaseFuzzer constraint(Constraint cstr) {
-        this.cstr = cstr;
-        return this;
-    }
-
-    @Override
-    public Constraint constraint() {
-        return cstr;
-    }
-
-    @Override
-    public DefaultTestCaseFuzzer supportedConstraints(List<Constraint> cstrs) {
-        return this;
-    }
 }

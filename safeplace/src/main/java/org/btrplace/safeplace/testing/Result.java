@@ -19,12 +19,28 @@
 package org.btrplace.safeplace.testing;
 
 /**
+ * The possible outcomes for a test.
  * @author Fabien Hermenier
  */
 public enum Result {
 
-    falsePositive,
-    falseNegative,
-    failure,
+    /**
+     * The implementation generates a plan that is not valid wrt. its spec. It let some inconsistencies pass.
+     */
+    underFiltering,
+
+    /**
+     * The implementation did not generate a plan despite it exists. It denied solutions.
+     */
+    overFiltering,
+
+    /**
+     * The implementation crashed
+     */
+    crash,
+
+    /**
+     * The implementation and the specification are consistent.
+     */
     success
 }

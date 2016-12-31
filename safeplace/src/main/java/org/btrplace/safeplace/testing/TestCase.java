@@ -98,10 +98,6 @@ public class TestCase {
         return this.impl;
     }
 
-    public TestCase with(String arg, Object v) {
-        return this;
-    }
-
     public boolean continuous() {
         return impl() == null || impl().isContinuous();
     }

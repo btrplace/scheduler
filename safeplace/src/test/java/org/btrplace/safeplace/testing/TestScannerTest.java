@@ -37,7 +37,6 @@ public class TestScannerTest {
             Assert.fail("Nothing to test");
         }
         Assert.assertEquals(campaigns.stream().mapToInt(tc -> {
-            tc.fuzz().vms(5).nodes(5);
             tc.limits().tests(1000);
             return tc.go().defects();
         }).sum(), 0);

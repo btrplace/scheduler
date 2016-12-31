@@ -49,13 +49,13 @@ public class Counting implements Report {
         }
         global = global.plus(r.metrics());
         switch (r.result()) {
-            case falsePositive:
+            case underFiltering:
                 under++;
                 break;
-            case falseNegative:
+            case overFiltering:
                 over++;
                 break;
-            case failure:
+            case crash:
                 failures++;
                 break;
             default:

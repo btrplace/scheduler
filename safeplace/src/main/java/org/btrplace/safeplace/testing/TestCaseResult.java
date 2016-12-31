@@ -100,7 +100,7 @@ public class TestCaseResult {
 
     public static Result makeResult(SolvingStatistics stats, VerifierResult res) {
         if (stats == null) {
-            return failure;
+            return crash;
         }
         ReconfigurationPlan last = stats.lastSolution();
         if (Boolean.TRUE.equals(res.getStatus())) {
@@ -108,18 +108,18 @@ public class TestCaseResult {
             if (last == null) {
                 //but no in practice
                 if (stats.completed()) {
-                    return falseNegative;
+                    return overFiltering;
                 }
-                return failure;
+                return crash;
             }
             return success;
         } else if (Boolean.FALSE.equals(res.getStatus())) {
             if (last != null) {
-                return falsePositive;
+                return underFiltering;
             }
             return success;
         }
-        return failure;
+        return crash;
     }
 
     public String stackTraceToString(Throwable e) {

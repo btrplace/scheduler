@@ -377,6 +377,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
                 break;
             case CstrSpecParser.MULT:
                 return new Mult(t1, t2);
+            default:
         }
         throw SpecException.unsupportedOperation(filename, t1.type(), ctx.op, t2.type());
     }

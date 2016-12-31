@@ -31,12 +31,12 @@ public class MaxDefectsTest {
     @Test
     public void test() {
         MaxDefects m = new MaxDefects(3);
-        Assert.assertEquals(m.test(Result.failure), true);
+        Assert.assertEquals(m.test(Result.crash), true);
         Assert.assertEquals(m.test(Result.success), true);
-        Assert.assertEquals(m.test(Result.falsePositive), true);
-        Assert.assertEquals(m.test(Result.falseNegative), false);
+        Assert.assertEquals(m.test(Result.underFiltering), true);
+        Assert.assertEquals(m.test(Result.overFiltering), false);
         Assert.assertEquals(m.test(Result.success), false);
-        Assert.assertEquals(m.test(Result.falseNegative), false);
+        Assert.assertEquals(m.test(Result.overFiltering), false);
         Assert.assertEquals(m.test(Result.success), false);
     }
 

@@ -230,10 +230,12 @@ public class DSN {
             System.out.println("--- Restriction: " + r + "; replay= " + first + " ---");
             Bench.report = new CSVReport(path, r.toString());
             sc.testGroups("bi").forEach(x -> {
-                x.fuzz().restriction(EnumSet.of(r));
+                Bench.restrictions = EnumSet.of(r);
                 System.out.println(x.go());
             });
         }
+        //restore
+        Bench.restrictions = EnumSet.allOf(Restriction.class);
     }
 
     //@Test
@@ -281,7 +283,7 @@ public class DSN {
         Bench.scale = 5;
 
         sc.test(Bench.class).forEach(x -> {
-            x.reporting(new StoredReport(Paths.get("xp-dsn", "errors.txt"), r -> !r.result().equals(Result.success)));
+            x.reportTo(new StoredReport(Paths.get("xp-dsn", "errors.txt"), r -> !r.result().equals(Result.success)));
             System.out.println(x.go());
         });
     }

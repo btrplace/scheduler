@@ -18,18 +18,17 @@
 
 package org.btrplace.safeplace.testing;
 
-import org.btrplace.safeplace.testing.fuzzer.Replay;
+import org.btrplace.safeplace.testing.fuzzer.ConfigurableFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.btrplace.safeplace.testing.reporting.Counting;
 import org.btrplace.safeplace.testing.reporting.Report;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
-import org.testng.Assert;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -47,6 +46,7 @@ public class Bench {
     public static String source = ".";
     public static Mode mode = Mode.DEFAULT;
 
+    public static Set<Restriction> restrictions = EnumSet.allOf(Restriction.class);
     public static Report report = new Counting();
 
     public static TestCampaign thousand(TestCampaign tc, String cstr) {
@@ -55,30 +55,26 @@ public class Bench {
 
     public static TestCampaign thousand(TestCampaign tc, String cstr, Verifier v) {
 
-        tc.reporting(report);
+        tc.reportTo(report);
         tc.verifyWith(v);
 
         if (mode == Mode.REPLAY) {
-            try {
-                tc.fuzzer(new Replay(Paths.get(source, cstr + ".json")));
-            } catch (IOException e) {
-                Assert.fail(e.getMessage());
-            }
+            tc.replay(Paths.get(source, cstr + ".json"));
             return tc;
         }
         tc.printProgress(true);
         tc.limits().tests(population);
-        tc.constraint(cstr);
-        tc.fuzz().restriction(EnumSet.allOf(Restriction.class));
+        ConfigurableFuzzer f = tc.check(cstr).restriction(EnumSet.allOf(Restriction.class));
+        f.restriction(restrictions);
         if (transitions) {
-            tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
+            f.vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
         } else {
-            tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0).dstOffNodes(0).srcVMs(0, 1, 0).dstVMs(0, 1, 0);
+            f.vms(scale).nodes(scale).srcOffNodes(0).dstOffNodes(0).srcVMs(0, 1, 0).dstVMs(0, 1, 0);
         }
-        tc.fuzz().with("nb", 1, 10);
+        f.with("nb", 1, 10);
 
         if (mode == Mode.SAVE) {
-            tc.save(Paths.get(source, cstr + ".json").toString());
+            f.save(Paths.get(source, cstr + ".json").toString());
         }
         return tc;
     }
@@ -187,7 +183,7 @@ public class Bench {
     public void testResource(TestCampaign c) {
         thousand(c, "shareableresource");
         if (Bench.mode != Mode.REPLAY) {
-                c.fuzz().with("id", "cpu")
+            c.check("shareableresource").with("id", "cpu")
                 .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5));
         }
     }
@@ -196,7 +192,7 @@ public class Bench {
     public void testResourceCapacity(TestCampaign c) {
         thousand(c, "resourceCapacity");
         if (Bench.mode != Mode.REPLAY) {
-            c.fuzz().with("id", "cpu")
+            c.check("resourceCapacity").with("id", "cpu")
                     .with("qty", 1, 5)
                     .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(1));
         }

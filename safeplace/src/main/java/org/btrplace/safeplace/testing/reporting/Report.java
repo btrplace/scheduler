@@ -18,10 +18,11 @@
 
 package org.btrplace.safeplace.testing.reporting;
 
+import org.btrplace.safeplace.testing.DefaultTestCampaign;
 import org.btrplace.safeplace.testing.TestCaseResult;
 
 /**
- * Specify a report resulting from a {@link org.btrplace.safeplace.testing.TestCampaign}.
+ * Specify a report resulting from a {@link DefaultTestCampaign}.
  * @author Fabien Hermenier
  */
 public interface Report {
@@ -73,5 +74,7 @@ public interface Report {
     /**
      * An event to signal the last test has been executed.
      */
-    default void done() {}
+    default void done() {
+        //nothing to do by default
+    }
 }

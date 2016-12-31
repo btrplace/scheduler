@@ -18,7 +18,6 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
-import org.btrplace.model.Instance;
 import org.btrplace.plan.ReconfigurationPlan;
 
 import java.util.function.Supplier;
@@ -28,5 +27,4 @@ import java.util.function.Supplier;
  */
 public interface ReconfigurationPlanFuzzer extends ReconfigurationPlanParams,Supplier<ReconfigurationPlan> {
 
-    Instance toInstance(ReconfigurationPlan p);
 }

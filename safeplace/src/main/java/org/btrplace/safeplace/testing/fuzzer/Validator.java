@@ -18,23 +18,21 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
-import org.btrplace.json.model.InstanceConverter;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.Result;
 import org.btrplace.safeplace.testing.TestCase;
 import org.btrplace.safeplace.testing.TestCaseResult;
 import org.btrplace.safeplace.testing.Tester;
-import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
 /**
+ * This object allows to check if a test case validates some constraints that are preconditions.
+ *
  * @author Fabien Hermenier
  */
-public class Matches implements Predicate<TestCase> {
+public class Validator implements Predicate<TestCase> {
 
     private List<Constraint> cstrs;
 
@@ -42,41 +40,32 @@ public class Matches implements Predicate<TestCase> {
 
     private long duration;
 
-    public Matches(Tester t) {
-        cstrs = new ArrayList<>();
+    /**
+     * New Validator.
+     *
+     * @param t   the tester to use to check for the validity
+     * @param pre the constraints to consider as preconditions
+     */
+    public Validator(Tester t, List<Constraint> pre) {
+        cstrs = pre;
         tester = t;
     }
 
-    public Matches() {
-        this(null);
-    }
-
-    public Matches with(Constraint ...cstrs) {
-        Collections.addAll(this.cstrs, cstrs);
-        return this;
-    }
-
-    public Matches setTester(Tester t) {
-        tester = t;
-        return this;
-    }
     @Override
     public boolean test(TestCase o) {
         duration = -System.currentTimeMillis();
 
-        if (tester != null) {
+        try {
             for (Constraint c : cstrs) {
                 TestCase tc = purge(o, c);
                 TestCaseResult res = tester.test(tc);
                 if (res.result() != Result.success) {
-                    duration += System.currentTimeMillis();
-                    InstanceConverter ic = new InstanceConverter();
-                    ic.getConstraintsConverter().register(new ScheduleConverter());
                     return false;
                 }
             }
+        } finally {
+            duration += System.currentTimeMillis();
         }
-        duration += System.currentTimeMillis();
         return true;
     }
 
@@ -85,7 +74,10 @@ public class Matches implements Predicate<TestCase> {
         return new TestCase(o.instance(), o.plan(), c);
     }
 
-
+    /**
+     * Get the duration of the validation phase.
+     * @return a duration in milliseconds
+     */
     public long lastDuration() {
         return duration;
     }

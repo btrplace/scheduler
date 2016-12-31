@@ -18,45 +18,35 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
-import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.TestCase;
-import org.btrplace.safeplace.testing.Tester;
-import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
-import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
+ * Specify a {@link TestCase} fuzzer.
+ *
  * @author Fabien Hermenier
  */
-public interface TestCaseFuzzer extends Supplier<TestCase>, ReconfigurationPlanParams {
+public interface Fuzzer extends Supplier<TestCase> {
 
-    TestCaseFuzzer with(String var, int val);
-
-    TestCaseFuzzer with(String var, int min, int max);
-
-    TestCaseFuzzer with(String var, int [] vals);
-
-    TestCaseFuzzer with(String var, String val);
-
-    TestCaseFuzzer with(String var,  String[] vals);
-
-    TestCaseFuzzer with(String var,  Domain d);
-
-    TestCaseFuzzer validating(Constraint c, Tester t);
-
-    TestCaseFuzzer restriction(Set<Restriction> domain);
-
+    /**
+     * The duration of the fuzzing stage.
+     *
+     * @return a duration in millisecond
+     */
     long lastFuzzingDuration();
 
+    /**
+     * The duration of the validation stage.
+     *
+     * @return a duration in millisecond
+     */
     long lastValidationDuration();
 
+    /**
+     * The number of fuzzing iterations to get a valid test case.
+     *
+     * @return an integer
+     */
     int lastFuzzingIterations();
-
-    TestCaseFuzzer constraint(Constraint cstr);
-
-    Constraint constraint();
-
-    TestCaseFuzzer supportedConstraints(List<Constraint> cstrs);
 }

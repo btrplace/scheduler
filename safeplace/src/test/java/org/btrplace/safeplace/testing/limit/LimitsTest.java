@@ -31,16 +31,16 @@ public class LimitsTest {
     public void testSimple() {
         Limits l = new Limits();
         l.failures(1);
-        Assert.assertFalse(l.test(Result.failure));
+        Assert.assertFalse(l.test(Result.crash));
 
         //Override
         l.failures(3);
-        Assert.assertTrue(l.test(Result.failure));
+        Assert.assertTrue(l.test(Result.crash));
 
         l.tests(1);
         Assert.assertFalse(l.test(Result.success));//because of maxtests
 
         l.clear();
-        Assert.assertTrue(l.test(Result.failure));
+        Assert.assertTrue(l.test(Result.crash));
     }
 }

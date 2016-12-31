@@ -31,10 +31,10 @@ public class MaxTestsTest {
     @Test
     public void test() {
         MaxTests m = new MaxTests(3);
-        Assert.assertEquals(m.test(Result.failure), true);
+        Assert.assertEquals(m.test(Result.crash), true);
         Assert.assertEquals(m.test(Result.success), true);
-        Assert.assertEquals(m.test(Result.falsePositive), false);
-        Assert.assertEquals(m.test(Result.falseNegative), false);
+        Assert.assertEquals(m.test(Result.underFiltering), false);
+        Assert.assertEquals(m.test(Result.overFiltering), false);
         Assert.assertEquals(m.test(Result.success), false);
     }
 

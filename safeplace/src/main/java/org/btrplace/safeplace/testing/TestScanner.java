@@ -63,7 +63,7 @@ public class TestScanner {
     }
 
     private TestCampaign makeTestCampaign(Method m, Object o) throws InvocationTargetException, IllegalAccessException {
-        TestCampaign campaign = new TestCampaign(cstrs);
+        TestCampaign campaign = new DefaultTestCampaign(cstrs);
         m.invoke(o, campaign);
         return campaign;
     }

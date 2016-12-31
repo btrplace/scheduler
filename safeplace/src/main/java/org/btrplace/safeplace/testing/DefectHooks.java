@@ -40,8 +40,7 @@ public final class DefectHooks {
      * A hook that use an assertion to signal the defect
      */
     public static final Consumer<TestCaseResult> failedAssertion = res -> {
-        boolean pass = res.result().equals(Result.success);
-        assert pass : res.toString();
+        assert false : res.toString();
     };
 
     /**

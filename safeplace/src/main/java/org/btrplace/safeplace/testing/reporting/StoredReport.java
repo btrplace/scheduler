@@ -38,7 +38,7 @@ public class StoredReport extends Counting {
     private Predicate<TestCaseResult> toSave;
 
     /**
-     * New reporting.
+     * New reportTo.
      * All the results will be stored
      *
      * @param file the output file
@@ -48,7 +48,7 @@ public class StoredReport extends Counting {
     }
 
     /**
-     * New reporting.
+     * New reportTo.
      *
      * @param file   the output file
      * @param toSave the predicate to indicate the results to save

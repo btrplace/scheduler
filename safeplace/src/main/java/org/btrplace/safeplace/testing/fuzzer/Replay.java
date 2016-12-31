@@ -23,9 +23,6 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.TestCase;
-import org.btrplace.safeplace.testing.Tester;
-import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
-import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,64 +33,29 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * An object to read previously saved {@link TestCase}.
+ * All the durations are set to 0.
+ *
  * @author Fabien Hermenier
  */
-public class Replay implements TestCaseFuzzer {
-
+public class Replay implements Fuzzer {
 
     private final BufferedReader in;
 
     private List<Constraint> constraints;
 
     private Set<Restriction> restriction = EnumSet.allOf(Restriction.class);
-    public Replay(Path path) throws IOException {
 
+    /**
+     * Replay from a given path.
+     *
+     * @param cstrs the constraint catalog
+     * @param path  the file containing the jsons.
+     * @throws IOException if an error occurred while reading the file
+     */
+    public Replay(List<Constraint> cstrs, Path path) throws IOException {
         in = Files.newReader(path.toFile(), Charset.defaultCharset());
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, int val) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, int min, int max) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, int[] vals) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, String val) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, String[] vals) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, Domain d) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer validating(Constraint c, Tester t) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer restriction(Set<Restriction> domain) {
-
-        if (domain.size() != 1) {
-            throw new UnsupportedOperationException("Not available in replay mode");
-        }
-        restriction = domain;
-        return this;
+        constraints = cstrs;
     }
 
     @Override
@@ -112,19 +74,8 @@ public class Replay implements TestCaseFuzzer {
     }
 
     @Override
-    public TestCaseFuzzer constraint(Constraint cstr) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public Constraint constraint() {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
     public TestCase get() {
         try {
-            in.readLine(); // "[" or "," or "]"
             String json = in.readLine();
             if (json == null) {
                 return null;
@@ -146,51 +97,4 @@ public class Replay implements TestCaseFuzzer {
             throw new IllegalArgumentException(e);
         }
     }
-
-    @Override
-    public ReconfigurationPlanFuzzer srcOffNodes(double ratio) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer dstOffNodes(double ratio) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer srcVMs(double ready, double running, double sleeping) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer dstVMs(double ready, double running, double sleeping) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer vms(int n) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer nodes(int n) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer durations(int min, int max) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer with(FuzzerDecorator f) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public Replay supportedConstraints(List<Constraint> cstrs) {
-        this.constraints = cstrs;
-        return this;
-    }
-
 }

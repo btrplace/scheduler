@@ -30,11 +30,11 @@ public class MaxSuccessTest {
     @Test
     public void test() {
         MaxSuccess m = new MaxSuccess(2);
-        Assert.assertEquals(m.test(Result.failure), true);
+        Assert.assertEquals(m.test(Result.crash), true);
         Assert.assertEquals(m.test(Result.success), true);
         Assert.assertEquals(m.test(Result.success), false);
         Assert.assertEquals(m.test(Result.success), false);
-        Assert.assertEquals(m.test(Result.falseNegative), false);
+        Assert.assertEquals(m.test(Result.overFiltering), false);
         Assert.assertEquals(m.test(Result.success), false);
     }
 }
