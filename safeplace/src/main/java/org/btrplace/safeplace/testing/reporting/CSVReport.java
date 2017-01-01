@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -34,12 +34,12 @@ public class CSVReport extends Counting {
     private Path output;
 
     private String label;
-    private static final String fmt = "%s;%s;%d;%d;%d;%d;%d;%d;%d;%s\n";
+    private static final String ROW_FORMAT = "%s;%s;%d;%d;%d;%d;%d;%d;%d;%s\n";
 
     /**
      * The default header.
      */
-    public static final String HEADER = "constraint;label;continuous;vms;nodes;fuzzing;validation;iterations;testing;result\n";
+    public static final String HEADER = "constraint;label;CONTINUOUS;vms;nodes;fuzzing;validation;iterations;testing;result\n";
 
     /**
      * New report
@@ -63,8 +63,8 @@ public class CSVReport extends Counting {
             if (!output.toFile().exists()) {
                 Files.write(output, HEADER.getBytes(), StandardOpenOption.CREATE);
             }
-            //id;num;continuous;vms;nodes;fuzzing;validation;testing;result)
-            String res = String.format(fmt,
+            //id;num;CONTINUOUS;vms;nodes;fuzzing;validation;testing;result)
+            String res = String.format(ROW_FORMAT,
                     r.testCase().constraint().id(),
                     label,
                     r.testCase().continuous() ? 1 : 0,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -49,13 +49,13 @@ public class Counting implements Report {
         }
         global = global.plus(r.metrics());
         switch (r.result()) {
-            case underFiltering:
+            case UNDER_FILTERING:
                 under++;
                 break;
-            case overFiltering:
+            case OVER_FILTERING:
                 over++;
                 break;
-            case crash:
+            case CRASH:
                 failures++;
                 break;
             default:
@@ -89,7 +89,7 @@ public class Counting implements Report {
         int qty = ok + failures + over + under;
         StringBuilder b = new StringBuilder();
         //Counters
-        b.append(String.format("\t%d success; %d over-filtering; %d under-filtering; %d crash(es)%n", ok, over, under, failures));
+        b.append(String.format("\t%d SUCCESS; %d over-filtering; %d under-filtering; %d CRASH(es)%n", ok, over, under, failures));
 
         //Average durations
         float fuzzing = 1f * global.fuzzing() / qty;

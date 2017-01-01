@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -44,13 +44,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Default implementation of a fuzzer.
  * @author Fabien Hermenier
  */
 public class DefaultFuzzer implements ConfigurableFuzzer {
 
     private Random rnd;
 
-    private DefaultReconfigurationPlanFuzzer fuzzer;
+    private ReconfigurationPlanFuzzer fuzzer;
 
     private Validator predicates;
 
@@ -68,9 +69,16 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
 
     private Writer writer;
 
+    /**
+     * Make a new fuzzer.
+     *
+     * @param t      the tester to use to validate the test case
+     * @param toTest the constraint to test inside the test cases
+     * @param pre    the constraint to use to validate the generate test case
+     */
     public DefaultFuzzer(Tester t, Constraint toTest, List<Constraint> pre) {
         rnd = new Random();
-        fuzzer = new DefaultReconfigurationPlanFuzzer();
+        fuzzer = new ReconfigurationPlanFuzzer();
         doms = new HashMap<>();
         restrictions = EnumSet.allOf(Restriction.class);
         predicates = new Validator(t, pre);
@@ -162,7 +170,7 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
                 return;
             } else {
                 //Force the right one
-                if (restrictions.contains(Restriction.continuous)) {
+                if (restrictions.contains(Restriction.CONTINUOUS)) {
                     impl.setContinuous(true);
                 } else {
                     impl.setContinuous(false);
@@ -171,12 +179,12 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
             }
         }
         //Only 1 possible, go for it if allowed
-        if (!continuous && !restrictions.contains(Restriction.discrete)) {
-            throw new IllegalArgumentException(cstr + " implementation cannot be discrete");
+        if (!continuous && !restrictions.contains(Restriction.DISCRETE)) {
+            throw new IllegalArgumentException(cstr + " implementation cannot be DISCRETE");
         }
 
-        if (continuous && !restrictions.contains(Restriction.continuous)) {
-            throw new IllegalArgumentException(cstr + " implementation cannot be continuous");
+        if (continuous && !restrictions.contains(Restriction.CONTINUOUS)) {
+            throw new IllegalArgumentException(cstr + " implementation cannot be CONTINUOUS");
         }
     }
 
@@ -255,43 +263,51 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
 
     //Delegation to the plan fuzzer
     @Override
-    public ReconfigurationPlanFuzzer vms(int nb) {
-        return fuzzer.vms(nb);
+    public ConfigurableFuzzer vms(int nb) {
+        fuzzer.vms(nb);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer nodes(int nb) {
-        return fuzzer.nodes(nb);
+    public ConfigurableFuzzer nodes(int nb) {
+        fuzzer.nodes(nb);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer with(FuzzerDecorator f) {
-        return fuzzer.with(f);
+    public ConfigurableFuzzer with(FuzzerDecorator f) {
+        fuzzer.with(f);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer srcOffNodes(double ratio) {
-        return fuzzer.srcOffNodes(ratio);
+    public ConfigurableFuzzer srcOffNodes(double ratio) {
+        fuzzer.srcOffNodes(ratio);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer dstOffNodes(double ratio) {
-        return fuzzer.dstOffNodes(ratio);
+    public ConfigurableFuzzer dstOffNodes(double ratio) {
+        fuzzer.dstOffNodes(ratio);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer srcVMs(double ready, double running, double sleeping) {
-        return fuzzer.srcVMs(ready, running, sleeping);
+    public ConfigurableFuzzer srcVMs(double ready, double running, double sleeping) {
+        fuzzer.srcVMs(ready, running, sleeping);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer dstVMs(double ready, double running, double sleeping) {
-        return fuzzer.dstVMs(ready, running, sleeping);
+    public ConfigurableFuzzer dstVMs(double ready, double running, double sleeping) {
+        fuzzer.dstVMs(ready, running, sleeping);
+        return this;
     }
 
     @Override
-    public ReconfigurationPlanFuzzer durations(int min, int max) {
-        return fuzzer.durations(min, max);
+    public ConfigurableFuzzer durations(int min, int max) {
+        fuzzer.durations(min, max);
+        return this;
     }
 
 }

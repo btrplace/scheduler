@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -57,16 +57,6 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
     public ShareableResourceFuzzer variability(double v) {
         variability = v;
         return this;
-    }
-
-    @Override
-    public ShareableResourceFuzzer copy() {
-        return new ShareableResourceFuzzer(id, minCons, maxCons, minCapa, maxCapa);
-    }
-
-    @Override
-    public void decorate(Model mo) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

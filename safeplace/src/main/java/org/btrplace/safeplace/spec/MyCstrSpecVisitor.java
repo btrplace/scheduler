@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -136,9 +136,9 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         List<Term> ps = ctx.term().stream().map(t -> (Term) visit(t)).collect(Collectors.toList());
         Function f = resolveFunction(ctx.ID().getSymbol(), ps);
 
-        FunctionCall.Moment m = FunctionCall.Moment.any;
+        FunctionCall.Moment m = FunctionCall.Moment.ANY;
         if (ctx.BEGIN() != null) {
-            m = FunctionCall.Moment.begin;
+            m = FunctionCall.Moment.BEGIN;
         }
         return new FunctionCall(f, ps, m);
     }

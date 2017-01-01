@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 package org.btrplace.safeplace.testing.fuzzer;
 
 
+import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
 import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.io.Writer;
@@ -29,7 +30,7 @@ import java.util.Set;
  * but also the constraint arguments.
  * @author Fabien Hermenier
  */
-public interface ConfigurableFuzzer extends Fuzzer, ReconfigurationPlanParams {
+public interface ConfigurableFuzzer extends Fuzzer {
 
     /**
      * Set the value for a constraint int argument.
@@ -117,4 +118,76 @@ public interface ConfigurableFuzzer extends Fuzzer, ReconfigurationPlanParams {
      * @return {@code this}
      */
     ConfigurableFuzzer save(String path);
+
+    /**
+     * Set the ratio of nodes initially OFFLINE.
+     *
+     * @param ratio a number <= 1.0
+     * @return {@code this}
+     */
+    ConfigurableFuzzer srcOffNodes(double ratio);
+
+    /**
+     * Set the ratio of nodes OFFLINE at the END of the reconfiguration
+     *
+     * @param ratio a number <= 1.0
+     * @return {@code this}
+     */
+    ConfigurableFuzzer dstOffNodes(double ratio);
+
+    /**
+     * Set the distribution of VM initial state.
+     * The sum of the ratio must be equals to 1
+     *
+     * @param ready    the ratio of VMs initially ready. <= 1.0
+     * @param running  the ratio of VMs initially running. <= 1.0
+     * @param sleeping the ratio of VMs initially sleeping. <= 1.0
+     * @return {@code this}
+     */
+    ConfigurableFuzzer srcVMs(double ready, double running, double sleeping);
+
+    /**
+     * Set the distribution of VM final state.
+     * The sum of the ratio must be equals to 1
+     *
+     * @param ready    the ratio of VMs initially ready. <= 1.0
+     * @param running  the ratio of VMs initially running. <= 1.0
+     * @param sleeping the ratio of VMs initially sleeping. <= 1.0
+     * @return {@code this}
+     */
+    ConfigurableFuzzer dstVMs(double ready, double running, double sleeping);
+
+    /**
+     * Set the number of VMs inside the plan.
+     *
+     * @param n a number >= 0
+     * @return {@code this}
+     */
+    ConfigurableFuzzer vms(int n);
+
+    /**
+     * Set the number of nodes inside the plan.
+     *
+     * @param n a number >= 0
+     * @return {@code this}
+     */
+    ConfigurableFuzzer nodes(int n);
+
+    /**
+     * Set the bounds for the action duration
+     *
+     * @param min the minimum duration
+     * @param max the maximum duration
+     * @return {@code this}
+     */
+    ConfigurableFuzzer durations(int min, int max);
+
+    /**
+     * Add a decorator.
+     * It will be called once the initial plan generated.
+     *
+     * @param f the decorator to add
+     * @return {@code this}
+     */
+    ConfigurableFuzzer with(FuzzerDecorator f);
 }

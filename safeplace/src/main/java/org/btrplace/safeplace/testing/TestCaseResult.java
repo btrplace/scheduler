@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -100,7 +100,7 @@ public class TestCaseResult {
 
     public static Result makeResult(SolvingStatistics stats, VerifierResult res) {
         if (stats == null) {
-            return crash;
+            return CRASH;
         }
         ReconfigurationPlan last = stats.lastSolution();
         if (Boolean.TRUE.equals(res.getStatus())) {
@@ -108,18 +108,18 @@ public class TestCaseResult {
             if (last == null) {
                 //but no in practice
                 if (stats.completed()) {
-                    return overFiltering;
+                    return OVER_FILTERING;
                 }
-                return crash;
+                return CRASH;
             }
-            return success;
+            return SUCCESS;
         } else if (Boolean.FALSE.equals(res.getStatus())) {
             if (last != null) {
-                return underFiltering;
+                return UNDER_FILTERING;
             }
-            return success;
+            return SUCCESS;
         }
-        return crash;
+        return CRASH;
     }
 
     public String stackTraceToString(Throwable e) {

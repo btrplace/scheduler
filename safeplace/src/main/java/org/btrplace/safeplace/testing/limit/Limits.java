@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * Define stop criteria for a test campaign.
  * Criteria can be accumulated and updated.
- * When a new limit is set, any existing limit having the same class is removed.
+ * When a new limit is set, ANY existing limit having the same class is removed.
  *
  * @author Fabien Hermenier
  */

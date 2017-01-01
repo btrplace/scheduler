@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -99,7 +99,7 @@ public class SpecScanner {
 
         List<org.btrplace.safeplace.spec.Constraint> l = new ArrayList<>();
 
-        for (Side s : resolveDepedencies(sides)) {
+        for (Side s : resolveDependencies(sides)) {
             org.btrplace.safeplace.spec.Constraint c = parseSide(s, l);
             l.add(c);
         }
@@ -108,7 +108,7 @@ public class SpecScanner {
         return cstrs;
     }
 
-    private List<Side> resolveDepedencies(List<Side> sides) {
+    private List<Side> resolveDependencies(List<Side> sides) {
         List<String> ids = sides.stream().map(s -> s.impl.getSimpleName()).collect(Collectors.toList());
         List<Node> roots = new ArrayList<>();
         for (Side s : sides) {

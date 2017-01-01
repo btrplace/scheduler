@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,10 +33,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Utility class to convert a plan to an instance.
+ *
  * @author Fabien Hermenier
  */
 public class InstanceConverter {
 
+    private InstanceConverter() {
+    }
 
     public static Instance toInstance(ReconfigurationPlan p) {
         Model mo = p.getOrigin().copy();

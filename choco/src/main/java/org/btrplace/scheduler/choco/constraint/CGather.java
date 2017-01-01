@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -67,25 +67,35 @@ public class CGather implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         List<Slice> dSlices = getDSlices(rp);
         if (cstr.isContinuous()) {
-            //Check for the already running VMs
-            Mapping map = rp.getSourceModel().getMapping();
-            Node loc = null;
-            for (VM vm : cstr.getInvolvedVMs()) {
-                if (map.isRunning(vm)) {
-                    Node node = map.getVMLocation(vm);
-                    if (loc == null) {
-                        loc = node;
-                    } else if (!loc.equals(node)) {
-                        rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
-                        return false;
-                    }
-                }
-            }
-            if (loc != null) {
-                return placeDSlices(rp, dSlices, rp.getNode(loc));
+            if (!continuousColocation(rp, dSlices)) {
+                return false;
             }
         }
         return forceDiscreteCollocation(rp, dSlices);
+    }
+
+    /*
+    * Check for the already running VMs and force co-location if any.
+     */
+    private boolean continuousColocation(ReconfigurationProblem rp, List<Slice> dSlices) {
+
+        Mapping map = rp.getSourceModel().getMapping();
+        Node loc = null;
+        for (VM vm : cstr.getInvolvedVMs()) {
+            if (map.isRunning(vm)) {
+                Node node = map.getVMLocation(vm);
+                if (loc == null) {
+                    loc = node;
+                } else if (!loc.equals(node)) {
+                    rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
+                    return false;
+                }
+            }
+        }
+        if (loc != null) {
+            return placeDSlices(rp, dSlices, rp.getNode(loc));
+        }
+        return true;
     }
 
     private boolean placeDSlices(ReconfigurationProblem rp, List<Slice> dSlices, int nIdx) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -118,7 +118,7 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
             long d = -System.currentTimeMillis();
             res = test(tc);
             d += System.currentTimeMillis();
-            if (res.result() != Result.success) {
+            if (res.result() != Result.SUCCESS) {
                 defectHook.accept(res);
             }
             printProgress(res.result(), nb);
@@ -143,13 +143,13 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
             return;
         }
         switch (res) {
-            case underFiltering:
+            case UNDER_FILTERING:
                 System.out.print("-");
                 break;
-            case overFiltering:
+            case OVER_FILTERING:
                 System.out.print("+");
                 break;
-            case crash:
+            case CRASH:
                 System.out.print("x");
                 break;
             default:
@@ -190,7 +190,7 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
             ReconfigurationPlan plan = sched.solve(tc.instance());
             checkConsistency(plan, tc);
         } catch (RuntimeException e) {
-            //A runtime exception is a crash. Should not happen
+            //A runtime exception is a CRASH. Should not happen
             return new TestCaseResult(tc, e, res);
         }
         return new TestCaseResult(tc, sched.getStatistics(), res);

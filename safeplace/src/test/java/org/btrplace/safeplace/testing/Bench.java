@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -169,14 +169,14 @@ public class Bench {
         thousand(c, "ready");
     }
 
-    @CstrTest(groups = {"state", "sides","online"})
+    @CstrTest(groups = {"state", "sides", "ONLINE"})
     public void testOnline(TestCampaign c) {
-        thousand(c, "online");
+        thousand(c, "ONLINE");
     }
 
     @CstrTest(groups = {"state", "sides"})
     public void testOffline(TestCampaign c) {
-        thousand(c, "offline");
+        thousand(c, "OFFLINE");
     }
 
     @CstrTest(groups = {"resource", "sides", "rc"})

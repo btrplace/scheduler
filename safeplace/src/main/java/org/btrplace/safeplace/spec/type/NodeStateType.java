@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.term.Constant;
  */
 public class NodeStateType implements Litteral, Atomic {
 
-    public enum Type {online, booting, halting, offline}
+    public enum Type {ONLINE, BOOTING, HALTING, OFFLINE}
 
     private static NodeStateType instance = new NodeStateType();
 
@@ -44,7 +44,7 @@ public class NodeStateType implements Litteral, Atomic {
     @Override
     public Constant parse(String n) {
         try {
-            return new Constant(Type.valueOf(n), this);
+            return new Constant(Type.valueOf(n.toUpperCase()), this);
         } catch (IllegalArgumentException ex) {
             return null;
         }

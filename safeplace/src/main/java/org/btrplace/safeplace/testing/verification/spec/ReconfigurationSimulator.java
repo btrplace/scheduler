@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ public class ReconfigurationSimulator implements ActionVisitor {
                 ed = new ArrayList<>();
             }
 
-            at(i, st, ed);
+            at(st, ed);
             Boolean res = prop.eval(co);
             if (!Boolean.TRUE.equals(res)) {
                 return i;
@@ -89,7 +89,7 @@ public class ReconfigurationSimulator implements ActionVisitor {
         return -1;
     }
 
-    private void at(Integer i, List<Action> starts, List<Action> ends) {
+    private void at(List<Action> starts, List<Action> ends) {
         //Apply all the actions simultaneously, starting by the ending
 
         start = false;
@@ -123,21 +123,21 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(BootNode a) {
         if (start) {
-            co.getMapping().state(a.getNode(), NodeStateType.Type.booting);
+            co.getMapping().state(a.getNode(), NodeStateType.Type.BOOTING);
             return null;
         }
-        co.getMapping().state(a.getNode(), NodeStateType.Type.online);
+        co.getMapping().state(a.getNode(), NodeStateType.Type.ONLINE);
         return null;
     }
 
     @Override
     public Object visit(BootVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.booting);
+            co.getMapping().state(a.getVM(), VMStateType.Type.BOOTING);
             co.getMapping().host(a.getVM(), a.getDestinationNode());
             return null;
         }
-        co.getMapping().state(a.getVM(), VMStateType.Type.running);
+        co.getMapping().state(a.getVM(), VMStateType.Type.RUNNING);
         return null;
     }
 
@@ -150,7 +150,7 @@ public class ReconfigurationSimulator implements ActionVisitor {
     public Object visit(KillVM a) {
         if (start) {
             //TODO: terminating ?
-            co.getMapping().state(a.getVM(), VMStateType.Type.terminated);
+            co.getMapping().state(a.getVM(), VMStateType.Type.TERMINATED);
             return null;
         }
 
@@ -158,7 +158,7 @@ public class ReconfigurationSimulator implements ActionVisitor {
         if (n != null) {
             co.getMapping().unhost(n, a.getVM());
             co.getMapping().desactivate(a.getVM());
-            co.getMapping().state(a.getVM(), VMStateType.Type.terminated);
+            co.getMapping().state(a.getVM(), VMStateType.Type.TERMINATED);
         }
 
         return null;
@@ -167,11 +167,11 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(MigrateVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.migrating);
+            co.getMapping().state(a.getVM(), VMStateType.Type.MIGRATING);
             co.getMapping().host(a.getVM(), a.getDestinationNode());
             return null;
         }
-        co.getMapping().state(a.getVM(), VMStateType.Type.running);
+        co.getMapping().state(a.getVM(), VMStateType.Type.RUNNING);
         co.getMapping().activateOn(a.getVM(), a.getDestinationNode());
         //No longer hosted on the source node
         //running on the new one.
@@ -182,31 +182,31 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(ResumeVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.resuming);
+            co.getMapping().state(a.getVM(), VMStateType.Type.RESUMING);
             co.getMapping().host(a.getVM(), a.getDestinationNode());
             return null;
         }
-        co.getMapping().state(a.getVM(), VMStateType.Type.running);
+        co.getMapping().state(a.getVM(), VMStateType.Type.RUNNING);
         return null;
     }
 
     @Override
     public Object visit(ShutdownNode a) {
         if (start) {
-            co.getMapping().state(a.getNode(), NodeStateType.Type.halting);
+            co.getMapping().state(a.getNode(), NodeStateType.Type.HALTING);
             return null;
         }
-        co.getMapping().state(a.getNode(), NodeStateType.Type.offline);
+        co.getMapping().state(a.getNode(), NodeStateType.Type.OFFLINE);
         return null;
     }
 
     @Override
     public Object visit(ShutdownVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.halting);
+            co.getMapping().state(a.getVM(), VMStateType.Type.HALTING);
             return null;
         }
-        co.getMapping().state(a.getVM(), VMStateType.Type.ready);
+        co.getMapping().state(a.getVM(), VMStateType.Type.READY);
         co.getMapping().unhost(a.getNode(), a.getVM());
         co.getMapping().desactivate(a.getVM());
         return null;
@@ -215,10 +215,10 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(SuspendVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.suspending);
+            co.getMapping().state(a.getVM(), VMStateType.Type.SUSPENDING);
             return null;
         }
-        co.getMapping().state(a.getVM(), VMStateType.Type.sleeping);
+        co.getMapping().state(a.getVM(), VMStateType.Type.SLEEPING);
         return null;
     }
 }

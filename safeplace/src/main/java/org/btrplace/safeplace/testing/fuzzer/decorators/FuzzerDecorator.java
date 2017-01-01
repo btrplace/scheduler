@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,19 +18,21 @@
 
 package org.btrplace.safeplace.testing.fuzzer.decorators;
 
-import org.btrplace.Copyable;
-import org.btrplace.model.Model;
 import org.btrplace.plan.ReconfigurationPlan;
 
 /**
+ * Specify a decorator that can alter a generated reconfiguration
  * @author Fabien Hermenier
  */
-public interface FuzzerDecorator extends Copyable<FuzzerDecorator> {
+@FunctionalInterface
+public interface FuzzerDecorator {
 
-    void decorate(Model mo);
+    /**
+     * Decorate a given reconfiguration plan
+     *
+     * @param p the plan to decorate
+     */
+    void decorate(ReconfigurationPlan p);
 
-    default void decorate(ReconfigurationPlan p) {
-        //nothing is done by default
-    }
 
 }

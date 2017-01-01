@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *  
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -82,14 +82,10 @@ public class Replay implements Fuzzer {
             }
             TestCase tc = TestCase.fromJSON(constraints, json);
             if (restriction.size() == 1) {
-                if (restriction.contains(Restriction.continuous)) {
-                    if (!tc.impl().setContinuous(true)) {
-                        throw new IllegalArgumentException("Cannot be continuous");
-                    }
-                } else {
-                    if (!tc.impl().setContinuous(false)) {
-                        throw new IllegalArgumentException("Cannot be discrete");
-                    }
+                if (restriction.contains(Restriction.CONTINUOUS) && !tc.impl().setContinuous(true)) {
+                    throw new IllegalArgumentException("Cannot be CONTINUOUS");
+                } else if (!tc.impl().setContinuous(false)) {
+                    throw new IllegalArgumentException("Cannot be DISCRETE");
                 }
             }
             return tc;

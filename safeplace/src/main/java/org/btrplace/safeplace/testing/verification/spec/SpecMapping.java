@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -49,25 +49,25 @@ public class SpecMapping {
         nodeState = new HashMap<>(ma.getNbNodes());
         host = new HashMap<>();
         for (Node n : ma.getOnlineNodes()) {
-            nodeState.put(n, NodeStateType.Type.online);
+            nodeState.put(n, NodeStateType.Type.ONLINE);
             host.put(n, new HashSet<>());
             for (VM v : ma.getRunningVMs(n)) {
-                vmState.put(v, VMStateType.Type.running);
+                vmState.put(v, VMStateType.Type.RUNNING);
                 activeOn.put(v, n);
                 host.get(n).add(v);
             }
             for (VM v : ma.getSleepingVMs(n)) {
-                vmState.put(v, VMStateType.Type.sleeping);
+                vmState.put(v, VMStateType.Type.SLEEPING);
                 activeOn.put(v, n);
                 host.get(n).add(v);
             }
         }
         for (Node n : ma.getOfflineNodes()) {
-            nodeState.put(n, NodeStateType.Type.offline);
+            nodeState.put(n, NodeStateType.Type.OFFLINE);
             host.put(n, new HashSet<>());
         }
         for (VM v : ma.getReadyVMs()) {
-            vmState.put(v, VMStateType.Type.ready);
+            vmState.put(v, VMStateType.Type.READY);
         }
     }
 
@@ -118,19 +118,19 @@ public class SpecMapping {
 
     public Set<VM> runnings(Node n) {
         return host.get(n).stream()
-                .filter(v -> state(v).equals(VMStateType.Type.running) || state(v).equals(VMStateType.Type.migrating))
+                .filter(v -> state(v).equals(VMStateType.Type.RUNNING) || state(v).equals(VMStateType.Type.MIGRATING))
                 .collect(Collectors.toSet());
     }
 
     public Set<VM> sleeping(Node n) {
         return host.get(n).stream()
-                .filter(v -> state(v).equals(VMStateType.Type.sleeping))
+                .filter(v -> state(v).equals(VMStateType.Type.SLEEPING))
                 .collect(Collectors.toSet());
     }
 
     public Set<VM> ready() {
         return vmState.entrySet().stream()
-                .filter(e -> e.getValue() == VMStateType.Type.ready)
+                .filter(e -> e.getValue() == VMStateType.Type.READY)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }

@@ -16,31 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.testing;
-
 /**
- * The possible outcomes for a test.
- * @author Fabien Hermenier
+ * Objects to collect the result of test campaigns.
  */
-public enum Result {
-
-    /**
-     * The implementation generates a plan that is not valid wrt. its spec. It let some inconsistencies pass.
-     */
-    UNDER_FILTERING,
-
-    /**
-     * The implementation did not generate a plan despite it exists. It denied solutions.
-     */
-    OVER_FILTERING,
-
-    /**
-     * The implementation crashed
-     */
-    CRASH,
-
-    /**
-     * The implementation and the specification are consistent.
-     */
-    SUCCESS
-}
+package org.btrplace.safeplace.testing.reporting;

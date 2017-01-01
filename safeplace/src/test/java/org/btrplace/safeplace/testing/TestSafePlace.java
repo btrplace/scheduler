@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -169,7 +169,7 @@ public class TestSafePlace {
 
     @CstrTest()
     public void testOnline(TestCampaign c) {
-        c.check("online").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("ONLINE").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
@@ -195,7 +195,7 @@ public class TestSafePlace {
     @CstrTest(groups = {"resourceCapacity"})
     public void testResourceCapacity(TestCampaign c) {
         c.check("resourceCapacity")
-                .restriction(EnumSet.of(Restriction.continuous, Restriction.discrete))
+                .restriction(EnumSet.of(Restriction.CONTINUOUS, Restriction.DISCRETE))
                 .with("id", "cpu")
                 .with("qty", 1, 50)
                 .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))

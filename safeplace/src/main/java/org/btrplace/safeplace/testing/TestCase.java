@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -126,9 +126,9 @@ public class TestCase {
 
     @Override
     public String toString() {
-        String restriction = "continuous ";
+        String restriction = "CONTINUOUS ";
         if (impl() != null && !impl().isContinuous()) {
-            restriction = "discrete ";
+            restriction = "DISCRETE ";
         }
         String res = "Constraint: " + restriction + cstr.toString(args) + "\n"
                 + instance.getModel().getMapping() + "\n"
@@ -152,7 +152,7 @@ public class TestCase {
             a.add(c.toJSON());
         }
         o.put("args", a);
-        o.put("continuous", continuous());
+        o.put("CONTINUOUS", continuous());
         o.put("groups", groups());
         o.put("plan", pc.toJSON(plan()));
         o.put("instance", ic.toJSON(instance()));
@@ -183,7 +183,7 @@ public class TestCase {
             tc.impl(cstr.instantiate(l.stream().map(x -> x.eval(null)).collect(Collectors.toList())));
         }
         if (tc.impl() != null) {
-            tc.impl().setContinuous((Boolean)o.get("continuous"));
+            tc.impl().setContinuous((Boolean) o.get("CONTINUOUS"));
         }
         return tc;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -31,13 +31,13 @@ public class MaxDefectsTest {
     @Test
     public void test() {
         MaxDefects m = new MaxDefects(3);
-        Assert.assertEquals(m.test(Result.crash), true);
-        Assert.assertEquals(m.test(Result.success), true);
-        Assert.assertEquals(m.test(Result.underFiltering), true);
-        Assert.assertEquals(m.test(Result.overFiltering), false);
-        Assert.assertEquals(m.test(Result.success), false);
-        Assert.assertEquals(m.test(Result.overFiltering), false);
-        Assert.assertEquals(m.test(Result.success), false);
+        Assert.assertEquals(m.test(Result.CRASH), true);
+        Assert.assertEquals(m.test(Result.SUCCESS), true);
+        Assert.assertEquals(m.test(Result.UNDER_FILTERING), true);
+        Assert.assertEquals(m.test(Result.OVER_FILTERING), false);
+        Assert.assertEquals(m.test(Result.SUCCESS), false);
+        Assert.assertEquals(m.test(Result.OVER_FILTERING), false);
+        Assert.assertEquals(m.test(Result.SUCCESS), false);
     }
 
 }

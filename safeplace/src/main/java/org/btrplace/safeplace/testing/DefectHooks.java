@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ public final class DefectHooks {
     /**
      * A hook that uses testng to signal a defect.
      */
-    public static final Consumer<TestCaseResult> testNgFailure = res -> Assert.assertEquals(res.result(), Result.success, res.toString());
+    public static final Consumer<TestCaseResult> testNgFailure = res -> Assert.assertEquals(res.result(), Result.SUCCESS, res.toString());
 
     /**
      * Utility class. No instantiation.
