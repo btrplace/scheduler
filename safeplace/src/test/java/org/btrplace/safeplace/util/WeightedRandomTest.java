@@ -16,39 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.spec.type;
+package org.btrplace.safeplace.util;
 
-import org.btrplace.safeplace.spec.term.Constant;
+import org.testng.annotations.Test;
 
 /**
  * @author Fabien Hermenier
  */
-public class VMStateType implements Litteral, Atomic {
-
-    public enum Type {READY, BOOTING, RUNNING, MIGRATING, SUSPENDING, SLEEPING, RESUMING, HALTING, TERMINATED}
-
-    private static VMStateType instance = new VMStateType();
-
-    private VMStateType() {
-    }
-
-    public static VMStateType getInstance() {
-        return instance;
-    }
-
-    @Override
-    public String toString() {
-        return "vmState";
-    }
-
-    @Override
-    @SuppressWarnings("squid:S1166")
-    public Constant parse(String n) {
-        try {
-            return new Constant(Type.valueOf(n.toUpperCase()), this);
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
+public class WeightedRandomTest {
+    @Test
+    public void testNextInt() throws Exception {
+        WeightedRandom rnd = new WeightedRandom(1, 2, 3);
+        rnd.nextInt();
     }
 
 }

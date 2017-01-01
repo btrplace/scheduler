@@ -66,10 +66,8 @@ public class CGather implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         List<Slice> dSlices = getDSlices(rp);
-        if (cstr.isContinuous()) {
-            if (!continuousColocation(rp, dSlices)) {
+        if (cstr.isContinuous() && !continuousColocation(rp, dSlices)) {
                 return false;
-            }
         }
         return forceDiscreteCollocation(rp, dSlices);
     }

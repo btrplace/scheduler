@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@ import org.btrplace.scheduler.SchedulerException;
 public class CheckerVerifier implements Verifier {
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public VerifierResult verify(TestCase tc) {
         if (tc.impl() == null) {
             return VerifierResult.newOk();

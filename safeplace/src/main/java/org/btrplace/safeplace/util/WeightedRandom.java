@@ -16,39 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.safeplace.spec.type;
+package org.btrplace.safeplace.util;
 
-import org.btrplace.safeplace.spec.term.Constant;
+import java.util.Random;
 
 /**
  * @author Fabien Hermenier
  */
-public class VMStateType implements Litteral, Atomic {
+public class WeightedRandom {
 
-    public enum Type {READY, BOOTING, RUNNING, MIGRATING, SUSPENDING, SLEEPING, RESUMING, HALTING, TERMINATED}
+    private int[] values;
 
-    private static VMStateType instance = new VMStateType();
+    private int sum;
+    private Random rnd;
 
-    private VMStateType() {
-    }
+    public WeightedRandom(int... weights) {
 
-    public static VMStateType getInstance() {
-        return instance;
-    }
+        rnd = new Random();
 
-    @Override
-    public String toString() {
-        return "vmState";
-    }
-
-    @Override
-    @SuppressWarnings("squid:S1166")
-    public Constant parse(String n) {
-        try {
-            return new Constant(Type.valueOf(n.toUpperCase()), this);
-        } catch (IllegalArgumentException ex) {
-            return null;
+        sum = 0;
+        for (int v : weights) {
+            sum += v;
+        }
+        values = new int[sum - 1];
+        int i = 0;
+        for (int max : weights) {
+            for (; i < values.length && i < max; i++) {
+                values[i] = max;
+            }
         }
     }
 
+    public int nextInt() {
+        return values[rnd.nextInt(values.length)];
+    }
 }

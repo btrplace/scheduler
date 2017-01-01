@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -62,6 +62,7 @@ public class Bench {
      * @param args the CLI arguments
      * @throws IOException
      */
+    @SuppressWarnings("squid:S1166")
     public static void main(String[] args) throws IOException {
         opts = new Options();
 

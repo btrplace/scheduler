@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,6 +27,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.util.ESat;
+
+import java.util.Objects;
 
 /**
  * A fast implementation for BVAR => VAR = CSTE
@@ -119,6 +121,26 @@ public class FastImpliesEq extends Constraint {
                 return !vars[1].contains(constant) ? ESat.FALSE : vars[1].isInstantiated() ? ESat.TRUE : ESat.UNDEFINED;
             }
             return ESat.UNDEFINED;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            if (!super.equals(o)) {
+                return false;
+            }
+            FastImpliesEqProp that = (FastImpliesEqProp) o;
+            return constant == that.constant;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), constant);
         }
     }
 }

@@ -42,6 +42,7 @@ public class NodeStateType implements Litteral, Atomic {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public Constant parse(String n) {
         try {
             return new Constant(Type.valueOf(n.toUpperCase()), this);

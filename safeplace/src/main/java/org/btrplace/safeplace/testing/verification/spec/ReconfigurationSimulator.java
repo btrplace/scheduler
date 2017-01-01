@@ -29,6 +29,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Simulate a reconfiguration by executing its action over a context.
+ * Action are executed wrt. their timestamp.
+ *
+ * So at time {@code t}, the simulator first commits all the actions that end at {@code t},
+ * then it starts all the actions beginning at {@code t}.
  * @author Fabien Hermenier
  */
 public class ReconfigurationSimulator implements ActionVisitor {
@@ -44,6 +49,12 @@ public class ReconfigurationSimulator implements ActionVisitor {
 
     private boolean start = false;
 
+    /**
+     * Make a new simulator.
+     *
+     * @param origin the original context
+     * @param p      the plan to apply.
+     */
     public ReconfigurationSimulator(Context origin, ReconfigurationPlan p) {
         co = origin;
         starts = new HashMap<>();
@@ -52,6 +63,11 @@ public class ReconfigurationSimulator implements ActionVisitor {
         this.p = p;
     }
 
+    /**
+     * Evaluate the proposition over a reconfiguration, at any timestamp.
+     * @param prop the proposition to evaluate
+     * @return the moment the proposition is not valid. {@code -1} if the proposition is correct
+     */
     public int start(Proposition prop) {
         //sort actions by timestamp
         Set<Integer> s = new TreeSet<>(Comparator.comparingInt(a -> a));
@@ -149,7 +165,6 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(KillVM a) {
         if (start) {
-            //TODO: terminating ?
             co.getMapping().state(a.getVM(), VMStateType.Type.TERMINATED);
             return null;
         }
