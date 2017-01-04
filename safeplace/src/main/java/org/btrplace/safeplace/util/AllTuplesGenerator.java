@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@ package org.btrplace.safeplace.util;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author Fabien Hermenier
@@ -59,6 +60,9 @@ public class AllTuplesGenerator<T> implements Iterator<T[]> {
 
     @Override
     public T[] next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         T[] tuple = (T[]) Array.newInstance(cl, doms.length);
         for (int x = 0; x < doms.length; x++) {
             tuple[x] = doms[x][indexes[x]];

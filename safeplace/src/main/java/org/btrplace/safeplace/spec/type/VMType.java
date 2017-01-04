@@ -23,7 +23,7 @@ import org.btrplace.model.VM;
 /**
  * @author Fabien Hermenier
  */
-public class VMType extends Atomic {
+public class VMType implements Atomic {
 
     private static VMType instance = new VMType();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,35 +19,21 @@
 package org.btrplace.safeplace.testing.verification.spec;
 
 import org.btrplace.model.Model;
-import org.btrplace.plan.event.Action;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.spec.term.UserVar;
 import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.TestCase;
-import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.VerifierResult;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
 public class SpecVerifier implements Verifier {
-
-    private List<Domain> vDoms;
-
-
-    public SpecVerifier(List<Domain> vDoms) {
-        this.vDoms = vDoms;
-    }
-
-    public SpecVerifier() {
-        this(Collections.emptyList());
-    }
 
     public void fillArguments(Context mo, TestCase tc) {
         Constraint c = tc.constraint();
@@ -72,37 +58,29 @@ public class SpecVerifier implements Verifier {
         Proposition good = tc.constraint().proposition();
 
         if (tc.continuous()) {
-            Context mo = new Context(tc.instance().getModel());
-            fillArguments(mo, tc);
-            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, tc.plan());
-            //System.out.println(tc.plan());
-            try {
-                Action a = spc.check(good);
-                if (a != null) {
-                    return new VerifierResult(false, a);
-                }
 
-            } catch (Exception e) {
-                if ("Failure at the beginning of the plan".equals(e.getMessage())) {
-                    return VerifierResult.newKo(e.getMessage());
-                }
-                return VerifierResult.newError(e);
-            } /*finally {
-                System.out.println("Verif done");
-            }*/
+            Context mo = new Context(tc.instance().getModel());
+            mo.setRootContext(new Context(tc.instance().getModel().copy()));
+            fillArguments(mo, tc);
+            Boolean res = good.eval(mo);
+            if (!Boolean.TRUE.equals(res)) {
+                return VerifierResult.newKo("Failure at the initial stage");
+            }
+            ReconfigurationSimulator sim = new ReconfigurationSimulator(mo, tc.plan());
+            int x = sim.start(good);
+            if (x >= 0) {
+                return VerifierResult.newKo("Failure at time '" + x + "'");
+            }
             return VerifierResult.newOk();
         }
 
-        //discrete
+        //DISCRETE
         Model res = tc.plan().getResult();
         if (res == null) {
-            System.err.println("NULL RES");
-            tc.plan().getResult();
-            System.err.println(tc.plan().getOrigin().getMapping());
-            System.err.println(tc.plan());
-
+            throw new IllegalStateException("no destination model");
         }
         Context mo = new Context(res);
+        mo.setRootContext(new Context(tc.instance().getModel().copy()));
         fillArguments(mo, tc);
 
         Boolean bOk = good.eval(mo);

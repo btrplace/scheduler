@@ -29,6 +29,7 @@ import java.util.List;
 public interface Domain<T> extends Term<List<T>>{
     List<T> values();
 
+    @Override
     Type type();
 
     String name();

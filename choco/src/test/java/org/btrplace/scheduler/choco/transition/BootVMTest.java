@@ -26,11 +26,11 @@ import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -70,9 +70,6 @@ public class BootVMTest {
                 .build();
         rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
-        for (Node n : rp.getNodes()) {
-            System.out.println(n + " " + rp.getNode(n));
-        }
         BootVM m = (BootVM) rp.getVMActions().get(0);
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
@@ -81,6 +78,7 @@ public class BootVMTest {
         Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         org.btrplace.plan.event.BootVM a = (org.btrplace.plan.event.BootVM) p.getActions().iterator().next();
@@ -122,8 +120,9 @@ public class BootVMTest {
         rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
-        s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
+        rp.getModel().post(rp.getModel().arithm(m2.getStart(), ">=", m1.getEnd()));
 
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Iterator<Action> ite = p.iterator();

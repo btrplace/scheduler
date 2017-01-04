@@ -18,24 +18,31 @@
 
 package org.btrplace.safeplace.testing.limit;
 
-import org.btrplace.safeplace.testing.TestCaseResult;
+import org.btrplace.safeplace.testing.Result;
 
 import java.util.function.Predicate;
 
 /**
+ * A predicate to cap the testing duration.
  * @author Fabien Hermenier
  */
-public class Timeout implements Predicate<TestCaseResult> {
+public class Timeout implements Predicate<Result> {
 
     private int max;
     private long start;
+
+    /**
+     * New threshold.
+     *
+     * @param max the testing duration in seconds
+     */
     public Timeout(int max) {
         this.max = max;
         start = -1;
     }
 
     @Override
-    public boolean test(TestCaseResult tc) {
+    public boolean test(Result tc) {
         if (start == -1) {
             start = System.currentTimeMillis();
         }
@@ -45,7 +52,7 @@ public class Timeout implements Predicate<TestCaseResult> {
 
     @Override
     public String toString() {
-        return "duration < " + max + " sec.";
+        return "duration <= " + max + " sec.";
     }
 
 }

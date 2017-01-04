@@ -21,7 +21,7 @@ package org.btrplace.bench;
 import org.btrplace.json.JSON;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
-import org.btrplace.scheduler.choco.extensions.env.ChunkedTrailing;
+import org.chocosolver.memory.EnvironmentBuilder;
 import org.kohsuke.args4j.Option;
 
 import java.io.File;
@@ -79,7 +79,7 @@ public class Options {
             ps.setVerbosity(verbosity);
         // }
         if (chunk) {
-            ps.setEnvironmentFactory(mo -> new ChunkedTrailing());
+            ps.setEnvironmentFactory(mo -> new EnvironmentBuilder().fromChunk().build());
         }
         return ps;
     }
@@ -111,6 +111,7 @@ public class Options {
         if (single()) {
             return Collections.singletonList(instance(new File(instance))).stream();
         }
+
         Stream<String> s = Files.lines(Paths.get(instances), StandardCharsets.UTF_8);
         return s.map(x -> instance(new File(x)));
     }

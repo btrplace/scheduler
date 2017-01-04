@@ -30,6 +30,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -57,7 +58,7 @@ public class MinusTest {
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
         Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(IntType.getInstance()));
-        Constant v2 = new Constant(Arrays.asList(VMStateType.getInstance().parse("running")), new SetType(VMStateType.getInstance()));
+        Constant v2 = new Constant(Collections.singletonList(VMStateType.getInstance().parse("running")), new SetType(VMStateType.getInstance()));
         new SetMinus(v1, v2);
     }
 

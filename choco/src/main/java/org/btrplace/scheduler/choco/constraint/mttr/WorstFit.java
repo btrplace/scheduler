@@ -27,7 +27,7 @@ import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.Packing;
 import org.btrplace.scheduler.choco.view.VectorPacking;
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
+import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public class WorstFit implements IntValueSelector {
         if (capa == null) {
             capa = new int[rcs.size()];
             for (int i = 0; i < rcs.size(); i++) {
-                capa[i] += rcs.get(i).getVirtualUsage().get(nIdx).getUB() * rcs.get(i).getOverbookRatios().get(nIdx).getLB();
+                capa[i] += rcs.get(i).getVirtualUsage().get(nIdx).getUB() * rcs.get(i).getOverbookRatio(nIdx);
             }
             capacities.put(nIdx, capa);
         }
@@ -131,7 +131,7 @@ public class WorstFit implements IntValueSelector {
         if (usage == null) {
             usage = new int[rcs.size()];
             for (int i = 0; i < rcs.size(); i++) {
-                usage[i] += rcs.get(i).getVMsAllocation(vId).getLB();
+                usage[i] += rcs.get(i).getVMAllocation(vId);
             }
             usages.put(vId, usage);
         }

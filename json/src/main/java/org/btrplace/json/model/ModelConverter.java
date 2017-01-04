@@ -153,7 +153,7 @@ public class ModelConverter implements JSONObjectConverter<Model> {
             int id = Integer.parseInt(e.getKey());
             Node u = mo.newNode(id);
             if (u == null) {
-                throw new JSONConverterException("Node '" + id + "' already declared");
+                throw JSONConverterException.nodeAlreadyDeclared(id);
             }
             JSONObject on = (JSONObject) e.getValue();
             c.addOnlineNode(u);
@@ -186,7 +186,7 @@ public class ModelConverter implements JSONObjectConverter<Model> {
             int id = (Integer) i;
             Node n = mo.newNode(id);
             if (n == null) {
-                throw new JSONConverterException("Node '" + id + "' already declared");
+                throw JSONConverterException.nodeAlreadyDeclared(id);
             }
             s.add(n);
         }
@@ -214,7 +214,7 @@ public class ModelConverter implements JSONObjectConverter<Model> {
             int id = (Integer) i;
             VM vm = mo.newVM(id);
             if (vm == null) {
-                throw new JSONConverterException("VM '" + id + "' already declared");
+                throw JSONConverterException.vmAlreadyDeclared(id);
             }
             s.add(vm);
         }

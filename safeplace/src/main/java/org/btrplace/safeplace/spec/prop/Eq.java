@@ -42,6 +42,6 @@ public class Eq extends AtomicProp {
         if (vA == null && vB == null) {
             return true;
         }
-        return (vA != null && vA.equals(vB));
+        return vA != null && vA.equals(vB);
     }
 }

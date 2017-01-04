@@ -41,6 +41,7 @@ import java.util.List;
 /**
  * @author Vincent Kherbache
  */
+@SuppressWarnings("squid:S106")
 public class AdvancedMigScheduling implements Example {
 
     private Node srcNode1;

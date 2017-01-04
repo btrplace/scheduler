@@ -39,7 +39,7 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 
-@SideConstraint(args = {"ns <: nodes", "nb : int"}, inv = "sum([card(running(n)). n : ns]) <= nb")
+@SideConstraint(args = {"ns <: nodes", "nb : int"}, inv = "sum({card(running(n)). n : ns}) <= nb")
 public class RunningCapacity extends SimpleConstraint {
 
     private int qty;

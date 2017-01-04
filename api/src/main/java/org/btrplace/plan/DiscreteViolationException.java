@@ -28,7 +28,7 @@ import org.btrplace.model.constraint.SatConstraint;
  */
 public class DiscreteViolationException extends SatConstraintViolationException {
 
-    private final Model mo;
+    private final transient Model mo;
 
     /**
      * New constraint.

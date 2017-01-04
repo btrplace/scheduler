@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * @author Vincent Kherbache
  */
+@SuppressWarnings("squid:S106")
 public class NetworkAndMigrations implements Example {
 
     @Override

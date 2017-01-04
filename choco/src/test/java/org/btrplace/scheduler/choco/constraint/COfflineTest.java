@@ -113,7 +113,6 @@ public class COfflineTest {
         ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(new Offline(n1)));
         Assert.assertNull(plan);
         SolvingStatistics stats = cra.getStatistics();
-        System.out.println(stats);
         Assert.assertTrue(stats.completed());
     }
 }

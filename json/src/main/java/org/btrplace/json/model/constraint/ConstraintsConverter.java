@@ -81,6 +81,7 @@ public class ConstraintsConverter {
         c.register(new MaxOnlineConverter());
         c.register(new MinMTTRConverter());
         c.register(new MinMTTRMigConverter());
+        c.register(new MinMigrationsConverter());
         return c;
     }
 

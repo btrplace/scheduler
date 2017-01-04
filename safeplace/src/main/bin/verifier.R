@@ -8,42 +8,39 @@ dta <- read.table(args[1], header=T, sep=";",quote="")
 
 #Get rid of useless elements there
 dta <- dta[,c("constraint","label","result")]
-names(dta)[names(dta)=="label"] <- "verifier"
+names(dta)[names(dta)=="label"] <- "oracle"
+levels(dta$oracle) <- c(levels(dta$oracle), "specification")
+dta$oracle[dta$oracle=="spec"] <- "specification"
 
 
-## Fine grain: number of errors per constraint wrt. the verifier
+## Fine grain: number of errors per constraint wrt. the oracle
 #Count per factor
-byCstr <- dcast(dta, verifier + constraint ~ result, value.var="result")
+byCstr <- dcast(dta, oracle + constraint ~ result, value.var="result")
 
 #error rate
 byCstr$errors <- (byCstr$failure + byCstr$falseNegative + byCstr$falsePositive) / (byCstr$failure + byCstr$falseNegative + byCstr$falsePositive + byCstr$success) * 100
-byCstr <- byCstr[,c("errors","constraint","verifier")]
+byCstr <- byCstr[,c("errors","constraint","oracle")]
 
-p <- ggplot(byCstr, aes(constraint, errors)) + geom_bar(aes(fill=verifier), position="dodge", stat="identity")
+p <- ggplot(byCstr, aes(constraint, errors)) + geom_bar(aes(fill=oracle), position="dodge", stat="identity")
 p <- p + theme_bw() + theme(axis.text.x  = element_text(angle=45,hjust=1))  + ylim(0, 100)  + ylab("errors (%)")
 ggsave(paste0(args[2],"-fine.pdf"),p, width=8, height=4)
 
 
-#Corse grain: error type wrt. the verifier
-fine <- dcast(dta, verifier ~ result, value.var="result")
-fine$total <- fine$failure + fine$falseNegative + fine$falsePositive + fine$success
-fine$errs <- fine$failure + fine$falseNegative + fine$falsePositive
+#Corse grain: error type wrt. the oracle
+fine <- dcast(dta, result  ~ oracle, value.var="result")
+fine <- fine[!fine$result=="success",]
+fine <- melt(fine, c("result"))
 
-e1 = fine[which(fine$verifier == "checker"),]$errs
-e2 = fine[which(fine$verifier == "spec"),]$errs
-cat("Bugs with the checkers: ",e1,"\n")
-cat("Bugs with safeplace: ",e2,"\n")
-cat("Improvement: ",e2/e1,"\n")
+cat(length(unique(byCstr$constraint)), " constraint(s)\n")
+cat("spec error: ", sum(fine[fine$variable=="specification",]$value), "%\n")
+cat("checker error : ", sum(fine[fine$variable=="checker",]$value), "%\n")
+names(fine) <- c("result","oracle","value")
 
-fine$falseNegative = fine$falseNegative / fine$total * 100
-fine$falsePositive = fine$falsePositive / fine$total * 100
-fine$failure = fine$failure / fine$total * 100
-fine <- fine[,c("verifier","failure","falseNegative","falsePositive")]
-fine <- melt(fine, by="verifier")
-
-p <- ggplot(fine, aes(verifier, value)) + geom_bar(aes(fill=variable), stat="identity")
-p <- p + theme_bw() + ylab("errors (%)")
-ggsave(paste0(args[2],"-coarse.pdf"),p, width=5, height=4)
-
-
+p <- ggplot(fine, aes(result, value)) + geom_bar(stat="identity", aes(fill=oracle), position="dodge")
+p <- p + theme_bw() + ylab("defects") + scale_x_discrete("defect", labels = c("crashes","over-filtering","under-filtering"))
+p <- p + scale_fill_manual(values = c("#bdbdbd", "#31a354"))
+big = element_text(size = 19, family="Times")
+med = element_text(size = 16, family="Times")
+p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)
+ggsave(paste0(args[2],"-coarse.pdf"),p, width=8, height=4)
 

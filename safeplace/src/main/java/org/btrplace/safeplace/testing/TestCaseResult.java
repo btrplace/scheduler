@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,8 +26,7 @@ import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 
 import java.util.stream.Collectors;
 
-import static org.btrplace.safeplace.testing.Result.failure;
-import static org.btrplace.safeplace.testing.Result.success;
+import static org.btrplace.safeplace.testing.Result.*;
 
 /**
  * @author Fabien Hermenier
@@ -101,7 +100,7 @@ public class TestCaseResult {
 
     public static Result makeResult(SolvingStatistics stats, VerifierResult res) {
         if (stats == null) {
-            return failure;
+            return CRASH;
         }
         ReconfigurationPlan last = stats.lastSolution();
         if (Boolean.TRUE.equals(res.getStatus())) {
@@ -109,18 +108,18 @@ public class TestCaseResult {
             if (last == null) {
                 //but no in practice
                 if (stats.completed()) {
-                    return Result.falseNegative;
+                    return OVER_FILTERING;
                 }
-                return Result.failure;
+                return CRASH;
             }
-            return success;
+            return SUCCESS;
         } else if (Boolean.FALSE.equals(res.getStatus())) {
             if (last != null) {
-                return Result.falsePositive;
+                return UNDER_FILTERING;
             }
-            return success;
+            return SUCCESS;
         }
-        return Result.failure;
+        return CRASH;
     }
 
     public String stackTraceToString(Throwable e) {

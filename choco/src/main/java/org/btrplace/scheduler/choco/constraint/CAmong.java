@@ -28,9 +28,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -132,7 +130,7 @@ public class CAmong implements ChocoConstraint {
     private boolean restrictGroup(Parameters ps, ReconfigurationProblem rp, Set<VM> running, List<Collection<Node>> groups, int selected) {
         if (selected == -1) {
             //Now, we create a variable to indicate on which group of nodes the VMs will be
-            vmGrpId = VariableFactory.enumerated(rp.makeVarLabel(GROUP_LABEL), 0, groups.size() - 1, rp.getSolver());
+            vmGrpId = rp.getModel().intVar(rp.makeVarLabel(GROUP_LABEL), 0, groups.size() - 1, false);
             //grp: A table to indicate the group each node belong to, -1 for no group
             int[] grp = new int[rp.getNodes().size()];
             for (int i = 0; i < grp.length; i++) {
@@ -147,12 +145,12 @@ public class CAmong implements ChocoConstraint {
             //We link the VM placement variable with the group variable
             for (VM vm : running) {
                 IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
-                Constraint c = IntConstraintFactory.element(vmGrpId, grp, assign, 0, "detect");
-                rp.getSolver().post(c);
+                Constraint c = rp.getModel().element(vmGrpId, grp, assign, 0/*, "detect"*/);
+                rp.getModel().post(c);
             }
         } else {
             //As the group is already known, it's now just a fence constraint
-            vmGrpId = VariableFactory.fixed(rp.makeVarLabel(GROUP_LABEL), selected, rp.getSolver());
+            vmGrpId = rp.fixed(selected, GROUP_LABEL);
             if (!fence(ps, rp, running, groups.get(selected))) {
                 return false;
             }

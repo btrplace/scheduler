@@ -50,11 +50,7 @@ public class ActionDurationFromOptionalAttribute<E extends Element> implements A
     public int evaluate(Model mo, E e) {
         Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
-            try {
-                return attrs.get(e, key, -1);
-            } catch (Exception ex) {
-                return parent.evaluate(mo, e);
-            }
+            return attrs.get(e, key, -1);
         }
         return parent.evaluate(mo, e);
     }

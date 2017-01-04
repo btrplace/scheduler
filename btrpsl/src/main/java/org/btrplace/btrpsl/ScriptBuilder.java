@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -189,6 +189,7 @@ public class ScriptBuilder {
      * @return the built script
      * @throws ScriptBuilderException in an error occurred while building the script
      */
+    @SuppressWarnings("squid:S1166") //For the UnsupportedOperationException
     private Script build(CharStream cs) throws ScriptBuilderException {
 
         Script v = new Script();
@@ -221,6 +222,7 @@ public class ScriptBuilder {
         } catch (RecognitionException e) {
             throw new ScriptBuilderException(e.getMessage(), e);
         } catch (UnsupportedOperationException e) {
+            //We only keep the error message
             errorReporter.append(0, 0, e.getMessage());
         }
         if (!errorReporter.getErrors().isEmpty()) {

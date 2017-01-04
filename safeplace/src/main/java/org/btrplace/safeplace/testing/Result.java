@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,12 +19,28 @@
 package org.btrplace.safeplace.testing;
 
 /**
+ * The possible outcomes for a test.
  * @author Fabien Hermenier
  */
 public enum Result {
 
-    falsePositive,
-    falseNegative,
-    failure,
-    success
+    /**
+     * The implementation generates a plan that is not valid wrt. its spec. It let some inconsistencies pass.
+     */
+    UNDER_FILTERING,
+
+    /**
+     * The implementation did not generate a plan despite it exists. It denied solutions.
+     */
+    OVER_FILTERING,
+
+    /**
+     * The implementation crashed
+     */
+    CRASH,
+
+    /**
+     * The implementation and the specification are consistent.
+     */
+    SUCCESS
 }

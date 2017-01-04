@@ -29,8 +29,8 @@ DIV:'/';
 ALL:'!';
 EXISTS:'?';
 INT: '0' | '-'?[1..9][0..9]*;
-INTER: '\\/';
-UNION: '/\\';
+UNION: '\\/';
+INTER: '/\\';
 AND:'&';
 OR:'|';
 EQ:'=';
@@ -44,16 +44,11 @@ LT:'<';
 LEQ:'<=';
 GT:'>';
 GEQ:'>=';
-TRUE:'true';
-FALSE:'false';
 //NOT:'~';
 LBRACK: '[';
 RBRACK: ']';
 STRING: '"' (~('\\'|'"'))* '"';
 BEGIN: '^';
-DISCRETE: 'discrete';
-CORE: 'core';
-CONSTRAINT: 'constraint';
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
@@ -76,19 +71,12 @@ list: LBRACK term SUCH_AS typedef (COMMA formula)? RBRACK #listInComprehension
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL | PART|NOT_PART) t2=term;
 
 typedef: ID (COMMA ID)* op=(IN|INCL|NOT_IN|NOT_INCL|PART|NOT_PART) i2=term;
-arg: ID op=(IN|INCL|PART) i2=term;
 formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison
        |ALL LPARA typedef RPARA formula #all
        |EXISTS LPARA typedef RPARA formula #exists
-       |TRUE        #trueFormula
-       |FALSE       #falseFormula
        |call        #cstrCall
        ;
        
 call: BEGIN? ID LPARA term (COMMA term)* RPARA;
-
-constraint: CORE? DISCRETE? CONSTRAINT ID LPARA (arg (COMMA arg)*)? RPARA DEF_CONTENT formula;
-
-spec: constraint+;

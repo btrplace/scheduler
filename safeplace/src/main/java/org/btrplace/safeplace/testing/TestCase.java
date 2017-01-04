@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -98,38 +98,25 @@ public class TestCase {
         return this.impl;
     }
 
-    public TestCase with(String arg, Object v) {
-        return this;
-    }
-
     public boolean continuous() {
         return impl() == null || impl().isContinuous();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TestCase testCase = (TestCase) o;
-        /*System.err.println("----");
-        if (!Objects.equals(instance, testCase.instance)) {
-            System.err.println(instance.getSatConstraints() + "\n" + testCase.instance.getSatConstraints());
+        if (this == o) {
+            return true;
         }
-        System.err.println(Objects.equals(plan, testCase.plan));
-        System.err.println(Objects.equals(cstr, testCase.cstr));
-        System.err.println(Objects.equals(args, testCase.args));
-        if (!Objects.equals(impl, testCase.impl)) {
-            System.err.println(impl + "\n" + testCase.impl());
-        }*/
-
-        //System.err.println(Objects.equals(groups, testCase.groups));
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TestCase testCase = (TestCase) o;
 
         return Objects.equals(instance, testCase.instance) &&
                 Objects.equals(plan, testCase.plan) &&
                 Objects.equals(cstr, testCase.cstr) &&
                 Objects.equals(args, testCase.args) &&
-                Objects.equals(impl, testCase.impl) &&
-                Objects.equals(groups, testCase.groups);
+                Objects.equals(impl, testCase.impl);
     }
 
     @Override
@@ -139,14 +126,19 @@ public class TestCase {
 
     @Override
     public String toString() {
-        String restriction = "continuous ";
+        String restriction = "CONTINUOUS ";
         if (impl() != null && !impl().isContinuous()) {
-            restriction = "discrete ";
+            restriction = "DISCRETE ";
         }
-        return "Constraint: " + restriction + cstr.toString(args) + "\n"
+        String res = "Constraint: " + restriction + cstr.toString(args) + "\n"
                 + instance.getModel().getMapping() + "\n"
-                + instance.getModel().getViews().stream().map(ModelView::toString).collect(Collectors.joining("\n","","\n"))
-                + plan + "\n";
+                + instance.getModel().getViews().stream().map(ModelView::toString).collect(Collectors.joining("\n", "", "\n"));
+
+        if (continuous() || !plan.isApplyable()) {
+            return res + "Plan:\n" + plan + "\n";
+        } else {
+            return res + "Result:\n" + plan.getResult().getMapping() + "\n";
+        }
     }
 
     public String toJSON() throws JSONConverterException {
@@ -160,7 +152,7 @@ public class TestCase {
             a.add(c.toJSON());
         }
         o.put("args", a);
-        o.put("continuous", continuous());
+        o.put("CONTINUOUS", continuous());
         o.put("groups", groups());
         o.put("plan", pc.toJSON(plan()));
         o.put("instance", ic.toJSON(instance()));
@@ -176,7 +168,12 @@ public class TestCase {
         InstanceConverter ic = new InstanceConverter();
         ic.getConstraintsConverter().register(new ScheduleConverter());
         ReconfigurationPlanConverter rc = new ReconfigurationPlanConverter();
-        TestCase tc = new TestCase(ic.fromJSON(o.getAsString("instance")), rc.fromJSON(o.getAsString("plan")), cstr);
+
+        Instance i = ic.fromJSON(o.getAsString("instance"));
+        ReconfigurationPlan plan = rc.fromJSON(o.getAsString("plan"));
+
+
+        TestCase tc = new TestCase(i, plan, cstr);
         List<Constant> l = new ArrayList<>();
         for(Object x : (JSONArray) o.get("args")) {
             l.add(Constant.fromJSON((JSONObject) x));
@@ -186,7 +183,7 @@ public class TestCase {
             tc.impl(cstr.instantiate(l.stream().map(x -> x.eval(null)).collect(Collectors.toList())));
         }
         if (tc.impl() != null) {
-            tc.impl().setContinuous((Boolean)o.get("continuous"));
+            tc.impl().setContinuous((Boolean) o.get("CONTINUOUS"));
         }
         return tc;
     }

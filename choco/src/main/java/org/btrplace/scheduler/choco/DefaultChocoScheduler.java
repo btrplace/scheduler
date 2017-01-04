@@ -152,7 +152,8 @@ public class DefaultChocoScheduler implements ChocoScheduler {
             //New timeout value = elapsed time - initial timeout value
             Parameters ps = new DefaultParameters(params);
             if (ps.getTimeLimit() > 0) {
-                float timeout = params.getTimeLimit() - runner.getStatistics().getMeasures().getTimeCount();
+                //in seconds
+                double timeout = params.getTimeLimit() - runner.getStatistics().getMetrics().timeCount() / 1000;
                 ps.setTimeLimit((int) timeout);
             }
 

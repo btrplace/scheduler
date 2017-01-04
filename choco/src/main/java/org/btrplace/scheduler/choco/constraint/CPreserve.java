@@ -26,9 +26,6 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.variables.IntVar;
 
 import java.util.Collections;
 import java.util.Set;
@@ -62,13 +59,7 @@ public class CPreserve implements ChocoConstraint {
         VM vm = cstr.getInvolvedVMs().iterator().next();
         if (rp.getFutureRunningVMs().contains(vm)) {
             int idx = rp.getVM(vm);
-            IntVar v = map.getVMsAllocation().get(idx);
-            try {
-                v.updateLowerBound(cstr.getAmount(), Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to set the '" + cstr.getResource() + "' consumption for VM '" + vm + "' to " + cstr.getAmount(), ex);
-                return false;
-            }
+            map.minVMAllocation(idx, cstr.getAmount());
         }
         return true;
     }

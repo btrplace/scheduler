@@ -24,9 +24,10 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  * A simple service to name VMs or nodes.
@@ -178,15 +179,11 @@ public final class NamingService<E extends Element> implements ModelView {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        for (Iterator<Map.Entry<E, String>> ite = rev.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<E, String> e = ite.next();
-            b.append(e.getKey()).append("<->").append(e.getValue());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
+        StringJoiner joiner = new StringJoiner(", ");
+        for (Entry<E, String> entry : rev.entrySet()) {
+            joiner.add(String.format("%s<->%s", entry.getKey(), entry.getValue()));
         }
-        return b.toString();
+        return joiner.toString();
     }
 
     /**

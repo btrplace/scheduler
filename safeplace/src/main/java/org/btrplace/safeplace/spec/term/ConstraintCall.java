@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -32,10 +32,8 @@ import java.util.List;
  */
 public class ConstraintCall extends FunctionCall<Boolean> implements Proposition {
 
-    private Function<Boolean> c;
-
     public ConstraintCall(Function<Boolean> c, List<Term> args) {
-        super(c, args, Moment.any);
+        super(c, args, Moment.ANY);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class ConstraintCall extends FunctionCall<Boolean> implements Proposition
             ins.add(o);
         }
         m.saveStack();
-        Boolean ret = c.eval(m, ins);
+        Boolean ret = c.eval(m, ins.toArray());
         m.restoreStack();
         return ret;
     }

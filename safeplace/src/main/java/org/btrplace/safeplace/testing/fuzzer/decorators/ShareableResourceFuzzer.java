@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -38,7 +38,10 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
 
     private Random rnd;
 
-    private int minCons, maxCons, minCapa, maxCapa;
+    private int minCons;
+    private int maxCons;
+    private int minCapa;
+    private int maxCapa;
 
     private double variability = 0.5;
 
@@ -57,28 +60,6 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
     }
 
     @Override
-    public ShareableResourceFuzzer copy() {
-        return new ShareableResourceFuzzer(id, minCons, maxCons, minCapa, maxCapa);
-    }
-
-    @Override
-    public void decorate(Model mo) {
-        throw new RuntimeException("foo");
-        /*ShareableResource rc = new ShareableResource(id);
-        for (VM v : mo.getMapping().getAllVMs()) {
-            int c = rnd.nextInt(maxCons - minCons + 1) + minCons;
-            rc.setConsumption(v, c);
-        }
-
-        for (Node n : mo.getMapping().getAllNodes()) {
-            int c = rnd.nextInt(maxCapa - minCapa + 1) + minCapa;
-            rc.setCapacity(n, c);
-        }
-
-        mo.attach(rc);*/
-    }
-
-    @Override
     public void decorate(ReconfigurationPlan p) {
         Model mo = p.getOrigin();
         ShareableResource rc = new ShareableResource(id);
@@ -92,7 +73,6 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
         for (VM v : mo.getMapping().getAllVMs()) {
             int c = rnd.nextInt(maxCons - minCons + 1) + minCons;
             rc.setConsumption(v, c);
-            //System.err.println(v + " src=" + rc.getConsumption(v));
         }
 
         for (Node n : mo.getMapping().getAllNodes()) {
@@ -127,7 +107,6 @@ public class ShareableResourceFuzzer implements FuzzerDecorator {
                 }
                 //For a migrated VM, we allocate once the migration over
                 a.addEvent(h, ev);
-                //System.err.println(a + " " + h + " " + ev);
                 found = true;
                 break;
             }

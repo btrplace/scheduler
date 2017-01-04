@@ -77,6 +77,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      * @return the resulting constraint
      */
     @Override
+    @SuppressWarnings("squid:S3346")
     public boolean beforeSolve(ReconfigurationProblem rp) {
         super.beforeSolve(rp);
         if (rp.getSourceModel().getMapping().getNbNodes() == 0 || capacities.isEmpty()) {
@@ -123,7 +124,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         symmetryBreakingForStayingVMs(rp);
         IntVar[] earlyStarts = rp.getNodeActions().stream().map(NodeTransition::getHostingStart).toArray(IntVar[]::new);
         IntVar[] lastEnd = rp.getNodeActions().stream().map(NodeTransition::getHostingEnd).toArray(IntVar[]::new);
-        rp.getSolver().post(
+        rp.getModel().post(
                 new TaskScheduler(earlyStarts,
                         lastEnd,
                         capas,
@@ -199,7 +200,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                 return false;
             }
         } else {
-            rp.getSolver().post(new FastImpliesEq(stay, s.getDuration(), 0));
+            rp.getModel().post(new FastImpliesEq(stay, s.getDuration(), 0));
         }
         return true;
     }

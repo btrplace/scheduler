@@ -55,10 +55,14 @@ public class InstanceConverter implements JSONObjectConverter<Instance> {
 
     private ConstraintsConverter cc;
 
+    /**
+     * Make a new converter.
+     */
     public InstanceConverter() {
         moc = new ModelConverter();
         cc = ConstraintsConverter.newBundle();
     }
+
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
         checkKeys(in, MODEL_LABEL, CONSTRAINTS_LABEL, OBJ_LABEL);

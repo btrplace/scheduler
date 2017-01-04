@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -81,6 +81,7 @@ public class ImportStatement extends BtrPlaceTree {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public BtrpOperand go(BtrPlaceTree parent) {
         String id = scriptId();
         List<Script> res;

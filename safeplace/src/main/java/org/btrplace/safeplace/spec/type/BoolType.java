@@ -23,7 +23,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 /**
  * @author Fabien Hermenier
  */
-public class BoolType extends Atomic implements Litteral {
+public class BoolType implements Litteral, Atomic {
 
 
     private static BoolType instance = new BoolType();

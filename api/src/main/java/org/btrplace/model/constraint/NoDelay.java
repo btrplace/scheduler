@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  * <p>
  * @author Vincent Kherbache
  */
+@SideConstraint(args = {"v : vms"}, inv = "!(a : actions(v)) begin(a) = 0")
 public class NoDelay implements SatConstraint {
 
     private VM vm;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,6 @@ package org.btrplace.safeplace.testing.fuzzer;
  */
 public enum Restriction {
 
-    discrete,
-    continuous,
+    DISCRETE,
+    CONTINUOUS,
 }

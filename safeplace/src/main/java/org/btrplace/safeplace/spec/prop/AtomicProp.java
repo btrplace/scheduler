@@ -25,7 +25,8 @@ import org.btrplace.safeplace.spec.term.Term;
  */
 public abstract class AtomicProp implements Proposition {
 
-    protected Term a, b;
+    protected Term a;
+    protected Term b;
 
     private String op;
 

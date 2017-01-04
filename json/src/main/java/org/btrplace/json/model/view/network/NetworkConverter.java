@@ -88,8 +88,6 @@ public class NetworkConverter implements ModelViewConverter<Network> {
         container.put("switches", switchesToJSON(net.getSwitches()));
         container.put("links", linksToJSON(net.getLinks()));
         container.put("routing", routingToJSON(net.getRouting()));
-        
-        // TODO: manage possible custom LinkBuilder and SwitchBuilder implementations.
 
         return container;
     }
@@ -146,8 +144,9 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      *
      * @param pe the physical element to convert
      * @return  the JSON object
+     * @throws IllegalArgumentException if the physical element is not supported
      */
-    public JSONObject physicalElementToJSON(PhysicalElement pe) throws IllegalArgumentException {
+    public JSONObject physicalElementToJSON(PhysicalElement pe) {
         JSONObject o = new JSONObject();
         if (pe instanceof Node) {
             o.put("type", NODE_LABEL);

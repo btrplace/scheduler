@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *  
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,70 +23,39 @@ import net.minidev.json.parser.ParseException;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.testing.TestCase;
-import org.btrplace.safeplace.testing.Tester;
-import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
-import org.btrplace.safeplace.testing.fuzzer.domain.Domain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
 /**
+ * An object to read previously saved {@link TestCase}.
+ * All the durations are set to 0.
+ *
  * @author Fabien Hermenier
  */
-public class Replay implements TestCaseFuzzer {
+public class Replay implements Fuzzer {
 
-
-    public BufferedReader in;
+    private final BufferedReader in;
 
     private List<Constraint> constraints;
 
-    public Replay(Path path) throws IOException {
+    private Set<Restriction> restriction = EnumSet.allOf(Restriction.class);
 
+    /**
+     * Replay from a given path.
+     *
+     * @param cstrs the constraint catalog
+     * @param path  the file containing the jsons.
+     * @throws IOException if an error occurred while reading the file
+     */
+    public Replay(List<Constraint> cstrs, Path path) throws IOException {
         in = Files.newReader(path.toFile(), Charset.defaultCharset());
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, int val) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, int min, int max) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, int[] vals) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, String val) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, String[] vals) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer with(String var, Domain d) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer validating(Constraint c, Tester t) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public TestCaseFuzzer restriction(Set<Restriction> domain) {
-        throw new UnsupportedOperationException("Not available in replay mode");
+        constraints = cstrs;
     }
 
     @Override
@@ -105,74 +74,23 @@ public class Replay implements TestCaseFuzzer {
     }
 
     @Override
-    public TestCaseFuzzer constraint(Constraint cstr) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public Constraint constraint() {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
     public TestCase get() {
         try {
-            in.readLine(); // "[" or "," or "]"
             String json = in.readLine();
             if (json == null) {
                 return null;
             }
             TestCase tc = TestCase.fromJSON(constraints, json);
+            if (restriction.size() == 1) {
+                if (restriction.contains(Restriction.CONTINUOUS) && !tc.impl().setContinuous(true)) {
+                    throw new IllegalArgumentException("Cannot be CONTINUOUS");
+                } else if (!tc.impl().setContinuous(false)) {
+                    throw new IllegalArgumentException("Cannot be DISCRETE");
+                }
+            }
             return tc;
         } catch (IOException | ParseException | JSONConverterException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
-
-    @Override
-    public ReconfigurationPlanFuzzer srcOffNodes(double ratio) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer dstOffNodes(double ratio) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer srcVMs(double ready, double running, double sleeping) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer dstVMs(double ready, double running, double sleeping) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer vms(int n) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer nodes(int n) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer durations(int min, int max) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public ReconfigurationPlanFuzzer with(FuzzerDecorator f) {
-        throw new UnsupportedOperationException("Not available in replay mode");
-    }
-
-    @Override
-    public Replay supportedConstraints(List<Constraint> cstrs) {
-        this.constraints = cstrs;
-        return this;
-    }
-
 }

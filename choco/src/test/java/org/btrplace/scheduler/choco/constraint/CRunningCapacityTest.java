@@ -117,7 +117,7 @@ public class CRunningCapacityTest {
         x.setContinuous(true);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
-        l.forEach(System.out::println);
+
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
@@ -253,7 +253,6 @@ public class CRunningCapacityTest {
         cra.setTimeLimit(3);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
-        System.out.println(plan);
         Assert.assertNotNull(plan);
         Iterator<Action> ite = plan.iterator();
         Assert.assertEquals(2, plan.getSize());
@@ -272,12 +271,8 @@ public class CRunningCapacityTest {
         ChocoScheduler s = new DefaultChocoScheduler();
 
         i = new Instance(i.getModel(), l, new MinMTTR());
-        System.out.println(i.getModel().getMapping());
-        System.out.println(i.getSatConstraints());
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
-        System.out.println(p.getResult().getMapping());
     }
 
     @Test

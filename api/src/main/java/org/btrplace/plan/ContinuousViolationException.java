@@ -28,7 +28,7 @@ import org.btrplace.plan.event.Action;
  */
 public class ContinuousViolationException extends SatConstraintViolationException {
 
-    private final Action action;
+    private final transient Action action;
 
     /**
      * New constraint.

@@ -25,7 +25,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.AliasedCumulatives;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
             for (IntVar dUseDim : dUsages.get(i)) {
                 dUses[i++] = dUseDim.getLB();
             }
-            r.getSolver().post(new AliasedCumulatives(alias,
+            r.getModel().post(new AliasedCumulatives(alias,
                     new int[]{capa},
                     cHosts, new int[][]{cUse}, cEnds,
                     dHosts, new int[][]{dUses}, dStarts,

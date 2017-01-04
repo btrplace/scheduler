@@ -27,11 +27,10 @@ import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.*;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -78,7 +77,6 @@ public class BootableNodeTest {
         na.getState().instantiateTo(1, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertEquals(na.getDuration().getValue(), 5);
         Assert.assertEquals(na.getStart().getValue(), 0);
         Assert.assertEquals(na.getEnd().getValue(), 5);
@@ -169,8 +167,8 @@ public class BootableNodeTest {
         BootableNode na2 = (BootableNode) rp.getNodeAction(n2);
         na1.getState().instantiateTo(1, Cause.Null);
         na2.getState().instantiateTo(1, Cause.Null);
-        Solver solver = rp.getSolver();
-        solver.post(IntConstraintFactory.arithm(na1.getEnd(), "=", na2.getEnd()));
+        rp.getModel().post(rp.getModel().arithm(na1.getEnd(), "=", na2.getEnd()));
+        new CMinMTTR().inject(ps, rp);
         Assert.assertNotNull(rp.solve(0, false));
     }
 
@@ -190,11 +188,10 @@ public class BootableNodeTest {
         BootableNode ma2 = (BootableNode) rp.getNodeAction(n2);
         ma2.getState().instantiateTo(1, Cause.Null);
         ma2.getStart().updateLowerBound(5, Cause.Null);
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);
-        System.out.println(p);
-        System.out.flush();
     }
 
     /**
@@ -222,9 +219,9 @@ public class BootableNodeTest {
         BootableNode bn4 = (BootableNode) rp.getNodeAction(n4);
         bn4.getState().instantiateTo(0, Cause.Null);
 
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertEquals(bn4.getStart().getValue(), 0);
         Assert.assertEquals(bn4.getDuration().getValue(), 0);
         Assert.assertEquals(bn4.getEnd().getValue(), 0);

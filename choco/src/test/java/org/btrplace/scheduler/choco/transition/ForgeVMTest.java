@@ -27,6 +27,7 @@ import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
@@ -103,6 +104,7 @@ public class ForgeVMTest {
         //Force the node to get offline
         ShutdownableNode n = (ShutdownableNode) rp.getNodeAction(n1);
         n.getState().instantiateTo(0, Cause.Null);
+        new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);

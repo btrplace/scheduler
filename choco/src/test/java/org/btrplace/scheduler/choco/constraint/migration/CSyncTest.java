@@ -30,6 +30,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -182,7 +183,8 @@ public class CSyncTest {
         cstrs.add(sync);
 
         // Solve it using the Min Max Time To Repair Migration scheduling oriented objective
-        ReconfigurationPlan p = new DefaultChocoScheduler().solve(mo, cstrs, new MinMTTRMig());
+        ChocoScheduler sched = new DefaultChocoScheduler();
+        ReconfigurationPlan p = sched.solve(mo, cstrs, new MinMTTRMig());
 
         // Unable to sync two migrations on the same path !
         Assert.assertNull(p);

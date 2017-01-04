@@ -125,7 +125,7 @@ public class AliasedCumulatives extends Constraint {
 
             this.nbDims = capas.length;
 
-            this.vIns = cHosters[0].getSolver().getEnvironment().makeIntVector(0, 0);
+            this.vIns = cHosters[0].getModel().getEnvironment().makeIntVector(0, 0);
 
 
             BitSet out = new BitSet(cHosters.length);
@@ -194,7 +194,7 @@ public class AliasedCumulatives extends Constraint {
         @Override
         public void propagate(int evtmask) throws ContradictionException {
             if (PropagatorEventType.isFullPropagation(evtmask)) {
-                this.toInstantiate = cHosters[0].getSolver().getEnvironment().makeInt(dHosters.length);
+                this.toInstantiate = cHosters[0].getModel().getEnvironment().makeInt(dHosters.length);
 
                 //Check whether some hosting variable are already instantiated
                 for (int i = 0; i < dHosters.length; i++) {
@@ -221,7 +221,7 @@ public class AliasedCumulatives extends Constraint {
                         }
                     }
                     if (isFull && !resource.propagate()) {
-                        contradiction(null, "");
+                        fails();
                     }
                     for (IntVar v : vars) {
                         size -= v.getDomainSize();

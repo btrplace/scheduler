@@ -25,7 +25,8 @@ import org.btrplace.safeplace.spec.type.Type;
  */
 public abstract class Minus<T> implements Term<T> {
 
-    protected Term<T> a, b;
+    protected Term<T> a;
+    protected Term<T> b;
 
     public Minus(Term<T> t1, Term<T> t2) {
         this.a = t1;

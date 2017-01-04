@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -58,7 +58,7 @@ public class CSchedule implements ChocoConstraint {
             am.getStart().instantiateTo(cstr.getStart(), Cause.Null);
             am.getEnd().instantiateTo(cstr.getEnd(), Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr + ": " + ex.getMessage());
+            rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr, ex);
             return false;
         }
         return true;

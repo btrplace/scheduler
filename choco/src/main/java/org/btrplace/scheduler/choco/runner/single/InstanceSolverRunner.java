@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -32,18 +32,19 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
+import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.ChocoViews;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.SearchState;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
-import org.chocosolver.solver.search.measure.IMeasures;
+import org.chocosolver.solver.search.measure.Measures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
-import org.chocosolver.solver.search.solution.Solution;
-import org.chocosolver.solver.trace.Chatterbox;
+import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -92,6 +93,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166") //for the LifeCycleViolationException
     public SolvingStatistics call() throws SchedulerException {
         stats = new SingleRunnerStatistics(params, instance, System.currentTimeMillis());
         rp = null;
@@ -104,7 +106,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             //If there is a violation of the cycle it is not a bug that should be propagated
             //it it just indicating there is no solution
             stats.completed();
-            stats.setMeasures(new MeasuresRecorder(new Solver()));
+            stats.setMetrics(new Metrics());
             return stats;
         } finally {
             d += System.currentTimeMillis();
@@ -122,19 +124,24 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         stats.setSpecialisationDuration(d);
 
         //statistics
-        stats.setMeasures(rp.getSolver().getMeasures().duplicate());
+        stats.setMetrics(new Metrics(rp.getSolver().getMeasures()));
         rp.getLogger().debug(stats.toString());
 
         //The solution monitor to store the measures at each solution
         rp.getSolver().plugMonitor((IMonitorSolution) () -> {
-            Solution solution = new Solution();
-            solution.record(rp.getSolver());
+            Solution solution = new Solution(rp.getModel());
+            solution.record();
 
             ReconfigurationPlan plan = rp.buildReconfigurationPlan(solution, origin);
             views.forEach(v -> v.insertActions(rp, solution, plan));
 
-            IMeasures m = rp.getSolver().getMeasures().duplicate();
-            stats.addSolution(new SolutionStatistics(m, plan));
+            MeasuresRecorder m = rp.getSolver().getMeasures();
+            SolutionStatistics st = new SolutionStatistics(new Metrics(m), plan);
+            IntVar o = rp.getObjective();
+            if (o != null) {
+                st.setObjective(solution.getIntVal(o));
+            }
+            stats.addSolution(st);
         });
 
         setVerbosity();
@@ -147,17 +154,17 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
     private void setVerbosity() {
         if (params.getVerbosity() >=1) {
-            Chatterbox.showSolutions(rp.getSolver());
+            rp.getSolver().showSolutions();
         }
         if (params.getVerbosity() >= 2) {
             //every second
-            Chatterbox.showStatisticsDuringResolution(rp.getSolver(), 1000);
+            rp.getSolver().showStatisticsDuringResolution(1000);
         }
         if (params.getVerbosity() >= 3) {
-            Chatterbox.showDecisions(rp.getSolver());
+            rp.getSolver().showDecisions();
         }
         if (params.getVerbosity() >= 4) {
-            Chatterbox.showContradiction(rp.getSolver());
+            rp.getSolver().showContradiction();
         }
     }
 
@@ -167,12 +174,12 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
         views.forEach(rp::addView);
         //Inject the sat constraints, 2nd pass on the view. Then the objective for a late optimisation
-        Optional<ChocoConstraint> obj = cConstraints.stream().filter(c -> c instanceof CObjective).findFirst();
+        Optional<ChocoConstraint> o = cConstraints.stream().filter(c -> c instanceof CObjective).findFirst();
         return views.stream().allMatch(v -> v.inject(params, rp)) &&
                 cConstraints.stream().filter(c -> !(c instanceof CObjective))
                         .allMatch(c -> c.inject(params, rp)) &&
                 views.stream().allMatch(v -> v.beforeSolve(rp)) &&
-                (!obj.isPresent() || obj.isPresent() && obj.get().inject(params, rp));
+                (!o.isPresent() || o.isPresent() && o.get().inject(params, rp));
     }
 
     private ReconfigurationProblem buildRP() throws SchedulerException {
@@ -293,9 +300,9 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
      */
     public SingleRunnerStatistics getStatistics() {
         if (rp != null) {
-            IMeasures m = rp.getSolver().getMeasures().duplicate();
-            stats.setMeasures(m);
-            stats.setCompleted(!rp.getSolver().hasReachedLimit());
+            Measures m = rp.getSolver().getMeasures();
+            stats.setMetrics(new Metrics(m));
+            stats.setCompleted(m.getSearchState().equals(SearchState.TERMINATED));
         }
         return stats;
     }

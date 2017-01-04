@@ -68,7 +68,7 @@ public class CDeadline implements ChocoConstraint {
         // Get the deadline from timestamp
         int deadline;
         SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        Date parsedDate = null;
+        Date parsedDate;
 
         // Relative timestamp
         if (timestamp.startsWith("+")) {
@@ -107,7 +107,7 @@ public class CDeadline implements ChocoConstraint {
         for (VM vm : dl.getInvolvedVMs()) {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
-                rp.getSolver().post(new Arithmetic(vt.getEnd(), Operator.LE, deadline));
+                rp.getModel().post(new Arithmetic(vt.getEnd(), Operator.LE, deadline));
             }
         }
 

@@ -23,7 +23,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
+import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.iterators.DisposableValueIterator;
 

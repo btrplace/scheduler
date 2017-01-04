@@ -35,10 +35,11 @@ public class HostingVariableSelector extends FirstFail {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
+     * @param s the csp to solve
      * @param sched the scheduling heuristic to notify when the placement is invalidated
      */
-    public HostingVariableSelector(OnStableNodeFirst sched) {
-        super();
+    public HostingVariableSelector(org.chocosolver.solver.Model s, OnStableNodeFirst sched) {
+        super(s);
         this.schedHeuristic = sched;
     }
 

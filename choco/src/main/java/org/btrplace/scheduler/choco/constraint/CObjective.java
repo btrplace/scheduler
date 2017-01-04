@@ -30,5 +30,6 @@ public interface CObjective extends ChocoConstraint {
      * This method is decoupled from {@link ChocoConstraint#inject(org.btrplace.scheduler.choco.Parameters, org.btrplace.scheduler.choco.ReconfigurationProblem)}
      * to allow to postpone the constraint posting to the last moment.
      */
-    void postCostConstraints();
+    default void postCostConstraints() {
+    }
 }

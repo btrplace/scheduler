@@ -36,6 +36,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class Decommissionning implements Example {
 
     @Override

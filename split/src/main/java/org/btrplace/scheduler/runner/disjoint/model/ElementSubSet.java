@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -65,6 +65,7 @@ public class ElementSubSet<E extends Element> implements Set<E> {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166") //ClassClassException
     public boolean contains(Object o) {
         try {
             Element x = (Element) o;
