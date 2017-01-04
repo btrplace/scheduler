@@ -44,11 +44,13 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
     private double srcOffNodes;
     private double dstOffNodes;
 
-    private double srcReadyVMs;
-    private double srcRunningVMs;
+    private int srcReadyVMs;
+    private int srcRunningVMs;
+    private int srcSleepingVMs;
 
-    private double dstReadyVMs;
-    private double dstRunningVMs;
+    private int dstReadyVMs;
+    private int dstRunningVMs;
+    private int dstSleepingVMs;
 
     private List<FuzzerDecorator> exts;
 
@@ -67,12 +69,14 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
         dstOffNodes = 0.1;
 
         //VM initial state ratio
-        srcReadyVMs = 0.2;
-        srcRunningVMs = 0.75;
+        srcReadyVMs = 20;
+        srcRunningVMs = 75;
+        srcSleepingVMs = 5;
 
         //VM destination states
-        dstReadyVMs = 0.1;
-        dstRunningVMs = 0.1;
+        dstReadyVMs = 20;
+        dstRunningVMs = 75;
+        dstRunningVMs = 5;
 
         exts = new ArrayList<>();
     }
@@ -90,22 +94,18 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
     }
 
 
-    public ReconfigurationPlanFuzzer srcVMs(double ready, double running, double sleeping) {
-        if (ready + running + sleeping != 1) {
-            throw new IllegalArgumentException("The sum of the ratios should equals 1");
-        }
+    public ReconfigurationPlanFuzzer srcVMs(int ready, int running, int sleeping) {
         srcReadyVMs = ready;
         srcRunningVMs = running;
+        srcSleepingVMs = sleeping;
         return this;
     }
 
 
-    public ReconfigurationPlanFuzzer dstVMs(double ready, double running, double sleeping) {
-        if (ready + running + sleeping != 1) {
-            throw new IllegalArgumentException("The sum of the ratios should equals 1");
-        }
+    public ReconfigurationPlanFuzzer dstVMs(int ready, int running, int sleeping) {
         dstReadyVMs = ready;
         dstRunningVMs = running;
+        dstSleepingVMs = sleeping;
         return this;
     }
 
@@ -184,7 +184,7 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
         Mapping map = p.getOrigin().getMapping();
         Node host = map.getVMLocation(v);
 
-        double n = rnd.nextDouble();
+        int n = rnd.nextInt(dstReadyVMs + dstRunningVMs + dstSleepingVMs);
         int[] bounds = schedule();
         int duration = bounds[1] - bounds[0];
         if (n < dstReadyVMs) {
@@ -200,7 +200,7 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
                 //was running -> migrate
                 if (map.isRunning(v)) {
                     Node dst = pick(map.getAllNodes());
-                    if (!dst.equals(host)) {
+                    if (!host.equals(dst)) {
                         p.add(new MigrateVM(v, host, dst, bounds[0], bounds[1]));
                         p.getOrigin().getAttributes().put(v, "migrate", duration);
                     }
@@ -226,7 +226,8 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
             map.addReadyVM(v);
             return;
         }
-        double n = rnd.nextDouble();
+        //CDF to consider the distribution
+        int n = rnd.nextInt(srcReadyVMs + srcRunningVMs + srcSleepingVMs);
         if (n < srcReadyVMs) {
             map.addReadyVM(v);
         } else if (n < srcReadyVMs + srcRunningVMs) {

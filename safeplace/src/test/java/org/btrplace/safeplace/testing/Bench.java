@@ -67,7 +67,7 @@ public class Bench {
         ConfigurableFuzzer f = tc.check(cstr).restriction(EnumSet.allOf(Restriction.class));
         f.restriction(restrictions);
         if (transitions) {
-            f.vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
+            f.vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(30, 70, 0).dstVMs(30, 70, 0);
         } else {
             f.vms(scale).nodes(scale).srcOffNodes(0).dstOffNodes(0).srcVMs(0, 1, 0).dstVMs(0, 1, 0);
         }

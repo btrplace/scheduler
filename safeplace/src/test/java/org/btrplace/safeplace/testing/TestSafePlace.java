@@ -41,28 +41,28 @@ public class TestSafePlace {
                 .vms(1)
                 .nodes(1)
                 .srcOffNodes(0.1)
-                .srcVMs(0.1, 0.9, 0);
+                .srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure); 
     }
 
     @CstrTest(groups = {"core"})
     public void testToRunning(TestCampaign c) {
-        c.check("toRunning").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("toRunning").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest(groups = {"core"})
     public void testToSleeping(TestCampaign c) {
-        c.check("toSleeping").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("toSleeping").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest(groups = {"core"})
     public void testToReady(TestCampaign c) {
-        c.check("toReady").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("toReady").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
@@ -70,98 +70,98 @@ public class TestSafePlace {
 
     @CstrTest()
     public void testSpread(TestCampaign c) {
-        c.check("spread").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("spread").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testLonely(TestCampaign c) {
-        c.check("lonely").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("lonely").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testGather(TestCampaign c) {
-        c.check("gather").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("gather").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest
     public void testBan(TestCampaign c) {
-        c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testFence(TestCampaign c) {
-        c.check("fence").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("fence").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testAmong(TestCampaign c) {
-        c.check("among").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("among").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testRoot(TestCampaign c) {
-        c.check("root").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("root").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testSplit(TestCampaign c) {
-        c.check("split").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("split").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testQuarantine(TestCampaign c) {
-        c.check("quarantine").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("quarantine").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testMaxOnline(TestCampaign c) {
-        c.check("maxOnline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("maxOnline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testRunningCapacity(TestCampaign c) {
-        c.check("runningCapacity").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("runningCapacity").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testRunning(TestCampaign c) {
-        c.check("running").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("running").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testSleeping(TestCampaign c) {
-        c.check("sleeping").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("sleeping").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testReady(TestCampaign c) {
-        c.check("ready").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("ready").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
 
@@ -169,14 +169,14 @@ public class TestSafePlace {
 
     @CstrTest()
     public void testOnline(TestCampaign c) {
-        c.check("ONLINE").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("ONLINE").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
     @CstrTest()
     public void testOffline(TestCampaign c) {
-        c.check("offline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+        c.check("offline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
@@ -187,7 +187,7 @@ public class TestSafePlace {
         c.check("shareableResource")
                 .with("id", "cpu")
                 .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
-                .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+                .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }
@@ -199,7 +199,7 @@ public class TestSafePlace {
                 .with("id", "cpu")
                 .with("qty", 1, 50)
                 .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
-                .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(0.1, 0.9, 0);
+                .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
         //c.onDefect(DefectHooks.testNgFailure);
     }

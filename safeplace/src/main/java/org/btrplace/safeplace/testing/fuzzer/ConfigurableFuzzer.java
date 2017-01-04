@@ -137,25 +137,27 @@ public interface ConfigurableFuzzer extends Fuzzer {
 
     /**
      * Set the distribution of VM initial state.
-     * The sum of the ratio must be equals to 1
+     * The individual weight compared to their sum indicates the probability.
+     * For example, if the cumulative weight is 100, then each weight denotes a percentage
      *
-     * @param ready    the ratio of VMs initially ready. <= 1.0
-     * @param running  the ratio of VMs initially running. <= 1.0
-     * @param sleeping the ratio of VMs initially sleeping. <= 1.0
+     * @param ready    the weight of VMs initially ready.
+     * @param running  the weight of VMs initially running.
+     * @param sleeping the weight of VMs initially sleeping.
      * @return {@code this}
      */
-    ConfigurableFuzzer srcVMs(double ready, double running, double sleeping);
+    ConfigurableFuzzer srcVMs(int ready, int running, int sleeping);
 
     /**
      * Set the distribution of VM final state.
-     * The sum of the ratio must be equals to 1
+     * The individual weight compared to their sum indicates the probability.
+     * For example, if the cumulative weight is 100, then each weight denotes a percentage
      *
-     * @param ready    the ratio of VMs initially ready. <= 1.0
-     * @param running  the ratio of VMs initially running. <= 1.0
-     * @param sleeping the ratio of VMs initially sleeping. <= 1.0
+     * @param ready    the weight of VMs eventually ready.
+     * @param running  the weight of VMs eventually running.
+     * @param sleeping the weight of VMs eventually sleeping.
      * @return {@code this}
      */
-    ConfigurableFuzzer dstVMs(double ready, double running, double sleeping);
+    ConfigurableFuzzer dstVMs(int ready, int running, int sleeping);
 
     /**
      * Set the number of VMs inside the plan.

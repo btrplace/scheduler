@@ -293,13 +293,13 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
     }
 
     @Override
-    public ConfigurableFuzzer srcVMs(double ready, double running, double sleeping) {
+    public ConfigurableFuzzer srcVMs(int ready, int running, int sleeping) {
         fuzzer.srcVMs(ready, running, sleeping);
         return this;
     }
 
     @Override
-    public ConfigurableFuzzer dstVMs(double ready, double running, double sleeping) {
+    public ConfigurableFuzzer dstVMs(int ready, int running, int sleeping) {
         fuzzer.dstVMs(ready, running, sleeping);
         return this;
     }
