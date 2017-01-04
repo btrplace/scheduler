@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -34,16 +34,15 @@ import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.ICF;
-import org.chocosolver.solver.search.loop.SLF;
-import org.chocosolver.solver.search.strategy.ISF;
-import org.chocosolver.solver.search.strategy.selectors.IntValueSelector;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,8 +86,8 @@ public class CMinMigrations implements CObjective {
                 stays.add(((RelocatableVM) t).isStaying());
             }
         }
-        IntVar s = VF.bounded("migs", 0, stays.size(), rp.getSolver());
-        rp.getSolver().post(ICF.sum(stays.toArray(new IntVar[stays.size()]), s));
+        IntVar s = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, stays.size(), true);
+        rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[stays.size()]), "=", s));
         rp.setObjective(false, s);
         return s;
     }
@@ -147,7 +146,11 @@ public class CMinMigrations implements CObjective {
                 migs.add(((RelocatableVM) t).getRelocationMethod());
             }
         }
-        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.max_value_selector(), migs.toArray(new IntVar[migs.size()])));
+        strategies.add(
+                Search.intVarSearch(
+                        new FirstFail(rp.getModel()), new IntDomainMax(), migs.toArray(new IntVar[migs.size()]))
+        );
+
 
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
@@ -157,16 +160,17 @@ public class CMinMigrations implements CObjective {
 
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
-        IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).toArray(IntVar[]::new);
+        IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
         strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
-        IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).toArray(IntVar[]::new);
-        strategies.add(ISF.custom(new MyInputOrder<>(s), ISF.min_value_selector(), ends));
+        IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
+        strategies.add(Search.intVarSearch(new MyInputOrder<>(s), new IntDomainMin(), ends));
+
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
-        SLF.restartOnSolutions(rp.getSolver());
-        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
+
+        s.setSearch(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
     }
 
     /*
@@ -175,9 +179,9 @@ public class CMinMigrations implements CObjective {
     private void placeVMs(Parameters ps, List<AbstractStrategy<?>> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
         IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
         if (!actions.isEmpty()) {
-            IntVar[] hosts = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
+            IntVar[] hosts = dSlices(actions).map(Slice::getHoster).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
             if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(schedHeuristic), rnd));
+                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(rp.getModel(), schedHeuristic), rnd));
             }
         }
     }
@@ -193,6 +197,6 @@ public class CMinMigrations implements CObjective {
 
     @Override
     public String toString() {
-        return "minimizeMTTR()";
+        return "minMigrations()";
     }
 }
