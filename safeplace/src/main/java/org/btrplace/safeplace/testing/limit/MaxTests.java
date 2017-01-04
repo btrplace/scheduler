@@ -18,24 +18,31 @@
 
 package org.btrplace.safeplace.testing.limit;
 
-import org.btrplace.safeplace.testing.TestCaseResult;
+import org.btrplace.safeplace.testing.Result;
 
 import java.util.function.Predicate;
 
 /**
+ * A predicate to limit the number of tests.
  * @author Fabien Hermenier
  */
-public class MaxTests implements Predicate<TestCaseResult> {
+public class MaxTests implements Predicate<Result> {
 
     private int max;
+
+    /**
+     * New threshold.
+     *
+     * @param max the maximum number of tests
+     */
     public MaxTests(int max) {
         this.max = max;
     }
 
     @Override
-    public boolean test(TestCaseResult tc) {
+    public boolean test(Result tc) {
         max--;
-        return max != 0;
+        return max > 0;
     }
 
     @Override

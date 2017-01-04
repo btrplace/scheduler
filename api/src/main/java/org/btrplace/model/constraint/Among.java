@@ -65,6 +65,7 @@ public class Among extends SimpleConstraint {
      * @param parts      disjoint set of nodes
      * @param continuous {@code true} for a continuous restriction
      */
+    @SuppressWarnings("squid:S3346")
     public Among(Collection<VM> vms, Collection<Collection<Node>> parts, boolean continuous) {
         super(continuous);
         assert checkDisjoint(parts) : "The constraint expects disjoint sets of nodes";

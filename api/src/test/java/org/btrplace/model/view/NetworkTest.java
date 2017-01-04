@@ -29,6 +29,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Unit tests for {@link org.btrplace.model.view.network.Network}.
@@ -80,7 +81,7 @@ public class NetworkTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         net.connect(2000, s, n1, n2);
-        LinkedHashMap<Link, Boolean> route = new LinkedHashMap<>();
+        Map<Link, Boolean> route = new LinkedHashMap<>();
         route.put(net.getConnectedLinks(n1).get(0), true);
         route.put(net.getConnectedLinks(n2).get(0), false);
         ((StaticRouting) net.getRouting()).setStaticRoute(new StaticRouting.NodesMap(n1, n2), route);

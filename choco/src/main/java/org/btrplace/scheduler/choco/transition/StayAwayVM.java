@@ -24,10 +24,9 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -56,7 +55,7 @@ public class StayAwayVM implements VMTransition {
         vm = e;
         this.from = from;
         this.to = to;
-        zero = VariableFactory.zero(rp.getSolver());
+        zero = rp.getModel().boolVar(false);
     }
 
     @Override

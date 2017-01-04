@@ -75,6 +75,7 @@ public class ForAll implements Proposition {
         return true;
     }
 
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder("!(");
         Iterator<UserVar> ite = vars.iterator();

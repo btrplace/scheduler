@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,165 +19,221 @@
 package org.btrplace.safeplace.testing.verification.spec;
 
 import org.btrplace.model.Node;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.*;
+import org.btrplace.safeplace.spec.prop.Proposition;
 import org.btrplace.safeplace.spec.type.NodeStateType;
 import org.btrplace.safeplace.spec.type.VMStateType;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
+ * Simulate a reconfiguration by executing its action over a context.
+ * Action are executed wrt. their timestamp.
+ *
+ * So at time {@code t}, the simulator first commits all the actions that end at {@code t},
+ * then it starts all the actions beginning at {@code t}.
  * @author Fabien Hermenier
  */
-public class ReconfigurationSimulator {
+public class ReconfigurationSimulator implements ActionVisitor {
 
-    private Context mo;
+    private Context co;
 
-    public ReconfigurationSimulator(Context mo) {
-        this.mo = mo;
+    private ReconfigurationPlan p;
+
+    private Map<Integer, List<Action>> starts;
+    private Map<Integer, List<Action>> ends;
+
+    private List<Integer> timeStamps;
+
+    private boolean start = false;
+
+    /**
+     * Make a new simulator.
+     *
+     * @param origin the original context
+     * @param p      the plan to apply.
+     */
+    public ReconfigurationSimulator(Context origin, ReconfigurationPlan p) {
+        co = origin;
+        starts = new HashMap<>();
+        ends = new HashMap<>();
+        timeStamps = new ArrayList<>();
+        this.p = p;
     }
 
-    public Context currentModel() {
-        return mo;
+    /**
+     * Evaluate the proposition over a reconfiguration, at any timestamp.
+     * @param prop the proposition to evaluate
+     * @return the moment the proposition is not valid. {@code -1} if the proposition is correct
+     */
+    public int start(Proposition prop) {
+        //sort actions by timestamp
+        Set<Integer> s = new TreeSet<>(Comparator.comparingInt(a -> a));
+        for (Action a : p.getActions()) {
+            s.add(a.getStart());
+            s.add(a.getEnd());
+            if (!starts.containsKey(a.getStart())) {
+                starts.put(a.getStart(), new ArrayList<>());
+            }
+            if (!ends.containsKey(a.getEnd())) {
+                ends.put(a.getEnd(), new ArrayList<>());
+            }
+
+            starts.get(a.getStart()).add(a);
+            ends.get(a.getEnd()).add(a);
+        }
+        timeStamps = s.stream().collect(Collectors.toList());
+
+        for (Integer i : timeStamps) {
+            List<Action> st = starts.get(i);
+            if (st == null) {
+                st = new ArrayList<>();
+            }
+            List<Action> ed = ends.get(i);
+            if (ed == null) {
+                ed = new ArrayList<>();
+            }
+
+            at(st, ed);
+            Boolean res = prop.eval(co);
+            if (!Boolean.TRUE.equals(res)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
-    public void startsWith(Context mo) {
-        this.mo = mo;
-    }
+    private void at(List<Action> starts, List<Action> ends) {
+        //Apply all the actions simultaneously, starting by the ending
 
+        start = false;
+        for (Action a : ends) {
+            a.visit(this);
+        }
 
-    public void start(MigrateVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.migrating);
-        mo.getMapping().host(a.getVM(), a.getDestinationNode());
-        //Hosted also on distinct node (but running on the old one)
-    }
-
-
-    public void end(MigrateVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.running);
-        mo.getMapping().activateOn(a.getVM(), a.getDestinationNode());
-        //No longer hosted on the source node
-        //running on the new one.
-        mo.getMapping().unhost(a.getSourceNode(), a.getVM());
-    }
-
-
-    public void start(BootVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.booting);
-        mo.getMapping().host(a.getVM(), a.getDestinationNode());
-    }
-
-
-    public void end(BootVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.running);
-    }
-
-
-    public void start(BootNode a) {
-        mo.getMapping().state(a.getNode(), NodeStateType.Type.booting);
-    }
-
-
-    public void end(BootNode a) {
-        mo.getMapping().state(a.getNode(), NodeStateType.Type.online);
-    }
-
-
-    public void start(ShutdownVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.halting);
-    }
-
-
-    public void end(ShutdownVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.ready);
-        mo.getMapping().unhost(a.getNode(), a.getVM());
-        mo.getMapping().desactivate(a.getVM());
-    }
-
-
-    public void start(ShutdownNode a) {
-        mo.getMapping().state(a.getNode(), NodeStateType.Type.halting);
-    }
-
-
-    public void end(ShutdownNode a) {
-        mo.getMapping().state(a.getNode(), NodeStateType.Type.offline);
-    }
-
-
-    public void start(ResumeVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.resuming);
-        mo.getMapping().host(a.getVM(), a.getDestinationNode());
-    }
-
-
-    public void end(ResumeVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.running);
-    }
-
-
-    public void start(SuspendVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.suspending);
-    }
-
-
-    public void end(SuspendVM a) {
-        mo.getMapping().state(a.getVM(), VMStateType.Type.sleeping);
-    }
-
-
-    public boolean start(KillVM a) {
-        //TODO: terminating ?
-        mo.getMapping().state(a.getVM(), VMStateType.Type.terminated);
-        return true;
-    }
-
-
-    public void end(KillVM a) {
-        Node n = a.getNode();
-        if (n != null) {
-            mo.getMapping().unhost(n, a.getVM());
-            mo.getMapping().desactivate(a.getVM());
-            mo.getMapping().state(a.getVM(), VMStateType.Type.terminated);
+        start = true;
+        for (Action a : starts) {
+            a.visit(this);
         }
     }
 
 
-    public boolean start(ForgeVM a) {
-        throw new UnsupportedOperationException("Unsupported action " + a);
-    }
-
-
-    public void end(ForgeVM a) {
-        throw new UnsupportedOperationException("Unsupported action " + a);
-    }
-
-
-    public boolean consume(SubstitutedVMEvent e) {
-        throw new UnsupportedOperationException("Unsupported action " + e);
-    }
-
-
-    public boolean consume(AllocateEvent e) {
-        return true;
-    }
-
-
-    public boolean start(Allocate a) {
-        return true;
-    }
-
-
-    public void end(Allocate e) {
-
-    }
-
-
-    public boolean endsWith(Context mo) {
-        return true;
-    }
-
-
-    public SatConstraint getConstraint() {
+    //The visitors
+    @Override
+    public Object visit(Allocate a) {
         return null;
-        //throw new UnsupportedOperationException("No constraint");
+    }
+
+    @Override
+    public Object visit(AllocateEvent a) {
+        return null;
+    }
+
+    @Override
+    public Object visit(SubstitutedVMEvent a) {
+        return null;
+    }
+
+    @Override
+    public Object visit(BootNode a) {
+        if (start) {
+            co.getMapping().state(a.getNode(), NodeStateType.Type.BOOTING);
+            return null;
+        }
+        co.getMapping().state(a.getNode(), NodeStateType.Type.ONLINE);
+        return null;
+    }
+
+    @Override
+    public Object visit(BootVM a) {
+        if (start) {
+            co.getMapping().state(a.getVM(), VMStateType.Type.BOOTING);
+            co.getMapping().host(a.getVM(), a.getDestinationNode());
+            return null;
+        }
+        co.getMapping().state(a.getVM(), VMStateType.Type.RUNNING);
+        return null;
+    }
+
+    @Override
+    public Object visit(ForgeVM a) {
+        return null;
+    }
+
+    @Override
+    public Object visit(KillVM a) {
+        if (start) {
+            co.getMapping().state(a.getVM(), VMStateType.Type.TERMINATED);
+            return null;
+        }
+
+        Node n = a.getNode();
+        if (n != null) {
+            co.getMapping().unhost(n, a.getVM());
+            co.getMapping().desactivate(a.getVM());
+            co.getMapping().state(a.getVM(), VMStateType.Type.TERMINATED);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object visit(MigrateVM a) {
+        if (start) {
+            co.getMapping().state(a.getVM(), VMStateType.Type.MIGRATING);
+            co.getMapping().host(a.getVM(), a.getDestinationNode());
+            return null;
+        }
+        co.getMapping().state(a.getVM(), VMStateType.Type.RUNNING);
+        co.getMapping().activateOn(a.getVM(), a.getDestinationNode());
+        //No longer hosted on the source node
+        //running on the new one.
+        co.getMapping().unhost(a.getSourceNode(), a.getVM());
+        return null;
+    }
+
+    @Override
+    public Object visit(ResumeVM a) {
+        if (start) {
+            co.getMapping().state(a.getVM(), VMStateType.Type.RESUMING);
+            co.getMapping().host(a.getVM(), a.getDestinationNode());
+            return null;
+        }
+        co.getMapping().state(a.getVM(), VMStateType.Type.RUNNING);
+        return null;
+    }
+
+    @Override
+    public Object visit(ShutdownNode a) {
+        if (start) {
+            co.getMapping().state(a.getNode(), NodeStateType.Type.HALTING);
+            return null;
+        }
+        co.getMapping().state(a.getNode(), NodeStateType.Type.OFFLINE);
+        return null;
+    }
+
+    @Override
+    public Object visit(ShutdownVM a) {
+        if (start) {
+            co.getMapping().state(a.getVM(), VMStateType.Type.HALTING);
+            return null;
+        }
+        co.getMapping().state(a.getVM(), VMStateType.Type.READY);
+        co.getMapping().unhost(a.getNode(), a.getVM());
+        co.getMapping().desactivate(a.getVM());
+        return null;
+    }
+
+    @Override
+    public Object visit(SuspendVM a) {
+        if (start) {
+            co.getMapping().state(a.getVM(), VMStateType.Type.SUSPENDING);
+            return null;
+        }
+        co.getMapping().state(a.getVM(), VMStateType.Type.SLEEPING);
+        return null;
     }
 }

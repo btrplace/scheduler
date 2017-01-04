@@ -92,7 +92,7 @@ public class UCC15 {
     public double duration(SolvingStatistics s) {
         SolutionStatistics x = s.getSolutions().get(0);
         System.out.println(s);
-        return x.getMeasures().getTimeCount() * 1000 + s.getCoreBuildDuration() + s.getSpecializationDuration();
+        return x.getMetrics().timeCount() * 1000 + s.getCoreBuildDuration() + s.getSpecializationDuration();
     }
 
     public SolvingStatistics decommissioning_10gb() throws SchedulerException {

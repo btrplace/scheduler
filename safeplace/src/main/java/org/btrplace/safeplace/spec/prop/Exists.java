@@ -75,6 +75,7 @@ public class Exists implements Proposition {
         return false;
     }
 
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder("?(");
         Iterator<UserVar> ite = vars.iterator();

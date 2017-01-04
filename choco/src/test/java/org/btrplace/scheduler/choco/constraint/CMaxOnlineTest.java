@@ -114,7 +114,6 @@ public class CMaxOnlineTest {
         cra.getMapper().mapConstraint(MaxOnline.class, CMaxOnline.class);
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
-        System.out.println(plan.toString());
         Assert.assertTrue(maxOnline.isSatisfied(plan));
     }
 
@@ -185,6 +184,5 @@ public class CMaxOnlineTest {
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxOn.isSatisfied(plan));
-        System.out.println(plan);
     }
 }

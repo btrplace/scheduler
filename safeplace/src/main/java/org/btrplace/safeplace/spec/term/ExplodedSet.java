@@ -35,8 +35,6 @@ public class ExplodedSet implements Term<Set> {
 
     private Type t;
 
-    private Set cache;
-
     public ExplodedSet(List<Term> ts, Type enclType) {
         this.terms = ts;
         t = new SetType(enclType);
@@ -44,10 +42,7 @@ public class ExplodedSet implements Term<Set> {
 
     @Override
     public Set eval(Context mo, Object... args) {
-        if (cache == null) {
-            cache = terms.stream().map(t -> t.eval(mo)).collect(Collectors.toSet());
-        }
-        return cache;
+        return terms.stream().map(x -> x.eval(mo)).collect(Collectors.toSet());
     }
 
     @Override

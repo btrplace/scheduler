@@ -68,12 +68,11 @@ public class CMinMTTRTest {
         mo.attach(cpu);
         mo.attach(mem);
         DefaultChocoScheduler sched = new DefaultChocoScheduler();
-        //sched.setVerbosity(2);
         ReconfigurationPlan p = sched.solve(mo, l);
         Assert.assertNotNull(p);
         System.err.println(sched.getStatistics());
         //TODO: fragile. Usefull ?
-        Assert.assertTrue(sched.getStatistics().getMeasures().getBackTrackCount() < 100);
+        Assert.assertTrue(sched.getStatistics().getMetrics().backtracks() < 100);
         System.err.flush();
     }
 }

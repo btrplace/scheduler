@@ -49,6 +49,7 @@ public class Host implements Function<Node> {
         return mo.getMapping().host(vm);
     }
 
+    @Override
     public Type[] signature() {
         return new Type[]{VMType.getInstance()};
     }

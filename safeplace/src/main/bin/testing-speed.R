@@ -12,16 +12,13 @@ dta_speed <- dta[, c("vms","fuzzing","validation","testing")];
 dta_speed <- aggregate(dta_speed,by=list(dta$vms),FUN=mean, na.rm=TRUE)
 dta_speed$Group.1 <- NULL
 dta_speed <- melt(dta_speed,id="vms")
-p <- ggplot(dta_speed,aes(x = dta_speed$vms,y = dta_speed$value, group=dta_speed$variable, fill=dta_speed$variable))
-p <- p + geom_area() + scale_fill_brewer(name="phase") + guides(fill = guide_legend(reverse=TRUE))
-p <- p + xlab("scaling") + ylab("duration in msec.") + theme_bw() + theme(legend.position = c(0.1, 0.75))
-ggsave(paste(args[2],"-speed.pdf",sep=""),p, width=8, height=4)
 
-dta_iter <- dta[,c("vms","iterations")]
-dta_iter <- aggregate(dta_iter,by=list(dta$vms),FUN=mean, na.rm=TRUE)
-dta_iter$Group.1 <- NULL
-dta_iter <- melt(dta_iter,id="vms")
-p <- ggplot(dta_iter,aes(x = dta_iter$vms,y = dta_iter$value))
-p <- p + geom_line()
-p <- p + xlab("scaling") + ylab("fuzzing iterations") + theme_bw()
-ggsave(paste(args[2],"-iterations.pdf",sep=""),p, width=8, height=4)
+big = element_text(size = 19, family="Times")
+med = element_text(size = 16, family="Times")
+
+p <- ggplot(dta_speed,aes(x = dta_speed$vms,y = dta_speed$value, group=dta_speed$variable, fill=dta_speed$variable))
+p <- p + geom_area() + scale_fill_brewer(name="stage") + guides(fill = guide_legend(reverse=TRUE))
+p <- p + xlab("scaling") + ylab("duration (msec.)") + theme_bw() + theme(legend.position = c(0.2, 0.75)) + ylim(0, 40)
+p <- p + theme(axis.text = med, axis.title = big, axis.title = big, legend.title=big, legend.text=med)
+
+ggsave(paste(args[2],"-speed.pdf",sep=""),p, width=4, height=4)

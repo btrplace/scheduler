@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,8 +28,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -68,26 +66,34 @@ public class CGather implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         List<Slice> dSlices = getDSlices(rp);
-        if (cstr.isContinuous()) {
-            //Check for the already running VMs
-            Mapping map = rp.getSourceModel().getMapping();
-            Node loc = null;
-            for (VM vm : cstr.getInvolvedVMs()) {
-                if (map.isRunning(vm)) {
-                    Node node = map.getVMLocation(vm);
-                    if (loc == null) {
-                        loc = node;
-                    } else if (!loc.equals(node)) {
-                        rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
-                        return false;
-                    }
-                }
-            }
-            if (loc != null) {
-                return placeDSlices(rp, dSlices, rp.getNode(loc));
-            }
+        if (cstr.isContinuous() && !continuousColocation(rp, dSlices)) {
+                return false;
         }
         return forceDiscreteCollocation(rp, dSlices);
+    }
+
+    /*
+    * Check for the already running VMs and force co-location if any.
+     */
+    private boolean continuousColocation(ReconfigurationProblem rp, List<Slice> dSlices) {
+
+        Mapping map = rp.getSourceModel().getMapping();
+        Node loc = null;
+        for (VM vm : cstr.getInvolvedVMs()) {
+            if (map.isRunning(vm)) {
+                Node node = map.getVMLocation(vm);
+                if (loc == null) {
+                    loc = node;
+                } else if (!loc.equals(node)) {
+                    rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
+                    return false;
+                }
+            }
+        }
+        if (loc != null) {
+            return placeDSlices(rp, dSlices, rp.getNode(loc));
+        }
+        return true;
     }
 
     private boolean placeDSlices(ReconfigurationProblem rp, List<Slice> dSlices, int nIdx) {
@@ -103,7 +109,6 @@ public class CGather implements ChocoConstraint {
     }
 
     private static boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
-        Solver s = rp.getSolver();
         for (int i = 0; i < dSlices.size(); i++) {
             for (int j = 0; j < i; j++) {
                 Slice s1 = dSlices.get(i);
@@ -115,7 +120,7 @@ public class CGather implements ChocoConstraint {
                 } else if (i2.isInstantiated() && !instantiateTo(rp, i1, i2.getLB(), s1, s2)) {
                     return false;
                 }
-                s.post(IntConstraintFactory.arithm(i1, "=", i2));
+                rp.getModel().post(rp.getModel().arithm(i1, "=", i2));
             }
         }
         return true;

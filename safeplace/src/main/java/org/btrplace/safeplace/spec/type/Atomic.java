@@ -21,6 +21,6 @@ package org.btrplace.safeplace.spec.type;
 /**
  * @author Fabien Hermenier
  */
-public abstract class Atomic implements Type {
+public interface Atomic extends Type {
 
 }

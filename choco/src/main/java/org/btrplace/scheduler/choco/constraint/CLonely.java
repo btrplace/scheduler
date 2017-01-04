@@ -29,7 +29,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.extensions.Disjoint;
 import org.btrplace.scheduler.choco.extensions.Precedences;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
@@ -70,51 +70,55 @@ public class CLonely implements ChocoConstraint {
             }
         }
         //Link the assignment variables with the set
-        Solver s = rp.getSolver();
+        Model s = rp.getModel();
         s.post(new Disjoint(myHosts.toArray(new IntVar[myHosts.size()]),
                 otherHosts.toArray(new IntVar[otherHosts.size()]),
                 rp.getNodes().size()));
 
         if (cstr.isContinuous()) {
-            //Get the position of all the others c-slices and their associated end moment
-            TIntArrayList otherPos = new TIntArrayList();
-            TIntArrayList minePos = new TIntArrayList();
-            List<IntVar> otherEnds = new ArrayList<>();
-            List<IntVar> mineEnds = new ArrayList<>();
-            Mapping map = rp.getSourceModel().getMapping();
-            for (Node n : map.getOnlineNodes()) {
-                for (VM vm : map.getRunningVMs(n)) {
-                    if (!vms.contains(vm)) {
-                        otherPos.add(rp.getNode(map.getVMLocation(vm)));
-                        VMTransition a = rp.getVMAction(vm);
-                        otherEnds.add(a.getCSlice().getEnd());
-                    } else {
-                        minePos.add(rp.getNode(map.getVMLocation(vm)));
-                        VMTransition a = rp.getVMAction(vm);
-                        mineEnds.add(a.getCSlice().getEnd());
-                    }
-                }
-            }
-            for (VM vm : vms) {
-                VMTransition a = rp.getVMAction(vm);
-                Precedences p = new Precedences(a.getDSlice().getHoster(),
-                        a.getDSlice().getStart(),
-                        otherPos.toArray(),
-                        otherEnds.toArray(new IntVar[otherEnds.size()]));
-                s.post(p);
-            }
-
-            //TODO: The following reveals a model problem. Too many constraints!!
-            for (VM vm : otherVMs) {
-                VMTransition a = rp.getVMAction(vm);
-                Precedences p = new Precedences(a.getDSlice().getHoster(),
-                        a.getDSlice().getStart(),
-                        minePos.toArray(),
-                        mineEnds.toArray(new IntVar[mineEnds.size()]));
-                s.post(p);
-            }
+            continuousRestriction(rp, vms, otherVMs);
         }
         return true;
+    }
+
+    private void continuousRestriction(ReconfigurationProblem rp, Collection<VM> vms, Set<VM> otherVMs) {
+        //Get the position of all the others c-slices and their associated end moment
+        TIntArrayList otherPos = new TIntArrayList();
+        TIntArrayList minePos = new TIntArrayList();
+        List<IntVar> otherEnds = new ArrayList<>();
+        List<IntVar> mineEnds = new ArrayList<>();
+        Mapping map = rp.getSourceModel().getMapping();
+        for (Node n : map.getOnlineNodes()) {
+            for (VM vm : map.getRunningVMs(n)) {
+                if (!vms.contains(vm)) {
+                    otherPos.add(rp.getNode(map.getVMLocation(vm)));
+                    VMTransition a = rp.getVMAction(vm);
+                    otherEnds.add(a.getCSlice().getEnd());
+                } else {
+                    minePos.add(rp.getNode(map.getVMLocation(vm)));
+                    VMTransition a = rp.getVMAction(vm);
+                    mineEnds.add(a.getCSlice().getEnd());
+                }
+            }
+        }
+        for (VM vm : vms) {
+            VMTransition a = rp.getVMAction(vm);
+            Precedences p = new Precedences(a.getDSlice().getHoster(),
+                    a.getDSlice().getStart(),
+                    otherPos.toArray(),
+                    otherEnds.toArray(new IntVar[otherEnds.size()]));
+            rp.getModel().post(p);
+        }
+
+        //TODO: The following reveals a model problem. Too many constraints!!
+        for (VM vm : otherVMs) {
+            VMTransition a = rp.getVMAction(vm);
+            Precedences p = new Precedences(a.getDSlice().getHoster(),
+                    a.getDSlice().getStart(),
+                    minePos.toArray(),
+                    mineEnds.toArray(new IntVar[mineEnds.size()]));
+            rp.getModel().post(p);
+        }
     }
 
     @Override

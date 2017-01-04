@@ -160,7 +160,7 @@ public class LocalTaskScheduler {
             }
         }
 
-        entailed = early.getSolver().getEnvironment().makeBool(false);
+        entailed = early.getModel().getEnvironment().makeBool(false);
     }
 
     /**
@@ -368,7 +368,8 @@ public class LocalTaskScheduler {
                         LOGGER.debug("(" + me + ") Invalid min profile at " + t + " on dimension " + d
                                 + ": " + profilesMin[d].get(t) + " > " + capacities[me][d]);
                     }
-                    aCause.contradiction(early, "");
+                    aCause.fails();
+                    //aCause.contradiction(early, "");
                 }
             }
         }

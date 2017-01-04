@@ -26,10 +26,8 @@ import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.NamingService;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -314,7 +312,7 @@ public class Network implements ModelView {
      */
     public void generateDot(Model mo, String out, boolean fromLeftToRight) throws IOException {
 
-        try (BufferedWriter dot = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out), StandardCharsets.UTF_8))) {
+        try (BufferedWriter dot = new BufferedWriter(new FileWriter(out))) {
             dot.append("digraph G {\n");
             if (fromLeftToRight) {
                 dot.append("rankdir=LR;\n");

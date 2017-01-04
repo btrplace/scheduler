@@ -18,7 +18,6 @@
 
 package org.btrplace.safeplace.spec.term.func;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.safeplace.spec.type.SetType;
@@ -47,7 +46,7 @@ public class Colocated implements Function<Set<VM>> {
         }
         Node n = mo.getMapping().host(v);
         if (n == null) {
-            return Collections.emptySet();
+            return new HashSet<>();
         }
         Set<VM> vms = new HashSet<>();
         vms.addAll(mo.getMapping().sleeping(n));

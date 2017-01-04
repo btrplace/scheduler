@@ -83,12 +83,18 @@ public class VerifierResult {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         VerifierResult that = (VerifierResult) o;
 
-        if (!b.equals(that.b)) return false;
+        if (!b.equals(that.b)) {
+            return false;
+        }
         return ex != null ? ex.equals(that.ex) : that.ex == null;
 
     }

@@ -30,8 +30,8 @@ import java.util.Objects;
  */
 public class Schedule extends SimpleConstraint {
 
-    private int start, end;
-
+    private int start;
+    private int end;
     private VM vm;
 
     private Node n;

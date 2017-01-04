@@ -32,14 +32,15 @@ public class SetMinus extends Minus<Set> {
     public SetMinus(Term<Set> t1, Term<Set> t2) {
         super(t1, t2);
         if (!a.type().equals(b.type())) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException("Type mismatch");
         }
     }
 
     @Override
     public Set eval(Context mo, Object... args) {
-        Collection o1 = a.eval(mo);
-        Collection o2 = b.eval(mo);
+        Collection o1 = a.eval(mo, args);
+        Collection o2 = b.eval(mo, args);
+
         Set l = new HashSet();
         o1.stream().filter(o -> !o2.contains(o)).forEach(l::add);
         return l;

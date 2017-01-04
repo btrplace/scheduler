@@ -52,10 +52,12 @@ public class Constraint implements Function<Boolean> {
         args = new ArrayList<>();
     }
 
+    @Override
     public BoolType type() {
         return BoolType.getInstance();
     }
 
+    @Override
     public String id() {
         return name;
     }
@@ -78,6 +80,7 @@ public class Constraint implements Function<Boolean> {
         return Stream.of(signature()).map(Type::toString).collect(Collectors.joining(", ", id() + "(", ")"));
     }
 
+    @Override
     public Boolean eval(Context mo, Object... values) {
         for (int i = 0; i < this.args.size(); i++) {
             UserVar v = this.args.get(i);
@@ -99,6 +102,7 @@ public class Constraint implements Function<Boolean> {
         return this;
     }
 
+    @Override
     public Type[] signature() {
         Type[] types = new Type[args.size()];
         for (int i = 0; i < args.size(); i++) {

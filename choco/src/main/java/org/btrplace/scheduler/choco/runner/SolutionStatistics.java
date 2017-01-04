@@ -19,7 +19,6 @@
 package org.btrplace.scheduler.choco.runner;
 
 import org.btrplace.plan.ReconfigurationPlan;
-import org.chocosolver.solver.search.measure.IMeasures;
 
 /**
  * Store statistics about a solution.
@@ -31,15 +30,19 @@ public class SolutionStatistics {
 
     private ReconfigurationPlan solution = null;
 
-    private IMeasures measures;
+    private Metrics measures;
+
+    private boolean hasObjective;
+
+    private int objective;
 
     /**
      * Make a new statistics.
      *
-     * @param m the solver measures at the moment of the solution
+     * @param m the solver metrics at the moment of the solution
      * @param  plan the resulting plan. {@code null} indicates the solver stated their is no solution
      */
-    public SolutionStatistics(IMeasures m, ReconfigurationPlan plan) {
+    public SolutionStatistics(Metrics m, ReconfigurationPlan plan) {
         measures = m;
         solution = plan;
     }
@@ -53,22 +56,47 @@ public class SolutionStatistics {
     }
 
     /**
-     * Return the solver measures at the moment the solution was computed.
+     * Return the solver metrics at the moment the solution was computed.
      * @return solver measurement
      */
-    public IMeasures getMeasures() {
+    public Metrics getMetrics() {
         return measures;
+    }
+
+    /**
+     * Set the objective value associated to the solution
+     *
+     * @param v the value
+     */
+    public void setObjective(int v) {
+        hasObjective = true;
+        objective = v;
+    }
+
+    /**
+     * Indicates if an objective is attached to the solution
+     *
+     * @return {@code true} iff there is an attached objective
+     */
+    public boolean hasObjective() {
+        return hasObjective;
+    }
+
+    /**
+     * Get the objective value for that solution.
+     * The value is meaningful iff there is an objective.
+     *
+     * @return a number
+     */
+    public int objective() {
+        return objective;
     }
 
     @Override
     public String toString() {
-        String res = String.format("at %dms, %d node(s), %d backtrack(s)",
-                (int) (measures.getTimeCount() * 1000),
-                measures.getNodeCount(),
-                measures.getBackTrackCount());
-
-        if (measures.hasObjective()) {
-            res = String.join("", res, ", objective: ", measures.getBestSolutionValue().toString());
+        String res = measures.toString();
+        if (hasObjective) {
+            res = res + ", objective: " + objective;
         }
         return res;
     }

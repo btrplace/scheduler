@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,26 +19,32 @@
 package org.btrplace.safeplace.testing.limit;
 
 import org.btrplace.safeplace.testing.Result;
-import org.btrplace.safeplace.testing.TestCaseResult;
 
 import java.util.function.Predicate;
 
 /**
+ * A predicate to limit the number of successful tests.
  * @author Fabien Hermenier
  */
-public class MaxSuccess implements Predicate<TestCaseResult> {
+public class MaxSuccess implements Predicate<Result> {
 
     private int max;
+
+    /**
+     * New threshold.
+     *
+     * @param max the maximum number of successful tests
+     */
     public MaxSuccess(int max) {
         this.max = max;
     }
 
     @Override
-    public boolean test(TestCaseResult tc) {
-        if (tc.result() == Result.success) {
+    public boolean test(Result tc) {
+        if (tc == Result.SUCCESS) {
             max--;
         }
-        return max != 0;
+        return max > 0;
     }
 
     @Override

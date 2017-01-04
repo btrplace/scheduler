@@ -53,4 +53,24 @@ public class JSONConverterException extends Exception {
         super(t);
     }
 
+    /**
+     * State a node has already been declared.
+     *
+     * @param id the node identifier
+     * @return the generated exception
+     */
+    public static JSONConverterException nodeAlreadyDeclared(int id) {
+        return new JSONConverterException("Node '" + id + "' already declared");
+    }
+
+    /**
+     * State a VM has already been declared.
+     *
+     * @param id the VM identifier
+     * @return the generated exception
+     */
+    public static JSONConverterException vmAlreadyDeclared(int id) {
+        return new JSONConverterException("VM '" + id + "' already declared");
+    }
+
 }

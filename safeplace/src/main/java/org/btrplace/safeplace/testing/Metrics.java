@@ -26,14 +26,15 @@ import java.util.Map;
 
 public class Metrics {
 
-    public long fuzzing;
+    private long fuzzing;
 
-    public long validation;
+    private long validation;
 
-    public long testing;
+    private long testing;
 
-    public long fuzzingIterations;
-    Map<String, Long> reductions;
+    private long fuzzingIterations;
+
+    private Map<String, Long> reductions;
 
     public Metrics() {
         reductions = new HashMap<>();
@@ -87,5 +88,37 @@ public class Metrics {
     @Override
     public String toString() {
         return "Fuzzing: " + fuzzing + "ms; Validation: " + validation + " ms; Fuzzing iterations: " + fuzzingIterations + "; Testing: " + testing + "ms";
+    }
+
+    public long fuzzing() {
+        return fuzzing;
+    }
+
+    public long validation() {
+        return validation;
+    }
+
+    public long testing() {
+        return testing;
+    }
+
+    public long fuzzingIterations() {
+        return fuzzingIterations;
+    }
+
+    public void fuzzing(long fuzzing) {
+        this.fuzzing = fuzzing;
+    }
+
+    public void validation(long validation) {
+        this.validation = validation;
+    }
+
+    public void testing(long testing) {
+        this.testing = testing;
+    }
+
+    public void fuzzingIterations(long fuzzingIterations) {
+        this.fuzzingIterations = fuzzingIterations;
     }
 }

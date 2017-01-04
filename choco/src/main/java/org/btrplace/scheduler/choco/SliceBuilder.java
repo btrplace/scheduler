@@ -22,8 +22,6 @@ import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
-
 
 /**
  * A tool to help at the instantiation of Slices.
@@ -101,7 +99,7 @@ public class SliceBuilder {
             if (start.isInstantiatedTo(0)) {
                 return end;
             }
-            return VF.offset(end, -start.getValue());
+            return rp.getModel().intOffsetView(end, -start.getValue());
         }
         int inf = end.getLB() - start.getUB();
         if (inf < 0) {
@@ -162,7 +160,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = VF.fixed("cste -- " + rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v, rp.getSolver());
+        this.hoster = rp.fixed(v, lblPrefix, "_hoster(", vm, ")");
         return this;
     }
 }

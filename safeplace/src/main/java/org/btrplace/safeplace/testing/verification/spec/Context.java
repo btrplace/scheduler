@@ -36,6 +36,7 @@ import java.util.Map;
  */
 public class Context {
 
+
     private SpecMapping sm;
 
     private Map<String, Domain> vDoms;
@@ -46,12 +47,10 @@ public class Context {
 
     private LinkedList<Map<String, Object>> stack;
 
+    private Context root;
+
     public Context() {
         this(new DefaultModel());
-    }
-
-    public ReconfigurationPlan getPlan() {
-        return plan;
     }
 
     public Context(Model mo) {
@@ -63,6 +62,18 @@ public class Context {
         //default domains
         add(new ConstantDomain<>("nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes())));
         add(new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs())));
+    }
+
+    public ReconfigurationPlan getPlan() {
+        return plan;
+    }
+
+    public void setRootContext(Context root) {
+        this.root = root;
+    }
+
+    public Context getRootContext() {
+        return root;
     }
 
     public Model getModel() {

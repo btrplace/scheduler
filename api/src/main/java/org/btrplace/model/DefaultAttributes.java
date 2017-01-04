@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -80,6 +80,7 @@ public class DefaultAttributes implements Attributes {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public double get(Element e, String k, double def) {
         if (isSet(e, k)) {
             try {
@@ -156,16 +157,10 @@ public class DefaultAttributes implements Attributes {
     public String toString() {
         StringBuilder b = new StringBuilder();
         for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
-            b.append(e.getKey());
-            b.append(':');
-            b.append(stringify(e.getValue()));
-            b.append('\n');
+            b.append(String.format("%s:%s%n", e.getKey(), stringify(e.getValue())));
         }
         for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
-            b.append(e.getKey());
-            b.append(':');
-            b.append(stringify(e.getValue()));
-            b.append('\n');
+            b.append(String.format("%s:%s%n", e.getKey(), stringify(e.getValue())));
         }
         return b.toString();
     }
@@ -253,6 +248,7 @@ public class DefaultAttributes implements Attributes {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public boolean castAndPut(Element e, String k, String v) {
         String x = v.toLowerCase().trim();
         if ("true".equals(x)) {

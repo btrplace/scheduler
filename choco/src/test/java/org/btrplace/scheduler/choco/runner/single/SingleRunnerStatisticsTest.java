@@ -27,9 +27,8 @@ import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.DefaultParameters;
 import org.btrplace.scheduler.choco.Parameters;
+import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.search.measure.MeasuresRecorder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -59,7 +58,7 @@ public class SingleRunnerStatisticsTest {
         Assert.assertEquals(stats.getParameters(), ps);
         Assert.assertEquals(stats.getSolutions().size(), 0);
         Assert.assertEquals(stats.completed(), false);
-        Assert.assertEquals(stats.getMeasures(), null);
+        Assert.assertEquals(stats.getMetrics(), null);
 
         stats.setCoreBuildDuration(12);
         stats.setSpecialisationDuration(17);
@@ -72,7 +71,7 @@ public class SingleRunnerStatisticsTest {
         Assert.assertEquals(stats.completed(), true);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        SolutionStatistics sol = new SolutionStatistics(new MeasuresRecorder(new Solver()), plan);
+        SolutionStatistics sol = new SolutionStatistics(new Metrics(), plan);
         stats.addSolution(sol);
         Assert.assertEquals(stats.getSolutions().size(), 1);
         Assert.assertEquals(stats.getSolutions().get(0), sol);

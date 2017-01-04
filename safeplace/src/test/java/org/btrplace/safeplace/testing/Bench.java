@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,33 +18,36 @@
 
 package org.btrplace.safeplace.testing;
 
-import org.btrplace.safeplace.testing.fuzzer.Replay;
+import org.btrplace.safeplace.testing.fuzzer.ConfigurableFuzzer;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
-import org.btrplace.safeplace.testing.reporting.DefaultReporting;
-import org.btrplace.safeplace.testing.reporting.Reporting;
+import org.btrplace.safeplace.testing.reporting.Counting;
+import org.btrplace.safeplace.testing.reporting.Report;
 import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.spec.SpecVerifier;
-import org.testng.Assert;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
+@SuppressWarnings("squid:S106")
 public class Bench {
 
     public static int scale = 1;
 
     public static int population = 100;
+    public static boolean transitions = true;
 
-    public enum Mode {SAVE, REPLAY, DEFAULT};
+    public enum Mode {SAVE, REPLAY, DEFAULT}
 
+    public static String source = ".";
     public static Mode mode = Mode.DEFAULT;
 
-    public static Reporting reporting = new DefaultReporting().verbosity(2).capture(x -> false);
+    public static Set<Restriction> restrictions = EnumSet.allOf(Restriction.class);
+    public static Report report = new Counting();
 
     public static TestCampaign thousand(TestCampaign tc, String cstr) {
         return thousand(tc, cstr, new SpecVerifier());
@@ -52,25 +55,26 @@ public class Bench {
 
     public static TestCampaign thousand(TestCampaign tc, String cstr, Verifier v) {
 
-        tc.reporting(reporting.verbosity(1));
+        tc.reportTo(report);
         tc.verifyWith(v);
 
         if (mode == Mode.REPLAY) {
-            try {
-                tc.fuzzer(new Replay(Paths.get(cstr + ".json")));
-            } catch (IOException e) {
-                Assert.fail(e.getMessage());
-            }
+            tc.replay(Paths.get(source, cstr + ".json"));
             return tc;
         }
+        tc.printProgress(true);
         tc.limits().tests(population);
-        tc.constraint(cstr);
-        tc.fuzz().restriction(EnumSet.allOf(Restriction.class));
-        tc.fuzz().vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(0.3, 0.7, 0).dstVMs(0.3, 0.7, 0);
-        tc.fuzz().with("nb", 1, 10);
+        ConfigurableFuzzer f = tc.check(cstr).restriction(EnumSet.allOf(Restriction.class));
+        f.restriction(restrictions);
+        if (transitions) {
+            f.vms(scale).nodes(scale).srcOffNodes(0.1).srcVMs(30, 70, 0).dstVMs(30, 70, 0);
+        } else {
+            f.vms(scale).nodes(scale).srcOffNodes(0).dstOffNodes(0).srcVMs(0, 1, 0).dstVMs(0, 1, 0);
+        }
+        f.with("nb", 1, 10);
 
         if (mode == Mode.SAVE) {
-            tc.save(cstr + ".json");
+            f.save(Paths.get(source, cstr + ".json").toString());
         }
         return tc;
     }
@@ -165,32 +169,32 @@ public class Bench {
         thousand(c, "ready");
     }
 
-    @CstrTest(groups = {"state", "sides","online"})
+    @CstrTest(groups = {"state", "sides", "ONLINE"})
     public void testOnline(TestCampaign c) {
-        thousand(c, "online");
+        thousand(c, "ONLINE");
     }
 
     @CstrTest(groups = {"state", "sides"})
     public void testOffline(TestCampaign c) {
-        thousand(c, "offline");
+        thousand(c, "OFFLINE");
     }
 
-    @CstrTest(groups = {"resource", "sides"})
+    @CstrTest(groups = {"resource", "sides", "rc"})
     public void testResource(TestCampaign c) {
         thousand(c, "shareableresource");
         if (Bench.mode != Mode.REPLAY) {
-                c.fuzz().with("id", "cpu")
+            c.check("shareableresource").with("id", "cpu")
                 .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5));
         }
     }
 
-    @CstrTest(groups = {"resource","sides"})
+    @CstrTest(groups = {"resource", "sides", "capacity"})
     public void testResourceCapacity(TestCampaign c) {
         thousand(c, "resourceCapacity");
         if (Bench.mode != Mode.REPLAY) {
-            c.fuzz().with("id", "cpu")
+            c.check("resourceCapacity").with("id", "cpu")
                     .with("qty", 1, 5)
-                    .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5));
+                    .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(1));
         }
     }
 }

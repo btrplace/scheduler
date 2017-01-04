@@ -33,13 +33,12 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.extensions.FastIFFEq;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.constraints.LCF;
 import org.chocosolver.solver.constraints.Operator;
-import org.chocosolver.solver.search.solution.Solution;
-import org.chocosolver.solver.variables.*;
+import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.Task;
 
 
 /**
@@ -98,19 +97,19 @@ public class RelocatableVM implements KeepRunningVM {
         vm = e;
         rp = p;
         src = rp.getSourceModel().getMapping().getVMLocation(e);
-        Solver s = rp.getSolver();
+        org.chocosolver.solver.Model csp = rp.getModel();
         Model mo = rp.getSourceModel();
 
         // Default values
         start = rp.getStart();
         end = rp.getStart();
-        duration =  VariableFactory.zero(s);
-        state = VariableFactory.one(s);
+        duration = csp.intVar(0);
+        state = csp.boolVar(true);
         
         // If not manageable, the VM stays on the current host
         if (!p.getManageableVMs().contains(e)) {
-            stay = VariableFactory.one(s);
-            doReinstantiation = VariableFactory.zero(s);
+            stay = csp.boolVar(true);
+            doReinstantiation = csp.boolVar(false);
             manageable = false;
             
             IntVar host = rp.makeCurrentHost(vm, PREFIX_STAY, vm, ").host");
@@ -127,7 +126,7 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // The VM can move (to re-instantiate or migrate) OR STAY to the same host
-        stay = VF.bool(vm + "stay", s);
+        stay = csp.boolVar(rp.makeVarLabel(vm, "stay"));
         cSlice = new SliceBuilder(rp, vm, PREFIX, vm, ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)))
                 .setEnd(rp.makeUnboundedDuration(PREFIX, vm, ").cSlice_end"))
@@ -160,56 +159,58 @@ public class RelocatableVM implements KeepRunningVM {
             postCopy = mo.getAttributes().get(vm, "postCopy", false);
 
             // Create unbounded/large domain vars for migration duration and bandwidth
-            migrationDuration = p.makeUnboundedDuration(PREFIX, vm, ").duration");
-            bandwidth = VF.bounded(PREFIX + vm + ").bandwidth", 0, Integer.MAX_VALUE/100, s);
+            migrationDuration = p.makeUnboundedDuration("migration(", vm, ").duration");
+            bandwidth = csp.intVar(PREFIX + vm + ").bandwidth", 0, Integer.MAX_VALUE / 100, true);
         }
         // No networking view, set the duration from the evaluator
         else {
             // The duration can still be 0 => the VM STAY !
-            migrationDuration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, vm, ").duration"),
-                    new int[]{0, migrateDuration}, s);
+            migrationDuration = csp.intVar(rp.makeVarLabel("migration(", vm, ").duration"),
+                    new int[]{0, migrateDuration});
             bandwidth = null;
         }
 
         // Possibly re-instantiate (if some attributes are defined)
         if (mo.getAttributes().get(vm, "clone", false) && mo.getAttributes().isSet(vm, "template")) {
 
-            doReinstantiation = VariableFactory.bool(rp.makeVarLabel("relocation_method(", vm, ")"), s);
+            doReinstantiation = csp.boolVar(rp.makeVarLabel("relocation_method(", vm, ")"));
 
-            duration = VariableFactory.bounded(rp.makeVarLabel(PREFIX, vm, ").duration"),
+            duration = csp.intVar(rp.makeVarLabel(PREFIX, vm, ").duration"),
                     Math.min(migrationDuration.getLB(), reInstantiateDuration),
-                    Math.max(migrationDuration.getUB(), reInstantiateDuration), s
-            );
+                    Math.max(migrationDuration.getUB(), reInstantiateDuration), true);
 
             // Re-instantiate or migrate
             // (Prefer the re-instantiation if the duration are the same, otherwise choose the min)
-            LCF.ifThenElse(LCF.or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // can be instantiated externally !
+            rp.getModel().ifThenElse(rp.getModel().or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // can be instantiated externally !
                                   new Arithmetic(migrationDuration, Operator.LT, reInstantiateDuration)),
                     new Arithmetic(duration, Operator.EQ, migrationDuration),
                     new Arithmetic(duration, Operator.EQ, reInstantiateDuration)
             );
 
             // If it is a re-instantiation then specify that the dSlice must start AFTER the Forge delay
-            IntVar time = VariableFactory.enumerated(
-                    rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, forgeD, s);
-            s.post(IntConstraintFactory.times(doReinstantiation, forgeD, time));
-            s.post(new Arithmetic(start, Operator.GE, time));
+            IntVar time = csp.intVar(
+                    rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, forgeD, false);
+            csp.post(csp.times(doReinstantiation, forgeD, time));
+            csp.post(new Arithmetic(start, Operator.GE, time));
 
             // Be sure that doReinstantiation will be instantiated
-            s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
+            csp.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
         }
         // The VM either migrate or stay but won't be re-instantiated for sure
         else {
-            doReinstantiation = VariableFactory.zero(s);
+            doReinstantiation = csp.boolVar(false);
             duration = migrationDuration;
         }
 
         // If the VM stay (src host == dst host), then duration = 0
-        s.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
-        s.post(new FastIFFEq(stay, duration, 0));
+        csp.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
+        csp.post(new FastIFFEq(stay, duration, 0));
+        //We have to force the migration duration equals to 0 if it stays
+        //otherwise, the variable will be free
+        csp.post(new FastIFFEq(stay, migrationDuration, 0));
 
         // Create the task ('default' cumulative constraint with a height of 1)
-        migrationTask = VariableFactory.task(start, duration, end);
+        migrationTask = new Task(start, duration, end);
     }
 
     /**
@@ -239,7 +240,7 @@ public class RelocatableVM implements KeepRunningVM {
     public boolean insertActions(Solution s, ReconfigurationPlan plan) {
         DurationEvaluators dev = rp.getDurationEvaluators();
         // Only if the VM doesn't stay
-        if (!s.getIntVal(cSlice.getHoster()).equals(s.getIntVal(dSlice.getHoster()))) {
+        if (s.getIntVal(cSlice.getHoster()) != (s.getIntVal(dSlice.getHoster()))) {
             Action a;
             Node dst = rp.getNode(s.getIntVal(dSlice.getHoster()));
             // Migration

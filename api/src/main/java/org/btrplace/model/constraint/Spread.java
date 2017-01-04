@@ -36,7 +36,7 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 
-@SideConstraint(args = {"vs <: vms"}, inv = "!(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)")
+@SideConstraint(args = {"vs <: vms"}, inv = "!(x,y : vs) (x /= y & vmState(x) : {running,migrating} & vmState(y) : {running,migrating}) --> host(x) /= host(y)")
 public class Spread extends SimpleConstraint {
 
     private Set<VM> vms;

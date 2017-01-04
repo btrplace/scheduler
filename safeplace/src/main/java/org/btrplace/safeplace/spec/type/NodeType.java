@@ -23,7 +23,7 @@ import org.btrplace.model.Node;
 /**
  * @author Fabien Hermenier
  */
-public class NodeType extends Atomic {
+public class NodeType implements Atomic {
 
     private static NodeType instance = new NodeType();
 

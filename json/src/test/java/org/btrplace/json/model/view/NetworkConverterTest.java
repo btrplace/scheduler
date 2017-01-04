@@ -77,7 +77,7 @@ public class NetworkConverterTest {
         mo.getMapping().addOnlineNode(n1);
         mo.getMapping().addOnlineNode(n2);
         net.connect(1000, s, n1, n2);
-        LinkedHashMap<Link, Boolean> route = new LinkedHashMap<>();
+        Map<Link, Boolean> route = new LinkedHashMap<>();
         route.put(net.getConnectedLinks(n1).get(0), true);
         route.put(net.getConnectedLinks(n2).get(0), false);
         ((StaticRouting) net.getRouting()).setStaticRoute(new StaticRouting.NodesMap(n1, n2), route);

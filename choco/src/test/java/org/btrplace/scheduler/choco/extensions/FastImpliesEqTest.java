@@ -18,10 +18,9 @@
 
 package org.btrplace.scheduler.choco.extensions;
 
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,72 +32,72 @@ import org.testng.annotations.Test;
 
     @Test
     public void test1() {
-        Solver s = new Solver();
+        Model s = new Model();
         //SMF.log(s, true, true);
-        BoolVar b = VF.bool("b", s);
-        IntVar x = VF.bounded("x", 0, 3, s);
+        BoolVar b = s.boolVar("b");
+        IntVar x = s.intVar("x", 0, 3, true);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(5, s.findAllSolutions());
+        Assert.assertEquals(5, s.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test2() {
-        Solver s = new Solver();
-        BoolVar b = VF.bool("b", s);
-        IntVar x = VF.enumerated("x", 0, 3, s);
+        Model s = new Model();
+        BoolVar b = s.boolVar("b");
+        IntVar x = s.intVar("x", 0, 3, false);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(5, s.findAllSolutions());
+        Assert.assertEquals(5, s.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test3() {
-        Solver s = new Solver();
-        BoolVar b = VF.bool("b", s);
-        IntVar x = VF.bounded("x", 0, 2, s);
+        Model s = new Model();
+        BoolVar b = s.boolVar("b");
+        IntVar x = s.intVar("x", 0, 2, true);
         int c = 3;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(3, s.findAllSolutions());
+        Assert.assertEquals(3, s.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test4() {
-        Solver s = new Solver();
-        BoolVar b = VF.one(s);
-        IntVar x = VF.bounded("x", 0, 2, s);
+        Model s = new Model();
+        BoolVar b = s.boolVar(true);
+        IntVar x = s.intVar("x", 0, 2, true);
         int c = 3;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(0, s.findAllSolutions());
+        Assert.assertEquals(0, s.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test5() {
-        Solver s = new Solver();
-        BoolVar b = VF.one(s);
-        IntVar x = VF.bounded("x", 0, 3, s);
+        Model s = new Model();
+        BoolVar b = s.boolVar(true);
+        IntVar x = s.intVar("x", 0, 3, true);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(1, s.findAllSolutions());
+        Assert.assertEquals(1, s.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test6() {
-        Solver s = new Solver();
-        BoolVar b = VF.zero(s);
-        IntVar x = VF.bounded("x", 0, 3, s);
+        Model s = new Model();
+        BoolVar b = s.boolVar(false);
+        IntVar x = s.intVar("x", 0, 3, true);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(4, s.findAllSolutions());
+        Assert.assertEquals(4, s.getSolver().findAllSolutions().size());
     }
 
     @Test
     public void test7() {
-        Solver s = new Solver();
-        BoolVar b = VF.zero(s);
-        IntVar x = VF.bounded("x", 0, 2, s);
+        Model s = new Model();
+        BoolVar b = s.boolVar(false);
+        IntVar x = s.intVar("x", 0, 2, true);
         int c = 3;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(3, s.findAllSolutions());
+        Assert.assertEquals(3, s.getSolver().findAllSolutions().size());
     }
 }

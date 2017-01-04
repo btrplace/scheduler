@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -38,6 +38,7 @@ import java.util.*;
  * @author Fabien Hermenier
  * @see <a href="https://github.com/btrplace/scheduler/wiki/Tuning-the-Reconfiguration-Algorithm">btrplace website</a>
  */
+@SuppressWarnings("squid:S106")
 public class SolverTuning implements Example {
 
     private List<Node> nodes;
@@ -48,6 +49,7 @@ public class SolverTuning implements Example {
     }
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public void run() {
 
         //Make a default model with 500 nodes hosting 3,000 VMs

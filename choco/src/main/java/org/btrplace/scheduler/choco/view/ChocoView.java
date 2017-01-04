@@ -26,7 +26,7 @@ import org.btrplace.scheduler.choco.Injectable;
 import org.btrplace.scheduler.choco.MisplacedVMsEstimator;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Solution;
 
 import java.util.Collections;
 import java.util.List;

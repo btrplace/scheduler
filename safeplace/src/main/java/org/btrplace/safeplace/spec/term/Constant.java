@@ -19,7 +19,7 @@
 package org.btrplace.safeplace.spec.term;
 
 import net.minidev.json.JSONObject;
-import org.btrplace.safeplace.spec.type.*;
+import org.btrplace.safeplace.spec.type.Type;
 import org.btrplace.safeplace.testing.verification.spec.Context;
 
 import java.util.Collection;
@@ -40,6 +40,7 @@ public class Constant implements Term {
         this.o = o;
     }
 
+    @Override
     public Type type() {
         return t;
     }
@@ -53,10 +54,10 @@ public class Constant implements Term {
     }
 
     public JSONObject toJSON() {
-        JSONObject o = new JSONObject();
-        o.put("type", type().encode());
-        o.put("value", type().toJSON(eval(null)));
-        return o;
+        JSONObject ob = new JSONObject();
+        ob.put("type", type().encode());
+        ob.put("value", type().toJSON(eval(null)));
+        return ob;
     }
 
     public static Constant fromJSON(JSONObject o) {
@@ -65,28 +66,18 @@ public class Constant implements Term {
         return new Constant(r, t);
     }
 
-    private static Type type(JSONObject o) {
-        switch(o.getAsString("type")) {
-            case "int":
-                return IntType.getInstance();
-            case "set":
-                return new SetType(type((JSONObject) o.get("value")));
-            case "list":
-                return new ListType(type((JSONObject) o.get("value")));
-            case "string":
-                return StringType.getInstance();
-        }
-        throw new IllegalArgumentException(o.getAsString("type"));
-    }
-
     @Override
     public boolean equals(Object o1) {
-        if (this == o1) return true;
-        if (!(o1 instanceof Constant)) return false;
+        if (this == o1) {
+            return true;
+        }
+        if (!(o1 instanceof Constant)) {
+            return false;
+        }
 
         Constant value = (Constant) o1;
 
-        return (o.equals(value.o) && t.equals(value.t));
+        return o.equals(value.o) && t.equals(value.t);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,24 +30,24 @@ import java.util.stream.Collectors;
  */
 public class FunctionCall<T> implements Term<T> {
 
-    private Function<T> c;
+    protected Function<T> c;
 
     private List<Term> args;
 
     public enum Moment {
-        begin {
+        BEGIN {
             @Override
             public String toString() {
                 return "^";
             }
         },
-        end {
+        END {
             @Override
             public String toString() {
                 return "$";
             }
         },
-        any {
+        ANY {
             @Override
             public String toString() {
                 return "";
@@ -74,6 +74,10 @@ public class FunctionCall<T> implements Term<T> {
         int i = 0;
         for (Term t : args) {
             values[i++] = t.eval(m);
+        }
+
+        if (moment.equals(Moment.BEGIN)) {
+            return c.eval(m.getRootContext(), values);
         }
         return c.eval(m, values);
     }

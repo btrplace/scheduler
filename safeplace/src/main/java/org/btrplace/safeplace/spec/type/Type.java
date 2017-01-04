@@ -44,8 +44,10 @@ public interface Type {
             case "string": return StringType.getInstance();
             case "list": return new ListType(decode(str.substring(str.indexOf(' ') + 1)));
             case "set": return new SetType(decode(str.substring(str.indexOf(' ') + 1)));
+            default:
+                throw new IllegalArgumentException("Unsupported " + str);
         }
-        throw new IllegalArgumentException("Unsupported " + str);
+
     }
 
     default Object fromJSON(Object value) {

@@ -27,7 +27,7 @@ public class ScriptBuilderException extends Exception {
 
     private static final long serialVersionUID = 5502255795746863232L;
 
-    private ErrorReporter errReporter;
+    private final transient ErrorReporter errReporter;
 
     /**
      * Make a new exception.
@@ -46,6 +46,7 @@ public class ScriptBuilderException extends Exception {
      */
     public ScriptBuilderException(String msg) {
         super(msg);
+        errReporter = null;
     }
 
     /**
@@ -56,12 +57,13 @@ public class ScriptBuilderException extends Exception {
      */
     public ScriptBuilderException(String msg, Throwable t) {
         super(msg, t);
+        errReporter = null;
     }
 
     /**
      * Get the error reporters.
      *
-     * @return the report provided at instantiation
+     * @return the report provided at instantiation, may be {@code null}
      */
     public ErrorReporter getErrorReporter() {
         return this.errReporter;

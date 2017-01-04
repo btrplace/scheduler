@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -67,16 +67,14 @@ public class CBan implements ChocoConstraint {
         }
 
         VM vm = ban.getInvolvedVMs().iterator().next();
-        if (rp.getFutureRunningVMs().contains(vm)) {
-            Slice t = rp.getVMAction(vm).getDSlice();
-            if (t != null) {
-                for (int x : nodesIdx) {
-                    try {
-                        t.getHoster().removeValue(x, Cause.Null);
-                    } catch (ContradictionException e) {
-                        rp.getLogger().error("Unable to disallow " + vm + " to be running on " + rp.getNode(x), e);
-                        return false;
-                    }
+        Slice t = rp.getVMAction(vm).getDSlice();
+        if (t != null) {
+            for (int x : nodesIdx) {
+                try {
+                    t.getHoster().removeValue(x, Cause.Null);
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to disallow " + vm + " to be running on " + rp.getNode(x), e);
+                    return false;
                 }
             }
         }

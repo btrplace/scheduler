@@ -63,10 +63,6 @@ public class CBanTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertNotNull(p);
-        System.out.println(p.getOrigin().getMapping());
-        System.out.println(b);
-        System.out.println(p);
-        System.out.println(p.getResult().getMapping());
         Assert.assertEquals(1, p.getSize());
     }
 

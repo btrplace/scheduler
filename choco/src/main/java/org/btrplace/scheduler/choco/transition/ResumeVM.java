@@ -26,12 +26,10 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.solution.Solution;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 
 /**
@@ -69,16 +67,17 @@ public class ResumeVM implements VMTransition {
 
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), org.btrplace.plan.event.ResumeVM.class, e);
 
+        Model csp = p.getModel();
+
         start = p.makeDuration(p.getEnd().getUB() - d, 0, PREFIX, e, ").start");
-        end = VariableFactory.offset(start, d);
+        end = rp.getModel().intOffsetView(start, d);
         duration = p.makeDuration(d, d, PREFIX, e, ").duration");
         dSlice = new SliceBuilder(p, e, PREFIX, e, ").dSlice").setStart(start)
                 .setDuration(p.makeDuration(p.getEnd().getUB(), d, PREFIX, e, ").dSlice_duration"))
                 .build();
 
-        Solver s = p.getSolver();
-        s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
-        state = VariableFactory.one(rp.getSolver());
+        csp.post(csp.arithm(end, "<=", p.getEnd()));
+        state = csp.boolVar(true);
     }
 
     @Override

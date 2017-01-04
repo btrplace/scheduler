@@ -32,11 +32,10 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
+import org.chocosolver.solver.variables.Task;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -90,23 +89,23 @@ public class IssuesTest {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (Node n : map.getAllNodes()) {
-            vmsOnInvolvedNodes[i] = VF.bounded("nVMs", -1, maxVMs, rp.getSolver());
+            vmsOnInvolvedNodes[i] = rp.getModel().intVar("nVMs", -1, maxVMs, true);
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
-            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
-            solver.post(elem);
+            Constraint elem = rp.getModel().element(vmsOnInvolvedNodes[i], new IntVar[]{rp.getModel().intVar(-1), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
+            rp.getModel().post(elem);
 
             // IF the node is online and hosting VMs -> busy = 1.
-            busy[i] = VF.bool("busy" + n, rp.getSolver());
-            ChocoUtils.postIfOnlyIf(rp, busy[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], ">=", 1));
+            busy[i] = rp.getModel().boolVar("busy" + n);
+            ChocoUtils.postIfOnlyIf(rp, busy[i], rp.getModel().arithm(vmsOnInvolvedNodes[i], ">=", 1));
             i++;
         }
 
         // idle is equals the number of vmsOnInvolvedNodes with value 0. (The node without VM)
-        IntVar idle = VF.bounded("Nidles", 0, NUMBER_OF_NODE, solver);
-        solver.post(IntConstraintFactory.count(0, vmsOnInvolvedNodes, idle));
+        IntVar idle = rp.getModel().intVar("Nidles", 0, NUMBER_OF_NODE, true);
+        rp.getModel().post(rp.getModel().count(0, vmsOnInvolvedNodes, idle));
         // idle should be less than Amount for MaxSN (0, in this case)
-        solver.post(IntConstraintFactory.arithm(idle, "<=", 0));
+        rp.getModel().post(rp.getModel().arithm(idle, "<=", 0));
 
         // Extract all the state of the involved nodes (all nodes in this case)
         IntVar[] states = new IntVar[NUMBER_OF_NODE];
@@ -118,14 +117,13 @@ public class IssuesTest {
         // In case the number of VMs is inferior to the number of online nodes, some nodes have to shutdown
         // to satisfy the constraint. This could be express as:
         // The addition of the idle nodes and busy nodes should be equals the number of online nodes.
-        IntVar sumStates = VF.bounded("sumStates", 0, 1000, solver);
-        solver.post(IntConstraintFactory.sum(states, sumStates));
-        IntVar sumBusy = VF.bounded("sumBusy", 0, 1000, solver);
-        solver.post(IntConstraintFactory.sum(states, sumBusy));
-        IntVar sumIB = VF.bounded("ib", 0, 1000, solver);
-        VF.task(sumBusy, idle, sumIB);
-        //solver.post(IntConstraintFactory.arithm(sumBusy, "+", idle));
-        solver.post(IntConstraintFactory.arithm(sumStates, "=", sumIB));//solver.eq(sumStates, sumIB));
+        IntVar sumStates = rp.getModel().intVar("sumStates", 0, 1000, true);
+        rp.getModel().post(rp.getModel().sum(states, "=", sumStates));
+        IntVar sumBusy = rp.getModel().intVar("sumBusy", 0, 1000, true);
+        rp.getModel().post(rp.getModel().sum(states, "=", sumBusy));
+        IntVar sumIB = rp.getModel().intVar("ib", 0, 1000, true);
+        new Task(sumBusy, idle, sumIB);
+        rp.getModel().post(rp.getModel().arithm(sumStates, "=", sumIB));//solver.eq(sumStates, sumIB));
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
@@ -161,11 +159,11 @@ public class IssuesTest {
             nodeVM[i++] = nodes_state.get(rp.getNode(n));
         }
         Solver solver = rp.getSolver();
-        IntVar idle = VF.bounded("Nidles", 0, map.getAllNodes().size(), solver);
+        IntVar idle = rp.getModel().intVar("Nidles", 0, map.getAllNodes().size(), true);
 
-        solver.post(IntConstraintFactory.count(0, nodeVM, idle));
+        rp.getModel().post(rp.getModel().count(0, nodeVM, idle));
         // Amount of maxSpareNode =  1
-        solver.post(IntConstraintFactory.arithm(idle, "<=", 1));
+        rp.getModel().post(rp.getModel().arithm(idle, "<=", 1));
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
@@ -203,10 +201,10 @@ public class IssuesTest {
             //rp.getNodeAction(n).getState().setVal(1);
         }
         Solver solver = rp.getSolver();
-        IntVar idle = VF.bounded("Nidles", 0, map.getAllNodes().size(), solver);
+        IntVar idle = rp.getModel().intVar("Nidles", 0, map.getAllNodes().size(), true);
 
-        solver.post(IntConstraintFactory.count(0, nodeVM, idle));
-        solver.post(IntConstraintFactory.arithm(idle, "<=", 1));
+        rp.getModel().post(rp.getModel().count(0, nodeVM, idle));
+        rp.getModel().post(rp.getModel().arithm(idle, "<=", 1));
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
     }
@@ -225,7 +223,7 @@ public class IssuesTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).build();
         Solver solver = rp.getSolver();
         rp.getNodeAction(n3).getState().instantiateTo(1, Cause.Null);  // n3 goes online
-        solver.post(IntConstraintFactory.arithm(rp.getEnd(), "<=", 10));
+        rp.getModel().post(rp.getModel().arithm(rp.getEnd(), "<=", 10));
         int NUMBER_OF_NODE = map.getAllNodes().size();
         // Extract all the state of the involved nodes (all nodes in this case)
         List<IntVar> VMsOnAllNodes = rp.getNbRunningVMs();
@@ -235,27 +233,25 @@ public class IssuesTest {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (Node n : map.getAllNodes()) {
-            vmsOnInvolvedNodes[i] = VF.bounded("nVMs" + n, -1, maxVMs, solver);
+            vmsOnInvolvedNodes[i] = rp.getModel().intVar("nVMs" + n, -1, maxVMs, true);
             IntVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
-            Constraint elem = IntConstraintFactory.element(vmsOnInvolvedNodes[i], new IntVar[]{VF.fixed(-1, solver), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
-            solver.post(elem);
+            Constraint elem = rp.getModel().element(vmsOnInvolvedNodes[i], new IntVar[]{rp.getModel().intVar(-1), VMsOnAllNodes.get(rp.getNode(n))}, state, 0);
+            rp.getModel().post(elem);
             // IF number of VMs on a node is 0 -> Idle
-            idles[i] = VF.bool("idle" + n, solver);
-            ChocoUtils.postIfOnlyIf(rp, idles[i], IntConstraintFactory.arithm(vmsOnInvolvedNodes[i], "=", 0));
+            idles[i] = rp.getModel().boolVar("idle" + n);
+            ChocoUtils.postIfOnlyIf(rp, idles[i], rp.getModel().arithm(vmsOnInvolvedNodes[i], "=", 0));
             i++;
         }
-        IntVar sum = VF.bounded("sum", 0, 1000, solver);
-        solver.post(IntConstraintFactory.sum(idles, sum));
+        IntVar sum = rp.getModel().intVar("sum", 0, 1000, true);
+        rp.getModel().post(rp.getModel().sum(idles, "=", sum));
         // idle should be less than Amount for MaxSN (0, in this case)
-        solver.post(IntConstraintFactory.arithm(sum, "=", 0));
+        rp.getModel().post(rp.getModel().arithm(sum, "=", 0));
         System.err.flush();
         CMinMTTR obj = new CMinMTTR();
         obj.inject(new DefaultParameters(), rp);
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
-        System.out.println(plan.getResult());
     }
 
     /**
@@ -344,8 +340,6 @@ public class IssuesTest {
         i.getModel().detach(ShareableResource.get(i.getModel(), "cpu"));
         List<SatConstraint> cstrs = new ArrayList<>();
         ReconfigurationPlan p = s.solve(i.getModel(), cstrs, i.getOptConstraint());
-        System.out.println(p);
-
         Assert.assertTrue(p.getActions().isEmpty());
     }
 
@@ -378,11 +372,9 @@ public class IssuesTest {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
-        System.out.println(i.getModel());
         s.doOptimize(false);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertTrue(p.getActions().isEmpty());
         s.doRepair(true);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
@@ -394,11 +386,11 @@ public class IssuesTest {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
-        System.out.println(i.getModel());
+
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
-        System.out.println(p);
+
         Assert.assertTrue(p.getActions().isEmpty());
         s.doRepair(true);
         p = s.solve(i);
@@ -420,13 +412,11 @@ public class IssuesTest {
         cstrs.addAll(mo.getMapping().getOnlineNodes().stream().map(n -> new RunningCapacity(n, 1)).collect(Collectors.toList()));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
         ChocoScheduler s = new DefaultChocoScheduler();
-        System.out.println(i.getModel());
         s.doOptimize(false);
         s.doRepair(false);
         ReconfigurationPlan p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertNotNull(p);
         Assert.assertEquals(3, p.getActions().size());
-        System.out.println(p);
         s.doRepair(true);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertNotNull(p);
@@ -440,10 +430,8 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);
-        System.out.println(p);
     }
 
     public static void main(String[] args) throws Exception {
@@ -511,6 +499,19 @@ public class IssuesTest {
         }
     }
 
+    /**
+     * A helper to check that an instance has a solution.
+     *
+     * @param file the serialised instance. Must be in 'src/test/resources/'
+     */
+    private void computable(String file) {
+        Instance i = JSON.readInstance(new File("src/test/resources/" + file));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan p = s.solve(i);
+        Assert.assertNotNull(p);
+        System.out.println(p.getSize() + " action(s)");
+    }
+
     @Test
     public void testIssue93() throws Exception {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[2]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{\"0\":{\"memUsed\":204},\"1\":{\"memUsed\":204},\"2\":{\"memUsed\":204}}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":8,\"1\":10,\"2\":10},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{\"0\":8,\"1\":1,\"2\":1}},{\"routing\":{\"type\":\"default\"},\"switches\":[{\"id\":0,\"capacity\":-1}],\"links\":[{\"physicalElement\":{\"id\":2,\"type\":\"node\"},\"id\":0,\"capacity\":1000,\"switch\":0},{\"physicalElement\":{\"id\":1,\"type\":\"node\"},\"id\":1,\"capacity\":1000,\"switch\":0},{\"physicalElement\":{\"id\":0,\"type\":\"node\"},\"id\":2,\"capacity\":1000,\"switch\":0}],\"id\":\"net\"}]},\"constraints\":[{\"rc\":\"cpu\",\"amount\":6,\"nodes\":[0],\"continuous\":false,\"id\":\"resourceCapacity\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
@@ -518,30 +519,17 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
-        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
-        System.out.println(p);
     }
 
     @Test
     public void testIssue100() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-100.json.gz"));
-            ChocoScheduler s = new DefaultChocoScheduler();
-            ReconfigurationPlan p = s.solve(i);
-            SolvingStatistics stats = s.getStatistics();
-            Assert.assertNotNull(p);
-            System.out.println(stats);
+        computable("issue-100.json.gz");
     }
 
     @Test
     public void testIssue101() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-101.json.gz"));
-        ChocoScheduler s = new DefaultChocoScheduler();
-        ReconfigurationPlan p = s.solve(i);
-        SolvingStatistics stats = s.getStatistics();
-        System.out.println(stats);
-        Assert.assertNotNull(p);
-        System.out.println(p);
+        computable("issue-101.json.gz");
     }
 
     @Test
@@ -551,9 +539,7 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
-        System.out.println(stats);
         Assert.assertNotNull(p);
-        System.out.println(p);
     }
 
     @Test
@@ -579,12 +565,10 @@ public class IssuesTest {
 
     @Test
     public void testIssue131() throws Exception {
-        Instance i = JSON.readInstance(new File("src/test/resources/issue-131.json.gz"));
-        ChocoScheduler s = new DefaultChocoScheduler();
-        ReconfigurationPlan p = s.solve(i);
-        SolvingStatistics stats = s.getStatistics();
-        System.out.println(stats);
-        Assert.assertNotNull(p);
-        System.out.println(p);
+        for (int id = 0; id <= 4; id++) {
+            System.out.println("--- " + id + " ---");
+            computable("issue-131-" + id + ".json.gz");
+        }
     }
+
 }

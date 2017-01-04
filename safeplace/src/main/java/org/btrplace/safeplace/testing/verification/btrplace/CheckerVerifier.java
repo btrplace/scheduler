@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,6 @@ import org.btrplace.safeplace.testing.verification.Verifier;
 import org.btrplace.safeplace.testing.verification.VerifierResult;
 import org.btrplace.scheduler.SchedulerException;
 
-//import org.btrplace.plan.ReconfigurationPlanCheckerException;
 
 /**
  * @author Fabien Hermenier
@@ -34,6 +33,7 @@ import org.btrplace.scheduler.SchedulerException;
 public class CheckerVerifier implements Verifier {
 
     @Override
+    @SuppressWarnings("squid:S1166")
     public VerifierResult verify(TestCase tc) {
         if (tc.impl() == null) {
             return VerifierResult.newOk();
@@ -46,9 +46,7 @@ public class CheckerVerifier implements Verifier {
             try {
                 chk.check(tc.plan());
                 return VerifierResult.newOk();
-            } catch (SatConstraintViolationException ex) {
-                return VerifierResult.newKo(ex.getMessage());
-            } catch (SchedulerException ex) {
+            } catch (SatConstraintViolationException | SchedulerException ex) {
                 return VerifierResult.newKo(ex.getMessage());
             }
         }

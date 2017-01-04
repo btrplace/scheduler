@@ -33,11 +33,12 @@ public class NoPackings extends AtomicProp {
         super(a, b, "<<:");
     }
 
+    @Override
     public Boolean eval(Context ctx) {
         Set left = new HashSet<>();
         Set right = (Set) b.eval(ctx);
         int nb = 0;
-        for (Set s : ((Set<Set>) a.eval(ctx))) {
+        for (Set s : (Set<Set>) a.eval(ctx)) {
             nb += s.size();
             left.addAll(s);
         }

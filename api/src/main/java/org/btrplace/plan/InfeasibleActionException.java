@@ -28,9 +28,9 @@ import org.btrplace.plan.event.Action;
  */
 public class InfeasibleActionException extends RuntimeException {
 
-    private final Model model;
+    private final transient Model model;
 
-    private final Action action;
+    private final transient Action action;
 
     /**
      * New exception.

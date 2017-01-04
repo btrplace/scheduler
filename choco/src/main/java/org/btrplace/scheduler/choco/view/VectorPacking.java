@@ -21,9 +21,6 @@ package org.btrplace.scheduler.choco.view;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -41,7 +38,7 @@ public class VectorPacking extends Packing {
 
     private List<IntVar[]> bins;
 
-    private List<IntVar[]> sizes;
+    private List<int[]> sizes;
 
     private List<String> names;
 
@@ -58,7 +55,7 @@ public class VectorPacking extends Packing {
     }
 
     @Override
-    public void addDim(String name, List<IntVar> l, IntVar[] s, IntVar[] b) {
+    public void addDim(String name, List<IntVar> l, int[] s, IntVar[] b) {
         this.loads.add(l);
         this.sizes.add(s);
         this.bins.add(b);
@@ -67,9 +64,9 @@ public class VectorPacking extends Packing {
     }
 
     @Override
+    @SuppressWarnings("squid:S3346")
     public boolean beforeSolve(ReconfigurationProblem p) {
         super.beforeSolve(p);
-        Solver solver = p.getSolver();
         int[][] aSizes = new int[dim][sizes.get(0).length];
         IntVar[][] aLoads = new IntVar[dim][];
         String[] aNames = new String[dim];
@@ -77,20 +74,11 @@ public class VectorPacking extends Packing {
             aLoads[d] = loads.get(d).toArray(new IntVar[loads.get(d).size()]);
             assert bins.get(d).length == 0 || bins.get(d)[0].equals(bins.get(0)[0]);
             aNames[d] = names.get(d);
-            IntVar[] s = sizes.get(d);
-            int x = 0;
-            for (IntVar ss : s) {
-                aSizes[d][x++] = ss.getLB();
-                try {
-                    ss.instantiateTo(ss.getLB(), Cause.Null);
-                } catch (ContradictionException ex) {
-                    p.getLogger().error("Unable post the vector packing constraint", ex);
-                    return false;
-                }
-            }
+            int[] s = sizes.get(d);
+            aSizes[d] = s;
         }
         if (!p.getFutureRunningVMs().isEmpty()) {
-            solver.post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
+            p.getModel().post(new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true));
         }
         return true;
     }

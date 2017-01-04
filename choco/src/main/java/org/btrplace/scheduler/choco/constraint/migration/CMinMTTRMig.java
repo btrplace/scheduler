@@ -35,16 +35,16 @@ import org.btrplace.scheduler.choco.transition.BootableNode;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.ShutdownableNode;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.IntConstraintFactory;
-import org.chocosolver.solver.search.strategy.ISF;
+import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
+import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VariableFactory;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -85,8 +85,8 @@ public class CMinMTTRMig implements CObjective {
             endVars.add(m.getEnd());
         }
         IntVar[] costs = endVars.toArray(new IntVar[endVars.size()]);
-        IntVar cost = VariableFactory.bounded(rp.makeVarLabel("costEndVars"), 0, Integer.MAX_VALUE / 100, rp.getSolver());
-        costConstraints.add(IntConstraintFactory.sum(costs, cost));
+        IntVar cost = rp.getModel().intVar(rp.makeVarLabel("costEndVars"), 0, Integer.MAX_VALUE / 100, true);
+        costConstraints.add(rp.getModel().sum(costs, "=", cost));
 
         // Set the objective, minimize the cost
         rp.setObjective(true, cost);
@@ -120,10 +120,10 @@ public class CMinMTTRMig implements CObjective {
             }
         }
         if (!endVars.isEmpty()) {
-            strategies.add(ISF.custom(
-                    ISF.minDomainSize_var_selector(),
-                    ISF.min_value_selector(),
-                    ISF.split(), // Split from max
+            strategies.add(Search.intVarSearch(
+                    new FirstFail(rp.getModel()),
+                    new IntDomainMin(),
+                    DecisionOperatorFactory.makeIntSplit(), // Split from max
                     endVars.toArray(new IntVar[endVars.size()])
             ));
         }
@@ -142,10 +142,10 @@ public class CMinMTTRMig implements CObjective {
             endVars.add(a.getEnd());
         }
         if (!endVars.isEmpty()) {
-            strategies.add(ISF.custom(
-                    ISF.minDomainSize_var_selector(),
-                    ISF.min_value_selector(),
-                    ISF.split(), // Split from max
+            strategies.add(Search.intVarSearch(
+                    new FirstFail(rp.getModel()),
+                    new IntDomainMin(),
+                    DecisionOperatorFactory.makeIntSplit(), // Split from max
                     endVars.toArray(new IntVar[endVars.size()])
             ));
         }
@@ -158,10 +158,10 @@ public class CMinMTTRMig implements CObjective {
             }
         }
         if (!endVars.isEmpty()) {
-            strategies.add(ISF.custom(
-                    ISF.minDomainSize_var_selector(),
-                    ISF.min_value_selector(),
-                    ISF.split(), // Split from max
+            strategies.add(Search.intVarSearch(
+                    new FirstFail(rp.getModel()),
+                    new IntDomainMin(),
+                    DecisionOperatorFactory.makeIntSplit(),
                     endVars.toArray(new IntVar[endVars.size()])
             ));
         }
@@ -170,9 +170,9 @@ public class CMinMTTRMig implements CObjective {
         strategies.add(new IntStrategy(new IntVar[]{rp.getEnd(), cost}, new MyInputOrder<>(rp.getSolver(), this), new IntDomainMin()));
 
         // Add all defined strategies
-        rp.getSolver().getSearchLoop().set(
+        rp.getSolver().setSearch(
                 new StrategiesSequencer(
-                        rp.getSolver().getEnvironment(),
+                        rp.getModel().getEnvironment(),
                         strategies.toArray(new AbstractStrategy[strategies.size()])
                 )
         );
@@ -184,7 +184,7 @@ public class CMinMTTRMig implements CObjective {
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            Solver s = rp.getSolver();
+            Model s = rp.getModel();
             costConstraints.forEach(s::post);
         }
     }
