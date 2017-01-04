@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -44,6 +44,8 @@ public class CMinMigrationsTest {
         s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
+        System.out.println(p);
+        System.out.println(s.getStatistics());
         Assert.assertEquals(p.getActions().stream().filter(x -> x instanceof MigrateVM).count(), 1);
     }
 }
