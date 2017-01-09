@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -541,27 +541,6 @@ public class IssuesTest {
         ReconfigurationPlan p = s.solve(i);
         SolvingStatistics stats = s.getStatistics();
         Assert.assertNotNull(p);
-    }
-
-    @Test
-    public void testNtnx() {
-        String root = "/Users/fhermeni/Documents/Research/Projects/BtrPlace/Nutanix/instances/instance-";
-        for (int nb = 1; nb <= 5; nb++) {
-            System.out.println("Instance " + nb);
-            Instance i = JSON.readInstance(new File(root + nb + "/instance_clean.json"));
-            ChocoScheduler s = new DefaultChocoScheduler();
-            /*for (VM v : i.getModel().getMapping().getAllVMs()) {
-                i.getSatConstraints().add(new NoDelay(v));
-            }*/
-            //s.setVerbosity(3);
-            s.doOptimize(true);
-            //s.setTimeLimit(10);
-            //s.doRepair(true);
-            ReconfigurationPlan p = s.solve(i);
-            System.out.println(s.getStatistics());
-            //System.out.println(p);
-            System.out.println();
-        }
     }
 
     @Test

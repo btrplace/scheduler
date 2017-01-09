@@ -14,6 +14,8 @@ is now much more constants. This reduces the memory usage of the
 scheduler for large problems.
 More improvements to come in the next version
 
+- Issue #136: a new objective to minimize the number of migrations
+- WorstFit: a new heuristic to place against a worst-fit approach
 
 version 1.3 - 13 Dec 2016
 -----------------------

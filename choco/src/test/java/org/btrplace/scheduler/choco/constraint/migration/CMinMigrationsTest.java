@@ -20,7 +20,10 @@ package org.btrplace.scheduler.choco.constraint.migration;
 
 import org.btrplace.json.JSON;
 import org.btrplace.model.Instance;
+import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.MinMigrations;
+import org.btrplace.model.constraint.OptConstraint;
+import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -29,6 +32,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * @author Fabien Hermenier
@@ -47,5 +53,48 @@ public class CMinMigrationsTest {
         System.out.println(p);
         System.out.println(s.getStatistics());
         Assert.assertEquals(p.getActions().stream().filter(x -> x instanceof MigrateVM).count(), 1);
+    }
+
+
+    public void testFoo() {
+        String root = "/Users/fhermeni/Documents/Research/Projects/BtrPlace/nutanix/instances";
+        List<OptConstraint> objs = Arrays.asList(new MinMTTR(), new MinMigrations());
+        boolean verbose = false;
+
+        System.out.println("  migs\tmttr");
+        for (int idx = 2; idx <= 7; idx++) {
+            String path = root + "/instance-" + idx + ".json";
+            if (verbose) {
+                System.out.println("--- " + idx + " --- ");
+            }
+
+            Stack<Long> res = new Stack<>();
+            for (OptConstraint o : objs) {
+                if (verbose) {
+                    System.out.println("\t" + o);
+                }
+                Instance i = JSON.readInstance(new File(path));
+                if (Network.get(i.getModel()) != null) {
+                    i.getModel().detach(Network.get(i.getModel()));
+                }
+                i = new Instance(i.getModel(), i.getSatConstraints(), o);
+                ChocoScheduler s = new DefaultChocoScheduler();
+                s.doOptimize(true);
+                s.doRepair(false);
+                s.setTimeLimit(10);
+                //s.setVerbosity(3);
+                ReconfigurationPlan p = s.solve(i);
+                Assert.assertNotNull(p);
+                res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).count());
+                if (verbose) {
+                    System.out.println(s.getStatistics());
+                }
+            }
+            if (!verbose) {
+                System.out.printf("%d:\t%d\t%d%n", idx, res.pop(), res.pop());
+                //System.out.println(res.pop());
+            }
+            //System.out.println(res.pop());
+        }
     }
 }
