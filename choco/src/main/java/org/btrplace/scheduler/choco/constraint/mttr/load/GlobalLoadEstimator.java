@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,9 +19,18 @@
 package org.btrplace.scheduler.choco.constraint.mttr.load;
 
 /**
+ * Interface modeling a global load estimator.
+ * It allows to consider multiple dimensions and reduce it to a unique metric.
+ *
  * @author Fabien Hermenier
  */
 public interface GlobalLoadEstimator {
 
+    /**
+     * Compute the load.
+     *
+     * @param loads the per dimension load (discretised)
+     * @return the resulting load
+     */
     double getLoad(double[] loads);
 }

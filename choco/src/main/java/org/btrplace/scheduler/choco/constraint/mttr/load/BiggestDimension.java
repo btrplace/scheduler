@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,8 @@
 package org.btrplace.scheduler.choco.constraint.mttr.load;
 
 /**
+ * Estimator stating the load of a node is the load of the mostly-loaded
+ * dimension.
  * @author Fabien Hermenier
  */
 public class BiggestDimension implements GlobalLoadEstimator {

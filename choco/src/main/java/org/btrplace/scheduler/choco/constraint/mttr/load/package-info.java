@@ -16,20 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.constraint.mttr.load;
-
 /**
- * Load estimator stating the global load is the average of the individual passed load.
+ * Estimators to get the load of a node.
+ *
  * @author Fabien Hermenier
  */
-public class Mean implements GlobalLoadEstimator {
-
-    @Override
-    public double getLoad(double[] loads) {
-        double t = 0;
-        for (double d : loads) {
-            t += d;
-        }
-        return t / loads.length;
-    }
-}
+package org.btrplace.scheduler.choco.constraint.mttr.load;

@@ -23,16 +23,18 @@ import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMigrations;
+import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.mttr.*;
-import org.btrplace.scheduler.choco.transition.NodeTransition;
+import org.btrplace.scheduler.choco.constraint.mttr.load.BiggestDimension;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
@@ -56,6 +58,8 @@ import java.util.stream.Stream;
  */
 public class CMinMigrations implements CObjective {
 
+    private boolean useResources = false;
+
     private ReconfigurationProblem rp;
 
     /**
@@ -71,8 +75,12 @@ public class CMinMigrations implements CObjective {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
-        List<IntVar> mttrs = p.getVMActions().stream().map(VMTransition::getEnd).collect(Collectors.toList());
-        mttrs.addAll(p.getNodeActions().stream().map(NodeTransition::getEnd).collect(Collectors.toList()));
+
+        List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
+                .filter(v -> v instanceof ShareableResource)
+                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
+                .collect(Collectors.toList());
+        useResources = !rcs.isEmpty();
 
         IntVar cost = minMigs(rp);
         injectPlacementHeuristic(p, ps, cost);
@@ -177,7 +185,10 @@ public class CMinMigrations implements CObjective {
      * Try to place the VMs associated on the actions in a random node while trying first to stay on the current node
      */
     private void placeVMs(Parameters ps, List<AbstractStrategy<?>> strategies, List<VMTransition> actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
-        IntValueSelector rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
+        IntValueSelector rnd = new WorstFit(map, rp, new BiggestDimension());
+        if (!useResources) {
+            rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
+        }
         if (!actions.isEmpty()) {
             IntVar[] hosts = dSlices(actions).map(Slice::getHoster).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
             if (hosts.length > 0) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Placement heuristic implementing a worst fit.
  * @author Fabien Hermenier
  */
 public class WorstFit implements IntValueSelector {
@@ -56,10 +57,25 @@ public class WorstFit implements IntValueSelector {
 
     private Map<Integer, int[]> capacities;
 
+    /**
+     * New heuristic.
+     * Will try to make the VM stay on their current node in prior if possible
+     *
+     * @param vmMap the VM -> placement variable mapping
+     * @param rp    the CSP to solve
+     * @param load  the load estimator for the node.
+     */
     public WorstFit(Map<IntVar, VM> vmMap, ReconfigurationProblem rp, GlobalLoadEstimator load) {
         this(vmMap, rp, load, true);
     }
 
+    /**
+     * New heuristic.
+     * @param vmMap the VM -> placement variable mapping
+     * @param rp the CSP to solve
+     * @param load the load estimator for the node.
+     * @param stayFirst {@code true} to try to let the VM on place first if possible
+     */
     public WorstFit(Map<IntVar, VM> vmMap, ReconfigurationProblem rp, GlobalLoadEstimator load, boolean stayFirst) {
         this.stayFirst = stayFirst;
         this.vmMap = vmMap;
@@ -83,7 +99,6 @@ public class WorstFit implements IntValueSelector {
         VM vm = vmMap.get(v);
         if (stayFirst) {
             if (canStay(vm)) {
-                //System.out.println(vm + " -> stays " + Arrays.toString(usage(rp.getVM(vm))));
                 return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
             }
         }
@@ -97,12 +112,12 @@ public class WorstFit implements IntValueSelector {
                 loads[d] = packing.assignedLoad()[d][nId];
             }
             double global = loadWith(nId, loads, vm);
+
             if (global < minLoad) {
                 leastId = nId;
                 minLoad = global;
             }
         }
-        //System.out.println(vm + " -> " + rp.getNode(leastId) + " (" + minLoad + ")");
         return leastId;
     }
 
@@ -114,7 +129,7 @@ public class WorstFit implements IntValueSelector {
         return loads;
     }
 
-    public int[] capacities(int nIdx) {
+    private int[] capacities(int nIdx) {
         int[] capa = capacities.get(nIdx);
         if (capa == null) {
             capa = new int[rcs.size()];
@@ -163,7 +178,7 @@ public class WorstFit implements IntValueSelector {
                 return false;
             }
             IStateInt[] loads = load(curPos);
-            return loadWith(curPos, loads, vm) < 0.90;
+            return loadWith(curPos, loads, vm) <= 1.0;
         }
         return false;
     }
