@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,46 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.constraint.*;
-import org.btrplace.model.constraint.migration.*;
+import org.btrplace.model.constraint.Among;
+import org.btrplace.model.constraint.Ban;
+import org.btrplace.model.constraint.Constraint;
+import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.Gather;
+import org.btrplace.model.constraint.Killed;
+import org.btrplace.model.constraint.Lonely;
+import org.btrplace.model.constraint.MaxOnline;
+import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.MinMigrations;
+import org.btrplace.model.constraint.NoDelay;
+import org.btrplace.model.constraint.Offline;
+import org.btrplace.model.constraint.Online;
+import org.btrplace.model.constraint.Overbook;
+import org.btrplace.model.constraint.Preserve;
+import org.btrplace.model.constraint.Quarantine;
+import org.btrplace.model.constraint.Ready;
+import org.btrplace.model.constraint.ResourceCapacity;
+import org.btrplace.model.constraint.Root;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.constraint.RunningCapacity;
+import org.btrplace.model.constraint.Seq;
+import org.btrplace.model.constraint.Sleeping;
+import org.btrplace.model.constraint.Split;
+import org.btrplace.model.constraint.SplitAmong;
+import org.btrplace.model.constraint.Spread;
+import org.btrplace.model.constraint.migration.Deadline;
+import org.btrplace.model.constraint.migration.MinMTTRMig;
+import org.btrplace.model.constraint.migration.Precedence;
+import org.btrplace.model.constraint.migration.Serialize;
+import org.btrplace.model.constraint.migration.Sync;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
-import org.btrplace.scheduler.choco.constraint.migration.*;
+import org.btrplace.scheduler.choco.constraint.migration.CDeadline;
+import org.btrplace.scheduler.choco.constraint.migration.CMinMTTRMig;
+import org.btrplace.scheduler.choco.constraint.migration.CMinMigrations;
+import org.btrplace.scheduler.choco.constraint.migration.CPrecedence;
+import org.btrplace.scheduler.choco.constraint.migration.CSerialize;
+import org.btrplace.scheduler.choco.constraint.migration.CSync;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.view.CNetwork;
 import org.btrplace.scheduler.choco.view.CShareableResource;

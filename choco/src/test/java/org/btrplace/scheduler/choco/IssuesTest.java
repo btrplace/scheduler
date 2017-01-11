@@ -19,18 +19,29 @@
 package org.btrplace.scheduler.choco;
 
 import org.btrplace.json.JSON;
-import org.btrplace.model.*;
-import org.btrplace.model.constraint.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
+import org.btrplace.model.constraint.Ban;
+import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.Offline;
+import org.btrplace.model.constraint.OptConstraint;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.constraint.RunningCapacity;
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.Spread;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
-import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
@@ -41,7 +52,13 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -75,7 +92,6 @@ public class IssuesTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .build();
 
-        Solver solver = rp.getSolver();
         List<IntVar> VMsOnAllNodes = rp.getNbRunningVMs();
 
         int NUMBER_OF_NODE = map.getAllNodes().size();
@@ -158,7 +174,6 @@ public class IssuesTest {
         for (Node n : map.getAllNodes()) {
             nodeVM[i++] = nodes_state.get(rp.getNode(n));
         }
-        Solver solver = rp.getSolver();
         IntVar idle = rp.getModel().intVar("Nidles", 0, map.getAllNodes().size(), true);
 
         rp.getModel().post(rp.getModel().count(0, nodeVM, idle));
@@ -200,7 +215,6 @@ public class IssuesTest {
             nodeVM[i++] = nodes_state.get(rp.getNode(n));
             //rp.getNodeAction(n).getState().setVal(1);
         }
-        Solver solver = rp.getSolver();
         IntVar idle = rp.getModel().intVar("Nidles", 0, map.getAllNodes().size(), true);
 
         rp.getModel().post(rp.getModel().count(0, nodeVM, idle));
@@ -221,7 +235,6 @@ public class IssuesTest {
         Mapping map = model.getMapping().on(n1, n2).off(n3).run(n1, vm1, vm2);
         //model.attach(resources);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).build();
-        Solver solver = rp.getSolver();
         rp.getNodeAction(n3).getState().instantiateTo(1, Cause.Null);  // n3 goes online
         rp.getModel().post(rp.getModel().arithm(rp.getEnd(), "<=", 10));
         int NUMBER_OF_NODE = map.getAllNodes().size();
@@ -505,7 +518,7 @@ public class IssuesTest {
      *
      * @param file the serialised instance. Must be in 'src/test/resources/'
      */
-    private void computable(String file) {
+    private static void computable(String file) {
         Instance i = JSON.readInstance(new File("src/test/resources/" + file));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
@@ -539,7 +552,6 @@ public class IssuesTest {
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
-        SolvingStatistics stats = s.getStatistics();
         Assert.assertNotNull(p);
     }
 

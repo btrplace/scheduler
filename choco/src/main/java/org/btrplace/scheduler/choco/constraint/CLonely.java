@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import gnu.trove.list.array.TIntArrayList;
+
 import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
@@ -32,7 +33,11 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of {@link org.btrplace.model.constraint.Lonely}.
@@ -81,7 +86,7 @@ public class CLonely implements ChocoConstraint {
         return true;
     }
 
-    private void continuousRestriction(ReconfigurationProblem rp, Collection<VM> vms, Set<VM> otherVMs) {
+    private static void continuousRestriction(ReconfigurationProblem rp, Collection<VM> vms, Set<VM> otherVMs) {
         //Get the position of all the others c-slices and their associated end moment
         TIntArrayList otherPos = new TIntArrayList();
         TIntArrayList minePos = new TIntArrayList();

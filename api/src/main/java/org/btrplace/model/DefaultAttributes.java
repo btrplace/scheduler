@@ -18,7 +18,12 @@
 
 package org.btrplace.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Default implementation for {@link Attributes}.

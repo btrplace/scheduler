@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,7 +30,6 @@ import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -119,7 +118,6 @@ public class BootVMTest {
         BootVM m2 = (BootVM) rp.getVMActions().get(rp.getVM(vm2));
         rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions().get(1).getState().instantiateTo(1, Cause.Null);
-        Solver s = rp.getSolver();
         rp.getModel().post(rp.getModel().arithm(m2.getStart(), ">=", m1.getEnd()));
 
         new CMinMTTR().inject(ps, rp);

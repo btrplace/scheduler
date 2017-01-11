@@ -22,7 +22,13 @@ import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.*;
+import org.btrplace.model.constraint.Constraint;
+import org.btrplace.model.constraint.Killed;
+import org.btrplace.model.constraint.OptConstraint;
+import org.btrplace.model.constraint.Ready;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.Sleeping;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
@@ -46,7 +52,12 @@ import org.chocosolver.solver.search.measure.Measures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**

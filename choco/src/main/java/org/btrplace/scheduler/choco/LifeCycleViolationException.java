@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,11 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.*;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.NodeState;
+import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 import org.btrplace.scheduler.SchedulerException;
 
 import java.util.Set;

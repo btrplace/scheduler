@@ -29,7 +29,15 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
-import org.btrplace.scheduler.choco.constraint.mttr.*;
+import org.btrplace.scheduler.choco.constraint.mttr.HostingVariableSelector;
+import org.btrplace.scheduler.choco.constraint.mttr.MovementGraph;
+import org.btrplace.scheduler.choco.constraint.mttr.MovingVMs;
+import org.btrplace.scheduler.choco.constraint.mttr.MyInputOrder;
+import org.btrplace.scheduler.choco.constraint.mttr.OnStableNodeFirst;
+import org.btrplace.scheduler.choco.constraint.mttr.RandomVMPlacement;
+import org.btrplace.scheduler.choco.constraint.mttr.StartOnLeafNodes;
+import org.btrplace.scheduler.choco.constraint.mttr.VMPlacementUtils;
+import org.btrplace.scheduler.choco.constraint.mttr.WorstFit;
 import org.btrplace.scheduler.choco.constraint.mttr.load.BiggestDimension;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
@@ -82,12 +90,13 @@ public class CMinMigrations implements CObjective {
                 .collect(Collectors.toList());
         useResources = !rcs.isEmpty();
 
-        IntVar cost = minMigs(rp);
+        //IntVar cost = minMigs(rp);
+        IntVar cost = minDurations(rp);
         injectPlacementHeuristic(p, ps, cost);
         return true;
     }
 
-    private IntVar minMigs(ReconfigurationProblem rp) {
+    private static IntVar minMigs(ReconfigurationProblem rp) {
         List<IntVar> stays = new ArrayList<>();
         for (VMTransition t : rp.getVMActions()) {
             if (t instanceof RelocatableVM) {
@@ -99,6 +108,20 @@ public class CMinMigrations implements CObjective {
         rp.setObjective(false, s);
         return s;
     }
+
+    private IntVar minDurations(ReconfigurationProblem rp) {
+        List<IntVar> stays = new ArrayList<>();
+        for (VMTransition t : rp.getVMActions()) {
+            if (t instanceof RelocatableVM) {
+                stays.add(t.getDuration());
+            }
+        }
+        IntVar s = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, stays.size(), true);
+        rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[stays.size()]), "=", s));
+        rp.setObjective(true, s);
+        return s;
+    }
+
 
     private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
 

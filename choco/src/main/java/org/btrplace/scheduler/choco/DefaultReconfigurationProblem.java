@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,12 +20,22 @@ package org.btrplace.scheduler.choco;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import org.btrplace.model.*;
+
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.NodeState;
+import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.btrplace.scheduler.choco.transition.*;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
+import org.btrplace.scheduler.choco.transition.NodeTransitionBuilder;
+import org.btrplace.scheduler.choco.transition.TransitionFactory;
+import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.Cumulatives;
@@ -51,7 +61,17 @@ import org.chocosolver.util.ESat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

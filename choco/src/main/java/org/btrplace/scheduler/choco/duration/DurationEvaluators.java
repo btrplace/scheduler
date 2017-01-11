@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,12 +20,21 @@ package org.btrplace.scheduler.choco.duration;
 
 import org.btrplace.model.Element;
 import org.btrplace.model.Model;
-import org.btrplace.plan.event.*;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.Allocate;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.ForgeVM;
+import org.btrplace.plan.event.KillVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SuspendVM;
 import org.btrplace.scheduler.SchedulerException;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * Class to store the {@link ActionDurationEvaluator} associated to each of the possible actions.

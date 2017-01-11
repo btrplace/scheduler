@@ -32,6 +32,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -56,22 +57,28 @@ public class CMinMigrationsTest {
     }
 
 
+    @Test
     public void testFoo() {
-        String root = "/Users/fhermeni/Documents/Research/Projects/BtrPlace/nutanix/instances";
+        String root = "/Users/fabien.hermenier/Documents/BtrPlace/nutanix/instances";
         List<OptConstraint> objs = Arrays.asList(new MinMTTR(), new MinMigrations());
         boolean verbose = false;
 
-        System.out.println("  migs\tmttr");
+        for (OptConstraint o : objs) {
+            System.out.print(" " + o);
+        }
+        System.out.println();
         for (int idx = 2; idx <= 7; idx++) {
             String path = root + "/instance-" + idx + ".json";
             if (verbose) {
                 System.out.println("--- " + idx + " --- ");
             }
 
-            Stack<Long> res = new Stack<>();
+            List<Long> res = new ArrayList<>();
             for (OptConstraint o : objs) {
                 if (verbose) {
                     System.out.println("\t" + o);
+                } else {
+                    System.out.print(idx);
                 }
                 Instance i = JSON.readInstance(new File(path));
                 if (Network.get(i.getModel()) != null) {
@@ -91,10 +98,11 @@ public class CMinMigrationsTest {
                 }
             }
             if (!verbose) {
-                System.out.printf("%d:\t%d\t%d%n", idx, res.pop(), res.pop());
-                //System.out.println(res.pop());
+                for (Long l : res) {
+                    System.out.print("\t" + l);
+                }
+                System.out.println();
             }
-            //System.out.println(res.pop());
         }
     }
 }

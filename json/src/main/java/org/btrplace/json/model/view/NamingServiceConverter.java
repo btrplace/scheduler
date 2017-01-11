@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,7 +28,10 @@ import org.btrplace.model.view.NamingService;
 
 import java.util.Map;
 
-import static org.btrplace.json.JSONs.*;
+import static org.btrplace.json.JSONs.checkKeys;
+import static org.btrplace.json.JSONs.getNode;
+import static org.btrplace.json.JSONs.getVM;
+import static org.btrplace.json.JSONs.requiredString;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.NamingService}.
