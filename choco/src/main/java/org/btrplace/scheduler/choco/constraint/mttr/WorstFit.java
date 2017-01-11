@@ -97,10 +97,8 @@ public class WorstFit implements IntValueSelector {
     @Override
     public int selectValue(IntVar v) {
         VM vm = vmMap.get(v);
-        if (stayFirst) {
-            if (canStay(vm)) {
-                return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
-            }
+        if (stayFirst && canStay(vm)) {
+            return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
         }
 
         //Get the load
@@ -157,9 +155,9 @@ public class WorstFit implements IntValueSelector {
     private double loadWith(int nId, IStateInt[] loads, VM vm) {
         int[] capas = capacities(nId);
         double[] normalised = new double[capas.length];
-        int[] usages = usage(rp.getVM(vm));
+        int[] usage = usage(rp.getVM(vm));
         for (int i = 0; i < capas.length; i++) {
-            normalised[i] = (1.0d * loads[i].get() + usages[i]) / capas[i];
+            normalised[i] = (1.0d * loads[i].get() + usage[i]) / capas[i];
         }
         return globalLoad.getLoad(normalised);
     }

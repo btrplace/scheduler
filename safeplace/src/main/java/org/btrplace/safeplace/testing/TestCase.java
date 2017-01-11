@@ -34,10 +34,7 @@ import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -164,7 +161,11 @@ public class TestCase {
         JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
         JSONObject o = (JSONObject) p.parse(new StringReader(c));
         String cId = o.getAsString("constraint");
-        Constraint cstr = cstrs.stream().filter(x -> x.id().equals(cId)).findFirst().get();
+        Optional<Constraint> opt = cstrs.stream().filter(x -> x.id().equals(cId)).findFirst();
+        if (!opt.isPresent()) {
+            throw new IllegalArgumentException("Unknown constraint '" + cId + "'");
+        }
+        Constraint cstr = opt.get();
         InstanceConverter ic = new InstanceConverter();
         ic.getConstraintsConverter().register(new ScheduleConverter());
         ReconfigurationPlanConverter rc = new ReconfigurationPlanConverter();

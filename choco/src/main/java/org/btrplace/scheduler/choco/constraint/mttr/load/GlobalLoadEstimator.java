@@ -24,6 +24,7 @@ package org.btrplace.scheduler.choco.constraint.mttr.load;
  *
  * @author Fabien Hermenier
  */
+@FunctionalInterface
 public interface GlobalLoadEstimator {
 
     /**
