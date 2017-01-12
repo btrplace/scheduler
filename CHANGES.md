@@ -11,10 +11,10 @@ the performance of the 1.2 version of BtrPlace.
 
 The CSP model has been tuned to shrink it in terms of variables. There
 is now much more constants. This reduces the memory usage of the
-scheduler for large problems.
-More improvements to come in the next version
+scheduler for large problems. More improvements to come in the next version
 
-- Issue #136: a new objective to minimize the number of migrations
+- Issue #136: MinMigrations objective to minimize the cumulative duration of
+  the migrations
 - WorstFit: a new heuristic to place against a worst-fit approach
 
 version 1.3 - 13 Dec 2016

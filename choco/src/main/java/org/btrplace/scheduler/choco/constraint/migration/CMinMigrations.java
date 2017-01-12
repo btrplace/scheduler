@@ -54,7 +54,15 @@ import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,23 +98,9 @@ public class CMinMigrations implements CObjective {
                 .collect(Collectors.toList());
         useResources = !rcs.isEmpty();
 
-        //IntVar cost = minMigs(rp);
         IntVar cost = minDurations(rp);
         injectPlacementHeuristic(p, ps, cost);
         return true;
-    }
-
-    private static IntVar minMigs(ReconfigurationProblem rp) {
-        List<IntVar> stays = new ArrayList<>();
-        for (VMTransition t : rp.getVMActions()) {
-            if (t instanceof RelocatableVM) {
-                stays.add(((RelocatableVM) t).isStaying());
-            }
-        }
-        IntVar s = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, stays.size(), true);
-        rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[stays.size()]), "=", s));
-        rp.setObjective(false, s);
-        return s;
     }
 
     private IntVar minDurations(ReconfigurationProblem rp) {
@@ -123,8 +117,20 @@ public class CMinMigrations implements CObjective {
     }
 
 
+
     private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
 
+        /*
+        VMs to run
+        VMs to move first (not in the domain, dynamic)
+            Sort by increasing duration, then MinDom
+        VMs than can stay
+            Sort by increasing duration, then MinDom
+
+        Schedule all actions asap
+            VM actions first
+            Node once its VMs ok
+         */
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
@@ -219,6 +225,7 @@ public class CMinMigrations implements CObjective {
             }
         }
     }
+
 
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
