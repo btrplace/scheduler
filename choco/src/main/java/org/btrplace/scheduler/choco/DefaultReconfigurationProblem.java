@@ -694,6 +694,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public VMTransition getVMAction(int idx) {
+        return idx < 0 ? null : vmActions.get(idx);
+    }
+
+
+    @Override
     public NodeTransition getNodeAction(Node id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions.get(idx);

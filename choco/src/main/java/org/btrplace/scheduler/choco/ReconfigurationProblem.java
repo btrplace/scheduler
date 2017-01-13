@@ -194,6 +194,14 @@ public interface ReconfigurationProblem {
     VMTransition getVMAction(VM id);
 
     /**
+     * Get the transition associated to a given VM.
+     *
+     * @param id the VM identifier
+     * @return the associated transition if exists, {@code null} otherwise
+     */
+    VMTransition getVMAction(int id);
+
+    /**
      * Get the transitions associated to a set of VMs.
      *
      * @param id the VMs

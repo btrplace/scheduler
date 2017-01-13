@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,8 +21,11 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.iterators.DisposableValueIterator;
@@ -51,6 +54,9 @@ public class RandomVMPlacement implements IntValueSelector {
 
     private TIntHashSet[] ranks;
 
+    private int[] nodeMap;
+
+    private VMTransition[] actionMap;
 
     /**
      * Make a new heuristic.
@@ -81,6 +87,31 @@ public class RandomVMPlacement implements IntValueSelector {
         if (priorities != null) {
             this.ranks = Arrays.copyOf(priorities, priorities.length);
         }
+
+        int maxId = 0;
+        for (Node n : p.getNodes()) {
+            if (maxId < n.id()) {
+                maxId = n.id();
+            }
+        }
+
+        nodeMap = new int[maxId + 1];
+        for (Node n : p.getNodes()) {
+            nodeMap[n.id()] = rp.getNode(n);
+        }
+
+        maxId = 0;
+        for (VM v : p.getFutureRunningVMs()) {
+            int idx = v.id();
+            if (maxId < idx) {
+                maxId = idx;
+            }
+        }
+        actionMap = new VMTransition[maxId + 1];
+        for (VM v : p.getFutureRunningVMs()) {
+            actionMap[v.id()] = p.getVMAction(v);
+        }
+
     }
 
     /**
@@ -137,12 +168,33 @@ public class RandomVMPlacement implements IntValueSelector {
         return pos;
     }
 
+    /**
+     * Check if a VM can stay on its current node.
+     *
+     * @param rp the reconfiguration problem.
+     * @param vm the VM
+     * @return {@code true} iff the VM can stay
+     */
+    public int canStay(ReconfigurationProblem rp, VM vm) {
+        Mapping m = rp.getSourceModel().getMapping();
+        if (m.isRunning(vm)) {
+            Node n = m.getVMLocation(vm);
+            int curPos = nodeMap[n.id()];
+            if (actionMap[vm.id()].getDSlice().getHoster().contains(curPos)) {
+                return curPos;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public int selectValue(IntVar x) {
         if (stay) {
             VM vm = vmPlacement.get(x);
-            if (VMPlacementUtils.canStay(rp, vm)) {
-                return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
+            int nIdx = canStay(rp, vm);
+            if (nIdx >= 0) {
+                Node n = rp.getSourceModel().getMapping().getVMLocation(vm);
+                return nodeMap[n.id()];
             }
         }
 

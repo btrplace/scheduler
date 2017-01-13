@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -140,6 +140,7 @@ public class RelocatableVM implements KeepRunningVM {
         start = dSlice.getStart();
         end = cSlice.getEnd();
 
+        csp.post(new Arithmetic(end, Operator.LE, rp.getEnd()));
         // Get some static durations from evaluators
         DurationEvaluators dev = rp.getDurationEvaluators();
         int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);
@@ -192,7 +193,6 @@ public class RelocatableVM implements KeepRunningVM {
                     rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, forgeD, false);
             csp.post(csp.times(doReinstantiation, forgeD, time));
             csp.post(new Arithmetic(start, Operator.GE, time));
-
             // Be sure that doReinstantiation will be instantiated
             csp.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
         }
