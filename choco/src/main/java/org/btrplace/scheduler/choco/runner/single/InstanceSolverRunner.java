@@ -164,9 +164,6 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
 
     private void setVerbosity() {
-        if (params.getVerbosity() >=1) {
-            rp.getSolver().showSolutions();
-        }
         if (params.getVerbosity() >= 2) {
             //every second
             rp.getSolver().showStatisticsDuringResolution(1000);
