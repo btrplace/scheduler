@@ -24,7 +24,6 @@ import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.MinMigrations;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.Preserve;
@@ -97,18 +96,20 @@ public class CMinMigrationsTest {
         Assert.assertEquals(p.getResult().getMapping().getVMLocation(vm0), n1); //VM0 to n1
     }
 
-    @Test
     public static void main(String[] args) {
         String root = "/Users/fabien.hermenier/Documents/BtrPlace/nutanix/instances";
-        List<OptConstraint> objs = Arrays.asList(new MinMTTR(), new MinMigrations());
-        boolean verbose = true;
+        List<OptConstraint> objs = Arrays.asList(/*new MinMTTR(), */new MinMigrations());
+        boolean verbose = false;
 
         for (OptConstraint o : objs) {
             System.out.print(" " + o);
         }
         System.out.println();
-        for (int idx = 7; idx <= 7; idx++) {
-            String path = root + "/instance-" + idx + ".json";
+        for (int idx = 1; idx <= 256; idx += 5) {
+            String path = root + "/lazan/lazan-" + idx + ".json.gz";
+//        for (int idx = 2; idx <= 7; idx++) {
+//            String path = root + "/instance-" + idx + ".json";
+
             if (verbose) {
                 System.out.println("--- " + idx + " --- ");
             } else {
@@ -127,11 +128,14 @@ public class CMinMigrationsTest {
                 i = new Instance(i.getModel(), i.getSatConstraints(), o);
                 ChocoScheduler s = new DefaultChocoScheduler();
                 s.doOptimize(true);
-                s.setTimeLimit(20);
-                s.doRepair(true);
+                s.setTimeLimit(30);
+                //s.setVerbosity(3);
+                s.doRepair(false);
                 ReconfigurationPlan p = s.solve(i);
                 Assert.assertNotNull(p);
+                //res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).mapToLong(x -> x.getEnd() - x.getStart()).sum());
                 res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).count());
+                //res.add((long)s.getStatistics().lastSolution().getDuration());
                 if (verbose) {
                     System.out.println(s.getStatistics());
                     System.out.println(p);

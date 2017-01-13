@@ -48,7 +48,7 @@
     <properties>
         <argLine>-Xmx128M</argLine>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.21</slf4j.version>
+        <slf4j.version>1.7.22</slf4j.version>
     </properties>
     <licenses>
         <license>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.9.10</version>
+            <version>6.10</version>
             <type>jar</type>
             <scope>test</scope>
             <optional>false</optional>
@@ -84,11 +84,6 @@
             <artifactId>mockito-all</artifactId>
             <version>1.10.19</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-core</artifactId>
-            <version>2.5.1</version>
         </dependency>
     </dependencies>
 
