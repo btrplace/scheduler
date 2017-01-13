@@ -1,6 +1,10 @@
 Release notes
 ======================
 
+version 1.5 - soon come
+----------------------
+See milestone [1.5](https://github.com/btrplace/scheduler/milestones/1.5)
+
 version 1.4 - 13 Jan 2017
 ----------------------
 See milestone [1.4](https://github.com/btrplace/scheduler/milestones/1.4)
@@ -416,6 +420,8 @@ inform nodes about additional operations to execute
 
 #### version 0.3 - 08 Feb 2013 ####
 - Synchronize with solver-api
+
+
 
 
 
