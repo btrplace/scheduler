@@ -5,6 +5,7 @@ version 1.5 - soon come
 ----------------------
 See milestone [1.5](https://github.com/btrplace/scheduler/milestones/1.5)
 
+
 version 1.4 - 13 Jan 2017
 ----------------------
 See milestone [1.4](https://github.com/btrplace/scheduler/milestones/1.4)
@@ -20,6 +21,7 @@ scheduler for large problems. More improvements to come in the next version
 - Issue #136: MinMigrations objective to minimize the cumulative duration of
   the migrations
 - WorstFit: a new heuristic to place against a worst-fit approach
+
 
 version 1.3 - 13 Dec 2016
 -----------------------
