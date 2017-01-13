@@ -31,7 +31,6 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
 import org.btrplace.scheduler.choco.constraint.mttr.HostingVariableSelector;
 import org.btrplace.scheduler.choco.constraint.mttr.MovementGraph;
-import org.btrplace.scheduler.choco.constraint.mttr.MovingVMs;
 import org.btrplace.scheduler.choco.constraint.mttr.MyInputOrder;
 import org.btrplace.scheduler.choco.constraint.mttr.OnStableNodeFirst;
 import org.btrplace.scheduler.choco.constraint.mttr.RandomVMPlacement;
@@ -74,9 +73,13 @@ import java.util.stream.Stream;
  */
 public class CMinMigrations implements CObjective {
 
+    private boolean costActivated = false;
+
     private boolean useResources = false;
 
     private ReconfigurationProblem rp;
+
+    private IntVar cost;
 
     /**
      * Make a new objective.
@@ -91,46 +94,17 @@ public class CMinMigrations implements CObjective {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem p) throws SchedulerException {
         this.rp = p;
+        costActivated = false;
 
-        List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
-                .filter(v -> v instanceof ShareableResource)
-                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
-                .collect(Collectors.toList());
-        useResources = !rcs.isEmpty();
-
-        IntVar cost = minDurations(rp);
+        cost = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, Integer.MAX_VALUE / 100, true);
+        rp.setObjective(true, cost);
         injectPlacementHeuristic(p, ps, cost);
+        postCostConstraints();
         return true;
     }
 
-    private IntVar minDurations(ReconfigurationProblem rp) {
-        List<IntVar> stays = new ArrayList<>();
-        for (VMTransition t : rp.getVMActions()) {
-            if (t instanceof RelocatableVM) {
-                stays.add(t.getDuration());
-            }
-        }
-        IntVar s = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, stays.size(), true);
-        rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[stays.size()]), "=", s));
-        rp.setObjective(true, s);
-        return s;
-    }
-
-
-
     private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
 
-        /*
-        VMs to run
-        VMs to move first (not in the domain, dynamic)
-            Sort by increasing duration, then MinDom
-        VMs than can stay
-            Sort by increasing duration, then MinDom
-
-        Schedule all actions asap
-            VM actions first
-            Node once its VMs ok
-         */
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
@@ -168,11 +142,18 @@ public class CMinMigrations implements CObjective {
                 }
             }
 
-            IntVar[] scopes = dSlices(actions).map(Slice::getHoster).toArray(IntVar[]::new);
-
-            strategies.add(new IntStrategy(scopes, new MovingVMs(p, map, actions), new RandomVMPlacement(p, pla, true, ps.getRandomSeed())));
+            placeVMs(ps, strategies, actions, schedHeuristic, pla);
         }
 
+        List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
+                .filter(v -> v instanceof ShareableResource)
+                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
+                .collect(Collectors.toList());
+        useResources = !rcs.isEmpty();
+
+        Map<VM, Integer> costs = CShareableResource.getWeights(rp, rcs);
+        badActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
+        goodActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
         placeVMs(ps, strategies, badActions, schedHeuristic, pla);
         placeVMs(ps, strategies, goodActions, schedHeuristic, pla);
 
@@ -192,7 +173,7 @@ public class CMinMigrations implements CObjective {
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
             IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
-            strategies.add(new IntStrategy(starts, new MyInputOrder<>(s), new IntDomainMin()));
+            strategies.add(new IntStrategy(starts, new FirstFail(rp.getModel()), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
@@ -234,6 +215,21 @@ public class CMinMigrations implements CObjective {
 
     private static Stream<Slice> dSlices(List<VMTransition> l) {
         return l.stream().map(VMTransition::getDSlice).filter(Objects::nonNull);
+    }
+
+    @Override
+    public void postCostConstraints() {
+        if (!costActivated) {
+            costActivated = true;
+            rp.getLogger().debug("Post the cost-oriented constraints");
+            List<IntVar> stays = new ArrayList<>();
+            for (VMTransition t : rp.getVMActions()) {
+                if (t instanceof RelocatableVM && rp.getManageableVMs().contains(t.getVM())) {
+                    stays.add(t.getDuration());
+                }
+            }
+            rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[stays.size()]), "=", cost));
+        }
     }
 
     @Override
