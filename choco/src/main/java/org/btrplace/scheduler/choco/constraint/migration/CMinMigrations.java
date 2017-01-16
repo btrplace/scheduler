@@ -43,6 +43,9 @@ import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.constraints.nary.sum.PropSum;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
@@ -98,8 +101,8 @@ public class CMinMigrations implements CObjective {
 
         cost = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, Integer.MAX_VALUE / 100, true);
         rp.setObjective(true, cost);
-        injectPlacementHeuristic(p, ps, cost);
         postCostConstraints();
+        injectPlacementHeuristic(p, ps, cost);
         return true;
     }
 
@@ -232,12 +235,18 @@ public class CMinMigrations implements CObjective {
                     stays.add(t.getDuration());
                 }
             }
-            rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[stays.size()]), "=", cost));
+            //With choco 4.0.1, we cannot post a simple sum() constraint due to hardcore
+            //simplification it made. So we bypass the optimisation phase and post the propagator
+            stays.add(cost);
+            Propagator<IntVar> p =
+                    new PropSum(stays.toArray(new IntVar[0]), stays.size() - 1, Operator.EQ, 0);
+            rp.getModel().post(new org.chocosolver.solver.constraints.Constraint("sumCost", p));
+
         }
     }
 
     @Override
     public String toString() {
-        return "minMigrations()";
+        return "minMigrations";
     }
 }

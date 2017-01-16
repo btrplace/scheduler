@@ -35,6 +35,9 @@ import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.constraints.Propagator;
+import org.chocosolver.solver.constraints.nary.sum.PropSum;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
@@ -206,12 +209,15 @@ public class CMinMTTR implements CObjective {
         if (!costActivated) {
             costActivated = true;
             rp.getLogger().debug("Post the cost-oriented constraints");
-            IntVar[] mttrs = Stream.concat(rp.getVMActions().stream(), rp.getNodeActions().stream())
-                    .map(Transition::getEnd)
-                    .filter(v -> !v.isInstantiatedTo(0))
-                    .toArray(IntVar[]::new);
+            List<IntVar> mttrs = Stream.concat(rp.getVMActions().stream(), rp.getNodeActions().stream())
+                    .map(Transition::getEnd).collect(Collectors.toList());
 
-            rp.getModel().post(rp.getModel().sum(mttrs, "=", cost));
+            //With choco 4.0.1, we cannot post a simple sum() constraint due to hardcore
+            //simplification it made. So we bypass the optimisation phase and post the propagator
+            mttrs.add(cost);
+            Propagator<IntVar> p =
+                    new PropSum(mttrs.toArray(new IntVar[0]), mttrs.size() - 1, Operator.EQ, 0);
+            rp.getModel().post(new org.chocosolver.solver.constraints.Constraint("sumCost", p));
         }
     }
 
