@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright (c) 2016 University Nice Sophia Antipolis
+  ~ Copyright (c) 2017 University Nice Sophia Antipolis
   ~
   ~ This file is part of btrplace.
   ~ This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>scheduler-json</artifactId>
