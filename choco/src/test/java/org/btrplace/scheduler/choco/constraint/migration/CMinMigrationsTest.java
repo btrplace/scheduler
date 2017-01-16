@@ -25,11 +25,10 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMigrations;
-import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.Spread;
 import org.btrplace.model.view.ShareableResource;
-import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -96,57 +95,22 @@ public class CMinMigrationsTest {
         Assert.assertEquals(p.getResult().getMapping().getVMLocation(vm0), n1); //VM0 to n1
     }
 
-    public static void main(String[] args) {
-        String root = "/Users/fabien.hermenier/Documents/BtrPlace/nutanix/instances";
-        List<OptConstraint> objs = Arrays.asList(/*new MinMTTR(), */new MinMigrations());
-        boolean verbose = false;
-
-        for (OptConstraint o : objs) {
-            System.out.print(" " + o);
-        }
-        System.out.println();
-        for (int idx = 1; idx <= 256; idx += 5) {
-            String path = root + "/lazan/lazan-" + idx + ".json.gz";
-//        for (int idx = 2; idx <= 7; idx++) {
-//            String path = root + "/instance-" + idx + ".json";
-
-            if (verbose) {
-                System.out.println("--- " + idx + " --- ");
-            } else {
-                System.out.print(idx);
-            }
-
-            List<Long> res = new ArrayList<>();
-            for (OptConstraint o : objs) {
-                if (verbose) {
-                    System.out.println("\t" + o);
-                }
-                Instance i = JSON.readInstance(new File(path));
-                if (Network.get(i.getModel()) != null) {
-                    i.getModel().detach(Network.get(i.getModel()));
-                }
-                i = new Instance(i.getModel(), i.getSatConstraints(), o);
-                ChocoScheduler s = new DefaultChocoScheduler();
-                s.doOptimize(true);
-                s.setTimeLimit(30);
-                //s.setVerbosity(3);
-                s.doRepair(false);
-                ReconfigurationPlan p = s.solve(i);
-                Assert.assertNotNull(p);
-                //res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).mapToLong(x -> x.getEnd() - x.getStart()).sum());
-                res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).count());
-                //res.add((long)s.getStatistics().lastSolution().getDuration());
-                if (verbose) {
-                    System.out.println(s.getStatistics());
-                    System.out.println(p);
-                }
-            }
-            if (!verbose) {
-                for (Long l : res) {
-                    System.out.print("\t" + l);
-                }
-                System.out.println();
-            }
-        }
+    /**
+     * Issue #137.
+     * ShutdownableNode.isOnline() is not instantiated at the end of the problem
+     */
+    @Test
+    public void testWithFreeNodes() {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        VM v1 = mo.newVM();
+        VM v2 = mo.newVM();
+        DefaultChocoScheduler s = new DefaultChocoScheduler();
+        mo.getMapping().on(n0, n1, n2).run(n0, v1, v2);
+        Instance i = new Instance(mo, Arrays.asList(new Spread(mo.getMapping().getAllVMs(), false)), new MinMigrations());
+        ReconfigurationPlan p = s.solve(i);
+        Assert.assertNotNull(p);
     }
 }

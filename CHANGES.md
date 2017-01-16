@@ -5,6 +5,7 @@ version 1.5 - soon come
 ----------------------
 See milestone [1.5](https://github.com/btrplace/scheduler/milestones/1.5)
 
+This version is a maintenance release that fix the critical issue #137
 
 version 1.4 - 13 Jan 2017
 ----------------------

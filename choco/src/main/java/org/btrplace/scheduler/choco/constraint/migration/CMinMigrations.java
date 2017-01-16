@@ -174,6 +174,10 @@ public class CMinMigrations implements CObjective {
             //Boot some nodes if needed
             IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
             strategies.add(new IntStrategy(starts, new FirstFail(rp.getModel()), new IntDomainMin()));
+            //Fix the duration. The side effect will be that states will be fixed as well
+            //with the objective to not do un-necessary actions
+            IntVar[] durations = p.getNodeActions().stream().map(Transition::getDuration).toArray(IntVar[]::new);
+            strategies.add(new IntStrategy(durations, new FirstFail(rp.getModel()), new IntDomainMin()));
         }
 
         ///SCHEDULING PROBLEM

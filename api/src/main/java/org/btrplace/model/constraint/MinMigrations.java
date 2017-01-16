@@ -31,6 +31,6 @@ public class MinMigrations extends OptConstraint {
 
     @Override
     public String id() {
-        return "minMigrations()";
+        return "minMigrations";
     }
 }
