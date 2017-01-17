@@ -5,6 +5,9 @@ version 1.5.1 - soon come
 ----------------------
 See milestone [1.5.1](https://github.com/btrplace/scheduler/milestones/1.5.1)
 
+Minor release that fix a performance issue in MinMigrations (a partial #138)
+
+
 version 1.5.0 - 16 Jan 2017
 ----------------------
 See milestone [1.5](https://github.com/btrplace/scheduler/milestones/1.5)
