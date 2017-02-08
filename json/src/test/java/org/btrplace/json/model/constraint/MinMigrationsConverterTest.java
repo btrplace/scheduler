@@ -21,34 +21,32 @@ package org.btrplace.json.model.constraint;
 import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
-import org.btrplace.model.constraint.NoDelay;
+import org.btrplace.model.constraint.MinMigrations;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link org.btrplace.json.model.constraint.NoDelayConverter}.
+ * Unit tests for {@link MinMigrationsConverter}.
  *
- * @author Vincent Kherbache
- * @see org.btrplace.json.model.constraint.NoDelayConverter
+ * @author Fabien Hermenier
  */
-public class NoDelayConverterTest {
+public class MinMigrationsConverterTest {
 
-    @Test
-    public void testViables() throws JSONConverterException {
-        Model mo = new DefaultModel();
-        ConstraintsConverter conv = new ConstraintsConverter();
-        conv.register(new NoDelayConverter());
+  @Test
+  public void test() throws JSONConverterException {
+    Model mo = new DefaultModel();
+    ConstraintsConverter conv = new ConstraintsConverter();
+    conv.register(new MinMigrationsConverter());
 
+    MinMigrations m = new MinMigrations();
+    Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(m)), m);
+    System.out.println(conv.toJSON(m));
+  }
 
-        NoDelay nd = new NoDelay(mo.newVM());
-        Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(nd)), nd);
-        System.out.println(conv.toJSON(nd));
-    }
-
-    @Test
-    public void testBundle() {
-        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(NoDelay.class));
-        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new NoDelayConverter().getJSONId()));
-    }
+  @Test
+  public void testBundle() {
+    Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(MinMigrations.class));
+    Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new MinMigrationsConverter().getJSONId()));
+  }
 
 }

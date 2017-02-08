@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -37,13 +37,22 @@ public class GatherConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        GatherConverter conv = new GatherConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new GatherConverter());
+
 
         Gather d = new Gather(Arrays.asList(mo.newVM(), mo.newVM()), false);
         Gather c = new Gather(Arrays.asList(mo.newVM(), mo.newVM()), true);
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Gather.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new GatherConverter().getJSONId()));
+    }
+
 }

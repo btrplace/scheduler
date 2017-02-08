@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ import org.btrplace.json.JSONConverterException;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
+import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.MaxOnline;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,10 +43,19 @@ public class MaxOnlineConverterTest {
         Model model = new DefaultModel();
         Set<Node> s = new HashSet<>(Arrays.asList(model.newNode(), model.newNode(), model.newNode()));
         MaxOnline mo = new MaxOnline(s, 2);
-        MaxOnlineConverter moc = new MaxOnlineConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new MaxOnlineConverter());
 
-        MaxOnline new_max = moc.fromJSON(model, moc.toJSON(mo));
+
+        Constraint new_max = conv.fromJSON(model, conv.toJSON(mo));
         Assert.assertEquals(mo, new_max);
-        System.out.println(moc.toJSONString(mo));
+        System.out.println(conv.toJSON(mo));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(MaxOnline.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new MaxOnlineConverter().getJSONId()));
+    }
+
 }

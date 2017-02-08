@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 package org.btrplace.json.model.constraint.migration;
 
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.constraint.ConstraintsConverter;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Deadline;
@@ -36,10 +37,19 @@ public class DeadlineConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        DeadlineConverter conv = new DeadlineConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new DeadlineConverter());
+
 
         Deadline d = new Deadline(mo.newVM(), "+00:00:15");
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Deadline.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new DeadlineConverter().getJSONId()));
+    }
+
 }

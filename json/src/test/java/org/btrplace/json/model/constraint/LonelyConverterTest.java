@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -38,13 +38,22 @@ public class LonelyConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        LonelyConverter conv = new LonelyConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new LonelyConverter());
+
 
         Lonely d = new Lonely(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Lonely c = new Lonely(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Lonely.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new LonelyConverter().getJSONId()));
+    }
+
 }

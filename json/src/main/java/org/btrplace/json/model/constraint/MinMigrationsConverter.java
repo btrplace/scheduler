@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@ public class MinMigrationsConverter implements ConstraintConverter<MinMigrations
     @Override
     public JSONObject toJSON(MinMigrations o) {
         JSONObject c = new JSONObject();
-        c.put("id", o.id());
+        c.put("id", getJSONId());
         return c;
     }
 }

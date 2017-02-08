@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,7 +27,12 @@ import org.btrplace.model.constraint.Among;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link org.btrplace.json.model.constraint.AmongConverter}.
@@ -38,7 +43,8 @@ public class AmongConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException {
-        AmongConverter conv = new AmongConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new AmongConverter());
         Model mo = new DefaultModel();
         List<VM> s1 = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
         Collection<Node> p1 = Arrays.asList(mo.newNode(), mo.newNode());
@@ -51,6 +57,12 @@ public class AmongConverterTest {
         Among c = new Among(s1, pgrps, true);
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
+    }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Among.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new AmongConverter().getJSONId()));
     }
 }

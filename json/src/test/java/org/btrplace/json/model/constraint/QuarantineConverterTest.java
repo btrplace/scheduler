@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,11 +35,20 @@ public class QuarantineConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        QuarantineConverter conv = new QuarantineConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new QuarantineConverter());
+
 
         Quarantine d = new Quarantine(mo.newNode());
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Quarantine.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new QuarantineConverter().getJSONId()));
+    }
+
 }

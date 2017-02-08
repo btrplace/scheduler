@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 package org.btrplace.json.model.constraint.migration;
 
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.constraint.ConstraintsConverter;
 import org.btrplace.model.DefaultModel;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.migration.Serialize;
@@ -36,10 +37,19 @@ public class SerializeConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        SerializeConverter conv = new SerializeConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new SerializeConverter());
+
 
         Serialize serial = new Serialize(mo.newVM(), mo.newVM());
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(serial)).toString(), serial.toString());
-        System.out.println(conv.toJSONString(serial));
+        System.out.println(conv.toJSON(serial));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Serialize.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new SerializeConverter().getJSONId()));
+    }
+
 }

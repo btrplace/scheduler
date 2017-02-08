@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,11 +35,19 @@ public class PreserveConverterTest {
     @Test
     public void testViables() throws JSONConverterException {
         Model mo = new DefaultModel();
-        PreserveConverter conv = new PreserveConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new PreserveConverter());
 
         Preserve d = new Preserve(mo.newVM(), "cpu", 5);
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Preserve.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new PreserveConverter().getJSONId()));
+    }
+
 }

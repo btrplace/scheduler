@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -36,13 +36,21 @@ public class BanConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException {
-        BanConverter conv = new BanConverter();
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new BanConverter());
         Model mo = new DefaultModel();
 
         Ban d = new Ban(mo.newVM(),
                 Arrays.asList(mo.newNode(), mo.newNode()));
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Ban.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new BanConverter().getJSONId()));
+    }
+
 }

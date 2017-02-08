@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,12 +21,21 @@ package org.btrplace.json.model.constraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.btrplace.json.JSONConverterException;
+import org.btrplace.json.model.constraint.migration.DeadlineConverter;
 import org.btrplace.json.model.constraint.migration.MinMTTRMigConverter;
+import org.btrplace.json.model.constraint.migration.PrecedenceConverter;
+import org.btrplace.json.model.constraint.migration.SerializeConverter;
+import org.btrplace.json.model.constraint.migration.SyncConverter;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.Constraint;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.btrplace.json.JSONs.checkKeys;
 
@@ -59,6 +68,7 @@ public class ConstraintsConverter {
         ConstraintsConverter c = new ConstraintsConverter();
         c.register(new AmongConverter());
         c.register(new BanConverter());
+      c.register(new DeadlineConverter());
         c.register(new ResourceCapacityConverter());
         c.register(new RunningCapacityConverter());
         c.register(new FenceConverter());
@@ -74,14 +84,19 @@ public class ConstraintsConverter {
         c.register(new RootConverter());
         c.register(new RunningConverter());
         c.register(new SeqConverter());
+      c.register(new SerializeConverter());
         c.register(new SleepingConverter());
         c.register(new SplitAmongConverter());
         c.register(new SplitConverter());
         c.register(new SpreadConverter());
+      c.register(new SyncConverter());
         c.register(new MaxOnlineConverter());
         c.register(new MinMTTRConverter());
         c.register(new MinMTTRMigConverter());
         c.register(new MinMigrationsConverter());
+      c.register(new NoDelayConverter());
+      c.register(new PrecedenceConverter());
+
         return c;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -41,11 +41,18 @@ public class SpreadConverterTest {
 
         Spread d = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Spread c = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
-        SpreadConverter conv = new SpreadConverter();
-
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new SpreadConverter());
 
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(mo, conv.toJSON(c)), c);
-        System.out.println(conv.toJSONString(d));
+        System.out.println(conv.toJSON(d));
     }
+
+    @Test
+    public void testBundle() {
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJavaConstraints().contains(Spread.class));
+        Assert.assertTrue(ConstraintsConverter.newBundle().getSupportedJSONConstraints().contains(new SpreadConverter().getJSONId()));
+    }
+
 }

@@ -5,6 +5,7 @@ version 1.5.2 - soon come
 ----------------------
 See milestone [1.5.2](https://github.com/btrplace/scheduler/milestones/1.5.2)
 
+Notable news:
 - An exception hierarchy to refine SchedulerException (see #130).
 
 
