@@ -5,12 +5,14 @@ version 1.5.2 - soon come
 ----------------------
 See milestone [1.5.2](https://github.com/btrplace/scheduler/milestones/1.5.2)
 
+- An exception hierarchy to refine SchedulerException (see #130).
+
+
 version 1.5.1 - 16 Jan 2017
 ----------------------
 See milestone [1.5.1](https://github.com/btrplace/scheduler/milestones/1.5.1)
 
 - fix a performance issue in MinMigrations (a partial #138)
-- An exception hierarchy to refine SchedulerException (see #130).
 
 
 version 1.5.0 - 16 Jan 2017
