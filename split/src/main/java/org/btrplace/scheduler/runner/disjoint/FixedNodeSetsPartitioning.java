@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,12 @@ package org.btrplace.scheduler.runner.disjoint;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.THashSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.btrplace.model.*;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.SynchronizedElementBuilder;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.scheduler.SchedulerException;
@@ -29,7 +34,11 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.runner.disjoint.model.SubModel;
 import org.btrplace.scheduler.runner.disjoint.splitter.ConstraintSplitterMapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A partitioning algorithm to split an instance
@@ -147,7 +156,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         int p = 0;
         for (VM v : toLaunch) {
             if (!parts.get(p).getModel().getMapping().addReadyVM(v)) {
-                throw new SchedulerException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
+                throw new SplitException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
             }
             vmPosition.put(v.id(), p);
             p = (p + 1) % parts.size();
@@ -156,7 +165,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         //Split the constraints
         for (SatConstraint cstr : i.getSatConstraints()) {
             if (!cstrMapper.split(cstr, i, parts, vmPosition, nodePosition)) {
-                throw new SchedulerException(i.getModel(), "Unable to split " + cstr);
+                throw new SplitException(i.getModel(), "Unable to split " + cstr);
             }
         }
 

@@ -32,6 +32,7 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.plan.event.SuspendVM;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,11 +111,11 @@ public class DurationEvaluators {
     public int evaluate(Model mo, Class<? extends Action> a, Element e) throws SchedulerException {
         ActionDurationEvaluator<Element> ev = durations.get(a);
         if (ev == null) {
-            throw new SchedulerException(null, "Unable to estimate the duration of action '" + a.getSimpleName() + "' related to '" + e + "'");
+            throw new SchedulerModelingException(null, "Unable to estimate the duration of action '" + a.getSimpleName() + "' related to '" + e + "'");
         }
         int d = ev.evaluate(mo, e);
         if (d <= 0) {
-            throw new SchedulerException(null, "The duration for action " + a.getSimpleName() + " over '" + e + "' has been evaluated to a negative value (" + d + "). Unsupported");
+            throw new SchedulerModelingException(null, "The duration for action " + a.getSimpleName() + " over '" + e + "' has been evaluated to a negative value (" + d + "). Unsupported");
         }
         return d;
     }

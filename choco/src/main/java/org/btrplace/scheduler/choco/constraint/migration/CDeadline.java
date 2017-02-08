@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@ package org.btrplace.scheduler.choco.constraint.migration;
 import org.btrplace.model.Instance;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.migration.Deadline;
-import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
@@ -94,13 +94,13 @@ public class CDeadline implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
+    public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerModelingException {
 
         int deadline = 0;
         try {
             deadline = convertTimestamp(dl.getTimestamp());
         } catch (ParseException e) {
-            throw new SchedulerException(rp.getSourceModel(), "Unable to parse the timestamp '"+dl.getTimestamp()+"'");
+            throw new SchedulerModelingException(rp.getSourceModel(), "Unable to parse the timestamp '" + dl.getTimestamp() + "'");
         }
 
         // Get all migrations involved

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.TaskMonitor;
@@ -70,13 +71,13 @@ public class ForgeVM implements VMTransition {
      *
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred
+     * @throws SchedulerModelingException if an error occurred
      */
-    public ForgeVM(ReconfigurationProblem rp, VM e) throws SchedulerException {
+    public ForgeVM(ReconfigurationProblem rp, VM e) throws SchedulerModelingException {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), org.btrplace.plan.event.ForgeVM.class, e);
         template = rp.getSourceModel().getAttributes().get(e, "template", "");
         if ("".equals(template)) {
-            throw new SchedulerException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
+            throw new SchedulerModelingException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
         }
         Model csp = rp.getModel();
         duration = csp.intVar(d);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.ResourceCapacity;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
@@ -38,7 +39,11 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of {@link org.btrplace.model.constraint.ResourceCapacity}.
@@ -89,7 +94,7 @@ public class CResourceCapacity implements ChocoConstraint {
         Model csp = rp.getModel();
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
-            throw new SchedulerException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
+            throw new SchedulerModelingException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
         }
 
         if (cstr.getInvolvedNodes().size() == 1) {
@@ -140,7 +145,7 @@ public class CResourceCapacity implements ChocoConstraint {
         }
         ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
         if (v == null) {
-            throw new SchedulerException(rp.getSourceModel(), "View '" + AliasedCumulatives.VIEW_ID + "' is required but missing");
+            throw SchedulerModelingException.missingView(rp.getSourceModel(), AliasedCumulatives.VIEW_ID);
         }
         ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
         return true;

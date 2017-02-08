@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ import org.btrplace.model.view.network.Network;
 import org.btrplace.model.view.network.Routing.LinkDirection;
 import org.btrplace.model.view.network.Switch;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
@@ -104,11 +105,11 @@ public class CNetwork implements ChocoView {
             Node dst;
 
             if (!migration.getDSlice().getHoster().isInstantiated()) {
-                throw new SchedulerException(null, "Destination node for VM '" + vm + "' should be known !");
+                throw new SchedulerModelingException(null, "Destination node for VM '" + vm + "' should be known !");
             }
 
             if (!mo.getAttributes().isSet(vm, "memUsed")) {
-                throw new SchedulerException(null, "Unable to retrieve 'memUsed' attribute for the vm '" + vm + "'");
+                throw new SchedulerModelingException(null, "Unable to retrieve 'memUsed' attribute for the vm '" + vm + "'");
             }
 
             dst = rp.getNode(migration.getDSlice().getHoster().getValue());

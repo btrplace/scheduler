@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
-
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
@@ -30,6 +29,9 @@ import org.btrplace.model.VMState;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
+import org.btrplace.scheduler.UnconsistentSolutionException;
+import org.btrplace.scheduler.UnstatableProblemException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.NodeTransitionBuilder;
@@ -179,7 +181,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 v.inject(ps, this);
                 addView(v);
             } catch (Exception e) {
-                throw new SchedulerException(model, "Unable to instantiate solver-only view '" + c.getSimpleName() + "'", e);
+                throw new SchedulerModelingException(model, "Unable to instantiate solver-only view '" + c.getSimpleName() + "'", e);
             }
         }
     }
@@ -221,6 +223,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.findSolution();
         } else {
             solver.findOptimalSolution(objective, solvingPolicy.equals(ResolutionPolicy.MAXIMIZE));
+        }
+
+        if (solver.isFeasible() == ESat.UNDEFINED) {
+            //We don't know if the CSP has a solution
+            throw new UnstatableProblemException(model, timeLimit);
         }
         return makeResultingPlan();
     }
@@ -275,11 +282,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (status == ESat.FALSE) {
             //It is certain the CSP has no solution
             return null;
-        } else if (solver.isFeasible() == ESat.UNDEFINED) {
-            //We don't know if the CSP has a solution
-            throw new SchedulerException(model, "Unable to state about the problem feasibility.");
         }
-
         Solution s = null;
         if (!solutions.isEmpty()) {
             s = solutions.get(solutions.size() - 1);
@@ -336,7 +339,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         ChocoView v = getView(Cumulatives.VIEW_ID);
         if (v == null) {
-            throw new SchedulerException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+            throw SchedulerModelingException.missingView(model, Cumulatives.VIEW_ID);
         }
 
         ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
@@ -349,7 +352,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Arrays.fill(usages, 1);
         ChocoView v = getView(Packing.VIEW_ID);
         if (v == null) {
-            throw new SchedulerException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
+            throw SchedulerModelingException.missingView(model, Packing.VIEW_ID);
         }
         ((Packing) v).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
@@ -490,7 +493,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(Solution s, ReconfigurationPlan p) {
         if (p.getDuration() != s.getIntVal(end)) {
-            throw new SchedulerException(p.getOrigin(), "The plan effective duration (" + p.getDuration() + ") and the computed duration (" + end.getValue() + ") mismatch");
+            String msg = String.format("The plan effective duration (%s) and the computed duration (%s) mismatch",
+                    p.getDuration(), s.getIntVal(end));
+            throw new UnconsistentSolutionException(p.getOrigin(), p, msg);
         }
         return true;
     }
@@ -538,7 +543,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public IntVar makeCurrentHost(VM vmId, Object... n) throws SchedulerException {
         int idx = getVM(vmId);
         if (idx < 0) {
-            throw new SchedulerException(model, "Unknown VM '" + vmId + "'");
+            throw new SchedulerModelingException(model, "Unknown VM '" + vmId + "'");
         }
         return makeCurrentNode(model.getMapping().getVMLocation(vmId), useLabels ? n : "");
     }
@@ -547,7 +552,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public IntVar makeCurrentNode(Node nId, Object... n) throws SchedulerException {
         int idx = getNode(nId);
         if (idx < 0) {
-            throw new SchedulerException(model, "Unknown node '" + nId + "'");
+            throw new SchedulerModelingException(model, "Unknown node '" + nId + "'");
         }
         return fixed(idx, makeVarLabel(n));
     }

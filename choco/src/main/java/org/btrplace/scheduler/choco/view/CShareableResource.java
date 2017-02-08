@@ -26,7 +26,6 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-
 import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
@@ -45,6 +44,7 @@ import org.btrplace.plan.event.AllocateEvent;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.RunningVMPlacement;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
@@ -280,7 +280,7 @@ public class CShareableResource implements ChocoView {
 
         ChocoView v = rp.getView(Packing.VIEW_ID);
         if (v == null) {
-            throw new SchedulerException(rp.getSourceModel(), "View '" + Packing.VIEW_ID + "' is required but missing");
+            throw SchedulerModelingException.missingView(rp.getSourceModel(), Packing.VIEW_ID);
         }
 
         IntVar[] host = new IntVar[p.getFutureRunningVMs().size()];
@@ -446,7 +446,7 @@ public class CShareableResource implements ChocoView {
                 if (usage > capa) {
                     //Here, the problem is not feasible but we consider an exception
                     //because such a situation does not physically makes sense (one cannot run at 110%)
-                    throw new SchedulerException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
+                    throw new SchedulerModelingException(rp.getSourceModel(), "Usage of virtual resource " + getResourceIdentifier() + " on node " + n + " (" + usage + ") exceeds its capacity (" + capa + ")");
                 }
             }
         }

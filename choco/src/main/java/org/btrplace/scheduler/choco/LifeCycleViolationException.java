@@ -23,7 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
 import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
-import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 
 import java.util.Set;
 
@@ -31,7 +31,7 @@ import java.util.Set;
  * Signals there is no model for a required transition.
  * @author Fabien Hermenier
  */
-public class LifeCycleViolationException extends SchedulerException {
+public class LifeCycleViolationException extends SchedulerModelingException {
 
     /**
      * An exception related to a VM state transition.

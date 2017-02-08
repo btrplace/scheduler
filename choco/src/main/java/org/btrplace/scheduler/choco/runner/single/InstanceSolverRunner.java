@@ -31,6 +31,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Sleeping;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
 import org.btrplace.scheduler.choco.LifeCycleViolationException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -270,7 +271,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         ChocoMapper mapper = params.getMapper();
         ChocoConstraint cc = mapper.get(cstr);
         if (cc == null) {
-            throw new SchedulerException(origin, "No implementation mapped to '" + cstr.getClass().getSimpleName() + "'");
+            throw new SchedulerModelingException(origin, "No implementation mapped to '" + cstr.getClass().getSimpleName() + "'");
         }
         return cc;
     }
@@ -281,7 +282,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             if (!m.getMapping().contains(v)) {
                 Set<VM> unknown = new HashSet<>(vms);
                 unknown.removeAll(m.getMapping().getAllVMs());
-                throw new SchedulerException(m, "Unknown VMs: " + unknown);
+                throw new SchedulerModelingException(m, "Unknown VMs: " + unknown);
             }
         }
     }
@@ -291,12 +292,12 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
      *
      * @param mo the model to check
      * @param ns the nodes to check
-     * @throws org.btrplace.scheduler.SchedulerException if at least one of the given nodes is not in the RP.
+     * @throws SchedulerModelingException if at least one of the given nodes is not in the RP.
      */
-    private static void checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerException {
+    private static void checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerModelingException {
         for (Node node : ns) {
             if (!mo.getMapping().contains(node)) {
-                throw new SchedulerException(mo, "Unknown node '" + node + "'");
+                throw new SchedulerModelingException(mo, "Unknown node '" + node + "'");
             }
         }
     }

@@ -20,6 +20,7 @@ package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.model.Model;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +66,7 @@ public class ChocoViews {
                 }
             }
             if (blocked) {
-                throw new SchedulerException(mo, "Missing dependencies or cyclic dependencies prevent from using: " + remaining);
+                throw new SchedulerModelingException(mo, "Missing dependencies or cyclic dependencies prevent from using: " + remaining);
             }
         }
         return solved;

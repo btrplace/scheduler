@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.UnconsistentSolutionException;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
@@ -137,7 +138,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
             Model result = p.getResult();
             if (result == null) {
-                throw new SchedulerException(p.getOrigin(), "The plan is not viable");
+                throw new UnconsistentSolutionException(mo, p, "The plan cannot be applied");
             }
             // Add Root constraints to all staying VMs
             newCstrs.addAll(mo.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==

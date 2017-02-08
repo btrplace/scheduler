@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -31,7 +31,11 @@ import org.btrplace.scheduler.choco.runner.single.InstanceSolverRunner;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * An abstract solver that decompose statically an instance
@@ -102,11 +106,11 @@ public abstract class StaticPartitioning implements InstanceSolver {
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
-                    throw new SchedulerException(null, cause.getMessage(), ignore);
+                    throw new SplitException(null, cause.getMessage(), ignore);
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new SchedulerException(orig.getModel(), e.getMessage(), e);
+                throw new SplitException(orig.getModel(), e.getMessage(), e);
             }
         }
         duration += System.currentTimeMillis();
@@ -116,7 +120,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
         return merge(orig, results);
     }
 
-    private ReconfigurationPlan merge(Instance i, Collection<SolvingStatistics> results) throws SchedulerException {
+    private ReconfigurationPlan merge(Instance i, Collection<SolvingStatistics> results) throws SplitException {
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(i.getModel());
         //Only if there is a solution
         for (SolvingStatistics result : results) {
@@ -127,7 +131,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
             }
             for (Action a : p) {
                     if (!plan.add(a)) {
-                        throw new SchedulerException(plan.getOrigin(),
+                        throw new SplitException(plan.getOrigin(),
                                 "Unable to add action '" + a + "' while merging the sub-plans");
                     }
                 }

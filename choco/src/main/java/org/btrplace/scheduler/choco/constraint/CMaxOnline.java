@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CPowerView;
@@ -78,10 +79,10 @@ public class CMaxOnline implements ChocoConstraint {
             if (view == null) {
                 view = new CPowerView();
                 if (!rp.addView(view)) {
-                    throw new SchedulerException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
+                    throw new SchedulerModelingException(rp.getSourceModel(), "Unable to attach view '" + CPowerView.VIEW_ID + "'");
                 }
                 if (!view.inject(ps, rp)) {
-                    throw new SchedulerException(rp.getSourceModel(), "Unable to inject view '" + CPowerView.VIEW_ID + "'");
+                    throw new SchedulerModelingException(rp.getSourceModel(), "Unable to inject view '" + CPowerView.VIEW_ID + "'");
                 }
 
             }

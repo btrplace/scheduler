@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,14 +18,30 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.UnstatableProblemException;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.btrplace.scheduler.choco.transition.*;
+import org.btrplace.scheduler.choco.transition.BootVM;
+import org.btrplace.scheduler.choco.transition.BootableNode;
+import org.btrplace.scheduler.choco.transition.ForgeVM;
+import org.btrplace.scheduler.choco.transition.KillVM;
+import org.btrplace.scheduler.choco.transition.NodeTransition;
+import org.btrplace.scheduler.choco.transition.RelocatableVM;
+import org.btrplace.scheduler.choco.transition.ResumeVM;
+import org.btrplace.scheduler.choco.transition.ShutdownVM;
+import org.btrplace.scheduler.choco.transition.ShutdownableNode;
+import org.btrplace.scheduler.choco.transition.StayAwayVM;
+import org.btrplace.scheduler.choco.transition.SuspendVM;
+import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
@@ -715,6 +731,38 @@ public class DefaultReconfigurationProblemTest {
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }
+
+    /**
+     * Test the report of a timeout.
+     */
+    @Test(expectedExceptions = {UnstatableProblemException.class})
+    public void testTimeout() throws UnstatableProblemException {
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        for (int i = 0; i < 10; i++) {
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
+            map.addOnlineNode(n);
+            map.addRunningVM(vm, n);
+        }
+        Parameters ps = new DefaultParameters();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
+        Solver s = rp.getSolver();
+        IntVar nbNodes = rp.getModel().intVar("nbNodes", 1, map.getAllNodes().size(), true);
+        Stream<Slice> dSlices = rp.getVMActions().stream().filter(t -> t.getDSlice() != null).map(VMTransition::getDSlice);
+        IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
+        rp.getModel().post(rp.getModel().atMostNValues(hosters, nbNodes, true));
+
+        rp.setObjective(true, nbNodes);
+        rp.getSolver().limitTime(1); // 1 ms
+        // -1 will be ignored as it is a negative value (assumed no timeout)
+        ReconfigurationPlan plan = rp.solve(-1, true);
+        Assert.assertNotNull(plan);
+        Assert.assertEquals(s.getMeasures().getSolutionCount(), 1);
+        Mapping dst = plan.getResult().getMapping();
+        Assert.assertEquals(usedNodes(dst), 1);
+    }
+
 
     @Test
     public void testViewAddition() throws SchedulerException {

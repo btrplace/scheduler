@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,8 +21,22 @@ package org.btrplace.plan;
 import org.btrplace.model.Model;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
-import org.btrplace.plan.event.*;
-import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.ActionVisitor;
+import org.btrplace.plan.event.Allocate;
+import org.btrplace.plan.event.AllocateEvent;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.Event;
+import org.btrplace.plan.event.ForgeVM;
+import org.btrplace.plan.event.KillVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SubstitutedVMEvent;
+import org.btrplace.plan.event.SuspendVM;
+import org.btrplace.scheduler.UnconsistentSolutionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -292,7 +306,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
         }
         Model mo = p.getResult();
         if (mo == null) {
-            throw new SchedulerException(p.getOrigin(), "The resulting reconfiguration plan is not applyable");
+            throw new UnconsistentSolutionException(p.getOrigin(), p, "The resulting reconfiguration plan is not applyable");
         }
         checkModel(mo, false);
     }
