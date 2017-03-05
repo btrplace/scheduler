@@ -299,10 +299,19 @@ public class CShareableResource implements ChocoView {
         return linkVirtualToPhysicalUsage();
     }
 
+    private VM destVM(VM vm) {
+        return clones.containsKey(vm) ? clones.get(vm) : vm;
+    }
+
     @Override
     public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
         Mapping srcMapping = r.getSourceModel().getMapping();
 
+        // Encache the VM -> Action to ease the event injection.
+        Map<VM, Action> actions = new HashMap<>();
+        p.getActions().stream().filter(RunningVMPlacement.class::isInstance)
+                .map(a -> (RunningVMPlacement) a).forEach(
+                a -> actions.put(destVM(a.getVM()), (Action) a));
         for (VM vm : r.getFutureRunningVMs()) {
             Slice dSlice = r.getVMAction(vm).getDSlice();
             Node destNode = r.getNode(s.getIntVal(dSlice.getHoster()));
@@ -313,23 +322,15 @@ public class CShareableResource implements ChocoView {
                 //TODO: might be too late depending on the symmetry breaking on the actions schedule
                 insertAllocateAction(p, vm, destNode, s.getIntVal(dSlice.getStart()));
             } else {
-                //TODO: not constant time operation. Maybe a big failure
-                VM dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
-                for (Action a : p.getActions()) {
-                    if (a instanceof RunningVMPlacement) {
-                        RunningVMPlacement tmp = (RunningVMPlacement) a;
-                        if (tmp.getVM().equals(dVM)) {
-                            if (a instanceof MigrateVM) {
-                                //For a migrated VM, we allocate once the migration over
-                                insertAllocateEvent(a, Action.Hook.POST, dVM);
-                            } else {
-                                //Resume or Boot VM
-                                //As the VM was not running, we pre-allocate
-                                insertAllocateEvent(a, Action.Hook.PRE, dVM);
-                            }
-                            break;
-                        }
-                    }
+                VM dVM = destVM(vm);
+                Action a = actions.get(dVM);
+                if (a instanceof MigrateVM) {
+                    //For a migrated VM, we allocate once the migration over
+                    insertAllocateEvent(a, Action.Hook.POST, dVM);
+                } else {
+                    //Resume or Boot VM
+                    //As the VM was not running, we pre-allocate
+                    insertAllocateEvent(a, Action.Hook.PRE, dVM);
                 }
             }
         }

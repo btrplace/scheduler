@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,18 +19,34 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.json.JSON;
-import org.btrplace.model.*;
-import org.btrplace.model.constraint.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
+import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.NoDelay;
+import org.btrplace.model.constraint.Online;
+import org.btrplace.model.constraint.Overbook;
+import org.btrplace.model.constraint.Preserve;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.*;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultParameters;
+import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
+import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -267,5 +283,41 @@ public class CShareableResourceTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
+    }
+
+    /**
+     * Reproduce issue#145.
+     */
+    /*@Test*/
+    public void testInsertAction() {
+        Model mo = new DefaultModel();
+        ShareableResource cpu = new ShareableResource("cpu");
+        ShareableResource mem = new ShareableResource("mem");
+        mo.attach(cpu);
+        mo.attach(mem);
+        Node node = mo.newNode();
+        Node node2 = mo.newNode();
+        mo.getMapping().on(node, node2);
+        cpu.setCapacity(node, 100000);
+        mem.setCapacity(node, 100000);
+        cpu.setCapacity(node2, 100000);
+        mem.setCapacity(node2, 100000);
+        for (int i = 0; i < 10000; i++) {
+            VM vm = mo.newVM();
+            mo.getMapping().run(node, vm);
+            cpu.setConsumption(vm, 1);
+            mem.setConsumption(vm, 1);
+
+        }
+        ChocoScheduler sched = new DefaultChocoScheduler();
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.addAll(Running.newRunning(mo.getMapping().getAllVMs()));
+        cstrs.addAll(NoDelay.newNoDelay(mo.getMapping().getAllVMs()));
+        cstrs.addAll(Fence.newFence(mo.getMapping().getAllVMs(), Arrays.asList(node2)));
+        cstrs.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 2));
+        cstrs.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "mem", 2));
+        ReconfigurationPlan plan = sched.solve(mo, cstrs);
+        System.out.println(plan);
+        System.out.println(sched.getStatistics());
     }
 }
