@@ -27,7 +27,7 @@ import org.btrplace.plan.ReconfigurationPlan;
  *
  * @author Fabien Hermenier
  */
-public class UnconsistentSolutionException extends SchedulerException {
+public class InconsistentSolutionException extends SchedulerModelingException {
 
   private ReconfigurationPlan plan;
 
@@ -38,7 +38,7 @@ public class UnconsistentSolutionException extends SchedulerException {
    * @param p   the faulty plan.
    * @param msg the error message.
    */
-  public UnconsistentSolutionException(Model m, ReconfigurationPlan p, String msg) {
+  public InconsistentSolutionException(Model m, ReconfigurationPlan p, String msg) {
     super(m, msg);
     plan = p;
   }

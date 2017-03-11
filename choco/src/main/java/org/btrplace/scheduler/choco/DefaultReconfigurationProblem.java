@@ -28,9 +28,9 @@ import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.InconsistentSolutionException;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.SchedulerModelingException;
-import org.btrplace.scheduler.UnconsistentSolutionException;
 import org.btrplace.scheduler.UnstatableProblemException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
@@ -495,7 +495,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (p.getDuration() != s.getIntVal(end)) {
             String msg = String.format("The plan effective duration (%s) and the computed duration (%s) mismatch",
                     p.getDuration(), s.getIntVal(end));
-            throw new UnconsistentSolutionException(p.getOrigin(), p, msg);
+          throw new InconsistentSolutionException(p.getOrigin(), p, msg);
         }
         return true;
     }

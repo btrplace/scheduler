@@ -36,7 +36,7 @@ import org.btrplace.plan.event.ShutdownNode;
 import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.plan.event.SubstitutedVMEvent;
 import org.btrplace.plan.event.SuspendVM;
-import org.btrplace.scheduler.UnconsistentSolutionException;
+import org.btrplace.scheduler.InconsistentSolutionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -306,7 +306,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
         }
         Model mo = p.getResult();
         if (mo == null) {
-            throw new UnconsistentSolutionException(p.getOrigin(), p, "The resulting reconfiguration plan is not applyable");
+            throw new InconsistentSolutionException(p.getOrigin(), p, "The resulting reconfiguration plan is not applyable");
         }
         checkModel(mo, false);
     }

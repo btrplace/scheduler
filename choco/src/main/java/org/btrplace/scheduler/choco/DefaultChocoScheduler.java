@@ -27,8 +27,8 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.scheduler.InconsistentSolutionException;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.UnconsistentSolutionException;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.runner.InstanceSolver;
@@ -138,7 +138,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
             Model result = p.getResult();
             if (result == null) {
-                throw new UnconsistentSolutionException(mo, p, "The plan cannot be applied");
+                throw new InconsistentSolutionException(mo, p, "The plan cannot be applied");
             }
             // Add Root constraints to all staying VMs
             newCstrs.addAll(mo.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==
