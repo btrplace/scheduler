@@ -41,6 +41,7 @@ import org.btrplace.scheduler.choco.view.ChocoView;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -278,5 +279,15 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     @Override
     public Parameters setEnvironmentFactory(EnvironmentFactory f) {
         return params.setEnvironmentFactory(f);
+    }
+
+    @Override
+    public Parameters addSolutionListener(BiConsumer<ReconfigurationProblem, ReconfigurationPlan> consumer) {
+        return params.addSolutionListener(consumer);
+    }
+
+    @Override
+    public List<BiConsumer<ReconfigurationProblem, ReconfigurationPlan>> solutionListeners() {
+        return params.solutionListeners();
     }
 }

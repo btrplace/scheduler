@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,12 +18,14 @@
 
 package org.btrplace.scheduler.choco;
 
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * Parameters for a {@link ChocoScheduler}.
@@ -224,4 +226,19 @@ public interface Parameters {
      * @return a list of views that may be empty
      */
     List<Class<? extends ChocoView>> getChocoViews();
+
+    /**
+     * Add a consumer to call every time a solution is computed.
+     *
+     * @param consumer the consumer to call
+     * @return {@code this}
+     */
+    Parameters addSolutionListener(BiConsumer<ReconfigurationProblem, ReconfigurationPlan> consumer);
+
+    /**
+     * Returns the solution listeners.
+     *
+     * @return a list that may be empty.
+     */
+    List<BiConsumer<ReconfigurationProblem, ReconfigurationPlan>> solutionListeners();
 }
