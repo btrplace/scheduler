@@ -154,6 +154,8 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
                 st.setObjective(solution.getIntVal(o));
             }
             stats.addSolution(st);
+
+          params.solutionListeners().forEach(c -> c.accept(rp, plan));
         });
 
         setVerbosity();

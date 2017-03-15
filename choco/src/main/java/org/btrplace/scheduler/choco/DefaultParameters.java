@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco;
 
+import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
@@ -29,7 +30,9 @@ import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.memory.trailing.EnvironmentTrailing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * Default implementation of {@link Parameters}.
@@ -70,8 +73,10 @@ public class DefaultParameters implements Parameters {
 
     private DurationEvaluators durationEvaluators;
 
+    private List<BiConsumer<ReconfigurationProblem, ReconfigurationPlan>> solutionListeners;
+
     /**
-     * Defautl horizon is one hour.
+     * Default horizon is one hour.
      */
     private int maxEnd = 3600;
 
@@ -90,6 +95,8 @@ public class DefaultParameters implements Parameters {
         views.add(VectorPacking.class);
         views.add(DefaultCumulatives.class);
         views.add(DefaultAliasedCumulatives.class);
+
+        solutionListeners = new ArrayList<>();
     }
 
     /**
@@ -240,5 +247,16 @@ public class DefaultParameters implements Parameters {
     public Parameters setEnvironmentFactory(EnvironmentFactory f) {
         envf = f;
         return this;
+    }
+
+    @Override
+    public Parameters addSolutionListener(BiConsumer<ReconfigurationProblem, ReconfigurationPlan> consumer) {
+        this.solutionListeners.add(consumer);
+        return this;
+    }
+
+    @Override
+    public List<BiConsumer<ReconfigurationProblem, ReconfigurationPlan>> solutionListeners() {
+        return Collections.unmodifiableList(solutionListeners);
     }
 }

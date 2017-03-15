@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,8 +18,20 @@
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.*;
-import org.btrplace.model.constraint.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
+import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.Offline;
+import org.btrplace.model.constraint.Online;
+import org.btrplace.model.constraint.Preserve;
+import org.btrplace.model.constraint.Ready;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
@@ -29,8 +41,10 @@ import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -297,5 +311,23 @@ public class DefaultChocoSchedulerTest {
         VM v = mo.newVM();
         mo.getMapping().addReadyVM(v);
         Assert.assertNull(cra.solve(mo, Collections.singletonList(new Running(v))));
+    }
+
+    @Test
+    public void testOnSolutionHook() {
+        ChocoScheduler cra = new DefaultChocoScheduler();
+        Model mo = new DefaultModel();
+        VM vm = mo.newVM();
+        Node node = mo.newNode();
+        mo.getMapping().on(node).run(node, vm);
+        Instance i = new Instance(mo, Running.newRunning(Arrays.asList(vm)), new MinMTTR());
+        List<ReconfigurationPlan> onSolutions = new ArrayList<>();
+
+        cra.addSolutionListener((rp, plan) -> onSolutions.add(plan));
+        Assert.assertEquals(1, cra.solutionListeners().size());
+        ReconfigurationPlan plan = cra.solve(i);
+        Assert.assertEquals(1, onSolutions.size());
+        Assert.assertEquals(plan, onSolutions.get(0));
+
     }
 }
