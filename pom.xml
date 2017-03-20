@@ -48,7 +48,7 @@
     <properties>
         <argLine>-Xmx128M</argLine>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.22</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
     </properties>
     <licenses>
         <license>
