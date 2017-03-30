@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -42,4 +42,9 @@ public interface Cumulatives extends ChocoView {
      * @param dUse the resource usage of each of the dSlices
      */
     void addDim(List<IntVar> c, int[] cUse, IntVar[] dUse);
+
+    @Override
+    default String getIdentifier() {
+        return VIEW_ID;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -51,11 +51,6 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         super.inject(ps, rp);
         capacities = new ArrayList<>();
         return true;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return Cumulatives.VIEW_ID;
     }
 
     /**
