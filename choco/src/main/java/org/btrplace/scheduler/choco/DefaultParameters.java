@@ -117,6 +117,7 @@ public class DefaultParameters implements Parameters {
         views = ps.getChocoViews();
         mapper = ps.getMapper();
         envf = ps.getEnvironmentFactory();
+        solutionListeners = ps.solutionListeners();
     }
 
     @Override
