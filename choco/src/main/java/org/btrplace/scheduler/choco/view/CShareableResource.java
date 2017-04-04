@@ -552,7 +552,7 @@ public class CShareableResource implements ChocoView {
     private boolean overloaded(Mapping m, Node n) {
         int free = rc.getCapacity(n);
         if (wantedCapacity.containsKey(n)) {
-            free -= wantedCapacity.get(n);
+            free = wantedCapacity.get(n);
         }
         if (wantedRatios.containsKey(n)) {
             free *= wantedRatios.get(n);
