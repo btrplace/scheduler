@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -34,7 +34,12 @@ import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Continuous implementation of {@link Spread}.
@@ -65,7 +70,7 @@ public class CSpread implements ChocoConstraint {
         }
 
         //The lazy spread implementation for the placement
-        csp.post(csp.allDifferent(running.toArray(new IntVar[running.size()]), "BC"));
+      csp.post(csp.allDifferent(running.toArray(new IntVar[running.size()]), "AC"));
 
         if (cstr.isContinuous()) {
             List<VM> vms = new ArrayList<>(cstr.getInvolvedVMs());
