@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.constraint.mttr;
 
 import org.btrplace.model.Mapping;
+import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.mttr.load.GlobalLoadEstimator;
@@ -92,6 +93,15 @@ public class WorstFit implements IntValueSelector {
 
         usages = new HashMap<>();
         capacities = new HashMap<>();
+      for (Node node : rp.getNodes()) {
+        int nIdx = rp.getNode(node);
+        int[] capa = new int[rcs.size()];
+        for (int i = 0; i < rcs.size(); i++) {
+          capa[i] += rcs.get(i).getVirtualUsage().get(nIdx).getUB() * rcs.get(i).getOverbookRatio(nIdx);
+        }
+        capacities.put(nIdx, capa);
+
+      }
     }
 
     @Override
@@ -127,18 +137,6 @@ public class WorstFit implements IntValueSelector {
         return loads;
     }
 
-    private int[] capacities(int nIdx) {
-        int[] capa = capacities.get(nIdx);
-        if (capa == null) {
-            capa = new int[rcs.size()];
-            for (int i = 0; i < rcs.size(); i++) {
-                capa[i] += rcs.get(i).getVirtualUsage().get(nIdx).getUB() * rcs.get(i).getOverbookRatio(nIdx);
-            }
-            capacities.put(nIdx, capa);
-        }
-        return capa;
-    }
-
     private int[] usage(int vId) {
         int[] usage = usages.get(vId);
         if (usage == null) {
@@ -153,7 +151,7 @@ public class WorstFit implements IntValueSelector {
     }
 
     private double loadWith(int nId, IStateInt[] loads, VM vm) {
-        int[] capas = capacities(nId);
+      int[] capas = capacities.get(nId);
         double[] normalised = new double[capas.length];
         int[] usage = usage(rp.getVM(vm));
         for (int i = 0; i < capas.length; i++) {
