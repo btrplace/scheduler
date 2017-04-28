@@ -51,7 +51,7 @@ import java.util.StringJoiner;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"id : string"}, inv = "!(n : nodes) sum({cons(v, id). v : running(n)}) <= capa(n, id)")
+@SideConstraint(args = {"id : string"}, inv = "!(n : nodes) sum([cons(v, id). v : running(n)]) <= capa(n, id)")
 public class ShareableResource implements ModelView {
 
     /**
