@@ -1,13 +1,13 @@
 Release notes
 ======================
 
-version 1.6.2 - soon come
+version 1.7.0 - soon come
 ----------------------
-See milestone [1.6.2](https://github.com/btrplace/scheduler/milestones/1.6.2)
+See milestone [1.7.0](https://github.com/btrplace/scheduler/milestones/1.7.0)
 
 - Hook system to catch the computed solutions on the fly (see #147)
 - CShareableResource was over pessimistic when identifying misplaced VMs. (see #150)
-- Move to choco 4.0.3
+- Move to choco 4.0.4
 
 
 version 1.6.1 - 10 Mar 2017
