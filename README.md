@@ -6,6 +6,7 @@ This repository contains the main sources of the flexible VM scheduler BtrPlace 
 
 
 [![Build Status](https://api.travis-ci.org/btrplace/scheduler.svg?branch=master)](https://travis-ci.org/btrplace/scheduler) [![codecov.io](https://codecov.io/github/btrplace/scheduler/coverage.svg?branch=master)](https://codecov.io/github/btrplace/scheduler?branch=master) [![Coverity](https://scan.coverity.com/projects/8380/badge.svg)](https://scan.coverity.com/projects/btrplace-scheduler) [![Codacy Badge](https://api.codacy.com/project/badge/grade/ccaa68ef1c474d4e9f079de2b10d2672)](https://www.codacy.com/app/fabien-hermenier/scheduler)
+[![Dependency Status](https://www.versioneye.com/user/projects/56fa5da135630e003e0a8aed/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/56fa5da135630e003e0a8aed)
 
 Contact: fabien.hermenier@unice.fr
 
