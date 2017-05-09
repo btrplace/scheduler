@@ -43,9 +43,6 @@ import org.btrplace.scheduler.choco.transition.Transition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.btrplace.scheduler.choco.view.CShareableResource;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Operator;
-import org.chocosolver.solver.constraints.Propagator;
-import org.chocosolver.solver.constraints.nary.sum.PropSum;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMax;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
@@ -107,6 +104,12 @@ public class CMinMigrations implements CObjective {
 
     private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
 
+        List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
+                .filter(v -> v instanceof ShareableResource)
+                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
+                .collect(Collectors.toList());
+        useResources = !rcs.isEmpty();
+
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
@@ -147,11 +150,6 @@ public class CMinMigrations implements CObjective {
             placeVMs(ps, strategies, actions, schedHeuristic, pla);
         }
 
-        List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
-                .filter(v -> v instanceof ShareableResource)
-                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
-                .collect(Collectors.toList());
-        useResources = !rcs.isEmpty();
 
         Map<VM, Integer> costs = CShareableResource.getWeights(rp, rcs);
         badActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
@@ -182,6 +180,7 @@ public class CMinMigrations implements CObjective {
             strategies.add(new IntStrategy(durations, new FirstFail(rp.getModel()), new IntDomainMin()));
         }
 
+        postCostConstraints();
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
         IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
@@ -205,11 +204,9 @@ public class CMinMigrations implements CObjective {
         if (!useResources) {
             rnd = new RandomVMPlacement(rp, map, true, ps.getRandomSeed());
         }
-        if (!actions.isEmpty()) {
-            IntVar[] hosts = dSlices(actions).map(Slice::getHoster).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
-            if (hosts.length > 0) {
-                strategies.add(new IntStrategy(hosts, new HostingVariableSelector(rp.getModel(), schedHeuristic), rnd));
-            }
+        IntVar[] hosts = dSlices(actions).map(Slice::getHoster).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
+        if (hosts.length > 0) {
+            strategies.add(new IntStrategy(hosts, new HostingVariableSelector(rp.getModel(), schedHeuristic), rnd));
         }
     }
 
@@ -236,11 +233,12 @@ public class CMinMigrations implements CObjective {
             }
             //With choco 4.0.1, we cannot post a simple sum() constraint due to hardcore
             //simplification it made. So we bypass the optimisation phase and post the propagator
-            stays.add(cost);
+            rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[0]), "=", cost));
+            /*stays.add(cost);
             Propagator<IntVar> p =
                     new PropSum(stays.toArray(new IntVar[0]), stays.size() - 1, Operator.EQ, 0);
             rp.getModel().post(new org.chocosolver.solver.constraints.Constraint("sumCost", p));
-
+*/
         }
     }
 
