@@ -1,9 +1,12 @@
 Release notes
 ======================
 
-version 1.7.1 - soon come
+version 1.8.0 - soon come
 ----------------------
-See milestone [1.7.1](https://github.com/btrplace/scheduler/milestones/1.7.1)
+See milestone [1.8.0](https://github.com/btrplace/scheduler/milestones/1.8.0)
+
+- Improve the filtering using a knapsack propagator (see Issue #154)
+
 
 version 1.7.0 - 04 May 2017
 ----------------------

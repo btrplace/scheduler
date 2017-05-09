@@ -55,11 +55,13 @@ public class CMinMigrationsTest {
         i = new Instance(i.getModel(), i.getSatConstraints(), new MinMigrations());
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
+        s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
-        System.out.println(p);
         System.out.println(s.getStatistics());
+        System.out.println(p);
         Assert.assertEquals(p.getActions().stream().filter(x -> x instanceof MigrateVM).count(), 1);
+        Assert.assertEquals(3, p.getDuration());
     }
 
 

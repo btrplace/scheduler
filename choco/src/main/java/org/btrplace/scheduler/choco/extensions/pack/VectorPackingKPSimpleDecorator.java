@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
 package org.btrplace.scheduler.choco.extensions.pack;
 
 import org.chocosolver.memory.IStateBitSet;
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.memory.structure.S64BitSet;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.util.iterators.DisposableValueIterator;
@@ -26,11 +27,11 @@ import org.chocosolver.util.iterators.DisposableValueIterator;
 import java.util.ArrayList;
 
 /**
- * An optional extension of VectorPacking allowing a very minimal knapsack process :
- * when an item is assigned to a bin and if then assignedLoad == sup(binLoad) for this bin
- * then remove all candidate items from this bin
- * call attachKPSimpleDecorator() to the VectorPackingPropagator object
- *
+ * An optional extension of VectorPacking allowing knapsack process.
+ * - when an item is assigned to a bin and if then assignedLoad == sup(binLoad)
+ *   for this bin then remove all candidate items from this bin
+ * - when an item is assigned to a bin then all the candidate items that are
+ *   too big to fit the new remaining space are filtered out.
  * @author Sophie Demassey
  */
 public class VectorPackingKPSimpleDecorator {
@@ -38,33 +39,52 @@ public class VectorPackingKPSimpleDecorator {
     /**
      * the core BinPacking propagator
      */
-    private VectorPackingPropagator p;
+    private VectorPackingPropagator prop;
+
+    /**
+     * Track the biggest item usage per dimension and bin.
+     */
+    private final IStateInt[][] dynBiggest;
 
     /**
      * the list of candidate items for each bin [nbBins][]
      */
-    private ArrayList<IStateBitSet> candidate;
-    // TODO 2: add watchItem[d][b] = the candidate item for b with the maximum size in dimension d
-    // when sup(binLoad) or assignedLoad are updated: if assignedLoad + size(watch) > sup(binLoad) then filter the candidates of b
-
+    protected ArrayList<IStateBitSet> candidate;
 
     public VectorPackingKPSimpleDecorator(VectorPackingPropagator p) {
-        this.p = p;
+        this.prop = p;
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i = 0; i < p.nbBins; i++) {
             candidate.add(new S64BitSet(p.getModel().getEnvironment(), p.bins.length));
         }
+
+        dynBiggest = new IStateInt[prop.nbDims][prop.nbBins];
     }
 
+    /**
+     * Propagate a knapsack on every node and every dimension.
+     *
+     * @throws ContradictionException
+     */
+    private void fullKnapsack() throws ContradictionException {
+        for (int bin = 0; bin < prop.nbBins; bin++) {
+            for (int d = 0; d < prop.nbDims; d++) {
+                knapsack(bin, d);
+            }
+        }
+    }
 
     /**
-     * initialize the lists of candidates
-     *
+     * initialize the lists of candidates.
      */
-    protected void postInitialize() {
-        for (int i = 0; i < p.bins.length; i++) {
-            if (!p.bins[i].isInstantiated()) {
-                DisposableValueIterator it = p.bins[i].getValueIterator(true);
+    protected void postInitialize() throws ContradictionException {
+        final int[] biggest = new int[prop.nbDims];
+        for (int i = 0; i < prop.bins.length; i++) {
+            for (int d = 0; d < prop.nbDims; d++) {
+                biggest[d] = Math.max(biggest[d], prop.iSizes[d][i]);
+            }
+            if (!prop.bins[i].isInstantiated()) {
+                final DisposableValueIterator it = prop.bins[i].getValueIterator(true);
                 try {
                     while (it.hasNext()) {
                         candidate.get(it.next()).set(i);
@@ -74,6 +94,15 @@ public class VectorPackingKPSimpleDecorator {
                 }
             }
         }
+
+        for (int b = 0; b < prop.nbBins; b++) {
+            for (int d = 0; d < prop.nbDims; d++) {
+                dynBiggest[d][b] =
+                        prop.getVars()[0].getEnvironment().makeInt(biggest[d]);
+            }
+        }
+
+        fullKnapsack();
     }
 
     /**
@@ -88,19 +117,21 @@ public class VectorPackingKPSimpleDecorator {
     private void filterFullDim(int bin, int dim) throws ContradictionException {
         for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
             // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
-            // ie. !p.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
-            if (p.bins[i].contains(bin) && p.iSizes[dim][i] > 0) {
-                p.bins[i].removeValue(bin, p);
+            // ie. !prop.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
+            if (prop.iSizes[dim][i] == 0) {
+                continue;
+            }
+            if (prop.bins[i].removeValue(bin, prop)) {
                 candidate.get(bin).clear(i);
-                p.potentialLoad[dim][bin].add(-p.iSizes[dim][i]);
-                if (p.bins[i].isInstantiated()) {
-                    p.assignItem(i, p.bins[i].getValue());
+                prop.potentialLoad[dim][bin].add(-prop.iSizes[dim][i]);
+                if (prop.bins[i].isInstantiated()) {
+                    prop.assignItem(i, prop.bins[i].getValue());
                 }
             }
         }
         if (candidate.get(bin).isEmpty()) {
-            assert p.potentialLoad[dim][bin].get() == p.assignedLoad[dim][bin].get();
-            assert p.loads[dim][bin].getUB() == p.potentialLoad[dim][bin].get();
+            assert prop.potentialLoad[dim][bin].get() == prop.assignedLoad[dim][bin].get();
+            assert prop.loads[dim][bin].getUB() == prop.potentialLoad[dim][bin].get();
         }
     }
 
@@ -125,22 +156,69 @@ public class VectorPackingKPSimpleDecorator {
      * @param bin  the bin
      * @throws ContradictionException
      */
-    protected void postAssignItem(int item, int bin) throws ContradictionException {
-        if (candidate.get(bin).get(item)) { //TODO stop the recursive loop without this (see test2DWithUnorderedItems(seed=120))
-            candidate.get(bin).clear(item);
-            for (int d = 0; d < p.nbDims; d++) {
-                if (p.assignedLoad[d][bin].get() == p.loads[d][bin].getUB()) {
-                    filterFullDim(bin, d);
-                    if (candidate.get(bin).isEmpty()) {
-                        for (int d2 = 0; d2 < p.nbDims; d2++) {
-                            p.potentialLoad[d2][bin].set(p.assignedLoad[d2][bin].get());
-                            p.filterLoadSup(d2, bin, p.potentialLoad[d2][bin].get());
-                        }
-                        return;
-                    }
-                }
-            }
+    protected void postAssignItem(int item, int bin) throws
+            ContradictionException {
+        if (!candidate.get(bin).get(item)) {
+            return;
+        }
+        candidate.get(bin).clear(item);
 
+        for (int d = 0; d < prop.nbDims; d++) {
+            knapsack(bin, d);
+
+            // The bin is full. We get rid of every candidate and set the bin load.
+            if (prop.loads[d][bin].getUB() == prop.assignedLoad[d][bin].get()) {
+                filterFullDim(bin, d);
+                if (candidate.get(bin).isEmpty()) {
+                    for (int d2 = 0; d2 < prop.nbDims; d2++) {
+                        prop.potentialLoad[d2][bin].set(prop.assignedLoad[d2][bin].get());
+                        prop.filterLoadSup(d2, bin, prop.potentialLoad[d2][bin].get());
+                    }
+                    return;
+                }
+                return;
+            }
         }
     }
-}
+
+    /**
+     * Propagate a knapsack on a given dimension and bin.
+     * If the usage of an item exceeds the bin free capacity, it is filtered out.
+     * @param bin the bin
+     * @param d the dimension
+     * @throws ContradictionException
+     */
+    private void knapsack(int bin, int d) throws ContradictionException {
+        final int maxLoad = prop.loads[d][bin].getUB();
+        final int free = maxLoad - prop.assignedLoad[d][bin].get();
+
+        if (free >= dynBiggest[d][bin].get()) {
+            // fail fast. The remaining space > the biggest item.
+            return;
+        }
+
+        if (free > 0) {
+            // The bin is not full and some items exceeds the remaining space. We
+            // get rid of them
+            // In parallel, we set the new biggest candidate item for that
+            // (bin,dimension)
+            int newMax = -1;
+            for (int i = candidate.get(bin).nextSetBit(0); i >= 0;
+                 i = candidate.get(bin).nextSetBit(i + 1)) {
+                if (prop.iSizes[d][i] > free) {
+                    if (prop.bins[i].removeValue(bin, prop)) {
+                        prop.removeItem(i, bin);
+
+                        if (prop.bins[i].isInstantiated()) {
+                            prop.assignItem(i, prop.bins[i].getValue());
+                        }
+                    }
+                } else {
+                    // The item is still a candidate, we just update the biggest value.
+                    newMax = Math.max(newMax, prop.iSizes[d][i]);
+                }
+            }
+            dynBiggest[d][bin].set(newMax);
+        }
+    }
+ }

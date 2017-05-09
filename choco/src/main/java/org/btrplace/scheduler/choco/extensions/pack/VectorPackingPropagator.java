@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -91,10 +91,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * Must the sumLoads be recompute since the last propagation ?
      */
     private IStateBool loadsHaveChanged;
+
     /**
      * Constraint name.
      */
-    private String[] name;
+    protected String[] name;
     /**
      * The procedure for removals in bins variable domains.
      */
@@ -533,6 +534,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 try {
                     while (it.hasNext()) {
                         int v = it.next();
+                        if (!decoKPSimple.candidate.get(v).get(i)) {
+                            System.err.println("Bug");
+                        }
                         for (int d = 0; d < nbDims; d++) {
                             cs[d][v] += iSizes[d][i];
                         }
@@ -561,19 +565,20 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int sls = 0;
         for (int b = 0; b < rs[d].length; b++) {
             if (rs[d][b] != assignedLoad[d][b].get()) {
-                System.err.println(name[d] + ": " + loads[d][b].toString() + " assigned=" + assignedLoad[d][b].get() + " expected=" + Arrays.toString(rs[b]));
+                System.err.printf("%s: %s assigned=%d expected=%s%n", name[d], loads[d][b], assignedLoad[d][b].get(), Arrays.toString(rs[b]));
                 check = false;
             }
             if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
-                System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
+                System.err.printf("%s: %s potential=%d expected=%d (%d+%d)%n", name[d], loads[d][b], potentialLoad[d][b].get(), rs[d][b] + cs[d][b], rs[d][b], cs[d][b]);
+                //System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]) + ());
                 check = false;
             }
             if (loads[d][b].getLB() < rs[d][b]) {
-                System.err.println(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
+                System.err.printf("%s: %s LB expected >= %d%n", name[d], loads[d][b], rs[d][b]);
                 check = false;
             }
             if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
-                System.err.println(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                System.err.printf("%s: %s UB expected <= %d%n", name[d], loads[d][b], rs[d][b] + cs[d][b]);
                 check = false;
             }
             sli += loads[d][b].getLB();
