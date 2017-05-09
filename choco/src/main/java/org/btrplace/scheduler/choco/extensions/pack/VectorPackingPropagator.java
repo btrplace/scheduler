@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -61,7 +61,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * The constant size of each item. [nbDims][nbItems]
      */
     protected final int[][] iSizes;
-    protected  int[][] negISizes;
 
     /**
      * The load of each bin per dimension. [nbDims][nbBins]
@@ -127,12 +126,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         this.nbDims = l.length;
         this.bins = b;
         this.iSizes = s;
-        negISizes = new int[iSizes.length][iSizes[0].length];
-        for (int d = 0; d < iSizes.length; d++) {
-            for (int i = 0; i < iSizes[d].length; i++) {
-                negISizes[d][i] =  -iSizes[d][i];
-            }
-        }
         this.remProc = new RemProc(this);
         this.deltaMonitor = new IIntDeltaMonitor[b.length];
         for (int i = 0; i < deltaMonitor.length; i++) {
@@ -335,7 +328,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     private void updateLoads(int item, int bin) throws ContradictionException {
         int d = 0;
         for (; d < nbDims; d++) {
-            filterLoadSup(d, bin, potentialLoad[d][bin].add(negISizes[d][item]));
+            filterLoadSup(d, bin, potentialLoad[d][bin].add(-iSizes[d][item]));
         }
     }
 

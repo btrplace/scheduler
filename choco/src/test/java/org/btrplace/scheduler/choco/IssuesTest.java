@@ -522,6 +522,7 @@ public class IssuesTest {
         Instance i = JSON.readInstance(new File("src/test/resources/" + file));
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
+        System.out.println(s.getStatistics());
         Assert.assertNotNull(p);
         System.out.println(p.getSize() + " action(s)");
     }
