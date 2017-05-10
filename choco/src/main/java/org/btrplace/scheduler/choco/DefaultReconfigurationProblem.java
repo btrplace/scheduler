@@ -208,7 +208,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.limitTime(timeLimit * 1000L);
         }
 
-        getLogger().debug("{} constraints; {} integers", csp.getNbCstrs(), csp.getNbIntVar(true));
+        //getLogger().debug("{} constraints; {} integers", csp.getNbCstrs(), csp.getNbIntVar(true));
         if (solver.getSearch() == null) {
             defaultHeuristic();
         }
