@@ -108,8 +108,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
      */
     private VectorPackingHeapDecorator decoHeap;
-    private VectorPackingKPSimpleDecorator decoKPSimple;
+    private KSDecorator decoKPSimple;
 
+    public static boolean withDancingLists = true;
     /**
      * constructor of the VectorPacking global constraint
      *
@@ -169,7 +170,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     }
 
     public void attachKPSimpleDecorator() {
-        decoKPSimple = new VectorPackingKPSimpleDecorator(this);
+        if (withDancingLists) {
+            //decoKPSimple = new KnapsackDecorator(this);
+            decoKPSimple = new KnapsackDecorator2(this);
+        } else {
+            decoKPSimple = new VectorPackingKPSimpleDecorator(this);
+        }
     }
 
     /**
@@ -534,9 +540,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 try {
                     while (it.hasNext()) {
                         int v = it.next();
-                        if (!decoKPSimple.candidate.get(v).get(i)) {
-                            System.err.println("Bug");
-                        }
                         for (int d = 0; d < nbDims; d++) {
                             cs[d][v] += iSizes[d][i];
                         }

@@ -16,32 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.btrplace.scheduler.choco.extensions.dancinglist;
+package org.btrplace.scheduler.choco.extensions.pack;
+
+import org.chocosolver.solver.exception.ContradictionException;
 
 /**
- * Created by fabien.hermenier on 10/05/2017.
+ * Created by fabien.hermenier on 11/05/2017.
  */
-public class Cell<T> {
+public interface KSDecorator {
 
-  public final T content;
+  void postAssignItem(int item, int bin) throws ContradictionException;
 
-  Cell<T> prev;
+  void postRemoveItem(int item, int bin) throws ContradictionException;
 
-  Cell<T> next;
-
-  /* To prevent from a multiple deletion that would break consistency. */
-  boolean linked;
-
-  public Cell(final Cell<T> prev, final T content, final Cell<T> next) {
-    this.prev = prev;
-    this.next = next;
-    this.content = content;
-    linked = true;
-  }
-
-  @Override
-  public String toString() {
-    return content.toString();
-  }
-
+  void postInitialize() throws ContradictionException;
 }

@@ -34,7 +34,7 @@ import java.util.ArrayList;
  *   too big to fit the new remaining space are filtered out.
  * @author Sophie Demassey
  */
-public class VectorPackingKPSimpleDecorator {
+public class VectorPackingKPSimpleDecorator implements KSDecorator {
 
     /**
      * the core BinPacking propagator
@@ -77,7 +77,7 @@ public class VectorPackingKPSimpleDecorator {
     /**
      * initialize the lists of candidates.
      */
-    protected void postInitialize() throws ContradictionException {
+    public void postInitialize() throws ContradictionException {
         final int[] biggest = new int[prop.nbDims];
         for (int i = 0; i < prop.bins.length; i++) {
             for (int d = 0; d < prop.nbDims; d++) {
@@ -142,7 +142,7 @@ public class VectorPackingKPSimpleDecorator {
      * @param bin  the bin
      */
     @SuppressWarnings("squid:S3346")
-    protected void postRemoveItem(int item, int bin) {
+    public void postRemoveItem(int item, int bin) {
         assert candidate.get(bin).get(item);
         candidate.get(bin).clear(item);
     }
@@ -156,7 +156,7 @@ public class VectorPackingKPSimpleDecorator {
      * @param bin  the bin
      * @throws ContradictionException
      */
-    protected void postAssignItem(int item, int bin) throws
+    public void postAssignItem(int item, int bin) throws
             ContradictionException {
         if (!candidate.get(bin).get(item)) {
             return;

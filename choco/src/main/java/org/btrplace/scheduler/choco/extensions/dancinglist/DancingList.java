@@ -73,7 +73,12 @@ public class DancingList<T> {
    *
    * @param c the cell to delete
    */
-  public void delete(final Cell<T> c) {
+  public boolean delete(final Cell<T> c) {
+
+    if (!c.linked) {
+      return false;
+    }
+
     if (c.next != null) {
       // not at the end of the list.
       c.next.prev = c.prev;
@@ -85,7 +90,9 @@ public class DancingList<T> {
       c.prev.next = c.next;
     }
     size--;
+    c.linked = false;
     env.save(() -> unDelete(c));
+    return true;
   }
 
   private void unDelete(final Cell<T> c) {
@@ -99,6 +106,7 @@ public class DancingList<T> {
       // It was the tail
       c.next.prev = c;
     }
+    c.linked = true;
     size++;
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -169,7 +169,7 @@ public class VectorPackingTest {
         int[] capa = new int[]{16, 32};
         int[] height = new int[]{1, 1};
         modelPack(nBins, capa, nItems, height);
-        s.getSolver().setSearch(Search.intVarSearch(new InputOrder<IntVar>(s), new IntDomainMin(), bins));
+        s.getSolver().setSearch(Search.intVarSearch(new InputOrder<>(s), new IntDomainMin(), bins));
         testPack(true, "failed with " + Arrays.toString(height));
     }
 
