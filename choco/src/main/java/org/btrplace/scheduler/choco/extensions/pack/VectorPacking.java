@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -38,39 +38,12 @@ public class VectorPacking extends Constraint {
      * @param l        array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
      * @param s        array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param b        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
-     * @param withHeap optional: process bins in a heap if true
-     * @param withKS   optional: process knapsack filtering on each bin bif true
      */
-    public VectorPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
-        super("VectorPacking", new VectorPackingPropagator(labels, l, s, b, withHeap, withKS));
+    public VectorPacking(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
+        super("VectorPacking", new VectorPackingPropagator(labels, l, s, b));
     }
 
     public IStateInt[][] assignedLoad() {
         return ((VectorPackingPropagator) propagators[0]).assignedLoad();
     }
-
-
-/*    public ESat isSatisfied(int[] tuple) {
-        int[][] l = new int[nbDims][nbBins];
-        int[][] c = new int[nbDims][nbBins];
-        for (int i = 0; i < bins.length; i++) {
-            final int b = tuple[i];
-            for (int d = 0; d < nbDims; d++) {
-                l[d][b] += iSizes[d][i];
-                c[d][b]++;
-            }
-        }
-        for (int b = 0; b < nbBins; b++) {
-            for (int d = 0; d < nbDims; d++) {
-                int loadPos = iSizes[0].length + d * nbBins + b;
-                if (tuple[loadPos] != l[d][b]) {
-                    LOGGER.warn("Invalid load for bin " + b + " on dimension " + d + ". Was " + tuple[loadPos] + ", expected " + l[d][b]);
-                    return ESat.FALSE;
-                }
-            }
-        }
-        return ESat.TRUE;
-    }
-    */
-
 }

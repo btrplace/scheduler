@@ -20,6 +20,8 @@ package org.btrplace.bench;
 
 import org.btrplace.json.JSON;
 import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.UnstatableProblemException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.Parameters;
@@ -92,13 +94,28 @@ public class Bench {
 
     private static void solve(LabelledInstance i, Parameters ps) throws IOException {
         ChocoScheduler s = new DefaultChocoScheduler().setParameters(ps);
-        s.solve(i);
+        String status = "OK";
+        try {
+            s.solve(i);
+        } catch (UnstatableProblemException ex) {
+            status = "TO";
+        } catch (SchedulerException ex) {
+            status = "FAIL";
+        }
         if (opts.single()) {
             out(0, "%s%n", s.getStatistics());
         } else {
             SolvingStatistics stats = s.getStatistics();
+            if (stats.getSolutions().isEmpty()) {
+                status = "KO*";
+            } else {
+                status = "OK";
+                if (stats.completed()) {
+                    status += "*";
+                }
+            }
             if (opts.verbosity() == 0) {
-                out(0, "%s: %s%n", i.label, stats.getSolutions().isEmpty() ? "KO" : "OK");
+                out(0, "%s: %s%n", i.label, status);
             } else {
                 out(1, "----- %s -----%n", i.label);
                 out(1, "%s%n", stats);

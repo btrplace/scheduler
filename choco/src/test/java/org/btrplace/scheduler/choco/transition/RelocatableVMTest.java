@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,11 @@
 
 package org.btrplace.scheduler.choco.transition;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.constraint.Preserve;
@@ -28,7 +32,12 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.*;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultParameters;
+import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
+import org.btrplace.scheduler.choco.Parameters;
+import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.ConstantActionDuration;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
@@ -228,7 +237,6 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
-        ps.setVerbosity(3);
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration<>(20));
         dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));

@@ -94,7 +94,7 @@ public class VectorPackingTest {
         }
         sizes = height;
         bins = s.intVarArray("b", nItems, 0, nBins, false);
-        Constraint cPack = new VectorPacking(name, loads, sizes, bins, true, true);
+        Constraint cPack = new VectorPacking(name, loads, sizes, bins);
         s.post(cPack);
     }
 

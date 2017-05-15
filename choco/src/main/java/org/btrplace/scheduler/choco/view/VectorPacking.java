@@ -81,7 +81,7 @@ public class VectorPacking extends Packing {
             aSizes[d] = s;
         }
         if (!p.getFutureRunningVMs().isEmpty()) {
-            org.btrplace.scheduler.choco.extensions.pack.VectorPacking c = new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0), true, true);
+            org.btrplace.scheduler.choco.extensions.pack.VectorPacking c = new org.btrplace.scheduler.choco.extensions.pack.VectorPacking(aNames, aLoads, aSizes, bins.get(0));
             p.getModel().post(c);
             assignedLoad = c.assignedLoad();
 

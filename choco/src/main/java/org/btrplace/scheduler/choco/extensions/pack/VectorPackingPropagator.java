@@ -107,9 +107,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
      */
     private VectorPackingHeapDecorator decoHeap;
-    private KSDecorator decoKPSimple;
+    private KnapsackDecorator decoKPSimple;
 
-    public static boolean withDancingLists = true;
     /**
      * constructor of the VectorPacking global constraint
      *
@@ -117,10 +116,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @param l        array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
      * @param s        array of nbDims x nbItems, each figuring the item size.
      * @param b        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
-     * @param withHeap optional: process bins in a heap if true
-     * @param withKS   optional: process knapsack filtering on each bin bif true
      */
-    public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b, boolean withHeap, boolean withKS) {
+    public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
         this.name = labels;
         this.loads = l;
@@ -133,14 +130,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int i = 0; i < deltaMonitor.length; i++) {
             deltaMonitor[i] = this.vars[i].monitorDelta(this);
         }
-        if (withHeap) {
-            attachHeapDecorator();
-        }
-        if (withKS) {
-            attachKPSimpleDecorator();
-        }
 
-        //make backtrackable stuff
+        decoHeap = new VectorPackingHeapDecorator(this);
+        decoKPSimple = new KnapsackDecorator(this);
+
+        //make backtrackable stuff.
         this.potentialLoad = new IStateInt[nbDims][nbBins];
         this.assignedLoad = new IStateInt[nbDims][nbBins];
         for (int x = 0; x < nbBins; x++) {
@@ -158,21 +152,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         super.linkVariables();
     }
 
-    public void attachHeapDecorator() {
-        decoHeap = new VectorPackingHeapDecorator(this);
-    }
-
-    public void attachKPSimpleDecorator() {
-        if (withDancingLists) {
-            //decoKPSimple = new KnapsackDecorator(this);
-            decoKPSimple = new KnapsackDecorator2(this);
-        } else {
-            decoKPSimple = new VectorPackingKPSimpleDecorator(this);
-        }
-    }
-
     /**
-     * check the consistency of the constraint
+     * check the consistency of the constraint.
      *
      * @return false if the total size of the items assigned to a bin exceeds the bin load upper bound, true otherwise
      */

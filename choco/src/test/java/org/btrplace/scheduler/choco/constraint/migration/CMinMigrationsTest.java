@@ -55,7 +55,6 @@ public class CMinMigrationsTest {
         i = new Instance(i.getModel(), i.getSatConstraints(), new MinMigrations());
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doOptimize(true);
-        s.setVerbosity(3);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
         System.out.println(s.getStatistics());
@@ -152,7 +151,6 @@ public class CMinMigrationsTest {
                 ChocoScheduler s = new DefaultChocoScheduler();
                 s.doOptimize(false);
                 s.setTimeLimit(30);
-                s.setVerbosity(0);
                 s.doRepair(false);
                 ReconfigurationPlan p = s.solve(i);
                 Assert.assertNotNull(p);

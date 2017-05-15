@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -268,16 +268,16 @@ public class LocalTaskScheduler {
         // the cTasks
         int lastInf = 0;
         for (int ct : outIdx) {
-
+            boolean associated = associatedToDSliceOnCurrentNode(ct);
             cEnds[ct].updateUpperBound(last.getUB(), aCause);
-            allinstantiated &= cEnds[ct].isInstantiated() || associatedToDSliceOnCurrentNode(ct);
+            allinstantiated &= cEnds[ct].isInstantiated() || associated;
 
             int tu = cEnds[ct].getUB();
             int tl = cEnds[ct].getLB();
             lastInf = Math.max(tl, lastInf);
 
             // the cTask does not migrate and its demand increases on at least one dimension
-            boolean increasing = associatedToDSliceOnCurrentNode(ct) && increase(ct, associateDTask[ct]);
+            boolean increasing = associated && increase(ct, associateDTask[ct]);
 
             for (int d = 0; d < nbDims; d++) {
                 int diff = cUsages[ct][d];
