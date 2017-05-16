@@ -40,7 +40,7 @@ public class UnstatableProblemException extends SchedulerException {
    * @param to the allotted time in seconds.
    */
   public UnstatableProblemException(Model m, int to) {
-    super(m, String.format("Unable to state about the problem feasibility withing the allotted %s seconds", to));
+    super(m, String.format("Unable to state about the problem feasibility within the allotted %s seconds", to));
     this.duration = to;
   }
 
