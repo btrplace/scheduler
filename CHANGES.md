@@ -5,6 +5,9 @@ version 1.8.1 - soon come
 ----------------------
 See milestone [1.8.1](https://github.com/btrplace/scheduler/milestones/1.8.1)
 
+- close issue #156
+
+
 version 1.8.0 - 15 May 2017
 ----------------------
 See milestone [1.8.0](https://github.com/btrplace/scheduler/milestones/1.8.0)

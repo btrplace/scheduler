@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ public class DefaultElementBuilder implements ElementBuilder {
     public Node newNode(int id) {
         if (!usedNodeIds.get(id)) {
             usedNodeIds.set(id);
-            nextVMId = Math.max(nextVMId, id + 1);
+            nextNodeId = Math.max(nextNodeId, id + 1);
             return new Node(id);
         }
         return null;
