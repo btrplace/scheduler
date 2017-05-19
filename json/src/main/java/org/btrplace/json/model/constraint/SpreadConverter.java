@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,9 @@ import org.btrplace.model.constraint.Spread;
 
 import java.util.HashSet;
 
-import static org.btrplace.json.JSONs.*;
+import static org.btrplace.json.JSONs.requiredBoolean;
+import static org.btrplace.json.JSONs.requiredVMs;
+import static org.btrplace.json.JSONs.vmsToJSON;
 
 /**
  * JSON converter for the {@link Spread} constraint.
@@ -53,7 +55,7 @@ public class SpreadConverter implements ConstraintConverter<Spread> {
     @Override
     public JSONObject toJSON(Spread o) {
         JSONObject c = new JSONObject();
-        c.put("id", getJSONId());
+        c.put(ConstraintConverter.IDENTIFIER, getJSONId());
         c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         c.put("continuous", o.isContinuous());
         return c;

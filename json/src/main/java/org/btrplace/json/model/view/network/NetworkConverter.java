@@ -34,7 +34,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.btrplace.json.JSONs.*;
+import static org.btrplace.json.JSONs.checkKeys;
+import static org.btrplace.json.JSONs.requiredInt;
+import static org.btrplace.json.JSONs.requiredNode;
+import static org.btrplace.json.JSONs.requiredString;
 
 /**
  * Serialize/Un-serialize a {@link org.btrplace.model.view.network.Network} view.
@@ -84,7 +87,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     @Override
     public JSONObject toJSON(Network net) throws JSONConverterException {
         JSONObject container = new JSONObject();
-        container.put("id", getJSONId());
+        container.put(ModelViewConverter.IDENTIFIER, getJSONId());
         container.put("switches", switchesToJSON(net.getSwitches()));
         container.put("links", linksToJSON(net.getLinks()));
         container.put("routing", routingToJSON(net.getRouting()));
@@ -94,8 +97,8 @@ public class NetworkConverter implements ModelViewConverter<Network> {
 
     @Override
     public Network fromJSON(Model mo, JSONObject o) throws JSONConverterException {
-        
-        String id = requiredString(o, "id");
+        checkKeys(o, IDENTIFIER, "switches", "links", "routing");
+        String id = requiredString(o, ModelViewConverter.IDENTIFIER);
 
         if (!id.equals(getJSONId())) {
             return null;

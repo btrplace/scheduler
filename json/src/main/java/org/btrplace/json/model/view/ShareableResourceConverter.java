@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,7 +28,11 @@ import org.btrplace.model.view.ShareableResource;
 import java.util.Map;
 import java.util.Set;
 
-import static org.btrplace.json.JSONs.*;
+import static org.btrplace.json.JSONs.checkKeys;
+import static org.btrplace.json.JSONs.getNode;
+import static org.btrplace.json.JSONs.getVM;
+import static org.btrplace.json.JSONs.requiredInt;
+import static org.btrplace.json.JSONs.requiredString;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.ShareableResource}.
@@ -65,7 +69,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
     @Override
     public JSONObject toJSON(ShareableResource rc) {
         JSONObject o = new JSONObject();
-        o.put("id", getJSONId());
+        o.put(ModelViewConverter.IDENTIFIER, getJSONId());
         o.put(DEFAULT_CONSUMPTION, rc.getDefaultConsumption());
         o.put(DEFAULT_CAPACITY, rc.getDefaultCapacity());
         o.put("rcId", rc.getResourceIdentifier());
@@ -89,9 +93,9 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
 
     @Override
     public ShareableResource fromJSON(Model mo, JSONObject o) throws JSONConverterException {
-        checkKeys(o, "vms", NODES_LABEL, DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
+        checkKeys(o, "vms", NODES_LABEL, DEFAULT_CAPACITY, DEFAULT_CONSUMPTION, ModelViewConverter.IDENTIFIER);
 
-        String id = requiredString(o, "id");
+        String id = requiredString(o, ModelViewConverter.IDENTIFIER);
         if (!id.equals(getJSONId())) {
             return null;
         }

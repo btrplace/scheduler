@@ -53,7 +53,7 @@ public class NamingServiceConverter implements ModelViewConverter<NamingService>
     @Override
     public JSONObject toJSON(NamingService rc) {
         JSONObject container = new JSONObject();
-        container.put("id", getJSONId());
+        container.put(ModelViewConverter.IDENTIFIER, getJSONId());
         container.put("type", rc.getElementIdentifier());
         JSONObject map = new JSONObject();
         for (Object o : rc.getNamedElements()) {
@@ -66,7 +66,7 @@ public class NamingServiceConverter implements ModelViewConverter<NamingService>
 
     @Override
     public NamingService<? extends Element> fromJSON(Model mo, JSONObject o) throws JSONConverterException {
-        String id = requiredString(o, "id");
+        String id = requiredString(o, ModelViewConverter.IDENTIFIER);
         if (!id.equals(getJSONId())) {
             return null;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -104,8 +104,8 @@ public class ModelViewsConverter {
      * @throws JSONConverterException if the conversion failed
      */
     public ModelView fromJSON(Model mo, JSONObject in) throws JSONConverterException {
-        checkKeys(in, "id");
-        Object id = in.get("id");
+        checkKeys(in, ModelViewConverter.IDENTIFIER);
+        Object id = in.get(ModelViewConverter.IDENTIFIER);
         ModelViewConverter<? extends ModelView> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a view having id '" + id + "'");

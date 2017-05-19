@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,6 +30,11 @@ import org.btrplace.model.constraint.Constraint;
  */
 public interface ConstraintConverter<E extends Constraint> {
 
+  /**
+   * The key identifier for the view type.
+   */
+  String IDENTIFIER = "id";
+
     /**
      * Get the name of the constraint that is supported by the converter.
      *
@@ -52,7 +57,7 @@ public interface ConstraintConverter<E extends Constraint> {
      * @throws JSONConverterException if the object is not compatible
      */
     default void checkId(JSONObject o) throws JSONConverterException {
-        Object id = o.get("id");
+      Object id = o.get(ConstraintConverter.IDENTIFIER);
         if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a constraint id '" + id + "'");
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -29,6 +29,11 @@ import org.btrplace.model.view.ModelView;
  * @author Fabien Hermenier
  */
 public interface ModelViewConverter<E extends ModelView> {
+
+    /**
+     * The key identifier for the view type.
+     */
+    String IDENTIFIER = "id";
 
     /**
      * Get the className of the view that is supported by the converter.
