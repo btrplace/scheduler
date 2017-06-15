@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -129,6 +129,7 @@ public class TemplateAssignment extends BtrPlaceTree {
                 addNode(tplName, o.toString(), opts);
             }
         } else if (nType == ANTLRBtrplaceSL2Parser.EXPLODED_SET) {
+            @SuppressWarnings("unchecked")
             List<BtrPlaceTree> children = (List<BtrPlaceTree>) t.getChildren();
             for (BtrPlaceTree child : children) {
                 if (child.getType() == ANTLRBtrplaceSL2Parser.IDENTIFIER) {

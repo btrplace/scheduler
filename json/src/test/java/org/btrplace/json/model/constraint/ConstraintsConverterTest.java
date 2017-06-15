@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,6 +24,7 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.SatConstraintChecker;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -63,6 +64,11 @@ public class ConstraintsConverterTest {
         @Override
         public boolean setContinuous(boolean b) {
             return false;
+        }
+
+        @Override
+        public SatConstraintChecker<? extends SatConstraint> getChecker() {
+            return null;
         }
     }
 

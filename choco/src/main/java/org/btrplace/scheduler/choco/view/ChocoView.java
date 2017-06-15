@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ public interface ChocoView extends Injectable, MisplacedVMsEstimator {
      * @return {@code false} iff there will be no solution to the RP.
      * @throws SchedulerException if an error occurred while building the problem
      */
-    default boolean beforeSolve(ReconfigurationProblem rp) throws SchedulerException {
+    default boolean beforeSolve(@SuppressWarnings("unused") ReconfigurationProblem rp) throws SchedulerException {
         return true;
     }
 

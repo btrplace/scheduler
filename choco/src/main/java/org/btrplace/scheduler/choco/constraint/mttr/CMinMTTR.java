@@ -74,7 +74,7 @@ public class CMinMTTR implements CObjective {
     /**
      * Make a new objective.
      */
-    public CMinMTTR(MinMTTR m) {
+    public CMinMTTR(@SuppressWarnings("unused") MinMTTR m) {
     }
 
     public CMinMTTR() {

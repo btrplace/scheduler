@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -50,8 +50,10 @@ public class FenceBuilder extends DefaultSatConstraintBuilder {
     @Override
     public List<Fence> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
-            List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
-            List<Node> ns = (List<Node>) params[1].transform(this, t, args.get(1));
+          @SuppressWarnings("unchecked")
+          List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
+          @SuppressWarnings("unchecked")
+          List<Node> ns = (List<Node>) params[1].transform(this, t, args.get(1));
             return vms != null && ns != null ? Fence.newFence(vms, ns) : Collections.emptyList();
         }
         return Collections.emptyList();

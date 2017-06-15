@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -52,7 +52,8 @@ public class MaxOnlineBuilder extends DefaultSatConstraintBuilder {
     @Override
     public List<MaxOnline> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
-            List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
+          @SuppressWarnings("unchecked")
+          List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
             if (ns == null) {
                 return Collections.emptyList();
             }

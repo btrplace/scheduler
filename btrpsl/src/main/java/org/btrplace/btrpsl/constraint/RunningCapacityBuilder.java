@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -48,6 +48,7 @@ public class RunningCapacityBuilder extends DefaultSatConstraintBuilder {
         if (!checkConformance(t, args)) {
             return Collections.emptyList();
         }
+        @SuppressWarnings("unchecked")
         List<Node> ns = (List<Node>) params[0].transform(this, t, args.get(0));
         BtrpNumber n = (BtrpNumber) args.get(1);
         if (!n.isInteger()) {

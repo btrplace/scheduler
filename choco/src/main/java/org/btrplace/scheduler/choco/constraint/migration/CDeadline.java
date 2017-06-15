@@ -99,7 +99,7 @@ public class CDeadline implements ChocoConstraint {
         int deadline = 0;
         try {
             deadline = convertTimestamp(dl.getTimestamp());
-        } catch (ParseException e) {
+        } catch (@SuppressWarnings("unused") ParseException e) {
             throw new SchedulerModelingException(rp.getSourceModel(), "Unable to parse the timestamp '" + dl.getTimestamp() + "'");
         }
 

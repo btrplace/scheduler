@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -108,6 +108,7 @@ public class CSplitAmong implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
         //contains the set of VMs hosted on a group id.
+        @SuppressWarnings("unchecked")
         Collection<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
         Mapping map = i.getModel().getMapping();

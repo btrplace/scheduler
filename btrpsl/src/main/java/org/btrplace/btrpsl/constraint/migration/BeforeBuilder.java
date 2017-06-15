@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,11 @@
 
 package org.btrplace.btrpsl.constraint.migration;
 
-import org.btrplace.btrpsl.constraint.*;
+import org.btrplace.btrpsl.constraint.ConstraintParam;
+import org.btrplace.btrpsl.constraint.DefaultSatConstraintBuilder;
+import org.btrplace.btrpsl.constraint.ListOfParam;
+import org.btrplace.btrpsl.constraint.OneOfParam;
+import org.btrplace.btrpsl.constraint.StringParam;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.VM;
@@ -62,6 +66,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
         }
 
         // Get the first parameter
+        @SuppressWarnings("unchecked")
         List<VM> s = (List<VM>) params[0].transform(this, t, args.get(0));
         if (s == null) {
             return Collections.emptyList();
@@ -73,6 +78,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
             return Collections.emptyList();
         }
         if (obj instanceof List) {
+            @SuppressWarnings("unchecked")
             List<VM> s2 = (List<VM>) obj;
             if (s2.isEmpty()) {
                 t.ignoreError("Parameter '" + params[1].getName() + "' expects a non-empty list of VMs");

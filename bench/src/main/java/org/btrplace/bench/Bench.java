@@ -73,7 +73,7 @@ public class Bench {
         try {
             cli.getProperties().withUsageWidth(80);
             cli.parseArgument(args);
-        } catch (CmdLineException ex) {
+        } catch (@SuppressWarnings("unused") CmdLineException ex) {
             cli.printUsage(System.err);
             System.exit(1);
         }
@@ -97,9 +97,9 @@ public class Bench {
         String status = "OK";
         try {
             s.solve(i);
-        } catch (UnstatableProblemException ex) {
+        } catch (@SuppressWarnings("unused") UnstatableProblemException ex) {
             status = "TO";
-        } catch (SchedulerException ex) {
+        } catch (@SuppressWarnings("unused") SchedulerException ex) {
             status = "FAIL";
         }
         if (opts.single()) {

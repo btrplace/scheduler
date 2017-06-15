@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -34,7 +34,11 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.Split} constraint.
@@ -94,6 +98,7 @@ public class CSplit implements ChocoConstraint {
         //the VMs in the other groups then we establish precedences constraints.
 
         TIntArrayList[] otherPositions = new TIntArrayList[vmGroups.size()];
+        @SuppressWarnings("unchecked")
         List<IntVar>[] otherEnds = new List[vmGroups.size()];
         for (int i = 0; i < vmGroups.size(); i++) {
             otherPositions[i] = new TIntArrayList();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -285,19 +285,19 @@ public class ScriptBuilderTest {
         try {
             b.build("namespace zog; import testExport; for $n in $nodes { }");
             Assert.fail();
-        } catch (ScriptBuilderException x) {
+        } catch (@SuppressWarnings("unused") ScriptBuilderException x) {
         }
 
         try {
             b.build("namespace sysadmin.foo; import testExport; for $n in $nodes { }");
             Assert.fail();
-        } catch (ScriptBuilderException x) {
+        } catch (@SuppressWarnings("unused") ScriptBuilderException x) {
         }
 
         try {
             b.build("namespace sysadmin.foo; import testExport; for $v in $testExport { }");
             Assert.fail();
-        } catch (ScriptBuilderException x) {
+        } catch (@SuppressWarnings("unused") ScriptBuilderException x) {
         }
     }
 

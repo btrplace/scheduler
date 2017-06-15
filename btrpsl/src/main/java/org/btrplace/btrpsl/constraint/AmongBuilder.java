@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -54,8 +54,10 @@ public class AmongBuilder extends DefaultSatConstraintBuilder {
     @Override
     public List<? extends SatConstraint> buildConstraint(BtrPlaceTree t, List<BtrpOperand> args) {
         if (checkConformance(t, args)) {
-            List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
-            Collection<Collection<Node>> nss = (Collection<Collection<Node>>) params[1].transform(this, t, args.get(1));
+          @SuppressWarnings("unchecked")
+          List<VM> vms = (List<VM>) params[0].transform(this, t, args.get(0));
+          @SuppressWarnings("unchecked")
+          Collection<Collection<Node>> nss = (Collection<Collection<Node>>) params[1].transform(this, t, args.get(1));
             return vms != null && nss != null ? Collections.singletonList(new Among(vms, nss)) : Collections.emptyList();
         }
         return Collections.emptyList();

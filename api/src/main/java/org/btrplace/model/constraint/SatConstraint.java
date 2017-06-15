@@ -81,9 +81,7 @@ public interface SatConstraint extends Constraint {
      *
      * @return a non-null {@link SatConstraintChecker}
      */
-    default SatConstraintChecker<? extends SatConstraint> getChecker() {
-        return new AllowAllConstraintChecker<>(null);
-    }
+    SatConstraintChecker<? extends SatConstraint> getChecker();
 
     /**
      * Check if a model satisfies the constraint.
@@ -109,7 +107,7 @@ public interface SatConstraint extends Constraint {
         chk.addChecker(getChecker());
         try {
             chk.check(p);
-        } catch (SatConstraintViolationException ex) {
+        } catch (@SuppressWarnings("unused") SatConstraintViolationException ex) {
             return false;
         }
         return true;

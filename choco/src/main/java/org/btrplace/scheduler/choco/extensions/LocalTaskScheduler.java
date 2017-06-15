@@ -382,7 +382,7 @@ public class LocalTaskScheduler {
     private void updateDStartsInf(BitSet watchHosts) throws ContradictionException {
 
         for (int idx = 0; idx < vIn.size(); idx++) {
-            int i = vIn.get(idx);
+            int i = vIn.quickGet(idx);
             if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
 
                 int lastT = -1;

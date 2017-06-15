@@ -114,7 +114,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         long d = -System.currentTimeMillis();
         try {
             rp = buildRP();
-        } catch (LifeCycleViolationException ex) {
+        } catch (@SuppressWarnings("unused") LifeCycleViolationException ex) {
             //If there is a violation of the cycle it is not a bug that should be propagated
             //it it just indicating there is no solution
             stats.completed();

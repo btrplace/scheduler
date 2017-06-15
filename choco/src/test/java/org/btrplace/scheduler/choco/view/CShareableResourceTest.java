@@ -246,7 +246,7 @@ public class CShareableResourceTest {
         try {
             Assert.assertNull(s.solve(mo, new ArrayList<>()));
             Assert.fail("Should have thrown an exception");
-        } catch (SchedulerException e) {
+        } catch (@SuppressWarnings("unused") SchedulerException e) {
             Assert.assertEquals(s.getStatistics().getMetrics().backtracks(), 0);
         }
     }

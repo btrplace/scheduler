@@ -90,7 +90,7 @@ public class DefaultAttributes implements Attributes {
         if (isSet(e, k)) {
             try {
                 return (int) get(e, k);
-            } catch (ClassCastException ex) {
+            } catch (@SuppressWarnings("unused") ClassCastException ex) {
                 //Not an integer
             }
             //Try the double
@@ -263,13 +263,13 @@ public class DefaultAttributes implements Attributes {
         }
         try {
             return put(e, k, Integer.parseInt(x));
-        } catch (NumberFormatException ignored) {
+        } catch (@SuppressWarnings("unused") NumberFormatException ignored) {
             //Not an int
         }
 
         try {
             return put(e, k, Double.parseDouble(x));
-        } catch (NumberFormatException ignored) {
+        } catch (@SuppressWarnings("unused") NumberFormatException ignored) {
             //not a double either
         }
 
