@@ -18,6 +18,8 @@
 
 package org.btrplace.scheduler.choco.constraint.mttr;
 
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
@@ -32,7 +34,6 @@ import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,9 +55,9 @@ public class WorstFit implements IntValueSelector {
 
     private VectorPacking packing;
 
-    private Map<Integer, int[]> usages;
+    private TIntObjectMap<int[]> usages;
 
-    private Map<Integer, int[]> capacities;
+    private TIntObjectMap<int[]> capacities;
 
     /**
      * New heuristic.
@@ -91,8 +92,8 @@ public class WorstFit implements IntValueSelector {
             }
         }
 
-        usages = new HashMap<>();
-        capacities = new HashMap<>();
+        usages = new TIntObjectHashMap<>();
+        capacities = new TIntObjectHashMap<>();
       for (Node node : rp.getNodes()) {
         int nIdx = rp.getNode(node);
         int[] capa = new int[rcs.size()];

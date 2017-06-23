@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,8 +18,23 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.*;
-import org.btrplace.plan.event.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.Util;
+import org.btrplace.model.VM;
+import org.btrplace.plan.event.Allocate;
+import org.btrplace.plan.event.AllocateEvent;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.ForgeVM;
+import org.btrplace.plan.event.KillVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SubstitutedVMEvent;
+import org.btrplace.plan.event.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,7 +43,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.btrplace.model.constraint.AllowAllConstraintChecker}.
@@ -48,8 +66,7 @@ public class AllowAllConstraintCheckerTest {
         when(cstr.getInvolvedNodes()).thenReturn(ns);
         when(cstr.getInvolvedVMs()).thenReturn(vms);
 
-        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
-        };
+        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<>(cstr);
         Assert.assertEquals(c.getConstraint(), cstr);
         Assert.assertEquals(c.getVMs(), vms);
         Assert.assertEquals(c.getNodes(), ns);
@@ -87,8 +104,7 @@ public class AllowAllConstraintCheckerTest {
 
         //do not use the mock as the constructor is important
         //while earlier, the mock was needed for the verify()
-        c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
-        };
+        c = new AllowAllConstraintChecker<>(cstr);
         Set<VM> allVMs = new HashSet<>();
         for (Node n : mo.getMapping().getOnlineNodes()) {
             allVMs.addAll(mo.getMapping().getRunningVMs(n));
@@ -133,8 +149,7 @@ public class AllowAllConstraintCheckerTest {
         when(cstr.getInvolvedNodes()).thenReturn(ns);
         when(cstr.getInvolvedVMs()).thenReturn(vms);
 
-        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
-        };
+        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<>(cstr);
 
         //VM1 (one of the involved vms) has to be removed to be substituted by vms.get(0)0
         c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(9)));
@@ -151,8 +166,7 @@ public class AllowAllConstraintCheckerTest {
     @Test(dependsOnMethods = "testInstantiation")
     public void testAnyTracking() {
         SatConstraint cstr = mock(SatConstraint.class);
-        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<SatConstraint>(cstr) {
-        };
+        AllowAllConstraintChecker<SatConstraint> c = new AllowAllConstraintChecker<>(cstr);
 
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
