@@ -34,7 +34,11 @@ import org.btrplace.safeplace.spec.term.Constant;
 import org.btrplace.safeplace.testing.verification.btrplace.ScheduleConverter;
 
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -123,9 +127,9 @@ public class TestCase {
 
     @Override
     public String toString() {
-        String restriction = "CONTINUOUS ";
+        String restriction = "continuous ";
         if (impl() != null && !impl().isContinuous()) {
-            restriction = "DISCRETE ";
+            restriction = "discrete ";
         }
         String res = "Constraint: " + restriction + cstr.toString(args) + "\n"
                 + instance.getModel().getMapping() + "\n"
@@ -149,7 +153,7 @@ public class TestCase {
             a.add(c.toJSON());
         }
         o.put("args", a);
-        o.put("CONTINUOUS", continuous());
+        o.put("continuous", continuous());
         o.put("groups", groups());
         o.put("plan", pc.toJSON(plan()));
         o.put("instance", ic.toJSON(instance()));
@@ -184,7 +188,7 @@ public class TestCase {
             tc.impl(cstr.instantiate(l.stream().map(x -> x.eval(null)).collect(Collectors.toList())));
         }
         if (tc.impl() != null) {
-            tc.impl().setContinuous((Boolean) o.get("CONTINUOUS"));
+            tc.impl().setContinuous((Boolean) o.get("continuous"));
         }
         return tc;
     }

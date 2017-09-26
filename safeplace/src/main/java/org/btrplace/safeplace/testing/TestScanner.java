@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -63,7 +63,8 @@ public class TestScanner {
     }
 
     private TestCampaign makeTestCampaign(Method m, Object o) throws InvocationTargetException, IllegalAccessException {
-        TestCampaign campaign = new DefaultTestCampaign(cstrs);
+        String name = m.getDeclaringClass().getSimpleName() + "." + m.getName();
+        TestCampaign campaign = new DefaultTestCampaign(name, cstrs);
         m.invoke(o, campaign);
         return campaign;
     }

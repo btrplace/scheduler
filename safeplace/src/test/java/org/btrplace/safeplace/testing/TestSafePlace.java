@@ -23,11 +23,10 @@ import org.btrplace.safeplace.spec.SpecScanner;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.EnumSet;
 import java.util.List;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * @author Fabien Hermenier
@@ -46,7 +45,7 @@ public class TestSafePlace {
         //c.onDefect(DefectHooks.testNgFailure); 
     }
 
-    @CstrTest(groups = {"core"})
+  @CstrTest(groups = {"core", "toRunning"})
     public void testToRunning(TestCampaign c) {
         c.check("toRunning").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
@@ -89,7 +88,7 @@ public class TestSafePlace {
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
-    @CstrTest
+  @CstrTest(groups = {"ban"})
     public void testBan(TestCampaign c) {
         c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
@@ -103,7 +102,7 @@ public class TestSafePlace {
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
-    @CstrTest()
+  @CstrTest(groups = {"among"})
     public void testAmong(TestCampaign c) {
         c.check("among").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
         c.limits().tests(100).failures(1);
@@ -204,19 +203,27 @@ public class TestSafePlace {
         //c.onDefect(DefectHooks.testNgFailure);
     }
 
-    //@Test
+  @Test
     public void launcher() throws Exception {
         SpecScanner specScanner = new SpecScanner();
         List<Constraint> l = specScanner.scan();
         TestScanner sc = new TestScanner(l);
-        List<TestCampaign> campaigns = sc.testGroups("resourceCapacity");
+    List<TestCampaign> campaigns = sc.testGroups("ban");//sc.testGroups(TestSafePlace.class);
         if (campaigns.isEmpty()) {
             Assert.fail("Nothing to test");
         }
-        assertEquals(campaigns.stream().mapToInt(tc -> {
+
+        /*assertEquals(campaigns.stream().mapToInt(tc -> {
             tc.schedulerParams().doRepair(false);
             return tc.go().defects();
         }).sum(), 0);
-
+*/
+    campaigns.forEach(tc -> {
+      tc.schedulerParams().doRepair(false);
+      tc.onDefect(DefectHooks.ignore);
+      tc.limits().clear().tests(100);
+      //tc.printProgress(false);
+      System.out.println(tc.go());
+    });
     }
 }

@@ -37,6 +37,13 @@ public final class DefectHooks {
     };
 
     /**
+     * A hook that print the defect and continue.
+     */
+    public static final Consumer<TestCaseResult> print = res -> {
+        System.out.println(res);
+    };
+
+    /**
      * A hook that use an assertion to signal the defect
      */
     public static final Consumer<TestCaseResult> failedAssertion = res -> {
@@ -46,7 +53,8 @@ public final class DefectHooks {
     /**
      * A hook that uses testng to signal a defect.
      */
-    public static final Consumer<TestCaseResult> testNgFailure = res -> Assert.assertEquals(res.result(), Result.SUCCESS, res.toString());
+    public static final Consumer<TestCaseResult> testNgFailure = res ->
+            Assert.assertEquals(res.result(), Result.SUCCESS, res.toString());
 
     /**
      * Utility class. No instantiation.

@@ -67,7 +67,10 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
 
     private Consumer<TestCaseResult> defectHook = DefectHooks.failedAssertion;
 
-    public DefaultTestCampaign(List<Constraint> cstrs) {
+    private String name;
+
+    public DefaultTestCampaign(String name, List<Constraint> cstrs) {
+        this.name = name;
         limits = new Limits();
         this.cstrs = cstrs;
         cores = cstrs.stream().filter(c -> c.args().isEmpty()).collect(Collectors.toList());
@@ -112,7 +115,7 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
                 break;
             }
             if (first) {
-                System.out.println(tc.constraint().signatureToString());
+                System.out.println(this.name + ": " + tc.constraint().signatureToString());
                 first = false;
             }
             long d = -System.currentTimeMillis();
@@ -176,7 +179,7 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
             throw new IllegalArgumentException("No specification for constraint '" + c + "'");
         }
 
-        List<Constraint> pre = cores.stream().filter(x -> lower.equalsIgnoreCase(x.id())).collect(Collectors.toList());
+        List<Constraint> pre = cores.stream().filter(x -> !lower.equalsIgnoreCase(x.id())).collect(Collectors.toList());
         ConfigurableFuzzer f = new DefaultFuzzer(this, cstr.get(), pre);
         tcFuzzer = f;
         return f;
