@@ -108,15 +108,16 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
         TestCaseResult res;
         int nb = 1;
         boolean first = true;
+        System.out.println(this.name + ":");
         do {
+            if (first) {
+
+                first = false;
+            }
             TestCase tc = tcFuzzer.get();
             if (tc == null) {
                 //We are done
                 break;
-            }
-            if (first) {
-                System.out.println(this.name + ": " + tc.constraint().signatureToString());
-                first = false;
             }
             long d = -System.currentTimeMillis();
             res = test(tc);

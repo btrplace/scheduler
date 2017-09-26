@@ -40,7 +40,15 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -130,6 +138,10 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
             p = fuzzer.get();
             tc = new TestCase(InstanceConverter.toInstance(p), p, cstr);
             iterations++;
+          if (iterations > 10000) {
+            // We abandon the fuzzing stage. Too hard to get a validation.
+            return null;
+          }
         } while (!predicates.test(tc));
         lastValidationDuration  += predicates.lastDuration();
 

@@ -26,7 +26,10 @@ import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 
 import java.util.stream.Collectors;
 
-import static org.btrplace.safeplace.testing.Result.*;
+import static org.btrplace.safeplace.testing.Result.CRASH;
+import static org.btrplace.safeplace.testing.Result.OVER_FILTERING;
+import static org.btrplace.safeplace.testing.Result.SUCCESS;
+import static org.btrplace.safeplace.testing.Result.UNDER_FILTERING;
 
 /**
  * @author Fabien Hermenier
@@ -79,7 +82,7 @@ public class TestCaseResult {
     @Override
     public String toString() {
         return "Test case:\n" + tc + "\n" +
-                "res: " + res + "\n" +
+                "res: " + res.toString().toLowerCase() + "\n" +
                 "impl: " + implResults() + "\n" +
                 "\t" + tc.instance().getSatConstraints().stream().map(SatConstraint::toString).collect(Collectors.joining(",", "(", ")\n")) +
                 "spec: " + verifier + "\n";

@@ -86,11 +86,14 @@ public class Counting implements Report {
 
     @Override
     public String toString() {
+      if (global == null) {
+        // We never received a test result.
+        return "\t Unable to fuzz a valid state. Consider tuning the fuzzer search space or check the core constraints implementation";
+      }
         int qty = ok + failures + over + under;
         StringBuilder b = new StringBuilder();
         //Counters
         b.append(String.format("\t%d success; %d over-filtering; %d under-filtering; %d crash(es)%n", ok, over, under, failures));
-
         //Average durations
         float fuzzing = 1f * global.fuzzing() / qty;
         float testing = 1f * global.testing() / qty;
@@ -99,7 +102,7 @@ public class Counting implements Report {
         float total = 1f * global.duration() / qty;
 
         //Speed
-        b.append(String.format("\tper test: fuzzing: %.2fms; validation: %.2fms; iterations: %.2fms; testing: %.2fms; Total: %.2fms%n", fuzzing, validation, iterations, testing, total));
+      b.append(String.format("\tper test: fuzzing: %.2fms; validation: %.2fms; iterations: %.2f; testing: %.2fms; Total: %.2fms%n", fuzzing, validation, iterations, testing, total));
 
         double perSec = 1.0 * global.duration() / 1000;
         b.append(String.format("\t%.2f tests/sec.", qty / perSec));

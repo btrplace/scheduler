@@ -33,197 +33,150 @@ import java.util.List;
  */
 public class TestSafePlace {
 
-    //Core constraints
-    @CstrTest(groups = {"core"})
-    public void testNoVmsOnOfflineNodes(TestCampaign c) {
-        c.check("noVMsOnOfflineNodes")
-                .vms(1)
-                .nodes(1)
-                .srcOffNodes(0.1)
-                .srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure); 
-    }
+  //Core constraints
+  @CstrTest(groups = {"core"})
+  public void testNoVmsOnOfflineNodes(TestCampaign c) {
+    c.check("noVMsOnOfflineNodes")
+            .vms(1)
+            .nodes(1)
+            .srcOffNodes(0.1)
+            .srcVMs(1, 9, 0);
+  }
 
   @CstrTest(groups = {"core", "toRunning"})
-    public void testToRunning(TestCampaign c) {
-        c.check("toRunning").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  public void testToRunning(TestCampaign c) {
+    c.check("toRunning").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest(groups = {"core"})
-    public void testToSleeping(TestCampaign c) {
-        c.check("toSleeping").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest(groups = {"core"})
+  public void testToSleeping(TestCampaign c) {
+    c.check("toSleeping").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest(groups = {"core"})
-    public void testToReady(TestCampaign c) {
-        c.check("toReady").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest(groups = {"core"})
+  public void testToReady(TestCampaign c) {
+    c.check("toReady").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
 
-    @CstrTest()
-    public void testSpread(TestCampaign c) {
-        c.check("spread").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testSpread(TestCampaign c) {
+    c.check("spread").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testLonely(TestCampaign c) {
-        c.check("lonely").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testLonely(TestCampaign c) {
+    c.check("lonely").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testGather(TestCampaign c) {
-        c.check("gather").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testGather(TestCampaign c) {
+    c.check("gather").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
   @CstrTest(groups = {"ban"})
-    public void testBan(TestCampaign c) {
-        c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  public void testBan(TestCampaign c) {
+    c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testFence(TestCampaign c) {
-        c.check("fence").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testFence(TestCampaign c) {
+    c.check("fence").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
   @CstrTest(groups = {"among"})
-    public void testAmong(TestCampaign c) {
-        c.check("among").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  public void testAmong(TestCampaign c) {
+    c.check("among").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testRoot(TestCampaign c) {
-        c.check("root").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testRoot(TestCampaign c) {
+    c.check("root").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+    c.limits().tests(100).failures(1);
+    //c.onDefect(DefectHooks.testNgFailure);
+  }
 
-    @CstrTest()
-    public void testSplit(TestCampaign c) {
-        c.check("split").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testSplit(TestCampaign c) {
+    c.check("split").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testQuarantine(TestCampaign c) {
-        c.check("quarantine").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testQuarantine(TestCampaign c) {
+    c.check("quarantine").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testMaxOnline(TestCampaign c) {
-        c.check("maxOnline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest(groups = {"maxOnline"})
+  public void testMaxOnline(TestCampaign c) {
+    c.check("maxOnline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0)
+            .with("nb", 0, 5);
+  }
 
-    @CstrTest()
-    public void testRunningCapacity(TestCampaign c) {
-        c.check("runningCapacity").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest(groups = {"runningCapacity"})
+  public void testRunningCapacity(TestCampaign c) {
+    c.check("runningCapacity").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0)
+            .with("nb", 0, 12);
+  }
 
-    @CstrTest()
-    public void testRunning(TestCampaign c) {
-        c.check("running").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testRunning(TestCampaign c) {
+    c.check("running").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testSleeping(TestCampaign c) {
-        c.check("sleeping").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testSleeping(TestCampaign c) {
+    c.check("sleeping").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testReady(TestCampaign c) {
-        c.check("ready").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
+  @CstrTest()
+  public void testReady(TestCampaign c) {
+    c.check("ready").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    }
+  @CstrTest()
+  public void testOnline(TestCampaign c) {
+    c.check("online").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest()
-    public void testOnline(TestCampaign c) {
-        c.check("ONLINE").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
-
-    @CstrTest()
-    public void testOffline(TestCampaign c) {
-        c.check("offline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest()
+  public void testOffline(TestCampaign c) {
+    c.check("offline").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
 
-    @CstrTest
-    public void testResource(TestCampaign c) {
-        c.check("shareableResource")
-                .with("id", "cpu")
-                .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
-                .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest
+  public void testResource(TestCampaign c) {
+    c.check("shareableResource")
+            .with("id", "cpu")
+            .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
+            .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
-    @CstrTest(groups = {"resourceCapacity"})
-    public void testResourceCapacity(TestCampaign c) {
-        c.check("resourceCapacity")
-                .restriction(EnumSet.of(Restriction.CONTINUOUS, Restriction.DISCRETE))
-                .with("id", "cpu")
-                .with("qty", 1, 50)
-                .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
-                .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
-        c.limits().tests(100).failures(1);
-        //c.onDefect(DefectHooks.testNgFailure);
-    }
+  @CstrTest(groups = {"resourceCapacity"})
+  public void testResourceCapacity(TestCampaign c) {
+    c.check("resourceCapacity")
+            .restriction(EnumSet.of(Restriction.CONTINUOUS, Restriction.DISCRETE))
+            .with("id", "cpu")
+            .with("qty", 1, 50)
+            .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
+            .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+  }
 
   @Test
-    public void launcher() throws Exception {
-        SpecScanner specScanner = new SpecScanner();
-        List<Constraint> l = specScanner.scan();
-        TestScanner sc = new TestScanner(l);
-    List<TestCampaign> campaigns = sc.testGroups("ban");//sc.testGroups(TestSafePlace.class);
-        if (campaigns.isEmpty()) {
-            Assert.fail("Nothing to test");
-        }
+  public void fullScan() throws Exception {
+    SpecScanner specScanner = new SpecScanner();
+    List<Constraint> l = specScanner.scan();
+    TestScanner sc = new TestScanner(l);
+    List<TestCampaign> campaigns = sc.test(TestSafePlace.class);
+    if (campaigns.isEmpty()) {
+      Assert.fail("Nothing to test");
+    }
 
-        /*assertEquals(campaigns.stream().mapToInt(tc -> {
-            tc.schedulerParams().doRepair(false);
-            return tc.go().defects();
-        }).sum(), 0);
-*/
     campaigns.forEach(tc -> {
       tc.schedulerParams().doRepair(false);
       tc.onDefect(DefectHooks.ignore);
       tc.limits().clear().tests(100);
-      //tc.printProgress(false);
       System.out.println(tc.go());
     });
-    }
+  }
 }
