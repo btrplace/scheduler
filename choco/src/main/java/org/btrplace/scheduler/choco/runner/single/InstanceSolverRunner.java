@@ -117,7 +117,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         } catch (@SuppressWarnings("unused") LifeCycleViolationException ex) {
             //If there is a violation of the cycle it is not a bug that should be propagated
             //it it just indicating there is no solution
-            stats.completed();
+          stats.setCompleted(true);
             stats.setMetrics(new Metrics());
             return stats;
         } finally {
@@ -129,7 +129,9 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         //Customize the core problem
         d = -System.currentTimeMillis();
         if (!specialise()) {
+          d += System.currentTimeMillis();
             stats.setSpecialisationDuration(d);
+          stats.setCompleted(true);
             return getStatistics();
         }
         d += System.currentTimeMillis();
@@ -313,7 +315,9 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         if (rp != null) {
             Measures m = rp.getSolver().getMeasures();
             stats.setMetrics(new Metrics(m));
-            stats.setCompleted(m.getSearchState().equals(SearchState.TERMINATED));
+          stats.setCompleted(m.getSearchState().equals(SearchState.TERMINATED)
+                  || m.getSearchState().equals(SearchState.NEW)
+          );
         }
         return stats;
     }
