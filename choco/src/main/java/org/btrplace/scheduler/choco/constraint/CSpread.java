@@ -61,7 +61,17 @@ public class CSpread implements ChocoConstraint {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
-
+      if (cstr.isContinuous()) {
+        Set<Node> usedNodes = new HashSet<>();
+        for (VM vm : cstr.getInvolvedVMs()) {
+          Node node = rp.getSourceModel().getMapping().getVMLocation(vm);
+          if (node != null && !usedNodes.add(node)) {
+            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            //System.out.println(rp.getSourceModel().getMapping());
+            return false;
+          }
+        }
+      }
         List<IntVar> running = placementVariables(rp);
 
         Model csp = rp.getModel();
@@ -71,7 +81,6 @@ public class CSpread implements ChocoConstraint {
 
         //The lazy spread implementation for the placement
       csp.post(csp.allDifferent(running.toArray(new IntVar[running.size()]), "AC"));
-
         if (cstr.isContinuous()) {
             List<VM> vms = new ArrayList<>(cstr.getInvolvedVMs());
             for (int i = 0; i < vms.size(); i++) {
@@ -88,7 +97,8 @@ public class CSpread implements ChocoConstraint {
     }
 
     private static void disallowOverlap(ReconfigurationProblem rp, VMTransition t1, VMTransition t2) {
-        Slice dI = t1.getDSlice();
+
+      Slice dI = t1.getDSlice();
         Slice cI = t1.getCSlice();
 
         Slice dJ = t2.getDSlice();
