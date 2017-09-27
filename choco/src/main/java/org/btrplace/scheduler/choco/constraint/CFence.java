@@ -56,9 +56,14 @@ public class CFence implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
-        if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
-            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
-            return false;
+        if (cstr.isContinuous()) {
+            for (VM vm : cstr.getInvolvedVMs()) {
+                Node location = rp.getSourceModel().getMapping().getVMLocation(vm);
+                if (location != null && !cstr.getInvolvedNodes().contains(location)) {
+                    rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+                    return false;
+                }
+            }
         }
 
         VM vm = cstr.getInvolvedVMs().iterator().next();
