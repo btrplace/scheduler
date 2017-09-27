@@ -23,7 +23,6 @@ import org.btrplace.safeplace.spec.SpecScanner;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -34,7 +33,7 @@ import java.util.List;
 public class TestSafePlace {
 
   //Core constraints
-  @CstrTest(groups = {"core"})
+  @CstrTest(groups = {"core_"})
   public void testNoVmsOnOfflineNodes(TestCampaign c) {
     c.check("noVMsOnOfflineNodes")
             .vms(1)
@@ -43,17 +42,17 @@ public class TestSafePlace {
             .srcVMs(1, 9, 0);
   }
 
-  @CstrTest(groups = {"core", "toRunning"})
+  @CstrTest(groups = {"core_", "toRunning"})
   public void testToRunning(TestCampaign c) {
     c.check("toRunning").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest(groups = {"core"})
+  @CstrTest(groups = {"core_"})
   public void testToSleeping(TestCampaign c) {
     c.check("toSleeping").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest(groups = {"core"})
+  @CstrTest(groups = {"core_"})
   public void testToReady(TestCampaign c) {
     c.check("toReady").vms(1).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
@@ -69,12 +68,12 @@ public class TestSafePlace {
     c.check("lonely").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest()
+  @CstrTest(groups = {"gather"})
   public void testGather(TestCampaign c) {
     c.check("gather").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest(groups = {"ban"})
+  @CstrTest(groups = {"ban", "go"})
   public void testBan(TestCampaign c) {
     c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
@@ -162,20 +161,21 @@ public class TestSafePlace {
             .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @Test
-  public void fullScan() throws Exception {
+  //@Test
+  public void launcher() throws Exception {
     SpecScanner specScanner = new SpecScanner();
     List<Constraint> l = specScanner.scan();
     TestScanner sc = new TestScanner(l);
     List<TestCampaign> campaigns = sc.test(TestSafePlace.class);
+    //List<TestCampaign> campaigns = sc.testGroups("go");
     if (campaigns.isEmpty()) {
       Assert.fail("Nothing to test");
     }
 
     campaigns.forEach(tc -> {
       tc.schedulerParams().doRepair(false);
-      tc.onDefect(DefectHooks.ignore);
-      tc.limits().clear().tests(100);
+      tc.onDefect(DefectHooks.print);
+      tc.limits().clear().tests(1000);
       System.out.println(tc.go());
     });
   }

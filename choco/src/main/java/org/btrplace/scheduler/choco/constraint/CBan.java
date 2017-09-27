@@ -55,9 +55,13 @@ public class CBan implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
 
-        if (ban.isContinuous() && !ban.getChecker().startsWith(rp.getSourceModel())) {
-            rp.getLogger().error("Constraint {} is not satisfied initially", ban);
-            return false;
+        if (ban.isContinuous()) {
+            for (VM vm : ban.getInvolvedVMs()) {
+                if (ban.getInvolvedNodes().contains(rp.getSourceModel().getMapping().getVMLocation(vm))) {
+                    rp.getLogger().error("Constraint {} is not satisfied initially", ban);
+                    return false;
+                }
+            }
         }
         Collection<Node> nodes = ban.getInvolvedNodes();
         int[] nodesIdx = new int[nodes.size()];
