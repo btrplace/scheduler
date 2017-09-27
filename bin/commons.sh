@@ -10,7 +10,7 @@ function warn() {
 }
 
 function getVersion() {
-    xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' pom.xml
+    ./bin/version.py
 }
 
 function quit() {
