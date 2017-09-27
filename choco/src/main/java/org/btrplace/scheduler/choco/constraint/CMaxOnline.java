@@ -74,6 +74,10 @@ public class CMaxOnline implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         Model csp = rp.getModel();
 
+      if (constraint.getInvolvedNodes().isEmpty()) {
+        // The constraint is entailed as it contains no node.
+        return true;
+      }
         if (constraint.isContinuous()) {
             CPowerView view = (CPowerView) rp.getView(CPowerView.VIEW_ID);
             if (view == null) {
