@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  *
  * @author Fabien Hermenier
  */
-@SideConstraint(args = {"v : vms"}, inv = "vmState(v) = running --> ^host(v) = host(v)")
+@SideConstraint(args = {"v : vms"}, inv = "vmState(v) = running & ^vmState(v) = running --> ^host(v) = host(v)")
 public class Root implements SatConstraint {
 
     private VM vm;
