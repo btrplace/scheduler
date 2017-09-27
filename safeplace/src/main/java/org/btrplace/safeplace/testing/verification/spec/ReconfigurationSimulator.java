@@ -202,7 +202,6 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(MigrateVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.MIGRATING);
             co.getMapping().host(a.getVM(), a.getDestinationNode());
             return null;
         }
@@ -238,7 +237,6 @@ public class ReconfigurationSimulator implements ActionVisitor {
     @Override
     public Object visit(ShutdownVM a) {
         if (start) {
-            co.getMapping().state(a.getVM(), VMStateType.Type.HALTING);
             return null;
         }
         co.getMapping().state(a.getVM(), VMStateType.Type.READY);

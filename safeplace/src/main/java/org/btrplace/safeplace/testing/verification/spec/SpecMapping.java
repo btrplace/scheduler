@@ -118,7 +118,7 @@ public class SpecMapping {
 
     public Set<VM> runnings(Node n) {
         return host.get(n).stream()
-                .filter(v -> state(v).equals(VMStateType.Type.RUNNING) || state(v).equals(VMStateType.Type.MIGRATING))
+                .filter(v -> state(v).equals(VMStateType.Type.RUNNING) /*|| state(v).equals(VMStateType.Type.MIGRATING*)*/)
                 .collect(Collectors.toSet());
     }
 

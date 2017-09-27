@@ -25,7 +25,7 @@ import org.btrplace.safeplace.spec.term.Constant;
  */
 public class VMStateType implements Litteral, Atomic {
 
-    public enum Type {READY, BOOTING, RUNNING, MIGRATING, SUSPENDING, SLEEPING, RESUMING, HALTING, TERMINATED}
+  public enum Type {READY, BOOTING, RUNNING, MIGRATING, SUSPENDING, SLEEPING, RESUMING, TERMINATED}
 
     private static VMStateType instance = new VMStateType();
 
