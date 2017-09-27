@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Fabien Hermenier
@@ -130,9 +131,6 @@ public class Context {
 
     @Override
     public int hashCode() {
-        int result = sm.hashCode();
-        result = 31 * result + vDoms.hashCode();
-        result = 31 * result + stack.hashCode();
-        return result;
+      return Objects.hash(sm, vDoms, stack);
     }
 }

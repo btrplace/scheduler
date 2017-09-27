@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -34,15 +34,21 @@ public class ConstantDomain<T> implements Domain<T> {
     private List<T> dom;
 
     private Type t;
-    private Random rnd = new Random();
+    private Random rnd;
 
     private String name;
 
     public ConstantDomain(String name, Type t, List<T> dom) {
+        this(new Random(), name, t, dom);
+    }
+
+    public ConstantDomain(Random rnd, String name, Type t, List<T> dom) {
+        this.rnd = rnd;
         this.dom = dom;
         this.t = t;
         this.name = name;
     }
+
 
     @Override
     public String name() {

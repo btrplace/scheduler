@@ -85,8 +85,8 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
      * @param pre    the constraint to use to validate the generate test case
      */
     public DefaultFuzzer(Tester t, Constraint toTest, List<Constraint> pre) {
-        rnd = new Random();
-        fuzzer = new ReconfigurationPlanFuzzer();
+      rnd = new Random(0);
+      fuzzer = new ReconfigurationPlanFuzzer(rnd);
         doms = new HashMap<>();
         restrictions = EnumSet.allOf(Restriction.class);
         predicates = new Validator(t, pre);
@@ -118,9 +118,9 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
         }
         SetType back = (SetType) v.getBackend().type();
         if (back.enclosingType().equals(NodeType.getInstance())) {
-            return new ConstantDomain<>("nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes()));
+          return new ConstantDomain<>(rnd, "nodes", NodeType.getInstance(), new ArrayList<>(mo.getMapping().getAllNodes()));
         } else if (back.enclosingType().equals(VMType.getInstance())) {
-            return new ConstantDomain<>("vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs()));
+          return new ConstantDomain<>(rnd, "vms", VMType.getInstance(), new ArrayList<>(mo.getMapping().getAllVMs()));
         }
         throw new IllegalArgumentException("No domain value attached to argument '" + v.label() + "'");
     }
@@ -192,17 +192,17 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
         }
         //Only 1 possible, go for it if allowed
         if (!continuous && !restrictions.contains(Restriction.DISCRETE)) {
-            throw new IllegalArgumentException(cstr + " implementation cannot be DISCRETE");
+          throw new IllegalArgumentException(cstr + " implementation cannot be discrete");
         }
 
         if (continuous && !restrictions.contains(Restriction.CONTINUOUS)) {
-            throw new IllegalArgumentException(cstr + " implementation cannot be CONTINUOUS");
+          throw new IllegalArgumentException(cstr + " implementation cannot be continuous");
         }
     }
 
     @Override
     public ConfigurableFuzzer with(String var, int val) {
-        Domain d = new ConstantDomain<>("int", IntType.getInstance(), Collections.singletonList(val));
+      Domain d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Collections.singletonList(val));
         return with(var, d);
     }
 
@@ -212,24 +212,24 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
         for (int m = min; m <= max; m++) {
             s.add(m);
         }
-        return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
+      return with(var, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
     }
 
     @Override
     public ConfigurableFuzzer with(String var, int[] vals) {
         List<Integer> s = new ArrayList(Arrays.asList(vals));
-        return with(var, new ConstantDomain<>("int", IntType.getInstance(), s));
+      return with(var, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
     }
 
     @Override
     public ConfigurableFuzzer with(String arg, String val) {
         List<String> s = new ArrayList<>(Collections.singleton(val));
-        return with(arg, new ConstantDomain<>("int", IntType.getInstance(), s));
+      return with(arg, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
     }
 
     @Override
     public ConfigurableFuzzer with(String arg, String[] vals) {
-        Domain d = new ConstantDomain<>("int", IntType.getInstance(), Arrays.asList(vals));
+      Domain d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Arrays.asList(vals));
         doms.put(arg, d);
         return this;
     }

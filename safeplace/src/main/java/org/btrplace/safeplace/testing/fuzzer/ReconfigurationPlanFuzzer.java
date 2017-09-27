@@ -18,13 +18,29 @@
 
 package org.btrplace.safeplace.testing.fuzzer;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Element;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.*;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SuspendVM;
 import org.btrplace.safeplace.testing.fuzzer.decorators.FuzzerDecorator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -32,7 +48,7 @@ import java.util.function.Supplier;
  * @author Fabien Hermenier
  */
 public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> {
-    private Random rnd = new Random();
+    private Random rnd;
 
     private int nbNodes;
     private int nbVMs;
@@ -54,10 +70,8 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
 
     private List<FuzzerDecorator> exts;
 
-    /**
-     * Make a new fuzzer with default values.
-     */
-    public ReconfigurationPlanFuzzer() {
+    public ReconfigurationPlanFuzzer(Random rnd) {
+        this.rnd = rnd;
         //all the default values
         nbNodes = 3;
         nbVMs = 3;
@@ -79,6 +93,13 @@ public class ReconfigurationPlanFuzzer implements Supplier<ReconfigurationPlan> 
         dstRunningVMs = 5;
 
         exts = new ArrayList<>();
+    }
+
+    /**
+     * Make a new fuzzer with default values.
+     */
+    public ReconfigurationPlanFuzzer() {
+        this(new Random());
     }
 
 
