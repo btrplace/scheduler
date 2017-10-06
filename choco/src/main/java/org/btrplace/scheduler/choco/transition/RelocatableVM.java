@@ -34,8 +34,6 @@ import org.btrplace.scheduler.choco.SliceBuilder;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.extensions.FastIFFEq;
 import org.chocosolver.solver.Solution;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
@@ -140,7 +138,7 @@ public class RelocatableVM implements KeepRunningVM {
         start = dSlice.getStart();
         end = cSlice.getEnd();
 
-        csp.post(new Arithmetic(end, Operator.LE, rp.getEnd()));
+        csp.post(rp.getModel().arithm(end, "<=", rp.getEnd()));
         // Get some static durations from evaluators
         DurationEvaluators dev = rp.getDurationEvaluators();
         int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);
@@ -182,17 +180,17 @@ public class RelocatableVM implements KeepRunningVM {
 
             // Re-instantiate or migrate
             // (Prefer the re-instantiation if the duration are the same, otherwise choose the min)
-            rp.getModel().ifThenElse(rp.getModel().or(new Arithmetic(doReinstantiation, Operator.EQ, 0), // can be instantiated externally !
-                                  new Arithmetic(migrationDuration, Operator.LT, reInstantiateDuration)),
-                    new Arithmetic(duration, Operator.EQ, migrationDuration),
-                    new Arithmetic(duration, Operator.EQ, reInstantiateDuration)
+            rp.getModel().ifThenElse(rp.getModel().or(rp.getModel().arithm(doReinstantiation, "=", 0), // can be instantiated externally !
+                    rp.getModel().arithm(migrationDuration, "<", reInstantiateDuration)),
+                    rp.getModel().arithm(duration, "=", migrationDuration),
+                    rp.getModel().arithm(duration, "=", reInstantiateDuration)
             );
 
             // If it is a re-instantiation then specify that the dSlice must start AFTER the Forge delay
             IntVar time = csp.intVar(
                     rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, forgeD, false);
             csp.post(csp.times(doReinstantiation, forgeD, time));
-            csp.post(new Arithmetic(start, Operator.GE, time));
+            csp.post(rp.getModel().arithm(start, ">=", time));
             // Be sure that doReinstantiation will be instantiated
             csp.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
         }

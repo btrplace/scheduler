@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -49,6 +49,11 @@ public class AliasedCumulativesFiltering {
     private IntVar[] cEnds;
 
     private IStateIntVector vIn;
+
+    /**
+     * As choco 4.0.5 no longer provide the vector size.
+     */
+    private IStateInt vInSize;
 
     /*
      * The moment the demanding slices ends. Same order as the hosting variables.
@@ -100,6 +105,7 @@ public class AliasedCumulativesFiltering {
                                        int[][] dUsages,
                                        IntVar[] dStarts,
                                        IStateIntVector vIn,
+                                       IStateInt vInSize,
                                        int[] assocs,
                                        int[] revAssocs,
                                        ICause aCause) {
@@ -114,6 +120,7 @@ public class AliasedCumulativesFiltering {
 
         this.dStarts = dStarts;
         this.vIn = vIn;
+        this.vInSize = vInSize;
         this.out = outs;
         revAssociations = revAssocs;
 
@@ -217,8 +224,8 @@ public class AliasedCumulativesFiltering {
 
     private void insertDSlices() {
         for (int i = 0; i < nbDims; i++) {
-            for (int x = 0; x < vIn.size(); x++) {
-                int j = vIn.get(x);
+            for (int x = 0; x < vInSize.get(); x++) {
+                int j = vIn.quickGet(x);
                 int t = dStarts[j].getUB();
                 profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
                 t = dStarts[j].getLB();
@@ -267,8 +274,8 @@ public class AliasedCumulativesFiltering {
         }
         LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
                 + " capacities=(" + Arrays.toString(capacities) + ") ---");
-        for (int x = 0; x < vIn.size(); x++) {
-            int i = vIn.get(x);
+        for (int x = 0; x < vInSize.get(); x++) {
+            int i = vIn.quickGet(x);
             LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
         }
 
@@ -299,8 +306,8 @@ public class AliasedCumulativesFiltering {
 
     private boolean isIn(int idx) {
 
-        for (int x = 0; x < vIn.size(); x++) {
-            int i = vIn.get(x);
+        for (int x = 0; x < vInSize.get(); x++) {
+            int i = vIn.quickGet(x);
             if (i == idx) {
                 return true;
             }
@@ -348,8 +355,8 @@ public class AliasedCumulativesFiltering {
 
     private void updateDStartsInf() throws ContradictionException {
 
-        for (int idx = 0; idx < vIn.size(); idx++) {
-            int i = vIn.get(idx);
+        for (int idx = 0; idx < vInSize.get(); idx++) {
+            int i = vIn.quickGet(idx);
             if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(dUsages, i);
@@ -387,8 +394,8 @@ public class AliasedCumulativesFiltering {
             }
         }
         if (lastSup != -1) {
-            for (int x = 0; x < vIn.size(); x++) {
-                int i = vIn.get(x);
+            for (int x = 0; x < vInSize.get(); x++) {
+                int i = vIn.quickGet(x);
                 if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getUB() > lastSup) {
                     int s = Math.max(dStarts[i].getLB(), lastSup);
                     dStarts[i].updateUpperBound(s, aCause);

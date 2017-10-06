@@ -21,6 +21,7 @@ package org.btrplace.scheduler.choco.extensions;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.chocosolver.memory.IStateBool;
+import org.chocosolver.memory.IStateInt;
 import org.chocosolver.memory.IStateIntVector;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -53,6 +54,7 @@ public class LocalTaskScheduler {
      */
     private IntVar[] cEnds;
     private IStateIntVector vIn;
+    private IStateInt vInSize;
     private final IntVar[] cHosters;
 
     /*
@@ -100,6 +102,7 @@ public class LocalTaskScheduler {
                               int[][] dUsages,
                               IntVar[] dStarts,
                               IStateIntVector vIn,
+                              IStateInt vInSize,
                               int[] associateCTask,
                               int[] associateDTask,
                               Propagator<?> iCause) {
@@ -122,6 +125,7 @@ public class LocalTaskScheduler {
         this.dStarts = dStarts;
         this.dHosters = dHosters;
         this.vIn = vIn;
+        this.vInSize = vInSize;
         this.out = outs;
         this.associateDTask = associateDTask;
 
@@ -181,7 +185,7 @@ public class LocalTaskScheduler {
 
 
     public void propagate(BitSet watchHosts) throws ContradictionException {
-        if (vIn.size() == 0 && outIdx.length == 0) {
+        if (vInSize.get() == 0 && outIdx.length == 0) {
             return;
         }
 
@@ -241,8 +245,8 @@ public class LocalTaskScheduler {
     private boolean insertDSlices() throws ContradictionException {
         boolean allinstantiated = true;
         int lastSup = 0;
-        for (int x = 0; x < vIn.size(); x++) {
-            int dt = vIn.get(x);
+        for (int x = 0; x < vInSize.get(); x++) {
+            int dt = vIn.quickGet(x);
 
             dStarts[dt].updateLowerBound(early.getLB(), aCause);
             allinstantiated &= dStarts[dt].isInstantiated() || associatedToCSliceOnCurrentNode(dt);
@@ -312,8 +316,8 @@ public class LocalTaskScheduler {
         if (me == DEBUG || DEBUG == DEBUG_ALL) {
             LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
                     + " init=" + Arrays.toString(capacities[me]) + "; early=" + early.toString() + "; last=" + last.toString());
-            for (int x = 0; x < vIn.size(); x++) {
-                int i = vIn.get(x);
+            for (int x = 0; x < vInSize.get(); x++) {
+                int i = vIn.quickGet(x);
                 LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages[i]));
             }
 
@@ -381,7 +385,7 @@ public class LocalTaskScheduler {
 
     private void updateDStartsInf(BitSet watchHosts) throws ContradictionException {
 
-        for (int idx = 0; idx < vIn.size(); idx++) {
+        for (int idx = 0; idx < vInSize.get(); idx++) {
             int i = vIn.quickGet(idx);
             if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
 
@@ -417,8 +421,8 @@ public class LocalTaskScheduler {
             }
         }
         if (lastSup != -1) {
-            for (int x = 0; x < vIn.size(); x++) {
-                int i = vIn.get(x);
+            for (int x = 0; x < vInSize.get(); x++) {
+                int i = vIn.quickGet(x);
                 if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getLB(), lastSup);
                     if (dStarts[i].updateUpperBound(s, aCause) && associateCTask[i] != NO_ASSOCIATIONS && dStarts[i].isInstantiated()) {

@@ -6,7 +6,8 @@ version 1.8.1 - soon come
 See milestone [1.8.1](https://github.com/btrplace/scheduler/milestones/1.8.1)
 
 - close issue #156
-
+- move to Choco 4.0.5
+- remove a useless dependency (fastutil) to reduce jar size (by 16MB !)
 
 version 1.8.0 - 15 May 2017
 ----------------------

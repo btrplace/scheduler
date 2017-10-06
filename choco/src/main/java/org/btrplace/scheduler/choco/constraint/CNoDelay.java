@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -28,8 +28,7 @@ import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
+import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
 
@@ -78,7 +77,7 @@ public class CNoDelay implements ChocoConstraint {
                 return false;
             }
         } else {
-            Arithmetic c = new Arithmetic(d.getStart(), Operator.EQ, 0);
+            Constraint c = rp.getModel().arithm(d.getStart(), "=", 0);
             BoolVar move = ((RelocatableVM) vt).isStaying().not();
             ChocoUtils.postImplies(rp, move, c);
         }

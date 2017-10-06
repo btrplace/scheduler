@@ -27,8 +27,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -107,7 +105,7 @@ public class CDeadline implements ChocoConstraint {
         for (VM vm : dl.getInvolvedVMs()) {
             VMTransition vt = rp.getVMAction(vm);
             if (vt instanceof RelocatableVM) {
-                rp.getModel().post(new Arithmetic(vt.getEnd(), Operator.LE, deadline));
+                rp.getModel().post(rp.getModel().arithm(vt.getEnd(), "<=", deadline));
             }
         }
 

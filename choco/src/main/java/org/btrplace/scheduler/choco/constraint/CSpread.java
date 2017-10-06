@@ -29,8 +29,6 @@ import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -124,8 +122,8 @@ public class CSpread implements ChocoConstraint {
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
             BoolVar eq = csp.boolVar(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"));
-            new Arithmetic(d.getHoster(), Operator.EQ, c.getHoster()).reifyWith(eq);
-            Arithmetic leqCstr = new Arithmetic(c.getEnd(), Operator.LE, d.getStart());
+          rp.getModel().arithm(d.getHoster(), "=", c.getHoster()).reifyWith(eq);
+          org.chocosolver.solver.constraints.Constraint leqCstr = rp.getModel().arithm(c.getEnd(), "<=", d.getStart());
             ChocoUtils.postImplies(rp, eq, leqCstr);
         }
     }

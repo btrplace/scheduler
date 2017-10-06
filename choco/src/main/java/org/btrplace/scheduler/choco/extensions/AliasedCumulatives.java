@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -91,6 +91,7 @@ public class AliasedCumulatives extends Constraint {
 
         private IStateIntVector vIns;
 
+        private IStateInt vInsSize;
         /**
          * 0 [0,1,2,4]
          * 1 [0,1,2,4]
@@ -126,7 +127,7 @@ public class AliasedCumulatives extends Constraint {
             this.nbDims = capas.length;
 
             this.vIns = cHosters[0].getModel().getEnvironment().makeIntVector(0, 0);
-
+            vInsSize = cHosters[0].getModel().getEnvironment().makeInt(0);
 
             BitSet out = new BitSet(cHosters.length);
 
@@ -159,6 +160,7 @@ public class AliasedCumulatives extends Constraint {
                     dUsages,
                     dStarts,
                     vIns,
+                    vInsSize,
                     assocs,
                     revAssociations,
                     this);
@@ -203,6 +205,7 @@ public class AliasedCumulatives extends Constraint {
                         if (isIn(nIdx)) {
                             toInstantiate.add(-1);
                             vIns.add(i);
+                            vInsSize.add(1);
                         }
                     }
                 }
@@ -237,6 +240,7 @@ public class AliasedCumulatives extends Constraint {
                 int nIdx = vars[idx].getValue();
                 if (isIn(nIdx)) {
                     vIns.add(idx);
+                    vInsSize.add(1);
                 }
             }
             forcePropagate(PropagatorEventType.CUSTOM_PROPAGATION);

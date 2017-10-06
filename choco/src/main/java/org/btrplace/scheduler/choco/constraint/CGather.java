@@ -81,10 +81,12 @@ public class CGather implements ChocoConstraint {
      */
     private boolean continuousColocation(ReconfigurationProblem rp, List<Slice> dSlices) {
 
+      Set<VM> alreadyRunning = new HashSet<>();
         Mapping map = rp.getSourceModel().getMapping();
         Node loc = null;
         for (VM vm : cstr.getInvolvedVMs()) {
             if (map.isRunning(vm)) {
+              alreadyRunning.add(vm);
                 Node node = map.getVMLocation(vm);
                 if (loc == null) {
                     loc = node;
@@ -95,6 +97,10 @@ public class CGather implements ChocoConstraint {
             }
         }
         if (loc != null) {
+          if (cstr.getInvolvedVMs().size() == 1 && dSlices.size() == 1) {
+            // The VM may migrate, we don't care as it is alone.
+            return true;
+          }
             return placeDSlices(rp, dSlices, rp.getNode(loc));
         }
         return true;

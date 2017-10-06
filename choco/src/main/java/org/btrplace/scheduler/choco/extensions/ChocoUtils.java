@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,9 +21,7 @@ package org.btrplace.scheduler.choco.extensions;
 
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.Model;
-import org.chocosolver.solver.constraints.Arithmetic;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.Operator;
 import org.chocosolver.solver.variables.BoolVar;
 
 /**
@@ -50,7 +48,7 @@ public final class ChocoUtils {
         c2.reifyWith(bC2);
 
         BoolVar notB1 = b1.not();
-        s.post(new Arithmetic(b1, Operator.NQ, notB1));
+        s.post(rp.getModel().arithm(b1, "!=", notB1));
 
         s.post(rp.getModel().or(notB1, bC2));
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -27,8 +27,6 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.constraint.ChocoConstraint;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.constraints.Arithmetic;
-import org.chocosolver.solver.constraints.Operator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +81,7 @@ public class CPrecedence implements ChocoConstraint {
         }
 
         // Post the precedence constraint (involved VMs need to be ordered)
-        rp.getModel().post(new Arithmetic(migrationList.get(0).getEnd(), Operator.LE, migrationList.get(1).getStart()));
+        rp.getModel().post(rp.getModel().arithm(migrationList.get(0).getEnd(), "<=", migrationList.get(1).getStart()));
 
         return true;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -97,6 +97,9 @@ public class TaskScheduler extends Constraint {
 
         private IStateIntVector[] vIns;
 
+        // Because Choco 4.0.5 no longer provides size().
+        private IStateInt[] vInsSize;
+
         private IntVar[] earlyStarts;
 
         private IntVar[] lastEnds;
@@ -134,7 +137,7 @@ public class TaskScheduler extends Constraint {
 
             scheds = new LocalTaskScheduler[nbHosts];
             this.vIns = new IStateIntVector[nbHosts];
-
+            this.vInsSize = new IStateInt[nbHosts];
             this.earlyStarts = earlyStarts;
             this.lastEnds = lastEnds;
             BitSet[] outs = new BitSet[nbHosts];
@@ -162,6 +165,7 @@ public class TaskScheduler extends Constraint {
 
             for (int h = 0; h < nbHosts; h++) {
                 vIns[h] = earlyStarts[0].getModel().getEnvironment().makeIntVector(0, 0);
+                vInsSize[h] = earlyStarts[0].getModel().getEnvironment().makeInt(0);
                 scheds[h] = new LocalTaskScheduler(h,
                         this.earlyStarts[h],
                         this.lastEnds[h],
@@ -174,6 +178,7 @@ public class TaskScheduler extends Constraint {
                         this.dUsages,
                         this.dStarts,
                         this.vIns[h],
+                        this.vInsSize[h],
                         assocs,
                         revAssociations,
                         this
@@ -310,6 +315,7 @@ public class TaskScheduler extends Constraint {
             while (d < dHosters.length && dHosters[d].isInstantiated()) {
                 int h = dHosters[d].getValue();
                 vIns[h].add(d);
+                vInsSize[h].add(1);
                 d++;
             }
             watchDTask.set(d);
