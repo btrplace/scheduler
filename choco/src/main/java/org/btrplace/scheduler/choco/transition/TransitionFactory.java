@@ -21,22 +21,23 @@ package org.btrplace.scheduler.choco.transition;
 import org.btrplace.model.NodeState;
 import org.btrplace.model.VMState;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * A customisable factory that provide the right transition model according
+ * A customisable factory that provides the right transition model according
  * to the given element states.
  *
  * @author Fabien Hermenier
  */
 public class TransitionFactory {
 
-    private Map<VMState, List<VMTransitionBuilder>> vmAMB2;
+    /**
+     * Map Destination -> <Source, builder>.
+     */
+    private Map<VMState, Map<VMState, VMTransitionBuilder>> vmAMB2;
 
     private Map<NodeState, NodeTransitionBuilder> nodeAMB;
 
@@ -45,21 +46,23 @@ public class TransitionFactory {
      */
     public TransitionFactory() {
         vmAMB2 = new EnumMap<>(VMState.class);
+        for (VMState src : VMState.values()) {
+            vmAMB2.put(src, new EnumMap<>(VMState.class));
+        }
         nodeAMB = new EnumMap<>(NodeState.class);
     }
 
     /**
-     * Add a builder for a VM
+     * Add a builder for a VM.
+     * Every builder that supports the same transition will be replaced.
      *
      * @param b the builder to add
      */
     public void add(VMTransitionBuilder b) {
-        List<VMTransitionBuilder> l = vmAMB2.get(b.getDestinationState());
-        if (l == null) {
-            l = new ArrayList<>();
-            vmAMB2.put(b.getDestinationState(), l);
+        Map<VMState, VMTransitionBuilder> m = vmAMB2.get(b.getDestinationState());
+        for (VMState src : b.getSourceStates()) {
+            m.put(src, b);
         }
-        l.add(b);
     }
 
     /**
@@ -69,8 +72,11 @@ public class TransitionFactory {
      * @return {@code true} if it has been removed
      */
     public boolean remove(VMTransitionBuilder b) {
-        VMState dst = b.getDestinationState();
-        return vmAMB2.get(dst).remove(b);
+        Map<VMState, VMTransitionBuilder> m = vmAMB2.get(b.getDestinationState());
+        for (VMState src : b.getSourceStates()) {
+            m.remove(src);
+        }
+        return true;
     }
 
     /**
@@ -100,16 +106,11 @@ public class TransitionFactory {
      * @return the list of possible transitions. {@code null} if no transition is available
      */
     public VMTransitionBuilder getBuilder(VMState srcState, VMState dstState) {
-        List<VMTransitionBuilder> dstCompliant = vmAMB2.get(dstState);
+        Map<VMState, VMTransitionBuilder> dstCompliant = vmAMB2.get(dstState);
         if (dstCompliant == null) {
             return null;
         }
-        for (VMTransitionBuilder vmb : dstCompliant) {
-            if (vmb.getSourceStates().contains(srcState)) {
-                return vmb;
-            }
-        }
-        return null;
+        return dstCompliant.get(srcState);
     }
 
     /**
@@ -151,8 +152,8 @@ public class TransitionFactory {
             b.append("node ").append(nb).append('\n');
         }
         Set<VMTransitionBuilder> vmb = new HashSet<>();
-        for (Map.Entry<VMState, List<VMTransitionBuilder>> entry : vmAMB2.entrySet()) {
-            for (VMTransitionBuilder a : entry.getValue()) {
+        for (Map.Entry<VMState, Map<VMState, VMTransitionBuilder>> entry : vmAMB2.entrySet()) {
+            for (VMTransitionBuilder a : entry.getValue().values()) {
                 if (vmb.add(a)) {
                     b.append("vm ").append(a).append('\n');
                 }

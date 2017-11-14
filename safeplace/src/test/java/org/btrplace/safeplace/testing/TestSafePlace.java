@@ -23,6 +23,7 @@ import org.btrplace.safeplace.spec.SpecScanner;
 import org.btrplace.safeplace.testing.fuzzer.Restriction;
 import org.btrplace.safeplace.testing.fuzzer.decorators.ShareableResourceFuzzer;
 import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -58,7 +59,7 @@ public class TestSafePlace {
   }
 
 
-  @CstrTest()
+  @CstrTest(groups = {"spread"})
   public void testSpread(TestCampaign c) {
     c.check("spread").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
@@ -73,12 +74,12 @@ public class TestSafePlace {
     c.check("gather").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest(groups = {"ban", "go"})
+  @CstrTest(groups = {"ban"})
   public void testBan(TestCampaign c) {
     c.check("ban").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest()
+  @CstrTest(groups = {"fence",})
   public void testFence(TestCampaign c) {
     c.check("fence").vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
@@ -143,38 +144,38 @@ public class TestSafePlace {
   }
 
 
-  @CstrTest
+  @CstrTest(groups = {})
   public void testResource(TestCampaign c) {
     c.check("shareableResource")
             .with("id", "cpu")
             .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
-            .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+            .vms(5).nodes(1).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  @CstrTest(groups = {"resourceCapacity"})
+  @CstrTest(groups = {"_resourceCapacity"})
   public void testResourceCapacity(TestCampaign c) {
     c.check("resourceCapacity")
             .restriction(EnumSet.of(Restriction.CONTINUOUS, Restriction.DISCRETE))
             .with("id", "cpu")
             .with("qty", 1, 50)
             .with(new ShareableResourceFuzzer("cpu", 1, 5, 10, 20).variability(0.5))
-            .vms(10).nodes(3).srcOffNodes(0.1).srcVMs(1, 9, 0);
+            .vms(5).nodes(2).srcOffNodes(0.1).srcVMs(1, 9, 0);
   }
 
-  //@Test
+  @Test
   public void launcher() throws Exception {
     SpecScanner specScanner = new SpecScanner();
     List<Constraint> l = specScanner.scan();
     TestScanner sc = new TestScanner(l);
     List<TestCampaign> campaigns = sc.test(TestSafePlace.class);
-    //List<TestCampaign> campaigns = sc.testGroups("go");
+    //List<TestCampaign> campaigns = sc.testGroups("_resourceCapacity");
     if (campaigns.isEmpty()) {
       Assert.fail("Nothing to test");
     }
 
     campaigns.forEach(tc -> {
-      tc.schedulerParams().doRepair(false);
-      tc.onDefect(DefectHooks.print);
+      tc.schedulerParams().doRepair(false);//.setVerbosity(1);
+      tc.onDefect(DefectHooks.ignore);
       tc.limits().clear().tests(1000);
       System.out.println(tc.go());
     });

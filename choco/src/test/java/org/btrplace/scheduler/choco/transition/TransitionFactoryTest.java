@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2017 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,10 +18,16 @@
 
 package org.btrplace.scheduler.choco.transition;
 
+import org.btrplace.model.Node;
 import org.btrplace.model.NodeState;
+import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
+import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.EnumSet;
 
 /**
  * Unit tests for {@link TransitionFactory}.
@@ -90,4 +96,53 @@ public class TransitionFactoryTest {
         Assert.assertEquals(b2.getSourceState(), NodeState.OFFLINE);
     }
 
+    @Test
+    public void testRemove() {
+        TransitionFactory amf = TransitionFactory.newBundle();
+        MockVMBuilder vmb = new MockVMBuilder();
+        amf.remove(vmb);
+        for (VMState src : vmb.getSourceStates()) {
+            Assert.assertNull(amf.getBuilder(src, vmb.getDestinationState()));
+        }
+
+        MockNodeBuilder nb = new MockNodeBuilder();
+        amf.remove(nb);
+        Assert.assertNull(amf.getBuilder(nb.getSourceState()));
+    }
+
+    @Test
+    public void testAdd() {
+        TransitionFactory amf = TransitionFactory.newBundle();
+        MockVMBuilder vmb = new MockVMBuilder();
+        amf.add(vmb);
+        for (VMState src : vmb.getSourceStates()) {
+            Assert.assertEquals(amf.getBuilder(src, vmb.getDestinationState()), vmb);
+        }
+
+        MockNodeBuilder nb = new MockNodeBuilder();
+        amf.add(nb);
+        Assert.assertEquals(amf.getBuilder(nb.getSourceState()), nb);
+    }
+
+    public static class MockVMBuilder extends VMTransitionBuilder {
+        public MockVMBuilder() {
+            super("foo", EnumSet.of(VMState.READY, VMState.SLEEPING), VMState.RUNNING);
+        }
+
+        @Override
+        public VMTransition build(ReconfigurationProblem rp, VM v) throws SchedulerException {
+            return null;
+        }
+    }
+
+    public static class MockNodeBuilder extends NodeTransitionBuilder {
+        public MockNodeBuilder() {
+            super("foo", NodeState.OFFLINE);
+        }
+
+        @Override
+        public NodeTransition build(ReconfigurationProblem rp, Node n) throws SchedulerException {
+            return null;
+        }
+    }
 }
