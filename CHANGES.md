@@ -1,9 +1,9 @@
 Release notes
 ======================
 
-version 1.8.1 - soon come
+version 1.9.0 - soon come
 ----------------------
-See milestone [1.8.1](https://github.com/btrplace/scheduler/milestones/1.8.1)
+See milestone [1.9.0](https://github.com/btrplace/scheduler/milestones/1.9.0)
 
 - close issue #156, #158, #159, #161, #162
 - move to Choco 4.0.5
