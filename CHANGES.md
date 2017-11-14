@@ -5,15 +5,16 @@ version 1.9.1 - soon come
 ----------------------
 See milestone [1.9.1](https://github.com/btrplace/scheduler/milestones/1.9.1)
 
+
 version 1.9.0 - 14 Nov 2017
 ----------------------
 See milestone [1.9.0](https://github.com/btrplace/scheduler/milestones/1.9.0)
 
-- close issue #156, #158, #159, #161, #162
+- close issue #156, #158, #159, #161, #162, #164, #166
 - move to Choco 4.0.5
 - Better integration of SafePlace and revise some of its API
-- Fix #
 - remove a useless dependency (fastutil) to reduce jar size (by 16MB !)
+
 
 version 1.8.0 - 15 May 2017
 ----------------------
