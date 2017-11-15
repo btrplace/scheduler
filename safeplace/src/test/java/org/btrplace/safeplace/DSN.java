@@ -23,6 +23,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.printer.PrettyPrinterConfiguration;
 import org.btrplace.safeplace.spec.Constraint;
 import org.btrplace.safeplace.spec.SpecScanner;
 import org.btrplace.safeplace.testing.Bench;
@@ -317,58 +318,60 @@ public class DSN {
         Files.write(path, sb.getBytes());
     }
 
-    private static class FunctionVisitor extends VoidVisitorAdapter {
+    private static class FunctionVisitor extends VoidVisitorAdapter<Void> {
 
         private List<Integer> l;
 
-        public FunctionVisitor(List<Integer> numbers) {
+        FunctionVisitor(List<Integer> numbers) {
             this.l = numbers;
         }
 
         @Override
-        public void visit(MethodDeclaration n, Object arg) {
-            if (n.getName().equals("eval")) {
-                l.add(n.getRange().end.line - n.getRange().begin.line);
+        public void visit(MethodDeclaration n, Void arg) {
+            if (n.getNameAsString().equals("eval")) {
+                n.getRange().ifPresent(r -> l.add(r.end.line - r.begin.line));
             }
             super.visit(n, arg);
         }
     }
 
-    private static class UnitTestsVisitor extends VoidVisitorAdapter {
+    private static class UnitTestsVisitor extends VoidVisitorAdapter<Void> {
 
         private List<Integer> l;
+        
+        private PrettyPrinterConfiguration noComments = new PrettyPrinterConfiguration().setPrintComments(false);
 
-        public UnitTestsVisitor(List<Integer> numbers) {
+        UnitTestsVisitor(List<Integer> numbers) {
             this.l = numbers;
         }
 
         @Override
-        public void visit(MethodDeclaration n, Object arg) {
-            System.out.println(n.getName());
-            if (n.toStringWithoutComments().contains("solve")) {
-                l.add(n.getBody().getRange().end.line - n.getBody().getRange().begin.line);
+        public void visit(MethodDeclaration n, Void arg) {
+            System.out.println(n.getNameAsString());
+            if (n.toString(noComments).contains("solve")) {
+                n.getRange().ifPresent(r -> l.add(r.end.line - r.begin.line));
             }
             super.visit(n, arg);
         }
     }
 
-    private static class SafeplaceTestsVisitor extends VoidVisitorAdapter {
+    private static class SafeplaceTestsVisitor extends VoidVisitorAdapter<Void> {
 
         private List<Integer> l;
 
-        public SafeplaceTestsVisitor(List<Integer> numbers) {
+        SafeplaceTestsVisitor(List<Integer> numbers) {
             this.l = numbers;
         }
 
         @Override
-        public void visit(MethodDeclaration n, Object arg) {
+        public void visit(MethodDeclaration n, Void arg) {
             for (AnnotationExpr a : n.getAnnotations()) {
-                if (!a.getName().getName().equals("CstrTest")) {
+                if (!a.getNameAsString().equals("CstrTest")) {
                     return;
                 }
             }
             System.out.println(n.getName());
-            l.add(n.getRange().end.line - n.getRange().begin.line);
+            n.getRange().ifPresent(r -> l.add(r.end.line - r.begin.line));
             super.visit(n, arg);
         }
     }
