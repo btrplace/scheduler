@@ -23,6 +23,7 @@ import org.btrplace.scheduler.choco.constraint.ChocoMapper;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
+import org.chocosolver.solver.Settings;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -219,6 +220,21 @@ public interface Parameters {
      * @return {@code true} if the view has been removed
      */
     boolean removeChocoView(Class<? extends ChocoView> v);
+
+    /**
+     * Get the solver settings.
+     *
+     * @return
+     */
+    Settings chocoSettings();
+
+    /**
+     * Set the choco settings.
+     *
+     * @param s the settings to set
+     * @return {@code this}
+     */
+    Parameters chocoSettings(Settings s);
 
     /**
      * Get the standalone views.

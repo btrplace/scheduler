@@ -37,6 +37,7 @@ import org.btrplace.scheduler.choco.runner.StagedSolvingStatistics;
 import org.btrplace.scheduler.choco.runner.single.SingleRunner;
 import org.btrplace.scheduler.choco.transition.TransitionFactory;
 import org.btrplace.scheduler.choco.view.ChocoView;
+import org.chocosolver.solver.Settings;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -264,6 +265,16 @@ public class DefaultChocoScheduler implements ChocoScheduler {
     @Override
     public boolean removeChocoView(Class<? extends ChocoView> v) {
         return params.removeChocoView(v);
+    }
+
+    @Override
+    public Settings chocoSettings() {
+        return params.chocoSettings();
+    }
+
+    @Override
+    public Parameters chocoSettings(Settings s) {
+        return params.chocoSettings(s);
     }
 
     @Override

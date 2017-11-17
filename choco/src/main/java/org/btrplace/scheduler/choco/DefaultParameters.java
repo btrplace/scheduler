@@ -28,6 +28,7 @@ import org.btrplace.scheduler.choco.view.DefaultCumulatives;
 import org.btrplace.scheduler.choco.view.VectorPacking;
 import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.memory.trailing.EnvironmentTrailing;
+import org.chocosolver.solver.Settings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +48,7 @@ import java.util.function.BiConsumer;
  * <li>the {@link org.btrplace.scheduler.choco.view.Cumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultCumulatives}</li>
  * <li>the {@link org.btrplace.scheduler.choco.view.AliasedCumulatives} view is {@link org.btrplace.scheduler.choco.view.DefaultAliasedCumulatives}</li>
  * <li>The {@link IEnvironment} is the default choco trailing environment. For large scale experiment, use</li>
+ * <li>The setting for choco makes {@link Settings#checkDeclaredConstraints()} returns false and prevent sum decomposition.</li>
  * </ul>
  *
  * @author Fabien Hermenier
@@ -82,6 +84,8 @@ public class DefaultParameters implements Parameters {
 
     private int verbosityLevel;
 
+    private Settings chocoSettings;
+
     /**
      * New set of parameters.
      */
@@ -97,6 +101,18 @@ public class DefaultParameters implements Parameters {
         views.add(DefaultAliasedCumulatives.class);
 
         solutionListeners = new ArrayList<>();
+
+        chocoSettings = new Settings() {
+            @Override
+            public boolean checkDeclaredConstraints() {
+                return false;
+            }
+
+            @Override
+            public int getMinCardForSumDecomposition() {
+                return 10000;
+            }
+        };
     }
 
     /**
@@ -247,6 +263,17 @@ public class DefaultParameters implements Parameters {
     @Override
     public Parameters setEnvironmentFactory(EnvironmentFactory f) {
         envf = f;
+        return this;
+    }
+
+    @Override
+    public Settings chocoSettings() {
+        return chocoSettings;
+    }
+
+    @Override
+    public Parameters chocoSettings(Settings s) {
+        chocoSettings = s;
         return this;
     }
 
