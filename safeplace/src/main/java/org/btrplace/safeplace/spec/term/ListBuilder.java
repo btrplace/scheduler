@@ -37,12 +37,12 @@ public class ListBuilder<T> implements Term<List<T>> {
 
     private Proposition p;
 
-    private UserVar v;
+    private UserVar<?> v;
     private Term<T> t;
 
     private Type type;
 
-    public ListBuilder(Term<T> t, UserVar v, Proposition p) {
+    public ListBuilder(Term<T> t, UserVar<?> v, Proposition p) {
         this.p = p;
         this.t = t;
         this.v = v;
@@ -56,7 +56,7 @@ public class ListBuilder<T> implements Term<List<T>> {
 
     @Override
     public List<T> eval(Context mo, Object... args) {
-        List res = new ArrayList();
+        List<T> res = new ArrayList<>();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
             mo.setValue(v.label(), c.eval(mo));

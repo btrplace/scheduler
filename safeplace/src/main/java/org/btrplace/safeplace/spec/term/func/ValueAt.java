@@ -32,10 +32,10 @@ import java.util.List;
  */
 public class ValueAt implements Term {
 
-    private Term<List> arr;
+    private Term<List<?>> arr;
     private Term<Integer> idx;
 
-    public ValueAt(Term<List> arr, Term<Integer> idx) {
+    public ValueAt(Term<List<?>> arr, Term<Integer> idx) {
         this.arr = arr;
         this.idx = idx;
     }
@@ -47,7 +47,7 @@ public class ValueAt implements Term {
 
     @Override
     public Object eval(Context mo, Object... args) {
-        List l = arr.eval(mo);
+        List<?> l = arr.eval(mo);
         if (l == null) {
             return null;
         }

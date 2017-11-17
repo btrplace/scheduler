@@ -42,7 +42,7 @@ public class Constraint implements Function<Boolean> {
 
     private Proposition prop;
 
-    private List<UserVar> args;
+    private List<UserVar<?>> args;
 
     private Class<? extends SatConstraint> impl;
 
@@ -93,11 +93,11 @@ public class Constraint implements Function<Boolean> {
         return prop;
     }
 
-    public List<UserVar> args() {
+    public List<UserVar<?>> args() {
         return args;
     }
 
-    public Constraint args(List<UserVar> args) {
+    public Constraint args(List<UserVar<?>> args) {
         this.args = args;
         return this;
     }
@@ -126,7 +126,7 @@ public class Constraint implements Function<Boolean> {
         if (impl == null) {
             return null;
         }
-        for (Constructor c : impl.getConstructors()) {
+        for (Constructor<?> c : impl.getConstructors()) {
             try {
                 if (c.getParameterTypes().length == args.size()) {
                     return (SatConstraint) c.newInstance(args.toArray());
@@ -146,9 +146,9 @@ public class Constraint implements Function<Boolean> {
         if (impl == null) {
             return false;
         }
-        Class c = impl;
+        Class<?> c = impl;
         do {
-            for (Class i : c.getInterfaces()) {
+            for (Class<?> i : c.getInterfaces()) {
                 if (i.equals(SatConstraint.class)) {
                     return true;
                 }

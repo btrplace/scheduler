@@ -73,7 +73,7 @@ public class Schedule extends SimpleConstraint {
     }
 
     @Override
-    public SatConstraintChecker getChecker() {
+    public SatConstraintChecker<?> getChecker() {
         return new ScheduleChecker(this);
     }
 

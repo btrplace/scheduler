@@ -53,6 +53,8 @@ import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 
+import gnu.trove.map.TObjectIntMap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -151,7 +153,7 @@ public class CMinMigrations implements CObjective {
         }
 
 
-        Map<VM, Integer> costs = CShareableResource.getWeights(rp, rcs);
+        TObjectIntMap<VM> costs = CShareableResource.getWeights(rp, rcs);
         badActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
         goodActions.sort((v2, v1) -> costs.get(v1.getVM()) - costs.get(v2.getVM()));
         placeVMs(ps, strategies, badActions, schedHeuristic, pla);

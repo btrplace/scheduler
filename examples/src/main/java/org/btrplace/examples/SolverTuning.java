@@ -85,7 +85,7 @@ public class SolverTuning implements Example {
         cra.doRepair(false);
         try {
             solve(cra, model, constraints);
-        } catch (SchedulerException ex) {
+        } catch (@SuppressWarnings("unused") SchedulerException ex) {
             //Just in case the testing environment is not performant enough
             //It does not matter that much if there is no enough time to get a solution here
         }

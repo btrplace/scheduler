@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.btrplace.safeplace.spec.antlr.CstrSpecBaseVisitor;
 import org.btrplace.safeplace.spec.antlr.CstrSpecParser;
 import org.btrplace.safeplace.spec.prop.*;
 import org.btrplace.safeplace.spec.term.*;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * @author Fabien Hermenier
  */
-public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpecBaseVisitor {
+public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     private SymbolsTable symbols;
 
@@ -48,12 +49,12 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         symbols = new SymbolsTable();
     }
 
-    public MyCstrSpecVisitor args(List<UserVar> args) {
+    public MyCstrSpecVisitor args(List<UserVar<?>> args) {
         args.forEach(symbols::put);
         return this;
     }
 
-    public MyCstrSpecVisitor library(List<Function> funcs) {
+    public MyCstrSpecVisitor library(List<Function<?>> funcs) {
         funcs.forEach(symbols::put);
         return this;
     }
@@ -99,14 +100,14 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
 
     @Override
     public Proposition visitAll(@NotNull CstrSpecParser.AllContext ctx) {
-        List<UserVar> vars = visitTypedef(ctx.typedef());
+        List<UserVar<?>> vars = visitTypedef(ctx.typedef());
         Proposition p = (Proposition) visit(ctx.formula());
         return new ForAll(vars, p);
     }
 
     @Override
     public Exists visitExists(@NotNull CstrSpecParser.ExistsContext ctx) {
-        List<UserVar> vars = visitTypedef(ctx.typedef());
+        List<UserVar<?>> vars = visitTypedef(ctx.typedef());
         Proposition p = (Proposition) visit(ctx.formula());
         return new Exists(vars, p);
     }
@@ -133,7 +134,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     @Override
     public FunctionCall visitCall(@NotNull CstrSpecParser.CallContext ctx) {
 
-        List<Term> ps = ctx.term().stream().map(t -> (Term) visit(t)).collect(Collectors.toList());
+        List<Term> ps = ctx.term().stream().map(t -> (Term<?>) visit(t)).collect(Collectors.toList());
         Function f = resolveFunction(ctx.ID().getSymbol(), ps);
 
         FunctionCall.Moment m = FunctionCall.Moment.ANY;
@@ -145,19 +146,19 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
 
     @Override
     public ConstraintCall visitCstrCall(@NotNull CstrSpecParser.CstrCallContext ctx) {
-        List<Term> ps = ctx.call().term().stream().map(t -> (Term) visit(t)).collect(Collectors.toList());
+        List<Term> ps = ctx.call().term().stream().map(t -> (Term<?>) visit(t)).collect(Collectors.toList());
         Function f = resolveFunction(ctx.call().ID().getSymbol(), ps);
         return new ConstraintCall(f, ps);
     }
 
     @Override
-    public List<UserVar> visitTypedef(@NotNull CstrSpecParser.TypedefContext ctx) {
+    public List<UserVar<?>> visitTypedef(@NotNull CstrSpecParser.TypedefContext ctx) {
 
-        Term parent = (Term) visit(ctx.term());
+        Term<?> parent = (Term<?>) visit(ctx.term());
         if (parent.type() instanceof Atomic) {
             throw new SpecException(filename, ctx.op.getCharPositionInLine(), "The right-hand side must be a collection");
         }
-        List<UserVar> vars = new ArrayList<>();
+        List<UserVar<?>> vars = new ArrayList<>();
         for (TerminalNode n : ctx.ID()) {
             String lbl = n.getText();
             UserVar v = new UserVar(lbl, ctx.op.getText(), parent);
@@ -190,7 +191,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         List<Term> s = new ArrayList<>();
         Type ty = null;
         for (CstrSpecParser.TermContext t : ctx.term()) {
-            Term tr = (Term) visit(t);
+            Term<?> tr = (Term<?>) visit(t);
             if (ty == null) {
                 ty = tr.type();
             }
@@ -202,34 +203,34 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
 
     @Override
     public Term visitProtectedTerm(@NotNull CstrSpecParser.ProtectedTermContext ctx) {
-        Term t = (Term) visit(ctx.term());
+        Term<?> t = (Term<?>) visit(ctx.term());
         return new ProtectedTerm(t);
     }
 
     @Override
-    public SetBuilder visitSetInComprehension(@NotNull CstrSpecParser.SetInComprehensionContext ctx) {
+    public SetBuilder<?> visitSetInComprehension(@NotNull CstrSpecParser.SetInComprehensionContext ctx) {
         //Get the binder
-        List<UserVar> v = visitTypedef(ctx.typedef());
+        List<UserVar<?>> v = visitTypedef(ctx.typedef());
 
         Proposition p = Proposition.True;
         if (ctx.COMMA() != null) {
             p = (Proposition) visit(ctx.formula());
         }
-        Term t = (Term) visit(ctx.term());
-        return new SetBuilder(t, v.get(0), p);
+        Term<?> t = (Term<?>) visit(ctx.term());
+        return new SetBuilder<>(t, v.get(0), p);
     }
 
     @Override
-    public ListBuilder visitListInComprehension(@NotNull CstrSpecParser.ListInComprehensionContext ctx) {
+    public ListBuilder<?> visitListInComprehension(@NotNull CstrSpecParser.ListInComprehensionContext ctx) {
         //Get the binder
-        List<UserVar> v = visitTypedef(ctx.typedef());
+        List<UserVar<?>> v = visitTypedef(ctx.typedef());
 
         Proposition p = Proposition.True;
         if (ctx.COMMA() != null) {
             p = (Proposition) visit(ctx.formula());
         }
-        Term t = (Term) visit(ctx.term());
-        return new ListBuilder(t, v.get(0), p);
+        Term<?> t = (Term<?>) visit(ctx.term());
+        return new ListBuilder<>(t, v.get(0), p);
     }
 
     @Override
@@ -239,7 +240,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     }
 
     @Override
-    public Term visitArrayTerm(@NotNull CstrSpecParser.ArrayTermContext ctx) {
+    public Term<?> visitArrayTerm(@NotNull CstrSpecParser.ArrayTermContext ctx) {
         String lbl = ctx.ID().getText();
         Var v = symbols.getVar(lbl);
         if (v == null) {
@@ -250,19 +251,19 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
             throw new SpecException(filename, ctx.ID().getSymbol().getCharPositionInLine(), "List expected. Got '" + v.type() + "')");
         }
 
-        Term idx = (Term) visit(ctx.term());
+        Term idx = (Term<?>) visit(ctx.term());
         assertEqualsTypes(ctx.term().getStart(), IntType.getInstance(), idx.type());
         return new ValueAt(v, idx);
     }
 
     @Override
-    public Term visitIdTerm(@NotNull CstrSpecParser.IdTermContext ctx) {
+    public Term<?> visitIdTerm(@NotNull CstrSpecParser.IdTermContext ctx) {
         String ref = ctx.ID().getText();
-        Term v = symbols.getVar(ref);
+        Term<?> v = symbols.getVar(ref);
         if (v != null) {
             return v;
         }
-        Term c = VMStateType.getInstance().parse(ref);
+        Term<?> c = VMStateType.getInstance().parse(ref);
         if (c == null) {
             c = NodeStateType.getInstance().parse(ref);
         }
@@ -291,7 +292,7 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
         }
     }
 
-    private void assertIn(Token to, Term t1, Term t2) {
+    private void assertIn(Token to, Term<?> t1, Term<?> t2) {
         Type t = t2.type();
         if (!(t instanceof SetType)) {
             throw new SpecException(filename, to.getCharPositionInLine(), "The right-hand side must be a collection. Got '" + t2.type() + "'");
@@ -307,8 +308,8 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     @Override
     public Proposition visitTermComparison(@NotNull CstrSpecParser.TermComparisonContext c) {
         CstrSpecParser.ComparisonContext ctx = c.comparison();
-        Term t1 = (Term) visit(ctx.t1);
-        Term t2 = (Term) visit(ctx.t2);
+        Term t1 = (Term<?>) visit(ctx.t1);
+        Term t2 = (Term<?>) visit(ctx.t2);
 
         switch (ctx.op.getType()) {
 
@@ -355,9 +356,9 @@ public class MyCstrSpecVisitor extends org.btrplace.safeplace.spec.antlr.CstrSpe
     }
 
     @Override
-    public Term visitTermOp(@NotNull CstrSpecParser.TermOpContext ctx) {
-        Term t1 = (Term) visit(ctx.t1);
-        Term t2 = (Term) visit(ctx.t2);
+    public Term<?> visitTermOp(@NotNull CstrSpecParser.TermOpContext ctx) {
+        Term t1 = (Term<?>) visit(ctx.t1);
+        Term t2 = (Term<?>) visit(ctx.t2);
 
         assertEqualsTypes(ctx.op, t1.type(), t2.type());
         switch (ctx.op.getType()) {

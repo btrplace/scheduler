@@ -37,9 +37,9 @@ public class SetPlus extends Plus<Set<?>> {
 
     @Override
     public Set eval(Context mo, Object... args) {
-        Set o1 = a.eval(mo);
-        Set o2 = b.eval(mo);
-        Set<?> l = new HashSet(o1);
+        Set<?> o1 = a.eval(mo);
+        Set<?> o2 = b.eval(mo);
+        Set l = new HashSet<>(o1);
         l.addAll(o2);
         return l;
     }

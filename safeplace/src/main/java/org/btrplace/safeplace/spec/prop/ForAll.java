@@ -31,13 +31,13 @@ import java.util.*;
  */
 public class ForAll implements Proposition {
 
-    private List<UserVar> vars;
+    private List<UserVar<?>> vars;
 
     private Term<Set> from;
 
     private Proposition prop;
 
-    public ForAll(List<UserVar> vars, Proposition p) {
+    public ForAll(List<UserVar<?>> vars, Proposition p) {
         this.vars = vars;
         this.from = vars.get(0).getBackend();
         prop = p;
@@ -78,7 +78,7 @@ public class ForAll implements Proposition {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("!(");
-        Iterator<UserVar> ite = vars.iterator();
+        Iterator<UserVar<?>> ite = vars.iterator();
         while (ite.hasNext()) {
             Var v = ite.next();
             if (ite.hasNext()) {

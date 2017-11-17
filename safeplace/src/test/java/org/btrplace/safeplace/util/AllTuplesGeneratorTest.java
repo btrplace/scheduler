@@ -42,8 +42,7 @@ public class AllTuplesGeneratorTest {
         double nb = 0;
         AllTuplesGenerator<Integer> tg = new AllTuplesGenerator<>(Integer.class, l);
         while (tg.hasNext()) {
-            Integer[] t = tg.next();
-            //System.out.println(t);
+            tg.next();
             nb++;
         }
         Assert.assertEquals(nb, Math.pow(cnt.size(), l.size()));

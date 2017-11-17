@@ -40,7 +40,7 @@ public class NIn extends AtomicProp {
     @Override
     public Boolean eval(Context m) {
         Object o = a.eval(m);
-        Collection c = (Collection) b.eval(m);
+        Collection<?> c = (Collection<?>) b.eval(m);
         if (c == null) {
             return null;
         }

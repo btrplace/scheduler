@@ -38,12 +38,12 @@ public class SetBuilder<T> implements Term<Set<T>> {
 
     private Proposition p;
 
-    private UserVar v;
+    private UserVar<?> v;
     private Term<T> t;
 
     private Type type;
 
-    public SetBuilder(Term<T> t, UserVar v, Proposition p) {
+    public SetBuilder(Term<T> t, UserVar<?> v, Proposition p) {
         this.p = p;
         this.t = t;
         this.v = v;
@@ -57,7 +57,7 @@ public class SetBuilder<T> implements Term<Set<T>> {
 
     @Override
     public Set<T> eval(Context mo, Object... args) {
-        Set res = new HashSet();
+        Set<T> res = new HashSet<>();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
             mo.setValue(v.label(), c.eval(mo));

@@ -46,7 +46,7 @@ public class NodeStateType implements Litteral, Atomic {
     public Constant parse(String n) {
         try {
             return new Constant(Type.valueOf(n.toUpperCase()), this);
-        } catch (IllegalArgumentException ex) {
+        } catch (@SuppressWarnings("unused") IllegalArgumentException ex) {
             return null;
         }
     }

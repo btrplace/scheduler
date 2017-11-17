@@ -138,7 +138,8 @@ public class IssuesTest {
         IntVar sumBusy = rp.getModel().intVar("sumBusy", 0, 1000, true);
         rp.getModel().post(rp.getModel().sum(states, "=", sumBusy));
         IntVar sumIB = rp.getModel().intVar("ib", 0, 1000, true);
-        new Task(sumBusy, idle, sumIB);
+        @SuppressWarnings("unused")
+        Task task = new Task(sumBusy, idle, sumIB);
         rp.getModel().post(rp.getModel().arithm(sumStates, "=", sumIB));//solver.eq(sumStates, sumIB));
 
         ReconfigurationPlan plan = rp.solve(0, false);

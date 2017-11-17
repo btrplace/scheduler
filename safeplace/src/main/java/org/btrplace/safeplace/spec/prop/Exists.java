@@ -31,13 +31,13 @@ import java.util.*;
  */
 public class Exists implements Proposition {
 
-    private List<UserVar> vars;
+    private List<UserVar<?>> vars;
 
     private Proposition prop;
 
-    private Term<Set> from;
+    private Term<Set<?>> from;
 
-    public Exists(List<UserVar> iterator, Proposition p) {
+    public Exists(List<UserVar<?>> iterator, Proposition p) {
         this.vars = iterator;
         prop = p;
         this.from = vars.get(0).getBackend();
@@ -52,7 +52,7 @@ public class Exists implements Proposition {
     public Boolean eval(Context m) {
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
-            Collection<Object> o = from.eval(m);
+            Collection<?> o = from.eval(m);
             if (o == null) {
                 return null;
             }
@@ -78,9 +78,9 @@ public class Exists implements Proposition {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("?(");
-        Iterator<UserVar> ite = vars.iterator();
+        Iterator<UserVar<?>> ite = vars.iterator();
         while (ite.hasNext()) {
-            Var v = ite.next();
+            Var<?> v = ite.next();
             if (ite.hasNext()) {
                 b.append(v.label());
                 b.append(",");

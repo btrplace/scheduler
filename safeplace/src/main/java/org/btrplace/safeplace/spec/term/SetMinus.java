@@ -37,11 +37,11 @@ public class SetMinus extends Minus<Set> {
     }
 
     @Override
-    public Set eval(Context mo, Object... args) {
-        Collection o1 = a.eval(mo, args);
-        Collection o2 = b.eval(mo, args);
+    public Set<Object> eval(Context mo, Object... args) {
+        Collection<?> o1 = a.eval(mo, args);
+        Collection<?> o2 = b.eval(mo, args);
 
-        Set l = new HashSet();
+        Set<Object> l = new HashSet<>();
         o1.stream().filter(o -> !o2.contains(o)).forEach(l::add);
         return l;
     }

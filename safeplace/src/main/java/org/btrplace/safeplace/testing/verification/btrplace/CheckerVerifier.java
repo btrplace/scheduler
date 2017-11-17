@@ -18,6 +18,7 @@
 
 package org.btrplace.safeplace.testing.verification.btrplace;
 
+import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.SatConstraintChecker;
 import org.btrplace.plan.ReconfigurationPlanChecker;
 import org.btrplace.plan.SatConstraintViolationException;
@@ -38,7 +39,7 @@ public class CheckerVerifier implements Verifier {
         if (tc.impl() == null) {
             return VerifierResult.newOk();
         }
-        SatConstraintChecker checker = tc.impl().getChecker();
+        SatConstraintChecker<? extends SatConstraint> checker = tc.impl().getChecker();
 
         if (tc.continuous()) {
             ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();

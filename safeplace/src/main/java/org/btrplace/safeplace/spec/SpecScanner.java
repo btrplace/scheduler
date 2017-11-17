@@ -19,7 +19,8 @@
 package org.btrplace.safeplace.spec;
 
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DiagnosticErrorListener;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -46,7 +47,7 @@ public class SpecScanner {
     private FastClasspathScanner scanner;
 
     private List<Side> sides;
-    private List<Function> functions;
+    private List<Function<?>> functions;
 
     public SpecScanner() {
 
@@ -108,7 +109,7 @@ public class SpecScanner {
         return cstrs;
     }
 
-    private List<Side> resolveDependencies(List<Side> sides) {
+    private static List<Side> resolveDependencies(List<Side> sides) {
         List<String> ids = sides.stream().map(s -> s.impl.getSimpleName()).collect(Collectors.toList());
         List<Node> roots = new ArrayList<>();
         for (Side s : sides) {
@@ -149,8 +150,8 @@ public class SpecScanner {
     /**
      * @throws SpecException
      */
-    private List<UserVar> makeArgs(String cl, String[] strings) throws IOException {
-        List<UserVar> args = new ArrayList<>();
+    private List<UserVar<?>> makeArgs(String cl, String[] strings) throws IOException {
+        List<UserVar<?>> args = new ArrayList<>();
         for (String arg : strings) {
             CstrSpecParser parser = new CstrSpecParser(getTokens(arg));
             ParseTree tree = parser.typedef();
@@ -164,7 +165,7 @@ public class SpecScanner {
      * @throws SpecException
      */
     private org.btrplace.safeplace.spec.Constraint parseSide(Side s, List<Constraint> known) throws IOException {
-        List<UserVar> args = makeArgs(s.impl.getSimpleName(), s.s.args());
+        List<UserVar<?>> args = makeArgs(s.impl.getSimpleName(), s.s.args());
         CstrSpecParser parser = new CstrSpecParser(getTokens(s.s.inv()));
         ParseTree tree = parser.formula();
         MyCstrSpecVisitor v = new MyCstrSpecVisitor().library(functions).args(args).constraints(known);
@@ -172,8 +173,8 @@ public class SpecScanner {
         return new org.btrplace.safeplace.spec.Constraint(s.impl.getSimpleName(), p).args(args).impl(s.impl);
     }
 
-    private CommonTokenStream getTokens(String source) throws IOException {
-        ANTLRInputStream is = new ANTLRInputStream(new StringReader(source));
+    private static CommonTokenStream getTokens(String source) throws IOException {
+        CharStream is = CharStreams.fromReader(new StringReader(source));
         CstrSpecLexer lexer = new CstrSpecLexer(is);
         lexer.removeErrorListeners();
         lexer.addErrorListener(new DiagnosticErrorListener());

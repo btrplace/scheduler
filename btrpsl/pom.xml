@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>1.9.1</version>
+        <version>1.9.2-SNAPSHOT</version>
     </parent>
     <name>btrpsl</name>
     <artifactId>btrpsl</artifactId>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
+            <version>0.9.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>

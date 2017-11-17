@@ -36,7 +36,7 @@ public interface Function<T> {
 
     Type[] signature();
 
-    default Type type(List<Term> args) { return type();}
+    default Type type(@SuppressWarnings("unused") List<Term> args) { return type();}
 
     static String toString(Function f) {
         return Arrays.stream(f.signature()).map(Type::toString).collect(Collectors.joining(",",f.id() + "(",")"));

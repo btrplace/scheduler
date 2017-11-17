@@ -42,11 +42,11 @@ public class Lists implements Function<List> {
 
     @Override
     public List eval(Context mo, Object... args) {
-        Collection c = (Collection) args[0];
+        Collection<?> c = (Collection<?>) args[0];
         if (c == null) {
             return null;
         }
-        List l = new ArrayList<>();
+        List<ArrayList<?>> l = new ArrayList<>();
         l.add(new ArrayList<>(c));
         return l;
     }

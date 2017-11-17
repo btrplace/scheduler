@@ -27,7 +27,7 @@ public interface Type {
         return toString();
     }
 
-    default Object toJSON(Object value) {
+    default Object toJSON(@SuppressWarnings("unused") Object value) {
         throw new UnsupportedOperationException();
     }
 

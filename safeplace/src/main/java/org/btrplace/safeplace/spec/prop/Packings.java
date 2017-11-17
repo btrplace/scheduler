@@ -36,8 +36,8 @@ public class Packings extends AtomicProp {
     @Override
     public Boolean eval(Context ctx) {
         //All the sets in a belongs to b and no duplicates
-        Set left = new HashSet<>();
-        Set right = (Set) b.eval(ctx);
+        Set<?> left = new HashSet<>();
+        Set<?> right = (Set<?>) b.eval(ctx);
         int nb = 0;
         for (Set s : (Set<Set>) a.eval(ctx)) {
             nb += s.size();

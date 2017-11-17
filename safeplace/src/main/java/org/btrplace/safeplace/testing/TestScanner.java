@@ -22,6 +22,7 @@ package org.btrplace.safeplace.testing;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import org.btrplace.safeplace.spec.Constraint;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class TestScanner {
             if (t == null) {
                 continue;
             }
-            Class cl = m.getDeclaringClass();
+            Class<?> cl = m.getDeclaringClass();
             Object o = cl.newInstance();
             campaigns.add(makeTestCampaign(m, o));
         }
@@ -69,11 +70,11 @@ public class TestScanner {
         return campaign;
     }
 
-    public List<TestCampaign> test(Class... classes) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public List<TestCampaign> test(Class<?>... classes) throws IllegalAccessException, InstantiationException, InvocationTargetException {
 
         List<Method> tests = new ArrayList<>();
         //Grab
-        for (Class cl : classes) {
+        for (Class<?> cl : classes) {
             Arrays.stream(cl.getDeclaredMethods()).filter(
                     m -> m.getAnnotation(CstrTest.class) != null
             ).forEach(tests::add);
@@ -82,7 +83,7 @@ public class TestScanner {
     }
 
     public List<TestCampaign> testGroups(String... groups) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        List<Method> ms = new ArrayList<>();
+        List<Executable> ms = new ArrayList<>();
         Set<String> ok = Stream.of(groups).collect(Collectors.toSet());
 
         FastClasspathScanner scanner = new FastClasspathScanner();

@@ -587,12 +587,12 @@ public class CShareableResource implements ChocoView {
      * @param rcs the resources to consider
      * @return a weight per VM
      */
-    public static Map<VM, Integer> getWeights(ReconfigurationProblem rp, List<CShareableResource> rcs) {
+    public static TObjectIntMap<VM> getWeights(ReconfigurationProblem rp, List<CShareableResource> rcs) {
         Model mo = rp.getSourceModel();
 
         int[] capa = new int[rcs.size()];
         int[] cons = new int[rcs.size()];
-        Map<VM, Integer> cost = new HashMap<>();
+        TObjectIntMap<VM> cost = new TObjectIntHashMap<>();
         for (Node n : mo.getMapping().getAllNodes()) {
             for (int i = 0; i < rcs.size(); i++) {
                 capa[i] += rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n))/*.getLB()*/;

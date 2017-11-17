@@ -40,7 +40,7 @@ public class MinusTest {
 
     @Test
     public void testInts() {
-        Minus p = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
+        Minus<?> p = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
         Assert.assertEquals(p.eval(new Context()), -2);
         Assert.assertEquals(p.type(), IntType.getInstance());
     }
@@ -49,8 +49,8 @@ public class MinusTest {
     public void testCollections() {
         Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(IntType.getInstance()));
         Constant v2 = new Constant(Arrays.asList(2, 5), new SetType(IntType.getInstance()));
-        Minus p = new SetMinus(v1, v2);
-        Set s = (Set) p.eval(new Context());
+        Minus<?> p = new SetMinus(v1, v2);
+        Set<?> s = (Set<?>) p.eval(new Context());
         Assert.assertEquals(s.size(), 1);
         Assert.assertEquals(p.type(), new SetType(IntType.getInstance()));
     }
@@ -59,14 +59,15 @@ public class MinusTest {
     public void testBadCollections() throws RuntimeException {
         Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(IntType.getInstance()));
         Constant v2 = new Constant(Collections.singletonList(VMStateType.getInstance().parse("running")), new SetType(VMStateType.getInstance()));
-        new SetMinus(v1, v2);
+        @SuppressWarnings("unused")
+        SetMinus bad = new SetMinus(v1, v2);
     }
 
     @Test
     public void testMinusMinus() {
-        Minus p1 = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
-        Minus p2 = new IntMinus(IntType.getInstance().parse("1"), IntType.getInstance().parse("2"));
-        Minus p3 = new IntMinus(p1, p2);
+        Minus<Integer> p1 = new IntMinus(IntType.getInstance().parse("5"), IntType.getInstance().parse("7"));
+        Minus<Integer> p2 = new IntMinus(IntType.getInstance().parse("1"), IntType.getInstance().parse("2"));
+        Minus<?> p3 = new IntMinus(p1, p2);
         Assert.assertEquals(p3.eval(new Context()), -1);
     }
 
