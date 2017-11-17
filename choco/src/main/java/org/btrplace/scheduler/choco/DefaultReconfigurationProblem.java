@@ -157,8 +157,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = ps.getDurationEvaluators();
 
         IEnvironment env = ps.getEnvironmentFactory().build(m);
-        csp = new org.chocosolver.solver.Model(env, "");
-        csp.set(ps.chocoSettings());
+        csp = new org.chocosolver.solver.Model(env, "", ps.chocoSettings());
         solver = csp.getSolver();
         start = fixed(0, "RP.start");
         end = csp.intVar(makeVarLabel("RP.end"), 0, ps.getMaxEnd(), true);

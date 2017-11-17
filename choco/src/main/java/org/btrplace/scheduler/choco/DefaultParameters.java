@@ -134,6 +134,7 @@ public class DefaultParameters implements Parameters {
         mapper = ps.getMapper();
         envf = ps.getEnvironmentFactory();
         solutionListeners = ps.solutionListeners();
+        chocoSettings = ps.chocoSettings();
     }
 
     @Override
