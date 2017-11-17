@@ -5,6 +5,8 @@ version 1.9.1 - soon come
 ----------------------
 See milestone [1.9.1](https://github.com/btrplace/scheduler/milestones/1.9.1)
 
+- #167 Fix the performance regression due to new Choco settings
+
 
 version 1.9.0 - 14 Nov 2017
 ----------------------
