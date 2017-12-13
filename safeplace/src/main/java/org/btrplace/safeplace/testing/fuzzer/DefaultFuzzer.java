@@ -63,7 +63,7 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
 
     private Validator predicates;
 
-    private Map<String, Domain> doms;
+    private Map<String, Domain<?>> doms;
 
     private Constraint cstr;
 
@@ -106,8 +106,8 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
     @Override
     public int lastFuzzingIterations() {return iterations;}
 
-    private Domain domain(UserVar v, Model mo) {
-        Domain d = doms.get(v.label());
+    private Domain<?> domain(UserVar<?> v, Model mo) {
+        Domain<?> d = doms.get(v.label());
         if (d != null) {
             return d;
         }
@@ -146,8 +146,8 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
         lastValidationDuration  += predicates.lastDuration();
 
         List<Constant> specArgs = new ArrayList<>();
-        for (UserVar v : cstr.args()) {
-            Domain d = domain(v, p.getOrigin());
+        for (UserVar<?> v : cstr.args()) {
+            Domain<?> d = domain(v, p.getOrigin());
             Object o = v.pick(d);
             specArgs.add(new Constant(o, v.type()));
 
@@ -180,15 +180,14 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
                 //Both possibles and don't care
                 impl.setContinuous(rnd.nextBoolean());
                 return;
-            } else {
-                //Force the right one
-                if (restrictions.contains(Restriction.CONTINUOUS)) {
-                    impl.setContinuous(true);
-                } else {
-                    impl.setContinuous(false);
-                }
-                return;
             }
+            //Force the right one
+            if (restrictions.contains(Restriction.CONTINUOUS)) {
+                impl.setContinuous(true);
+            } else {
+                impl.setContinuous(false);
+            }
+            return;
         }
         //Only 1 possible, go for it if allowed
         if (!continuous && !restrictions.contains(Restriction.DISCRETE)) {
@@ -202,7 +201,7 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
 
     @Override
     public ConfigurableFuzzer with(String var, int val) {
-      Domain d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Collections.singletonList(val));
+      Domain<?> d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Collections.singletonList(val));
         return with(var, d);
     }
 
@@ -217,7 +216,7 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
 
     @Override
     public ConfigurableFuzzer with(String var, int[] vals) {
-        List<Integer> s = new ArrayList(Arrays.asList(vals));
+      List<Integer> s = Arrays.stream(vals).boxed().collect(Collectors.toList());
       return with(var, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
     }
 
@@ -229,7 +228,7 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
 
     @Override
     public ConfigurableFuzzer with(String arg, String[] vals) {
-      Domain d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Arrays.asList(vals));
+      Domain<?> d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Arrays.asList(vals));
         doms.put(arg, d);
         return this;
     }

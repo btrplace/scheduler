@@ -137,9 +137,8 @@ public class TestCase {
 
         if (continuous() || !plan.isApplyable()) {
             return res + "Plan:\n" + plan + "\n";
-        } else {
-            return res + "Result:\n" + plan.getResult().getMapping() + "\n";
         }
+        return res + "Result:\n" + plan.getResult().getMapping() + "\n";
     }
 
     public String toJSON() throws JSONConverterException {

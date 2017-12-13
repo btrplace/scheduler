@@ -69,7 +69,7 @@ public class Validator implements Predicate<TestCase> {
         return true;
     }
 
-    private TestCase purge(TestCase o, Constraint c) {
+    private static TestCase purge(TestCase o, Constraint c) {
         //TODO: Get rid of all the views (optional so subject to un-awaited fault injection
         return new TestCase(o.instance(), o.plan(), c);
     }

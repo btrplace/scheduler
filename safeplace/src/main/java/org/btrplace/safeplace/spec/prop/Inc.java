@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 public class Inc extends AtomicProp {
 
-    public Inc(Term a, Term b) {
+    public Inc(Term<?> a, Term<?> b) {
         super(a, b, "<:");
     }
 
@@ -39,8 +39,8 @@ public class Inc extends AtomicProp {
 
     @Override
     public Boolean eval(Context m) {
-        Collection o = (Collection) a.eval(m);
-        Collection c = (Collection) b.eval(m);
+        Collection<?> o = (Collection<?>) a.eval(m);
+        Collection<?> c = (Collection<?>) b.eval(m);
         if (o != null && c != null) {
             return c.containsAll(o);
         }

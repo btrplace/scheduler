@@ -52,14 +52,14 @@ public class SymbolsTable {
         SymbolsTable syms = new SymbolsTable(this);
         //Copy the primitives
 
-        syms.put(new Primitive("nodes", NodeType.getInstance()));
-        syms.put(new Primitive("vms", VMType.getInstance()));
-        syms.put(new Primitive("vmState", VMStateType.getInstance()));
-        syms.put(new Primitive("nodeState", NodeStateType.getInstance()));
-        syms.put(new Primitive("int", IntType.getInstance()));
-        syms.put(new Primitive("action", ActionType.getInstance()));
-        syms.put(new Primitive("bool", BoolType.getInstance()));
-        syms.put(new Primitive("string", StringType.getInstance()));
+        syms.put(new Primitive<>("nodes", NodeType.getInstance()));
+        syms.put(new Primitive<>("vms", VMType.getInstance()));
+        syms.put(new Primitive<>("vmState", VMStateType.getInstance()));
+        syms.put(new Primitive<>("nodeState", NodeStateType.getInstance()));
+        syms.put(new Primitive<>("int", IntType.getInstance()));
+        syms.put(new Primitive<>("action", ActionType.getInstance()));
+        syms.put(new Primitive<>("bool", BoolType.getInstance()));
+        syms.put(new Primitive<>("string", StringType.getInstance()));
         return syms;
     }
 
@@ -87,7 +87,7 @@ public class SymbolsTable {
         return b.toString();
     }
 
-    public boolean put(Function f) {
+    public boolean put(Function<?> f) {
         if (funcs.containsKey(f.id())) {
             return false;
         }
@@ -95,7 +95,7 @@ public class SymbolsTable {
         return true;
     }
 
-    public Function getFunction(String id) {
+    public Function<?> getFunction(String id) {
         if (funcs.containsKey(id)) {
             return funcs.get(id);
         }
@@ -105,7 +105,7 @@ public class SymbolsTable {
         return null;
     }
 
-    public boolean put(Var v) {
+    public boolean put(Var<?> v) {
         if (table.containsKey(v.label())) {
             return false;
         }
@@ -113,7 +113,7 @@ public class SymbolsTable {
         return true;
     }
 
-    public Var getVar(String n) {
+    public Var<?> getVar(String n) {
         if (table.containsKey(n)) {
             return table.get(n);
         }

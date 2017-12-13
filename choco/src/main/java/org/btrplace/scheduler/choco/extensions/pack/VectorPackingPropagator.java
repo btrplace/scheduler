@@ -316,7 +316,10 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     private void updateLoads(int item, int bin) throws ContradictionException {
         int d = 0;
         for (; d < nbDims; d++) {
-            filterLoadSup(d, bin, potentialLoad[d][bin].add(-iSizes[d][item]));
+            int s = iSizes[d][item];
+            if (s > 0) {
+                filterLoadSup(d, bin, potentialLoad[d][bin].add(-s));
+            }
         }
     }
 

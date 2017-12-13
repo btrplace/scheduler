@@ -38,7 +38,7 @@ public class Card implements Function<Integer> {
 
     @Override
     public Integer eval(Context mo, Object... args) {
-        Collection c = (Collection) args[0];
+        Collection<?> c = (Collection<?>) args[0];
         if (c == null) {
             return null;
         }

@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 public class In extends AtomicProp {
 
-    public In(Term a, Term<? extends Collection> b) {
+    public In(Term<?> a, Term<? extends Collection<?>> b) {
         super(a, b, ":");
     }
 
@@ -40,7 +40,7 @@ public class In extends AtomicProp {
     @Override
     public Boolean eval(Context m) {
         Object o = a.eval(m);
-        Collection o2 = ((Term<? extends Collection>) b).eval(m);
+        Collection<?> o2 = ((Term<? extends Collection>) b).eval(m);
         return o2.contains(o);
     }
 }

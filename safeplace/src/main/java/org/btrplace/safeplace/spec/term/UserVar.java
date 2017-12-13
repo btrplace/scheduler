@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
  */
 public class UserVar<T> implements Var<T> {
 
-    private Term backend;
+    private Term<?> backend;
 
     private String lbl;
 
     private String op;
 
-    public UserVar(String lbl, String op, Term backend) {
+    public UserVar(String lbl, String op, Term<?> backend) {
         this.backend = backend;
         this.lbl = lbl;
         this.op = op;
@@ -89,7 +89,7 @@ public class UserVar<T> implements Var<T> {
     }
 
     public List<Constant> domain(Context mo) {
-        Collection col = (Collection) backend.eval(mo);
+        Collection<?> col = (Collection<?>) backend.eval(mo);
         if ("<:".equals(op) || "/<:".equals(op)) {
             List<Object> s = new ArrayList<>(col);
             List<List<Object>> tuples = s.stream().map(o -> s).collect(Collectors.toList());
@@ -97,16 +97,15 @@ public class UserVar<T> implements Var<T> {
             Set<Constant> res = new HashSet<>();
             while (tg.hasNext()) {
                 Object[] tuple = tg.next();
-                res.add(new Constant(new HashSet(Arrays.asList(tuple)), backend.type()));
+                res.add(new Constant(new HashSet<>(Arrays.asList(tuple)), backend.type()));
             }
             return new ArrayList<>(res);
-        } else {
-            List<Constant> s = new ArrayList<>();
-            for (Object o : col) {
-                s.add(new Constant(o, type()));
-            }
-            return s;
         }
+        List<Constant> s = new ArrayList<>();
+        for (Object o : col) {
+            s.add(new Constant(o, type()));
+        }
+        return s;
     }
 
     public Object pick(Domain d) {

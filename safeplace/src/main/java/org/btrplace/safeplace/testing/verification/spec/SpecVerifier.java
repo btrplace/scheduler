@@ -44,7 +44,7 @@ public class SpecVerifier implements Verifier {
             throw new IllegalArgumentException(c.toString(values) + " cannot match " + c.signatureToString());
         }
         for (int i = 0; i < values.size(); i++) {
-            UserVar var = c.args().get(i);
+            UserVar<?> var = c.args().get(i);
             Type t = values.get(i).type();
             if (!var.type().equals(t)) {
                 throw new IllegalArgumentException(c.toString(values) + " cannot match " + c.signatureToString());
@@ -89,9 +89,8 @@ public class SpecVerifier implements Verifier {
         }
         if (bOk) {
             return VerifierResult.newOk();
-        } else {
-            return VerifierResult.newKo("Unconsistent destination model");
         }
+        return VerifierResult.newKo("Unconsistent destination model");
 
     }
 

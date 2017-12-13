@@ -44,7 +44,7 @@ public class CSchedule implements ChocoConstraint {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SolverException {
-        Transition am;
+        Transition<?> am;
 
         if (cstr.getVM() != null) {
             am = rp.getVMAction(cstr.getVM());

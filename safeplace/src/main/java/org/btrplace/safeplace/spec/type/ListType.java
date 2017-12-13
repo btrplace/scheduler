@@ -38,8 +38,8 @@ public class ListType extends ColType {
 
     @Override
     public Object fromJSON(Object c) {
-        List s = new ArrayList<>();
-        for (Object o : (Collection) c) {
+        List<Object> s = new ArrayList<>();
+        for (Object o : (Collection<?>) c) {
             s.add(type.fromJSON(o));
         }
         return s;

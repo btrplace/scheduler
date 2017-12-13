@@ -206,7 +206,7 @@ public class DefaultTestCampaign implements Tester, TestCampaign {
         return this;
     }
 
-    private void checkConsistency(ReconfigurationPlan got, TestCase tc) {
+    private static void checkConsistency(ReconfigurationPlan got, TestCase tc) {
         if (got != null && !tc.plan().equals(got)) {
             String output = "--- Instance"
                     + tc.instance().getSatConstraints()

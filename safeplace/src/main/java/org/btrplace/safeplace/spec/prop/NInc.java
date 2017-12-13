@@ -39,8 +39,8 @@ public class NInc extends AtomicProp {
 
     @Override
     public Boolean eval(Context m) {
-        Collection cA = (Collection) a.eval(m);
-        Collection cB = (Collection) b.eval(m);
+        Collection<?> cA = (Collection<?>) a.eval(m);
+        Collection<?> cB = (Collection<?>) b.eval(m);
         if (cB == null) {
             return null;
         }
