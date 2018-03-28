@@ -5,6 +5,8 @@ version 1.9.2 - soon come
 ----------------------
 See milestone [1.9.2](https://github.com/btrplace/scheduler/milestones/1.9.2)
 
+- #170 Fix that remove an inappropriate tuning.
+
 version 1.9.1 - 17 Nov 2017
 ----------------------
 See milestone [1.9.1](https://github.com/btrplace/scheduler/milestones/1.9.1)
