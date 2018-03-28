@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -372,7 +372,13 @@ public class CShareableResource implements ChocoView {
     private boolean capHosting(int nIdx, int min, int nbZeroes) {
         Node n = rp.getNode(nIdx);
         double capa = getSourceResource().getCapacity(n) * getOverbookRatio(nIdx)/*.getLB()*/;
-        int card = (int) (capa / min + 1) + nbZeroes;
+      int card = (int) (capa / min) + nbZeroes + 1;
+      if (card < source.getMapping().getRunningVMs(n).size()) {
+        // This shortcut is required to prevent a filtering issue in the scheduling phase:
+        // At time 0, LocalTaskScheduler will complain and start to backtrack.
+        // TODO: revise the notion of continuous constraint for the cardinality issue.
+        return true;
+      }
         try {
             //Restrict the hosting capacity.
             rp.getNbRunningVMs().get(nIdx).updateUpperBound(card, Cause.Null);

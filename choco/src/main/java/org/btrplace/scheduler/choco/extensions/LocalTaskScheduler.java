@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -373,7 +373,6 @@ public class LocalTaskScheduler {
                                 + ": " + profilesMin[d].get(t) + " > " + capacities[me][d]);
                     }
                     aCause.fails();
-                    //aCause.contradiction(early, "");
                 }
             }
         }
