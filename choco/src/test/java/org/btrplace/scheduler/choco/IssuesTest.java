@@ -27,8 +27,10 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Ban;
 import org.btrplace.model.constraint.Fence;
+import org.btrplace.model.constraint.Gather;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Offline;
+import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.Running;
 import org.btrplace.model.constraint.RunningCapacity;
@@ -382,21 +384,21 @@ public class IssuesTest {
     }
 
     @Test
-    public void issue72c() throws Exception {
+    public void issue72c() {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}";
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
-        s.doOptimize(false);
+        s.doOptimize(true);
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getActions().isEmpty());
-        s.doRepair(true);
+        s.doRepair(false);
         p = s.solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
         Assert.assertTrue(p.getActions().isEmpty());
     }
 
     @Test
-    public void issue72d() throws Exception {
+    public void issue72d() {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[9,8,7,6,5,4,3,2,1,0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[19,18,17,16,15,14,13,12,11,10]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":32768,\"1\":32768},\"rcId\":\"mem\",\"id\":\"shareableResource\",\"defCapacity\":8192,\"vms\":{\"11\":1024,\"12\":1024,\"13\":1024,\"14\":1024,\"15\":1024,\"16\":1024,\"17\":1024,\"18\":1024,\"19\":1024,\"0\":1024,\"1\":1024,\"2\":1024,\"3\":1024,\"4\":1024,\"5\":1024,\"6\":1024,\"7\":1024,\"8\":1024,\"9\":1024,\"10\":1024}},{\"defConsumption\":0,\"nodes\":{\"0\":700,\"1\":700},\"rcId\":\"cpu\",\"id\":\"shareableResource\",\"defCapacity\":8000,\"vms\":{\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":50,\"17\":0,\"18\":0,\"19\":0,\"0\":0,\"1\":0,\"2\":0,\"3\":40,\"4\":0,\"5\":90,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0}}]},\"constraints\":[],\"objective\":{\"id\":\"minimizeMTTR\"}}\n";
         Instance i = JSON.readInstance(new StringReader(buf));
         ChocoScheduler s = new DefaultChocoScheduler();
@@ -573,4 +575,26 @@ public class IssuesTest {
     ReconfigurationPlan plan = s.solve(i);
     Assert.assertNotNull(plan);
   }
+
+    @Test
+    public void testIssue171() {
+        String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[3],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[2]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"3\":{\"sleepingVMs\":[],\"runningVMs\":[]},\"4\":{\"sleepingVMs\":[],\"runningVMs\":[]},\"5\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[{\"defConsumption\":0,\"nodes\":{\"0\":4,\"1\":4,\"2\":4,\"3\":4,\"4\":2147483,\"5\":2147483},\"rcId\":\"memory\",\"id\":\"shareableResource\",\"defCapacity\":0,\"vms\":{\"0\":4,\"1\":4,\"2\":4}}]},\"constraints\":[{\"vm\":0,\"id\":\"running\"},{\"vm\":1,\"id\":\"running\"},{\"vm\":2,\"id\":\"running\"},{\"node\":5,\"id\":\"online\"},{\"node\":4,\"id\":\"online\"},{\"node\":3,\"id\":\"online\"},{\"node\":2,\"id\":\"online\"},{\"node\":1,\"id\":\"online\"},{\"node\":0,\"id\":\"online\"},{\"continuous\":true,\"id\":\"spread\",\"vms\":[1,2]},{\"continuous\":false,\"id\":\"gather\",\"vms\":[2,3]},{\"vm\":3,\"id\":\"running\"}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
+        Instance i = JSON.readInstance(new StringReader(buf));
+        i.getModel().getMapping().remove(new Node(3));
+        ShareableResource mem = ShareableResource.get(i.getModel(), "memory");
+        mem.unset(new Node(5));
+        mem.unset(new Node(4));
+        mem.unset(new Node(3));
+        i.getSatConstraints().removeIf(Online.class::isInstance);
+        i.getSatConstraints().removeIf(Spread.class::isInstance);
+        i.getSatConstraints().removeIf(Gather.class::isInstance);
+        i.getSatConstraints().removeIf(r -> r instanceof Running && !r.getInvolvedVMs().contains(new VM(3)));
+        i.getModel().getMapping().remove(new VM(0));
+        i.getModel().getMapping().remove(new Node(2));
+        i.getModel().getMapping().remove(new Node(5));
+        i.getModel().getMapping().remove(new Node(4));
+        ChocoScheduler s = new DefaultChocoScheduler();
+        ReconfigurationPlan plan = s.solve(i);
+        Assert.assertNotNull(plan);
+    }
 }

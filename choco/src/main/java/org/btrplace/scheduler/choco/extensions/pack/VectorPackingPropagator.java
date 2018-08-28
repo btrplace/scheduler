@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -186,11 +186,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         return idx < bins.length ? IntEventType.all() : IntEventType.BOUND.getMask() + IntEventType.INSTANTIATE.getMask();
     }
 
-/*    @Override
-    protected void linkVariables() {
-        // do nothing, the linking is postponed because getPropagationConditions() needs some internal data
-    }
-*/
     /**
      * TODO: check when no propagation may occur anymore
      *
@@ -313,7 +308,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
     }
 
-    private void updateLoads(int item, int bin) throws ContradictionException {
+    protected void updateLoads(int item, int bin) throws ContradictionException {
         int d = 0;
         for (; d < nbDims; d++) {
             int s = iSizes[d][item];
@@ -433,7 +428,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             for (int d = 0; d < nbDims; d++) {
                 assignedLoad[d][b].set(rLoads[d][b]);
                 potentialLoad[d][b].set(rLoads[d][b] + cLoads[d][b]);
-
                 loads[d][b].updateLowerBound(rLoads[d][b], this);
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], this);
                 slb[d] += loads[d][b].getLB();
@@ -444,7 +438,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int d = 0; d < nbDims; d++) {
             sumLoadInf[d].set(slb[d]);
             sumLoadSup[d].set(slu[d]);
-
         }
 
         loadsHaveChanged = getModel().getEnvironment().makeBool(false);
@@ -532,7 +525,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
         if (!check) {
             for (IntVar v : bins) {
-                System.err.println(v.toString());
+                System.out.println(v.toString());
             }
         }
         return check;
@@ -545,31 +538,31 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int sls = 0;
         for (int b = 0; b < rs[d].length; b++) {
             if (rs[d][b] != assignedLoad[d][b].get()) {
-                System.err.printf("%s: %s assigned=%d expected=%s%n", name[d], loads[d][b], assignedLoad[d][b].get(), Arrays.toString(rs[b]));
+                System.out.printf("%s: %s assigned=%d expected=%s%n", name[d], loads[d][b], assignedLoad[d][b].get(), Arrays.toString(rs[b]));
                 check = false;
             }
             if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
-                System.err.printf("%s: %s potential=%d expected=%d (%d+%d)%n", name[d], loads[d][b], potentialLoad[d][b].get(), rs[d][b] + cs[d][b], rs[d][b], cs[d][b]);
-                //System.err.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]) + ());
+                System.out.printf("%s: %s potential=%d expected=%d (%d+%d)%n", name[d], loads[d][b], potentialLoad[d][b].get(), rs[d][b] + cs[d][b], rs[d][b], cs[d][b]);
+                //System.out.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]) + ());
                 check = false;
             }
             if (loads[d][b].getLB() < rs[d][b]) {
-                System.err.printf("%s: %s LB expected >= %d%n", name[d], loads[d][b], rs[d][b]);
+                System.out.printf("%s: %s LB expected >= %d%n", name[d], loads[d][b], rs[d][b]);
                 check = false;
             }
             if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
-                System.err.printf("%s: %s UB expected <= %d%n", name[d], loads[d][b], rs[d][b] + cs[d][b]);
+                System.out.printf("%s: %s UB expected <= %d%n", name[d], loads[d][b], rs[d][b] + cs[d][b]);
                 check = false;
             }
             sli += loads[d][b].getLB();
             sls += loads[d][b].getUB();
         }
         if (this.sumLoadInf[d].get() != sli) {
-            System.err.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+            System.out.println(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
             check = false;
         }
         if (this.sumLoadSup[d].get() != sls) {
-            System.err.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+            System.out.println(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
             check = false;
         }
         return check;
