@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.model.constraint;
 
 import org.btrplace.model.VM;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -39,6 +40,16 @@ import java.util.Objects;
 public class Gather extends SimpleConstraint {
 
     private Collection<VM> vms;
+
+    /**
+     * Make a new constraint between 2 VMs with a discrete restriction.
+     *
+     * @param vm1 the first VM
+     * @param vm2 the second VM
+     */
+    public Gather(VM vm1, VM vm2) {
+        this(Arrays.asList(vm1, vm2), false);
+    }
 
     /**
      * Make a new constraint with a discrete restriction.

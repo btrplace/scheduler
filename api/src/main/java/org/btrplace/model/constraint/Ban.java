@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -61,6 +61,16 @@ public class Ban extends SimpleConstraint {
         super(continuous);
         this.vm = vm;
         this.nodes = nodes;
+    }
+
+    /**
+     * Make a new constraint discrete constraint.
+     *
+     * @param vm   the VM identifier
+     * @param node the node identifier
+     */
+    public Ban(VM vm, final Node node) {
+        this(vm, Collections.singleton(node));
     }
 
     @Override
