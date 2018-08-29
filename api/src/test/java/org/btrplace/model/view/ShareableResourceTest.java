@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,11 @@
 
 package org.btrplace.model.view;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.Util;
+import org.btrplace.model.VM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -81,6 +85,8 @@ public class ShareableResourceTest {
         Assert.assertTrue(rc.capacityDefined(nodes.get(0)));
         Assert.assertEquals(rc.getCapacity(nodes.get(0)), 3);
 
+        rc.setConsumption(12, vms.toArray(new VM[0]));
+        rc.setCapacity(12, nodes.toArray(new Node[0]));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
@@ -108,7 +114,10 @@ public class ShareableResourceTest {
         Assert.assertFalse(rc.capacityDefined(nodes.get(0)));
 
         rc.unset(nodes.get(0));
-
+        rc.unset(nodes.toArray(new Node[0]));
+        rc.unset(vms.toArray(new VM[0]));
+        Assert.assertTrue(rc.getDefinedVMs().isEmpty());
+        Assert.assertTrue(rc.getDefinedNodes().isEmpty());
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
