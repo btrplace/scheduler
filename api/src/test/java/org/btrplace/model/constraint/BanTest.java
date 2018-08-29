@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,14 +18,23 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.Util;
+import org.btrplace.model.VM;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link Ban}.
@@ -47,6 +56,9 @@ public class BanTest {
         Assert.assertTrue(b.isContinuous());
         Assert.assertNotNull(b.getChecker());
         System.out.println(b);
+      Ban b2 = new Ban(v, nodes.iterator().next());
+      Assert.assertEquals(v, b2.getInvolvedVMs().iterator().next());
+      Assert.assertEquals(nodes.iterator().next(), b2.getInvolvedNodes().iterator().next());
     }
 
     @Test
