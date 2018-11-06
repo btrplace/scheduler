@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -55,6 +55,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
     private StaticPartitioningStatistics stats;
 
+    private List<InstanceSolverRunner> runners;
+
     /**
      * Make a new partitioning algorithm.
      * The number of workers is set to the number of available cores.
@@ -95,9 +97,12 @@ public abstract class StaticPartitioning implements InstanceSolver {
         List<SolvingStatistics> results = new ArrayList<>(partitions.size());
 
 
+        runners = new ArrayList<>();
         long duration = -System.currentTimeMillis();
         for (Instance partition : partitions) {
-            completionService.submit(new InstanceSolverRunner(cra, partition));
+            InstanceSolverRunner runner = new InstanceSolverRunner(cra, partition);
+            completionService.submit(runner);
+            runners.add(runner);
         }
 
         for (int i = 0; i < partitions.size(); i++) {
@@ -153,4 +158,13 @@ public abstract class StaticPartitioning implements InstanceSolver {
      * @throws org.btrplace.scheduler.SchedulerException if an error prevent the splitting process
      */
     public abstract List<Instance> split(Parameters ps, Instance i) throws SchedulerException;
+
+    @Override
+    public void stop() {
+        if (runners != null) {
+            for (InstanceSolverRunner runner: runners) {
+                runner.stop();
+            }
+        }
+    }
 }

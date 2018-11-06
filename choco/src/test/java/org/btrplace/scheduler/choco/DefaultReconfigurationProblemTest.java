@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -763,6 +763,28 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(usedNodes(dst), 1);
     }
 
+    @Test
+    public void testStopButton() {
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        for (int i = 0; i < 10; i++) {
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
+            map.addOnlineNode(n);
+            map.addRunningVM(vm, n);
+        }
+        Parameters ps = new DefaultParameters();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setParams(ps).build();
+        // We force the stop, so the problem is unstatable despite the solution exists and that
+        // there is no timeout.
+        rp.stop();
+        try {
+            rp.solve(0, true);
+            Assert.fail("UnstatableProblemException expected");
+        } catch (UnstatableProblemException ex) {
+            Assert.assertTrue(rp.getSolver().isStopCriterionMet());
+        }
+    }
 
     @Test
     public void testViewAddition() throws SchedulerException {

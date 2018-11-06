@@ -20,6 +20,8 @@ package org.btrplace.scheduler.choco;
 
 import org.chocosolver.util.criteria.Criterion;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A stop button that can stop the solving process.
  */
@@ -28,17 +30,17 @@ public class StopButton implements Criterion {
   /**
    * The stop flag.
    */
-  private boolean stopNow = false;
+  private AtomicBoolean stopNow = new AtomicBoolean(false);
 
   @Override
   public boolean isMet() {
-    return stopNow;
+    return stopNow.get();
   }
 
   /**
    * Stop the solver.
    */
   public void stopNow() {
-    stopNow = true;
+    stopNow.set(true);
   }
 }

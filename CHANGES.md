@@ -5,6 +5,10 @@ version 1.9.4 - soon come
 ----------------------
 See milestone [1.9.4](https://github.com/btrplace/scheduler/milestones/1.9.4)
 
+- Close #174
+- Fix #173 to be able to stop the solver while processing.
+
+
 version 1.9.3 - 29 Aug 2018
 ----------------------
 See milestone [1.9.3](https://github.com/btrplace/scheduler/milestones/1.9.3)
