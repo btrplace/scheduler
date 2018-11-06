@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -408,4 +408,9 @@ public interface ReconfigurationProblem {
      * @return the current resolution policy
      */
     ResolutionPolicy getResolutionPolicy();
+
+    /**
+     * Stop the solver.
+     */
+    void stop();
 }

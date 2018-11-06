@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -66,4 +66,9 @@ public interface ChocoScheduler extends Scheduler, Parameters {
      * @return the registered parameters
      */
     Parameters getParameters();
+
+    /**
+     * Stop the solving process.
+     */
+    void stop();
 }

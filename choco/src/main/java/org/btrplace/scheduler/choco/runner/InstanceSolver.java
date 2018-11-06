@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -47,4 +47,9 @@ public interface InstanceSolver {
      * @throws SchedulerException if an error occurred
      */
     SolvingStatistics getStatistics() throws SchedulerException;
+
+    /**
+     * Stop the solving process.
+     */
+    void stop();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -125,6 +125,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private List<Solution> solutions;
 
+    private StopButton stopButton;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -184,6 +186,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 throw new SchedulerModelingException(model, "Unable to instantiate solver-only view '" + c.getSimpleName() + "'", e);
             }
         }
+
+        stopButton = new StopButton();
+        solver.addStopCriterion(stopButton);
     }
 
     @Override
@@ -208,7 +213,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.limitTime(timeLimit * 1000L);
         }
 
-        //getLogger().debug("{} constraints; {} integers", csp.getNbCstrs(), csp.getNbIntVar(true));
         if (solver.getSearch() == null) {
             defaultHeuristic();
         }
@@ -731,5 +735,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ResolutionPolicy getResolutionPolicy() {
         return this.solvingPolicy;
+    }
+
+    @Override
+    public void stop() {
+        stopButton.stopNow();
     }
 }
