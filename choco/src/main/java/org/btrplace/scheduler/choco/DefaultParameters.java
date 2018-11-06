@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2018 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -130,10 +130,10 @@ public class DefaultParameters implements Parameters {
         durationEvaluators = ps.getDurationEvaluators();
         maxEnd = ps.getMaxEnd();
         verbosityLevel = ps.getVerbosity();
-        views = ps.getChocoViews();
+      views = new ArrayList<>(ps.getChocoViews());
         mapper = ps.getMapper();
         envf = ps.getEnvironmentFactory();
-        solutionListeners = ps.solutionListeners();
+      solutionListeners = new ArrayList<>(ps.solutionListeners());
         chocoSettings = ps.chocoSettings();
     }
 
@@ -253,7 +253,7 @@ public class DefaultParameters implements Parameters {
 
     @Override
     public List<Class<? extends ChocoView>> getChocoViews() {
-        return views;
+      return Collections.unmodifiableList(views);
     }
 
     @Override
