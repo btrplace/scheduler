@@ -1,9 +1,9 @@
 Release notes
 ======================
 
-version 1.9.4 - soon come
+version 1.10.0 - soon come
 ----------------------
-See milestone [1.9.4](https://github.com/btrplace/scheduler/milestones/1.9.4)
+See milestone [1.10.0](https://github.com/btrplace/scheduler/milestones/1.10.0)
 
 - Close #174
 - Fix #173 to be able to stop the solver while processing.
@@ -20,14 +20,14 @@ version 1.9.2 - 28 Mar 2018
 ----------------------
 See milestone [1.9.2](https://github.com/btrplace/scheduler/milestones/1.9.2)
 
-- #170 Fix that remove an inappropriate tuning.
+- Fix #170 that remove an inappropriate tuning.
 
 
 version 1.9.1 - 17 Nov 2017
 ----------------------
 See milestone [1.9.1](https://github.com/btrplace/scheduler/milestones/1.9.1)
 
-- #167 Fix the performance regression due to new Choco settings
+- Fix #167, the performance regression due to new Choco settings
 
 
 version 1.9.0 - 14 Nov 2017
