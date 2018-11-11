@@ -29,6 +29,7 @@ import org.btrplace.model.constraint.Ban;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Gather;
 import org.btrplace.model.constraint.MinMTTR;
+import org.btrplace.model.constraint.MinMigrations;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.OptConstraint;
@@ -41,6 +42,7 @@ import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
@@ -596,5 +598,37 @@ public class IssuesTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan plan = s.solve(i);
         Assert.assertNotNull(plan);
+    }
+
+    /**
+     * Boot plenty of VMs.
+     */
+    @Test
+    public void testIssue176() {
+        Model mo = new DefaultModel();
+        ShareableResource slots = new ShareableResource("slots");
+        for (int i = 0; i < 4; i++) {
+            final Node no = mo.newNode();
+            mo.getMapping().on(no);
+            slots.setCapacity(no, 100);
+            for (int j = 0; j < 5; j++) {
+                mo.getMapping().addRunningVM(mo.newVM(), no);
+            }
+        }
+        // 95 VMs * nbNodes can be hosted.
+        for (int i = 0; i < 95 * mo.getMapping().getNbNodes(); i++) {
+            mo.getMapping().addReadyVM(mo.newVM());
+        }
+
+        final List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.addAll(Running.newRunning(mo.getMapping().getReadyVMs()));
+        final Instance ii = new Instance(mo, cstrs, new MinMigrations());
+        ChocoScheduler sched = new DefaultChocoScheduler();
+        Assert.assertNotNull(sched.solve(ii));
+        SolvingStatistics stats = sched.getStatistics();
+        // We branch over the placement variables, but no longer on the VM scheduling tasks.
+        System.out.println(sched.getStatistics());
+        Assert.assertTrue(stats.getMetrics().nodes() < mo.getMapping().getReadyVMs().size() * 2);
+
     }
 }

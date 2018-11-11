@@ -64,6 +64,7 @@ public class LocalTaskScheduler {
     private final IntVar[] dHosters;
 
     private int[] startupFree;
+
     private int[] associateCTask;
     private int[] associateDTask;
     private int[] sortedMinProfile;
@@ -183,27 +184,67 @@ public class LocalTaskScheduler {
         }
     }
 
-
-    public void propagate(BitSet watchHosts) throws ContradictionException {
-        if (vInSize.get() == 0 && outIdx.length == 0) {
-            return;
-        }
-
-        if (entailed.get()) {
-            return;
-        }
-        boolean allInstantiated = computeProfiles();
-
-        checkInvariant();
-        if (allInstantiated) {
-            entailed.set(true);
-            return;
-        }
-
-        updateCEndsSup(watchHosts);
-        updateDStartsInf(watchHosts);
-        updateDStartsSup(watchHosts);
+  public void propagate(BitSet watchHosts) throws ContradictionException {
+    if (vInSize.get() == 0 && outIdx.length == 0) {
+      return;
     }
+
+    if (entailed.get()) {
+      return;
+    }
+
+    boolean fastPath = fastIn();
+    boolean allInstantiated = computeProfiles();
+
+    checkInvariant();
+    if (allInstantiated) {
+      entailed.set(true);
+      return;
+    }
+
+    updateCEndsSup(watchHosts);
+    if (!fastPath) {
+      updateDStartsInf(watchHosts);
+      updateDStartsSup(watchHosts);
+    }
+  }
+
+  /**
+   * Check if the initial free space (capacity - cSlices) is enough to accumulate all the dslices.
+   * If so, and if earlyStart is instantiated, we directly instantiate the dSlices start to
+   * max(earliest, dSlice.start), which indicate we don't want un-justified delays.
+   */
+  private boolean fastIn() throws ContradictionException {
+    if (!early.isInstantiated()) {
+      return false;
+    }
+    // Cumulative demand.
+    int s = vInSize.get();
+    int[] demand = new int[nbDims];
+    for (int i = 0; i < s; i++) {
+      int idx = vIn.quickGet(i);
+      for (int d = 0; d < nbDims; d++) {
+        demand[d] += dUsages[idx][d];
+      }
+    }
+    // Check if it fits.
+    boolean fits = true;
+    for (int d = 0; d < nbDims; d++) {
+      fits &= startupFree[d] > demand[d];
+    }
+    if (!fits) {
+      return false;
+    }
+
+    int earliest = early.getValue();
+    for (int idx = 0; idx < s; idx++) {
+      int i = vIn.quickGet(idx);
+      if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
+        dStarts[i].instantiateTo(Math.max(earliest, dStarts[i].getLB()), this.aCause);
+      }
+    }
+    return true;
+  }
 
     /**
      * Report if the current local constraint is entailed or not.
