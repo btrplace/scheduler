@@ -35,7 +35,7 @@ before_install:
 install:
 - true
 jdk:
-- oraclejdk8
+- openjdk8
 language: java
 notifications:
   email:
