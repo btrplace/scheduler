@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -629,6 +629,5 @@ public class IssuesTest {
         // We branch over the placement variables, but no longer on the VM scheduling tasks.
         System.out.println(sched.getStatistics());
         Assert.assertTrue(stats.getMetrics().nodes() < mo.getMapping().getReadyVMs().size() * 2);
-
     }
 }

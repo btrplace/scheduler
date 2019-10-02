@@ -6,6 +6,7 @@ version 1.10.1 - soon come
 See milestone [1.10.1](https://github.com/btrplace/scheduler/milestones/1.10.1)
 
 - Close #176
+- Close #178
 
 
 version 1.10.0 - 08 Nov 2018

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@ package org.btrplace.scheduler.choco.constraint.mttr;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
@@ -108,8 +107,11 @@ public class WorstFit implements IntValueSelector {
     @Override
     public int selectValue(IntVar v) {
         VM vm = vmMap.get(v);
-        if (stayFirst && canStay(vm)) {
-            return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
+      int vmId = rp.getVM(vm);
+      Node host = rp.getSourceModel().getMapping().getVMLocation(vm);
+      int nodeId = rp.getNode(host);
+      if (stayFirst && canStay(nodeId, vmId)) {
+        return nodeId;
         }
 
         //Get the load
@@ -120,7 +122,7 @@ public class WorstFit implements IntValueSelector {
             for (int d = 0; d < rcs.size(); d++) {
                 loads[d] = packing.assignedLoad()[d][nId];
             }
-            double global = loadWith(nId, loads, vm);
+          double global = loadWith(nId, loads, vmId);
 
             if (global < minLoad) {
                 leastId = nId;
@@ -151,10 +153,10 @@ public class WorstFit implements IntValueSelector {
 
     }
 
-    private double loadWith(int nId, IStateInt[] loads, VM vm) {
+  private double loadWith(int nId, IStateInt[] loads, int vmId) {
       int[] capas = capacities.get(nId);
         double[] normalised = new double[capas.length];
-        int[] usage = usage(rp.getVM(vm));
+    int[] usage = usage(vmId);
         for (int i = 0; i < capas.length; i++) {
             normalised[i] = (1.0d * loads[i].get() + usage[i]) / capas[i];
         }
@@ -164,19 +166,19 @@ public class WorstFit implements IntValueSelector {
     /**
      * Check if a VM can stay on its current node.
      *
-     * @param vm the VM
+     * @param hostId the node identifier. Negative if the VM is not running.
+     * @param vmId the VM identifier.
      * @return {@code true} iff the VM can stay
      */
-    private boolean canStay(VM vm) {
-        Mapping m = rp.getSourceModel().getMapping();
-        if (m.isRunning(vm)) {
-            int curPos = rp.getNode(m.getVMLocation(vm));
-            if (!rp.getVMAction(vm).getDSlice().getHoster().contains(curPos)) {
-                return false;
-            }
-            IStateInt[] loads = load(curPos);
-            return loadWith(curPos, loads, vm) <= 1.0;
-        }
+    private boolean canStay(int hostId, int vmId) {
+      if (hostId < 0) {
         return false;
+      }
+      // The VM is running for sure.
+      if (!rp.getVMActions().get(vmId).getDSlice().getHoster().contains(hostId)) {
+        return false;
+      }
+      IStateInt[] loads = load(hostId);
+      return loadWith(hostId, loads, vmId) <= 1.0;
     }
 }

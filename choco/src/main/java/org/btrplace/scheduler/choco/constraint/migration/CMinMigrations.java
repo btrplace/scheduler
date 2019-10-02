@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
 
 package org.btrplace.scheduler.choco.constraint.migration;
 
+import gnu.trove.map.TObjectIntMap;
 import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Model;
@@ -52,8 +53,6 @@ import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
-
-import gnu.trove.map.TObjectIntMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
