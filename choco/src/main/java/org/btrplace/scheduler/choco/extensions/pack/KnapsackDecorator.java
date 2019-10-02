@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@ import org.chocosolver.memory.IStateBitSet;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.memory.structure.S64BitSet;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.util.iterators.DisposableValueIterator;
 
 import java.util.ArrayList;
 
@@ -57,7 +56,11 @@ public class KnapsackDecorator {
         this.prop = p;
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i = 0; i < p.nbBins; i++) {
-            candidate.add(new S64BitSet(p.getModel().getEnvironment(), p.bins.length));
+          final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), p.bins.length);
+          // By default, the VMs are candidate for every node.
+          // We will check that in postInitialise().
+          bs.set(0, p.bins.length);
+          candidate.add(bs);
         }
 
         dynBiggest = new IStateInt[prop.nbDims][prop.nbBins];
@@ -86,13 +89,14 @@ public class KnapsackDecorator {
                 biggest[d] = Math.max(biggest[d], prop.iSizes[d][i]);
             }
             if (!prop.bins[i].isInstantiated()) {
-                final DisposableValueIterator it = prop.bins[i].getValueIterator(true);
-                try {
-                    while (it.hasNext()) {
-                        candidate.get(it.next()).set(i);
-                    }
-                } finally {
-                    it.dispose();
+              // We only put holes in the bitset if for sure some VMs
+              // can't go on some nodes.
+              if (prop.bins[i].getDomainSize() != prop.nbBins) {
+                for (int b = 0; b < prop.nbBins; b++) {
+                  if (!prop.bins[i].contains(b)) {
+                    candidate.get(b).clear(i);
+                  }
+                }
                 }
             }
         }
