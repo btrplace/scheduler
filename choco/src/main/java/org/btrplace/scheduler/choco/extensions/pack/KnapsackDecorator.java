@@ -38,19 +38,17 @@ import java.util.ArrayList;
 public class KnapsackDecorator {
 
     /**
-     * the core BinPacking propagator
-     */
-    private VectorPackingPropagator prop;
-
-    /**
      * Track the biggest item usage per dimension and bin.
      */
     private final IStateInt[][] dynBiggest;
-
     /**
      * the list of candidate items for each bin [nbBins][]
      */
     protected ArrayList<IStateBitSet> candidate;
+    /**
+     * the core BinPacking propagator
+     */
+    private VectorPackingPropagator prop;
 
     public KnapsackDecorator(VectorPackingPropagator p) {
         this.prop = p;
@@ -98,7 +96,12 @@ public class KnapsackDecorator {
                   }
                 }
                 }
+            } else {
+                for (int b = 0; b < prop.nbBins; b++) {
+                    candidate.get(b).clear(i);
+                }
             }
+
         }
 
         for (int b = 0; b < prop.nbBins; b++) {
@@ -107,7 +110,6 @@ public class KnapsackDecorator {
                         prop.getVars()[0].getEnvironment().makeInt(biggest[d]);
             }
         }
-
         fullKnapsack();
     }
 

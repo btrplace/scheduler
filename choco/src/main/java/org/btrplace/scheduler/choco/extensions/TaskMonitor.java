@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,12 +19,9 @@
 package org.btrplace.scheduler.choco.extensions;
 
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.exception.SolverException;
-import org.chocosolver.solver.explanations.RuleStore;
 import org.chocosolver.solver.variables.IVariableMonitor;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.events.IEventType;
-import org.chocosolver.solver.variables.events.IntEventType;
 
 /**
  * Monitor to maintain start + duration = end
@@ -74,42 +71,5 @@ public class TaskMonitor implements IVariableMonitor<IntVar> {
         end.updateBounds(start.getLB() + duration.getLB(), start.getUB() + duration.getUB(), this);
         // duration
         duration.updateBounds(end.getLB() - start.getUB(), end.getUB() - start.getLB(), this);
-    }
-
-    @Override
-    public boolean why(RuleStore ruleStore, IntVar var, IEventType evt, int value) {
-        boolean nrules = false;
-        if (var == start) {
-            if (evt == IntEventType.INCLOW) {
-                nrules = ruleStore.addLowerBoundRule(end);
-                nrules |= ruleStore.addUpperBoundRule(duration);
-            } else if (evt == IntEventType.DECUPP) {
-                nrules = ruleStore.addUpperBoundRule(end);
-                nrules |= ruleStore.addLowerBoundRule(duration);
-            } else {
-                throw new SolverException("TaskMonitor exception");
-            }
-        } else if (var == end) {
-            if (evt == IntEventType.INCLOW) {
-                nrules = ruleStore.addLowerBoundRule(start);
-                nrules |= ruleStore.addLowerBoundRule(duration);
-            } else if (evt == IntEventType.DECUPP) {
-                nrules = ruleStore.addUpperBoundRule(start);
-                nrules |= ruleStore.addUpperBoundRule(duration);
-            } else {
-                throw new SolverException("TaskMonitor exception");
-            }
-        } else if (var == duration) {
-            if (evt == IntEventType.INCLOW) {
-                nrules = ruleStore.addLowerBoundRule(end);
-                nrules |= ruleStore.addUpperBoundRule(start);
-            } else if (evt == IntEventType.DECUPP) {
-                nrules = ruleStore.addLowerBoundRule(start);
-                nrules |= ruleStore.addUpperBoundRule(end);
-            } else {
-                throw new SolverException("TaskMonitor exception");
-            }
-        }
-        return nrules;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -324,7 +324,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void defaultHeuristic() {
         IntStrategy intStrat = Search.intVarSearch(new FirstFail(csp), new IntDomainMin(), csp.retrieveIntVars(true));
         SetStrategy setStrat = new SetStrategy(csp.retrieveSetVars(), new InputOrder<>(csp), new SetDomainMin(), true);
-        RealStrategy realStrat = new RealStrategy(csp.retrieveRealVars(), new Occurrence<>(), new RealDomainMiddle());
+      RealStrategy realStrat = new RealStrategy(csp.retrieveRealVars(), new Occurrence<>(), new RealDomainMiddle(), 1e-2);
         solver.setSearch(new StrategiesSequencer(intStrat, realStrat, setStrat));
     }
 
