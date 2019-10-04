@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -147,7 +147,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     public List<SolutionStatistics> getSolutions() {
 
         //Check for the first solution that concatenate all the first solutions.
-        List<SolutionStatistics> solutions = new ArrayList<>();
+        return new ArrayList<>();
 /*
         int firstN = 0;
         int firstB = 0;
@@ -194,7 +194,6 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         if (multipleSolution) {
             solutions.add(new SolutionStatistics(lastN, lastB, endLast - start, lastOptValue));
         }*/
-        return solutions;
     }
 
     /**
