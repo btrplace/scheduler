@@ -17,6 +17,5 @@ travis_dbg)
 	./bin/push_javadoc.sh btrplace/apidocs|| exit 1
 	;;
 *)
-	echo "No CI for branch ${BRANCH}"
-	exit 1
+    ./bin/build_default.sh || exit 1
 esac
