@@ -171,7 +171,6 @@ public class VectorPackingTest {
         public void testPack(int nbExpectedSols) {
             List<Solution> sols = s.getSolver().findAllSolutions();
             int nbComputedSols = sols.size();
-            System.out.println(sols);
             Assert.assertEquals(s.getSolver().isFeasible(), ESat.eval(nbExpectedSols != 0), "SAT");
             if (nbExpectedSols > 0) {
                 Assert.assertEquals(nbComputedSols, nbExpectedSols, "#SOL");

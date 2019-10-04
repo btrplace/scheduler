@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -44,7 +44,7 @@ import java.io.File;
  *
  * @author Fabien Hermenier
  */
-@Test(sequential = true)
+@Test
 public class ScriptBuilderTest {
 
     private static final String RC_ROOT = "src/test/resources/org/btrplace/btrpsl/";
