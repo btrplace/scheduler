@@ -5,7 +5,7 @@
 #The run command runs the benchmark and store the resulting numbers
 #The stats command computes the average numbers
 export MAVEN_OPTS="-Xmx4G -Xms4G"
-OUTPUT=`git rev-parse --short HEAD`
+OUTPUT=$(git rev-parse --short HEAD)
 if [ $# -eq 2 ]; then
     OUTPUT=$2
 fi
@@ -23,7 +23,7 @@ stats)
     #summary per bench
     for t in nr6 li6; do
         echo "---------- ${t} ----------"
-        DTA=`grep ${t} ${OUTPUT}/scheduler.csv|tail -n 10 |awk -F';' '{ core+=$4; spe +=$5; solve+=$6; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }'`
+        DTA=$(grep ${t} ${OUTPUT}/scheduler.csv|tail -n 10 |awk -F';' '{ core+=$4; spe +=$5; solve+=$6; n++ } END { if (n > 0) printf "%d,%d,%d", core / n, spe / n, solve / n; }')
         echo "${OUTPUT},${DTA}"
     done
     ;;
