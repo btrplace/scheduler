@@ -17,7 +17,7 @@ echo "Version to release: ${VERSION}"
 git checkout -b release || exit 1
 
 #Establish the version, maven side ...
-mvn versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false||exit 1
+mvn versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false||exit 1
 #... and changelog side
 ./bin/changelog.py timestamp||exit 1
 
