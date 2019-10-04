@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -81,12 +81,10 @@ public class CGather implements ChocoConstraint {
      */
     private boolean continuousColocation(ReconfigurationProblem rp, List<Slice> dSlices) {
 
-      Set<VM> alreadyRunning = new HashSet<>();
         Mapping map = rp.getSourceModel().getMapping();
         Node loc = null;
         for (VM vm : cstr.getInvolvedVMs()) {
             if (map.isRunning(vm)) {
-              alreadyRunning.add(vm);
                 Node node = map.getVMLocation(vm);
                 if (loc == null) {
                     loc = node;

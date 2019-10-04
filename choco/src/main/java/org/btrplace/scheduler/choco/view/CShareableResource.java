@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -561,7 +561,7 @@ public class CShareableResource implements ChocoView {
             free = wantedCapacity.get(n);
         }
         if (wantedRatios.containsKey(n)) {
-            free *= wantedRatios.get(n);
+            free *= (int) (wantedRatios.get(n));
         }
         for (VM vm : m.getRunningVMs(n)) {
             if (wantedAmount.containsKey(vm)) {
@@ -601,7 +601,7 @@ public class CShareableResource implements ChocoView {
         TObjectIntMap<VM> cost = new TObjectIntHashMap<>();
         for (Node n : mo.getMapping().getAllNodes()) {
             for (int i = 0; i < rcs.size(); i++) {
-                capa[i] += rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n))/*.getLB()*/;
+                capa[i] += (int) (rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n)));
             }
         }
 

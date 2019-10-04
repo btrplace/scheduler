@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -37,8 +37,7 @@ import java.util.BitSet;
  */
 public class LocalTaskScheduler {
 
-    private static final int DEBUG = -3;
-    private static final int DEBUG_ALL = -2;
+  private static int DEBUG = -3;
     public static final int NO_ASSOCIATIONS = -1;
     private static final Logger LOGGER = LoggerFactory.getLogger("solver");
     private int me;
@@ -354,7 +353,7 @@ public class LocalTaskScheduler {
     }
 
     private void summary() {
-        if (me == DEBUG || DEBUG == DEBUG_ALL) {
+      if (me == DEBUG) {
             LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
                     + " init=" + Arrays.toString(capacities[me]) + "; early=" + early.toString() + "; last=" + last.toString());
             for (int x = 0; x < vInSize.get(); x++) {
@@ -409,7 +408,7 @@ public class LocalTaskScheduler {
         for (int t : sortedMinProfile) {
             for (int d = 0; d < nbDims; d++) {
                 if (profilesMin[d].get(t) > capacities[me][d]) {
-                    if (me == DEBUG || DEBUG == DEBUG_ALL) {
+                  if (me == DEBUG) {
                         LOGGER.debug("(" + me + ") Invalid min profile at " + t + " on dimension " + d
                                 + ": " + profilesMin[d].get(t) + " > " + capacities[me][d]);
                     }
