@@ -231,6 +231,15 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         partResults.add(stats);
     }
 
+  /**
+   * Return the results per partition.
+   *
+   * @return a collection of results that may be empty.
+   */
+  public List<SolvingStatistics> results() {
+    return partResults;
+  }
+
     /**
      * Get the partition splitting duration in milliseconds.
      *
