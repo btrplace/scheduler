@@ -77,4 +77,4 @@ If the build succeeded, the resulting jars will be automatically installed in yo
 
 
 ## Copyright ##
-Copyright (c) 2015 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
+Copyright (c) 2019 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
