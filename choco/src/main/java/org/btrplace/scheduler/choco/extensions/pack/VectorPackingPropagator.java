@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -67,6 +67,14 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     protected final IntVar[][] loads;
     /**
+     * The procedure for removals in bins variable domains.
+     */
+    protected final RemProc remProc;
+    /**
+     * The list of removals in bins variable domains.
+     */
+    protected final IIntDeltaMonitor[] deltaMonitor;
+    /**
      * The sum of the item sizes per dimension. [nbDims]
      */
     protected long[] sumISizes;
@@ -87,22 +95,14 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     protected IStateInt[] sumLoadSup;
     /**
-     * Must the sumLoads be recompute since the last propagation ?
-     */
-    private IStateBool loadsHaveChanged;
-
-    /**
      * Constraint name.
      */
     protected String[] name;
+
     /**
-     * The procedure for removals in bins variable domains.
+     * Must the sumLoads be recompute since the last propagation ?
      */
-    protected final RemProc remProc;
-    /**
-     * The list of removals in bins variable domains.
-     */
-    protected final IIntDeltaMonitor[] deltaMonitor;
+    private IStateBool loadsHaveChanged;
     /**
      * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
      */
@@ -358,35 +358,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     }
 
     /**
-     * the procedure of removal for an assignment variable
-     */
-    private static class RemProc implements UnaryIntProcedure<Integer> {
-        private final VectorPackingPropagator p;
-        private int idxVar;
-
-        public RemProc(VectorPackingPropagator p) {
-            this.p = p;
-        }
-
-        @Override
-        public UnaryIntProcedure<Integer> set(Integer idxVar) {
-            this.idxVar = idxVar;
-            return this;
-        }
-
-        @Override
-        public void execute(int val) throws ContradictionException {
-            p.removeItem(idxVar, val);
-        }
-    }
-
-
-    //***********************************************************************************************************************//
-    // HELPER
-    //***********************************************************************************************************************//
-
-
-    /**
      * initialize the internal data: sumItemSize, assignedLoad, potentialLoad, sumLoadInf, sumLoadSup, maxSlackBinHeap
      * shrink the item-to-bins assignment variables: 0 <= bins[i] < nbBins
      * shrink the bin load variables: assignedLoad <= binLoad <= potentialLoad
@@ -400,6 +371,13 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
+        // By default, the cLoad is the cumulative item size as by default, they may go to all the
+        // bins.
+        for (int d = 0; d < nbDims; d++) {
+            for (int n = 0; n < nbBins; n++) {
+                cLoads[d][n] = (int) sumISizes[d];
+            }
+        }
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, this);
             bins[i].updateUpperBound(nbBins - 1, this);
@@ -407,17 +385,24 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 for (int d = 0; d < nbDims; d++) {
                     rLoads[d][bins[i].getValue()] += iSizes[d][i];
                 }
+                // Items placed are no longer candidate for any nodes.
+                for (int n = 0; n < nbBins; n++) {
+                    for (int d = 0; d < nbDims; d++) {
+                        cLoads[d][n] -= iSizes[d][i];
+                    }
+                }
             } else {
-                DisposableValueIterator it = bins[i].getValueIterator(true);
-                try {
-                    while (it.hasNext()) {
-                        int b = it.next();
+                // We undeclare them candidate for the nodes where they can't go.
+                if (bins[i].getDomainSize() == nbBins) {
+                    // Fastpath.
+                    continue;
+                }
+                for (int n = 0; n < nbBins; n++) {
+                    if (!bins[i].contains(n)) {
                         for (int d = 0; d < nbDims; d++) {
-                            cLoads[d][b] += iSizes[d][i];
+                            cLoads[d][n] -= iSizes[d][i];
                         }
                     }
-                } finally {
-                    it.dispose();
                 }
             }
         }
@@ -453,6 +438,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
     }
 
+
+    //***********************************************************************************************************************//
+    // HELPER
+    //***********************************************************************************************************************//
+
     /**
      * Compute the sum of the item sizes for each dimension.
      */
@@ -483,11 +473,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             this.sumLoadSup[d].set(sls);
         }
     }
-
-
-    //****************************************************************//
-    //********* Checkers *********************************************//
-    //****************************************************************//
 
     /**
      * Check the consistency of the assigned and candidate loads with regards to the assignment variables:
@@ -531,6 +516,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         return check;
     }
 
+
+    //****************************************************************//
+    //********* Checkers *********************************************//
+    //****************************************************************//
+
     @SuppressWarnings("squid:S106")
     private boolean checkDimension(int d, int[][] rs, int[][] cs) {
         boolean check = true;
@@ -570,5 +560,28 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
     public IStateInt[][] assignedLoad() {
         return assignedLoad;
+    }
+
+    /**
+     * the procedure of removal for an assignment variable
+     */
+    private static class RemProc implements UnaryIntProcedure<Integer> {
+        private final VectorPackingPropagator p;
+        private int idxVar;
+
+        public RemProc(VectorPackingPropagator p) {
+            this.p = p;
+        }
+
+        @Override
+        public UnaryIntProcedure<Integer> set(Integer idxVar) {
+            this.idxVar = idxVar;
+            return this;
+        }
+
+        @Override
+        public void execute(int val) throws ContradictionException {
+            p.removeItem(idxVar, val);
+        }
     }
 }

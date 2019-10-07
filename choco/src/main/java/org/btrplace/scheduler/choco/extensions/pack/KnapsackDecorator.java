@@ -95,7 +95,7 @@ public class KnapsackDecorator {
                     candidate.get(b).clear(i);
                   }
                 }
-                }
+              }
             } else {
                 for (int b = 0; b < prop.nbBins; b++) {
                     candidate.get(b).clear(i);
