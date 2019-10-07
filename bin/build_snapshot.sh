@@ -5,7 +5,7 @@ source bin/commons.sh
 V=$(getVersion)
 if [[ ${V} == *-SNAPSHOT ]]; then
     echo "** Testing **"
-    mvn test > test.out 2>&1 ||err "  Unstable build" test.out
+    mvn test
     echo "** Releasing to sonatype **"
     ./bin/deploy.sh > deploy.out 2>&1 ||err "  Unable to deploy" deploy.out
     echo "** pushing the javadoc **"
