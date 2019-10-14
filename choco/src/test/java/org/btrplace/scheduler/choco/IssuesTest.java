@@ -624,23 +624,10 @@ public class IssuesTest {
         cstrs.addAll(Running.newRunning(mo.getMapping().getReadyVMs()));
         final Instance ii = new Instance(mo, cstrs, new MinMigrations());
         ChocoScheduler sched = new DefaultChocoScheduler();
-        sched.setVerbosity(5);
         Assert.assertNotNull(sched.solve(ii));
         SolvingStatistics stats = sched.getStatistics();
         // We branch over the placement variables, but no longer on the VM scheduling tasks.
         System.out.println(sched.getStatistics());
         Assert.assertTrue(stats.getMetrics().nodes() < mo.getMapping().getReadyVMs().size() * 2);
-    }
-
-    @Test
-    public void testLargeStuff() {
-        final Instance ii = JSON.readInstance(new File("/Users/fabien.hermenier/Documents/Nutanix/workspace/main/placement_solver/server/000572c4-d33c-aa14-0000-00000001c5c4_1536319890115.json.gz"));
-        ii.getSatConstraints().removeIf(cstr -> cstr instanceof Spread);
-        ChocoScheduler sched = new DefaultChocoScheduler();
-        sched.setVerbosity(1);
-        sched.doOptimize(false);
-        sched.doRepair(false);
-        sched.solve(ii);
-        System.out.println(sched.getStatistics());
     }
 }
