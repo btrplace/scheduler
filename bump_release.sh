@@ -41,8 +41,8 @@ code)
 	sedInPlace "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
 
 	## The CHANGES.md file
-	d=`LANG=en_US.utf8 date +"%d %b %Y"`
-	REGEX="s%????*%${VERSION} - ${d}%"	
+	d=$(LANG=en_US.utf8 date +"%d %b %Y")
+	REGEX="s%????*%${VERSION} - ${d}%"
 	sedInPlace "${REGEX}" CHANGES.md
     ;;
 *)

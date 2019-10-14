@@ -10,7 +10,7 @@ fi
 
 [ -z "$GH_TOKEN" ] && echo "Missing environment variable GH_TOKEN" && exit 1;
 
-LOCAL=`mktemp -d -t btrplace.XXX`
+LOCAL=$(mktemp -d -t btrplace.XXX)
 REPOS=$1
 VERSION=$(getVersionToRelease)
 HEAD=$(git rev-parse HEAD)
@@ -21,7 +21,7 @@ git -C "${LOCAL}" checkout gh-pages||git -C "${LOCAL}" checkout -b gh-pages
 
 #Don't generate if not needed
 if [ -f "${LOCAL}/.commit" ]; then
-	IN=`cat ${LOCAL}/.commit`		
+	IN=$(cat ${LOCAL}/.commit)
 	if [ $IN == "${HEAD}" ]; then
 		echo "Javadoc synced with HEAD"
 		exit 0

@@ -12,7 +12,7 @@ if [ $? -eq 0 ]; then
     exit 1
 fi
 echo "Ok"
-VERSION=`./bin/version.py --release`
+VERSION=$(./bin/version.py --release)
 echo "Version to release: ${VERSION}"
 git checkout -b release || exit 1
 

@@ -99,7 +99,7 @@ public class CMinMigrations implements CObjective {
 
         cost = rp.getModel().intVar(rp.makeVarLabel("#migs"), 0, Integer.MAX_VALUE / 100, true);
         rp.setObjective(true, cost);
-        injectPlacementHeuristic(p, ps, cost);
+        //injectPlacementHeuristic(p, ps, cost);
         return true;
     }
 

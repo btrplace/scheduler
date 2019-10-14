@@ -60,16 +60,15 @@ public class InstanceTest {
         ma.addOnlineNode(ns.get(0));
         ma.addOfflineNode(ns.get(0));
         ma.addReadyVM(vms.get(0));
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Online.newOnline(ma.getAllNodes()));
+        List<SatConstraint> cstrs = new ArrayList<>(Online.newOnline(ma.getAllNodes()));
         cstrs.add(new Running(vms.get(0)));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
         Instance i2 = new Instance(mo.copy(), new ArrayList<>(cstrs), new MinMTTR());
 
         Assert.assertEquals(i, i2);
-        Assert.assertTrue(i.equals(i));
-        Assert.assertFalse(i.equals(null));
-        Assert.assertFalse(i.equals(ma));
+        Assert.assertEquals(i, i);
+        Assert.assertNotEquals(i, null);
+        Assert.assertNotEquals(ma, i);
         Assert.assertEquals(i.hashCode(), i2.hashCode());
 
         i2.getModel().getMapping().addReadyVM(vms.get(2));
