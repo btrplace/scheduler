@@ -66,6 +66,7 @@ public class CMinMTTRMig implements CObjective {
 
     /**
      * Make a new Objective.
+     * @param m the user-side objective.
      */
     public CMinMTTRMig(@SuppressWarnings("unused") MinMTTRMig m) {
         costConstraints = new ArrayList<>();

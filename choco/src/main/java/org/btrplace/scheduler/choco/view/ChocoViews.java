@@ -46,6 +46,7 @@ public class ChocoViews {
      *
      * @param mo    the model
      * @param views the associated solver views
+     * @param base the identifier of the core views.
      * @return the list of views, dependency-free
      * @throws SchedulerException if there is a cyclic dependency
      */

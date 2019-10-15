@@ -123,7 +123,7 @@ public class StayAwayVM implements VMTransition {
   }
 
     /**
-     * The builder devoted to a ready->ready transition.
+     * The builder devoted to a ready -&gt; ready transition.
      */
     public static class BuilderReady extends VMTransitionBuilder {
 
@@ -141,7 +141,7 @@ public class StayAwayVM implements VMTransition {
     }
 
     /**
-     * The builder devoted to a sleeping->sleeping transition.
+     * The builder devoted to a sleeping -&gt; sleeping transition.
      */
     public static class BuilderSleeping extends VMTransitionBuilder {
 
@@ -159,7 +159,7 @@ public class StayAwayVM implements VMTransition {
     }
 
     /**
-     * The builder devoted to a sleeping->sleeping transition.
+     * The builder devoted to a sleeping -&gt; sleeping transition.
      */
     public static class BuilderInit extends VMTransitionBuilder {
 

@@ -79,6 +79,7 @@ public class KnapsackDecorator {
 
     /**
      * initialize the lists of candidates.
+     * @throws ContradictionException if a contradiction occurs.
      */
     public void postInitialize() throws ContradictionException {
         final int[] biggest = new int[prop.nbDims];
@@ -164,7 +165,7 @@ public class KnapsackDecorator {
      *
      * @param item the assigned item
      * @param bin  the bin
-     * @throws ContradictionException
+     * @throws ContradictionException if a contradiction occurs.
      */
     public void postAssignItem(int item, int bin) throws
             ContradictionException {

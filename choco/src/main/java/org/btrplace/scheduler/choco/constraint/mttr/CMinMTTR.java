@@ -75,6 +75,7 @@ public class CMinMTTR implements CObjective {
     private boolean useResources = false;
     /**
      * Make a new objective.
+     * @param m the user-side objective.
      */
     public CMinMTTR(@SuppressWarnings("unused") MinMTTR m) {
     }

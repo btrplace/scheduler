@@ -176,6 +176,7 @@ public class CAmong implements ChocoConstraint {
      * Get the group the node belong to.
      *
      * @param n the node
+     * @param grps the group of nodes.
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
     public int getGroup(Node n, List<Collection<Node>> grps) {

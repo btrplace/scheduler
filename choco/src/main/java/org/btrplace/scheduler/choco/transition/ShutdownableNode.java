@@ -43,7 +43,7 @@ import org.chocosolver.solver.variables.IntVar;
  * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
  * <ul>
  * <li>{@link #getState()} = {0,1}</li>
- * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
+ * <li>{@link #getState()} = 0 -&gt; {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
  * </ul>
  * </li>
  * <li>The action duration equals 0 if the node stays online. Otherwise, it equals the evaluated action duration {@code d}
@@ -56,8 +56,8 @@ import org.chocosolver.solver.variables.IntVar;
  * <li>The action starts and ends necessarily before the end of the reconfiguration problem. Their difference
  * equals the action duration. If the node stays online then the action starts and ends at moment 0.
  * <ul>
- * <li>{@link #getStart()} < {@link org.btrplace.scheduler.choco.ReconfigurationProblem#getEnd()}</li>
- * <li>{@link #getEnd()} < {@link org.btrplace.scheduler.choco.ReconfigurationProblem#getEnd()}</li>
+ * <li>{@link #getStart()} &lt; {@link org.btrplace.scheduler.choco.ReconfigurationProblem#getEnd()}</li>
+ * <li>{@link #getEnd()} &lt; {@link org.btrplace.scheduler.choco.ReconfigurationProblem#getEnd()}</li>
  * <li>{@link #getEnd()} = {@link #getStart()} + {@link #getDuration()}</li>
  * </ul>
  * </li>
@@ -195,7 +195,7 @@ public class ShutdownableNode implements NodeTransition {
     }
 
     /**
-     * The builder devoted to a online->(online|offline) transition.
+     * The builder devoted to a online -&gt; (online|offline) transition.
      */
     public static class Builder extends NodeTransitionBuilder {
 

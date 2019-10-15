@@ -117,6 +117,7 @@ public class ModelViewsConverter {
      * Serialise a view.
      * @param o the view
      * @return the resulting encoded view
+     * @throws JSONConverterException if a error occurred during the conversion
      */
     public JSONObject toJSON(ModelView o) throws JSONConverterException {
         ModelViewConverter c = java2json.get(o.getClass());

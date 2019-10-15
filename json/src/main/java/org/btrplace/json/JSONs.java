@@ -187,6 +187,7 @@ public class JSONs {
      * @param mo the associated model to browse
      * @param a the json array
      * @return the set of VMs
+     * @throws JSONConverterException if a error occurred during the conversion
      */
     public static List<VM> vmsFromJSON(Model mo, JSONArray a) throws JSONConverterException {
         String json = a.toJSONString();
@@ -208,6 +209,7 @@ public class JSONs {
      * @param mo the associated model to browse
      * @param a the json array
      * @return the set of nodes
+     * @throws JSONConverterException if a error occurred during the conversion
      */
     public static List<Node> nodesFromJSON(Model mo, JSONArray a) throws JSONConverterException {
         String json = a.toJSONString();

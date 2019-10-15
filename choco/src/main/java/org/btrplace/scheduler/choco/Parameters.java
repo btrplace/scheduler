@@ -39,7 +39,7 @@ public interface Parameters {
      * Set a seed to use from every random number generators.
      *
      * @param s the seed
-     * @return @{code this}
+     * @return {@code this}
      */
     Parameters setRandomSeed(long s);
 
@@ -178,6 +178,7 @@ public interface Parameters {
      * Set the factory that is used to model the transitions.
      *
      * @param amf the factory to rely on
+     * @return {@code this}
      */
     Parameters setTransitionFactory(TransitionFactory amf);
 
@@ -224,7 +225,7 @@ public interface Parameters {
     /**
      * Get the solver settings.
      *
-     * @return
+     * @return the solver settings.
      */
     Settings chocoSettings();
 

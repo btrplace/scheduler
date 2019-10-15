@@ -62,7 +62,7 @@ public class WorstFit implements IntValueSelector {
    * New heuristic.
    * Will try to make the VM stay on their current node in prior if possible
    *
-   * @param vmMap the VM -> placement variable mapping
+   * @param vmMap the VM to placement variable mapping
    * @param rp    the CSP to solve
    * @param load  the load estimator for the node.
    */
@@ -73,7 +73,7 @@ public class WorstFit implements IntValueSelector {
   /**
    * New heuristic.
    *
-   * @param vmMap     the VM -> placement variable mapping
+   * @param vmMap     the VM to placement variable mapping
    * @param rp        the CSP to solve
    * @param load      the load estimator for the node.
    * @param stayFirst {@code true} to try to let the VM on place first if possible

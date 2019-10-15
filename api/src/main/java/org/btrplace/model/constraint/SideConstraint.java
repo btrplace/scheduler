@@ -22,7 +22,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation to provide the specification of a side-constraint.
- * The annotation should be on a class extending {@link btrplace.model.constraint.SatConstraint}.
+ * The annotation should be on a class extending {@link org.btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */

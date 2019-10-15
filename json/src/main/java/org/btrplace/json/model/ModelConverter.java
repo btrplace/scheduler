@@ -138,7 +138,7 @@ public class ModelConverter implements JSONObjectConverter<Model> {
      *
      * @param mo the model where to attach the elements
      * @param o  the json describing the mapping
-     * @throws JSONConverterException
+     * @throws JSONConverterException if a error occurred during the conversion
      */
     public void fillMapping(Model mo, JSONObject o) throws JSONConverterException {
         Mapping c = mo.getMapping();

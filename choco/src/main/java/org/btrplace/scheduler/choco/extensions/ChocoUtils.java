@@ -35,7 +35,7 @@ public final class ChocoUtils {
     }
 
     /**
-     * Make and post an implies constraint where the first operand is a boolean: b1 -> c2.
+     * Make and post an implies constraint where the first operand is a boolean: b1 -&gt; c2.
      * The constraint is translated into (or(not(b1,c2))
      *
      * @param rp the problem to solve

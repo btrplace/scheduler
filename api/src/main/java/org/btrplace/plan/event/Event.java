@@ -42,6 +42,7 @@ public interface Event {
      * Notify a visitor to visit the action.
      *
      * @param v the visitor to notify
+     * @return the visit result
      */
     Object visit(ActionVisitor v);
 }

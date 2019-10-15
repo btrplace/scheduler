@@ -211,7 +211,9 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     /**
      * Convert a JSON routing object into the corresponding java Routing implementation.
      *
+     * @param mo the model we focus on
      * @param o the JSON object to convert
+     * @return the resulting {@link Routing} object
      * @throws JSONConverterException if the Routing implementation is not known
      */
     public Routing routingFromJSON(Model mo, JSONObject o) throws JSONConverterException {
@@ -229,6 +231,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      *
      * @param o the json object
      * @return the Switch
+     * @throws JSONConverterException if an error occurred during conversion
      */
     public Switch switchFromJSON(JSONObject o) throws JSONConverterException {
         return new Switch(requiredInt(o, "id"), readCapacity(o));
@@ -238,6 +241,7 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      * Convert a JSON array of switches to a Java List of switches.
      * @param net the network to populate
      * @param a the json array
+     * @throws JSONConverterException if an error occurred during conversion
      */
     public void switchesFromJSON(Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {
@@ -256,8 +260,11 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     /**
      * Convert a JSON physical element object to a Java PhysicalElement object.
      *
+     * @param mo the model we focus on
+     * @param net the network view we manipulate
      * @param o the JSON object to convert the physical element to convert
      * @return  the PhysicalElement
+     * @throws JSONConverterException if an error occurred during conversion
      */
     public PhysicalElement physicalElementFromJSON(Model mo, Network net, JSONObject o) throws JSONConverterException {
         String type = requiredString(o, "type");
@@ -282,8 +289,10 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     /**
      * Convert a JSON link object into a Java Link object.
      *
+     * @param mo the model we focus on
      * @param net the network to populate
      * @param   o the JSON object to convert
+     * @throws JSONConverterException if an error occurred during conversion
      */
     public void linkFromJSON(Model mo, Network net, JSONObject o) throws JSONConverterException {
         net.connect(requiredInt(o, "id"),
@@ -296,8 +305,10 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     /**
      * Convert a JSON array of links to a Java List of links.
      *
+     * @param mo the model we focus on
      * @param net the network to populate
      * @param a the json array
+     * @throws JSONConverterException if an error occurred during conversion
      */
     public void linksFromJSON(Model mo, Network net, JSONArray a) throws JSONConverterException {
         for (Object o : a) {

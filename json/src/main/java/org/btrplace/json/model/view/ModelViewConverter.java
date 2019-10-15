@@ -63,6 +63,7 @@ public interface ModelViewConverter<E extends ModelView> {
      * Serialise a view.
      * @param o the view
      * @return the resulting encoded view
+     * @throws JSONConverterException if a error occurred during the conversion
      */
     JSONObject toJSON(E o) throws JSONConverterException;
 

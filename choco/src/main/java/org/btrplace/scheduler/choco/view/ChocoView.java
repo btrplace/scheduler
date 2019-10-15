@@ -54,6 +54,7 @@ public interface ChocoView extends Injectable, MisplacedVMsEstimator {
      * An event that is send to indicate a RP will be solved.
      * The view can then customize the RP a last time.
      *
+     * @param rp the problem we solve
      * @return {@code false} iff there will be no solution to the RP.
      * @throws SchedulerException if an error occurred while building the problem
      */

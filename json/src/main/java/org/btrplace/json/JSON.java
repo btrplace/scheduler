@@ -120,6 +120,7 @@ public class JSON {
      * Serialise a instance.
      *
      * @param instance the instance to write
+     * @return the JSON string
      * @throws IllegalArgumentException if an error occurred while writing the json
      */
     public static String toString(Instance instance) {
@@ -199,6 +200,7 @@ public class JSON {
      * Serialise a reconfiguration plan.
      *
      * @param plan the plan to write
+     * @return the JSON string
      * @throws IllegalArgumentException if an error occurred while writing the json
      */
     public static String toString(ReconfigurationPlan plan) {

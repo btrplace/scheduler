@@ -127,7 +127,7 @@ public class Preserve implements SatConstraint, ResourceRelated {
      *
      * @param vms the VMs involved in the constraints
      * @param r   the resource identifier
-     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
+     * @param q   the minimum amount of resources to allocate to each VM. Must be positive
      * @return a list of constraints
      */
     public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {

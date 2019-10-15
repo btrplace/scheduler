@@ -162,7 +162,7 @@ public class ForgeVM implements VMTransition {
     }
 
     /**
-     * The builder devoted to a init->ready transition.
+     * The builder devoted to a init -&gt; ready transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

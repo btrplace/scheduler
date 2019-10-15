@@ -151,7 +151,7 @@ public class BootVM implements VMTransition {
     }
 
     /**
-     * The builder devoted to a ready->running transition.
+     * The builder devoted to a ready to running transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

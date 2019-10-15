@@ -37,7 +37,7 @@ public class DefaultRoutingConverter implements RoutingConverter<DefaultRouting>
     /**
      * Return the routing identifier.
      *
-     * @return {@value "default"}
+     * @return {@code "default"}
      */
     @Override
     public String getJSONId() {

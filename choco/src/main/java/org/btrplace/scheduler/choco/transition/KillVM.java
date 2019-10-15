@@ -149,7 +149,7 @@ public class KillVM implements VMTransition {
         return VMState.KILLED;
     }
     /**
-     * The builder devoted to a (init|ready|running|sleep)->killed transition.
+     * The builder devoted to a (init|ready|running|sleep) &gt; killed transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

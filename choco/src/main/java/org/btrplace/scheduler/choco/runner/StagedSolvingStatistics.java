@@ -36,6 +36,7 @@ public class StagedSolvingStatistics implements SolvingStatistics {
 
     /**
      * Make a new statistic.
+     * @param firstStage the first statistics
      */
     public StagedSolvingStatistics(SolvingStatistics firstStage) {
         stages = new ArrayList<>();

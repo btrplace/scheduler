@@ -84,6 +84,7 @@ public class CMinMigrations implements CObjective {
 
     /**
      * Make a new objective.
+     * @param m the user-side objective.
      */
     public CMinMigrations(@SuppressWarnings("unused") MinMigrations m) {
     }

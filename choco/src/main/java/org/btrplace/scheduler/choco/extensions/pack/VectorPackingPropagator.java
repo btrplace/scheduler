@@ -230,7 +230,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     /**
      * the fix point procedure without heap, on each dimension:
      * - check rule 1.0: if sumItemSizes < sumBinLoadInf or sumItemSizes > sumBinLoadSups then fail
-     * - filter according to rule 1.1, for each bin: sumItemSizes - (sumBinLoadSup - sup(binLoad)) <= binLoad <= sumItemSizes - (sumBinLoadInf - inf(binLoad))
+     * - filter according to rule 1.1, for each bin: sumItemSizes - (sumBinLoadSup - sup(binLoad)) &lt;= binLoad <= sumItemSizes - (sumBinLoadInf - inf(binLoad))
      *
      * @throws ContradictionException if a contradiction (rules 1) is raised
      */
@@ -297,8 +297,10 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
 
     /**
-     * apply rule 2 (binLoad <= binPotentialLoad) when an item has been removed from the bin candidate list
+     * apply rule 2 (binLoad &lt;= binPotentialLoad) when an item has been removed from the bin candidate list
      *
+     * @param item the item index
+     * @param bin the bin index
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
@@ -319,8 +321,10 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     }
 
     /**
-     * apply rule 2 (binLoad >= binAssignedLoad) when an item has been assign to the bin
+     * apply rule 2 (binLoad &gt;= binAssignedLoad) when an item has been assign to the bin
      *
+     * @param item the item index
+     * @param bin the bin index
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void assignItem(int item, int bin) throws ContradictionException {
@@ -335,7 +339,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     /**
      * fine grain propagation
      * - if the event concerns a bin variable, then update data and apply rule 2:
-     * on the assigned bin: binAssignedLoad <= binLoad <= binPotentialLoad
+     * on the assigned bin: binAssignedLoad &lt;= binLoad &lt;= binPotentialLoad
      * - otherwise remember to recompute the load sums and do nothing
      *
      * @param idx  the variable index
@@ -359,8 +363,8 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
     /**
      * initialize the internal data: sumItemSize, assignedLoad, potentialLoad, sumLoadInf, sumLoadSup, maxSlackBinHeap
-     * shrink the item-to-bins assignment variables: 0 <= bins[i] < nbBins
-     * shrink the bin load variables: assignedLoad <= binLoad <= potentialLoad
+     * shrink the item-to-bins assignment variables: 0 &lt;= bins[i] < nbBins
+     * shrink the bin load variables: assignedLoad &lt;= binLoad &lt;= potentialLoad
      */
     @SuppressWarnings("squid:S3346")
     private void initialize() throws ContradictionException {
@@ -477,7 +481,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     /**
      * Check the consistency of the assigned and candidate loads with regards to the assignment variables:
      * for each bin: sumAssignedItemSizes == binAssignedLoad, sumAllPossibleItemSizes == binPotentialLoad
-     * rule 2, for each bin: binAssignedLoad <= binLoad <= binPotentialLoad
+     * rule 2, for each bin: binAssignedLoad &lt;= binLoad &lt;= binPotentialLoad
      *
      * @return {@code false} if not consistent.
      */

@@ -96,8 +96,8 @@ public class Precedence implements SatConstraint {
     /**
      * Instantiate discrete constraints to force a set of VMs to migrate after a single one.
      *
-     * @param vmBefore the (single) VM to migrate before the others {@see vmsAfter}
-     * @param vmsAfter the VMs to migrate after the other one {@see vmBefore}
+     * @param vmBefore the (single) VM to migrate before the others
+     * @param vmsAfter the VMs to migrate after the other one
      * @return the associated list of constraints
      */
     public static List<Precedence> newPrecedence(VM vmBefore, Collection<VM> vmsAfter) {
@@ -107,8 +107,8 @@ public class Precedence implements SatConstraint {
     /**
      * Instantiate discrete constraints to force a single VM to migrate after a set of VMs.
      *
-     * @param vmsBefore the VMs to migrate before the other one {@see vmAfter}
-     * @param vmAfter   the (single) VM to migrate after the others {@see vmsBefore}
+     * @param vmsBefore the VMs to migrate before the other one
+     * @param vmAfter   the (single) VM to migrate after the others
      * @return the associated list of constraints
      */
     public static List<Precedence> newPrecedence(Collection<VM> vmsBefore, VM vmAfter) {
@@ -118,8 +118,8 @@ public class Precedence implements SatConstraint {
     /**
      * Instantiate discrete constraints to force a set of VMs to migrate after an other set of VMs.
      *
-     * @param vmsBefore the VMs to migrate before the others {@see vmsAfter}
-     * @param vmsAfter  the VMs to migrate after the others {@see vmsBefore}
+     * @param vmsBefore the VMs to migrate before the others
+     * @param vmsAfter  the VMs to migrate after the others
      * @return the associated list of constraints
      */
     public static List<Precedence> newPrecedence(Collection<VM> vmsBefore, Collection<VM> vmsAfter) {

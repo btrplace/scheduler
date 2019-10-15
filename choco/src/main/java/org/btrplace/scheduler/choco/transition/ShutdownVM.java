@@ -149,7 +149,7 @@ public class ShutdownVM implements VMTransition {
     }
 
     /**
-     * The builder devoted to a running->ready transition.
+     * The builder devoted to a running -&gt; ready transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

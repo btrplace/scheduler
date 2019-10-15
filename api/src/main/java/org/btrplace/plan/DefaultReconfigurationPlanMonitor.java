@@ -26,18 +26,11 @@ import java.util.*;
 /**
  * Simulated execution of a {@link ReconfigurationPlan}.
  * The execution relies on the dependencies between the actions, retrieved using
- * <<<<<<< HEAD:api/src/main/java/btrplace/plan/DefaultReconfigurationPlanMonitor.java
- * {@link ReconfigurationPlan#getDirectDependencies(btrplace.plan.event.Action)}.
- * <p>
- * The dependencies are updated each time an action is committed, which means the action
- * have been successfully executed.
- * =======
  * {@link ReconfigurationPlan#getDirectDependencies(org.btrplace.plan.event.Action)}.
  * <p>
  * The dependencies are updated each time an action is committed, which means the action
  * have been successfully executed.
  * <p>
- * >>>>>>> master:api/src/main/java/org/btrplace/plan/DefaultReconfigurationPlanMonitor.java
  *
  * @author Fabien Hermenier
  */

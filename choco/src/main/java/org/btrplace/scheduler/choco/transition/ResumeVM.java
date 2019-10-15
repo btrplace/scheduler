@@ -142,7 +142,7 @@ public class ResumeVM implements VMTransition {
     }
 
     /**
-     * The builder devoted to a sleeping->running transition.
+     * The builder devoted to a sleeping -&gt; running transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

@@ -31,7 +31,7 @@ import org.chocosolver.util.ESat;
 import java.util.Objects;
 
 /**
- * A fast implementation for BVAR <=> VAR = CSTE
+ * A fast implementation for BVAR &lt;=&gt; VAR = CSTE
  *
  * @author Charles Prud'homme
  * @since 29/06/11

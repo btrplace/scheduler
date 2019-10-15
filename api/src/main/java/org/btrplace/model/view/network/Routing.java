@@ -62,6 +62,7 @@ public abstract class Routing implements Copyable<Routing> {
 
     /**
      * Set the network view (recursively).
+     * @param net the network to attach
      */
     public void setNetwork(Network net) {
         this.net = net;

@@ -359,7 +359,7 @@ public class RelocatableVM implements KeepRunningVM {
     }
 
     /**
-     * The builder devoted to a running->running transition.
+     * The builder devoted to a running &gt; running transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

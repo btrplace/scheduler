@@ -110,12 +110,13 @@ public class VectorPackingHeapDecorator {
 
     /**
      * the fix point procedure with heaps for propagation rule 1.1, on each dimension:
-     * - check rule 1.0: if sumItemSizes < sumBinLoadInf or sumItemSizes > sumBinLoadSup then fail
+     * - check rule 1.0: if sumItemSizes &lt; sumBinLoadInf or sumItemSizes &gt; sumBinLoadSup then fail
      * - filter binLoad according to rule 1.1, for each bin:
-     * if loadSlack > sumItemSizes - sumBinLoadInf then update sup(binLoad) = sumItemSizes - (sumBinLoadInf - inf(binLoad))
-     * if loadSlack > sumBinLoadSup - sumItemSizes then update inf(binLoad) = sumItemSizes - (sumBinLoadSup - sup(binLoad))
+     * if loadSlack &gt; sumItemSizes - sumBinLoadInf then update sup(binLoad) = sumItemSizes - (sumBinLoadInf - inf(binLoad))
+     * if loadSlack &gt; sumBinLoadSup - sumItemSizes then update inf(binLoad) = sumItemSizes - (sumBinLoadSup - sup(binLoad))
      * check each rule against the bin with the maximum loadSlack and continue until it does not apply
      *
+     * @param loadsHaveChanged {@code true} to indicate the load has changed. In that case, we reheap.
      * @throws ContradictionException if a contradiction (rules 1) is raised
      */
     public void fixPoint(boolean loadsHaveChanged) throws ContradictionException {

@@ -25,11 +25,7 @@ import org.btrplace.plan.event.*;
  * Check if a constraint is satisfied by a reconfiguration plan.
  * <p>
  * The checking process is performed following an event-based approach
- * <<<<<<< HEAD:api/src/main/java/btrplace/model/constraint/SatConstraintChecker.java
- * using an instance of {@link btrplace.plan.ReconfigurationPlanChecker}.
- * =======
  * using an instance of {@link org.btrplace.plan.ReconfigurationPlanChecker}.
- * >>>>>>> master:api/src/main/java/org/btrplace/model/constraint/SatConstraintChecker.java
  * <p>
  * First, the checker is notified for the model at the origin of the
  * reconfiguration. It is then notified each time an action starts or ends

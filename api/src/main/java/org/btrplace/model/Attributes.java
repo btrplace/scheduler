@@ -94,6 +94,7 @@ public interface Attributes extends Copyable<Attributes> {
      *
      * @param e the element
      * @param k the attribute value
+     * @param def the default value if missing
      * @return the value if it has been stated. {@code null} otherwise
      */
     String get(Element e, String k, String def);

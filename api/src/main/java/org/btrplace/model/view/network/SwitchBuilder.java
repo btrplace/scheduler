@@ -39,6 +39,7 @@ public interface SwitchBuilder extends Copyable<SwitchBuilder> {
      * Generate a new Switch.
      *
      * @param id the identifier to use for the Switch.
+     * @param capacity the switch bandwidth
      * @return a Switch or {@code null} if the identifier is already used.
      */
     Switch newSwitch(int id, int capacity);

@@ -57,7 +57,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      *
      * @param rcId the resource to consider
      * @param a    the coefficient
-     * @param b    the base. Must be > 0
+     * @param b    the base. Must be &gt; 0
      */
     public LinearToAResourceActionDuration(String rcId, double a, double b) {
         this.rc = rcId;

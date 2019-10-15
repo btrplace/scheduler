@@ -141,7 +141,7 @@ public class SuspendVM implements VMTransition {
 
 
     /**
-     * The builder devoted to a running->sleeping transition.
+     * The builder devoted to a running -&gt; sleeping transition.
      */
     public static class Builder extends VMTransitionBuilder {
 

@@ -392,9 +392,10 @@ public class ShareableResource implements ModelView {
   }
 
   /**
-   * Get the view associated to a model if exists
+   * Get the view associated to a model if exists.
    *
    * @param mo the model to look at
+   * @param id the resource identifier
    * @return the view if attached. {@code null} otherwise
    */
   public static ShareableResource get(Model mo, String id) {

@@ -51,7 +51,7 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
     /**
      * Return the routing identifier.
      *
-     * @return {@value "static"}
+     * @return {@code "static"}
      */
     @Override
     public String getJSONId() {
@@ -84,15 +84,17 @@ public class StaticRoutingConverter implements RoutingConverter<StaticRouting> {
     /**
      * Convert a JSON nodes map object into a Java NodesMap object
      *
+     * @param mo the model we focus on
      * @param o the JSON object to convert
      * @return the nodes map
+     * @throws JSONConverterException if a error occurred during the conversion
      */
     public StaticRouting.NodesMap nodesMapFromJSON(Model mo, JSONObject o) throws JSONConverterException {
         return new StaticRouting.NodesMap(requiredNode(mo, o, "src"), requiredNode(mo, o, "dst"));
     }
 
     /**
-     * Convert a nodes map (a pair of two distinguishable nodes => source and destination) into a JSON object
+     * Convert a nodes map (a pair of two distinguishable nodes to source and destination) into a JSON object
      *
      * @param nm the nodes map to convert
      * @return the nodes map JSON object

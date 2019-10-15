@@ -228,7 +228,7 @@ public class CShareableResource implements ChocoView {
      * Get the overbooking ratio for a node.
      *
      * @param nId the node identifier
-     * @return a ratio >= 1
+     * @return a ratio &gt;= 1
      */
     public double getOverbookRatio(int nId) {
         return ratios.get(nId);
@@ -237,7 +237,7 @@ public class CShareableResource implements ChocoView {
     /**
      * Cap the overbooking ratio for a given node.
      * @param nIdx the node
-     * @param d the new ratio. {@code >= 1}
+     * @param d the new ratio. {@code &gt;= 1}
      * @return the resulting ratio. Will be lower than {@code d} if a previous cap stated a lower value
      */
     public double capOverbookRatio(int nIdx, double d) {
@@ -261,7 +261,7 @@ public class CShareableResource implements ChocoView {
 
     /**
      * Set the resource usage for each of the VM.
-     * If the LB is < 0 , the previous consumption is used to maintain the resource usage.
+     * If the LB is &lt; 0 , the previous consumption is used to maintain the resource usage.
      * Otherwise, the usage is set to the variable lower bound.
      *
      * @return false if an operation leads to a problem without solution
@@ -365,7 +365,7 @@ public class CShareableResource implements ChocoView {
      * Reduce the cardinality wrt. the worst case scenario.
      *
      * @param nIdx the node index
-     * @param min  the min (but > 0 ) consumption for a VM
+     * @param min  the min (but &gt; 0 ) consumption for a VM
      * @param nbZeroes the number of VMs consuming 0
      * @return {@code false} if the problem no longer has a solution
      */
@@ -438,7 +438,7 @@ public class CShareableResource implements ChocoView {
     }
 
     /**
-     * Check if the initial capacity > sum current consumption
+     * Check if the initial capacity &gt; sum current consumption
      * The ratio is instantiated now so the computation is correct
      */
     private void checkInitialSatisfaction() {

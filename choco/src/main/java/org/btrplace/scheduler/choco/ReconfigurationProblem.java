@@ -218,6 +218,7 @@ public interface ReconfigurationProblem {
 
     /**
      * Get the evaluator to estimate the duration of the actions.
+     * @return the current evaluator.
      */
     DurationEvaluators getDurationEvaluators();
 

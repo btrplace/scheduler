@@ -73,7 +73,7 @@ public class StaticRouting extends Routing {
      * Manually add a static route between two nodes.
      *
      * @param nm    a node mapping containing two nodes: the source and the destination node.
-     * @param links an insert-ordered map of link<->direction representing the path between the two nodes.
+     * @param links an insert-ordered map of (link,direction) representing the path between the two nodes.
      */
     public void setStaticRoute(NodesMap nm, Map<Link, Boolean> links) {
         routes.put(nm, links); // Only one route between two nodes (replace the old route)

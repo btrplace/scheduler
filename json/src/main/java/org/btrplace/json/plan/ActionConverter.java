@@ -395,7 +395,6 @@ public class ActionConverter implements ActionVisitor {
      * Serialise an action.
      * @param a the action
      * @return the resulting encoded action
-     * @throws JSONConverterException if the conversion exploded
      */
     public JSONObject toJSON(Action a) {
         return (JSONObject) a.visit(this);
