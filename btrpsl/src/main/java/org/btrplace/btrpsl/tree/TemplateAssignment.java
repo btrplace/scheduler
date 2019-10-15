@@ -69,7 +69,11 @@ public class TemplateAssignment extends BtrPlaceTree {
      *
      * @param t            the token to consider
      * @param s            the script that is built
+     * @param tplFactory    the template factory
      * @param symbolsTable the symbol table
+     * @param m the model we focus on
+     * @param nsNodes the NamingService for the nodes
+     * @param nsVMs the NamingService for the VMs
      * @param errs         the errors
      */
     public TemplateAssignment(Token t, Script s, TemplateFactory tplFactory, SymbolsTable symbolsTable, Model m, NamingService<Node> nsNodes, NamingService<VM> nsVMs, ErrorReporter errs) {

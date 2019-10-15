@@ -23,7 +23,7 @@ import org.btrplace.btrpsl.ErrorReporter;
 import org.btrplace.btrpsl.element.BtrpOperand;
 
 /**
- * A parser to check if the left operand is > or < to the right operand
+ * A parser to check if the left operand is &gt; or &lt; to the right operand
  * Return 1 if equals, 0 otherwise. Types must be the same
  *
  * @author Fabien Hermenier
@@ -36,6 +36,7 @@ public class StrictComparisonOperator extends BtrPlaceTree {
      * Make a new parser.
      *
      * @param t    the root token
+     * @param rev {@code true} for &gt;
      * @param errs the errors to report
      */
     public StrictComparisonOperator(Token t, boolean rev, ErrorReporter errs) {

@@ -46,6 +46,8 @@ public class EnumElement extends BtrPlaceTree {
      * Make a new tree.
      *
      * @param payload the root token
+     * @param srvNodes the Naming Service for the nodes
+     * @param srvVMs the Naming Service for the VMs
      * @param v       the script being check
      * @param ty      the type of the elements in the enumeration
      * @param errors  the errors to report

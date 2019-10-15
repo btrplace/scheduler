@@ -122,7 +122,7 @@ public interface ConfigurableFuzzer extends Fuzzer {
     /**
      * Set the ratio of nodes initially OFFLINE.
      *
-     * @param ratio a number <= 1.0
+     * @param ratio a number &lt;= 1.0
      * @return {@code this}
      */
     ConfigurableFuzzer srcOffNodes(double ratio);
@@ -130,7 +130,7 @@ public interface ConfigurableFuzzer extends Fuzzer {
     /**
      * Set the ratio of nodes OFFLINE at the END of the reconfiguration
      *
-     * @param ratio a number <= 1.0
+     * @param ratio a number &lt;= 1.0
      * @return {@code this}
      */
     ConfigurableFuzzer dstOffNodes(double ratio);
@@ -162,7 +162,7 @@ public interface ConfigurableFuzzer extends Fuzzer {
     /**
      * Set the number of VMs inside the plan.
      *
-     * @param n a number >= 0
+     * @param n a number &gt;= 0
      * @return {@code this}
      */
     ConfigurableFuzzer vms(int n);
@@ -170,7 +170,7 @@ public interface ConfigurableFuzzer extends Fuzzer {
     /**
      * Set the number of nodes inside the plan.
      *
-     * @param n a number >= 0
+     * @param n a number &gt;= 0
      * @return {@code this}
      */
     ConfigurableFuzzer nodes(int n);

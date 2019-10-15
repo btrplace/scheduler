@@ -33,6 +33,8 @@ public class ErrorTree extends BtrPlaceTree {
 
     /**
      * A tree signaling an error.
+     * @param start the first token signaling the error
+     * @param stop the last token involved in the error
      */
     public ErrorTree(Token start, Token stop) {
         super(start, null);

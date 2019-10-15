@@ -54,7 +54,7 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     /**
      * Get the maximum partition size in terms of number of nodes.
      *
-     * @return a value > 0
+     * @return a value &gt; 0
      */
     public int getSize() {
         return partSize;
@@ -63,7 +63,7 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     /**
      * Set the maximum partition size in terms of number of nodes.
      *
-     * @param s a value > 0
+     * @param s a value &gt; 0
      */
     public void setSize(int s) {
         this.partSize = s;

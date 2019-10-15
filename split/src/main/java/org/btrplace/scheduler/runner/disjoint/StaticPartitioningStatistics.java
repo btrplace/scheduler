@@ -73,8 +73,8 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     /**
      * Set statistics about the splitting process.
      *
-     * @param nbParts the number of
-     * @param d
+     * @param nbParts the number of partitions
+     * @param d the partitioning duration
      */
     public void setSplittingStatistics(int nbParts, long d) {
         splitDuration = d;
@@ -199,7 +199,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     /**
      * Get the number of partitions.
      *
-     * @return a number >= 1
+     * @return a number &gt;= 1
      */
     public int getNbParts() {
         return nbPartitions;
@@ -208,7 +208,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     /**
      * Get the maximum number of workers to that works in parallel
      *
-     * @return a number >= 1
+     * @return a number &gt;= 1
      */
     public int getNbWorkers() {
         return nbWorkers;

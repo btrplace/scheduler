@@ -46,6 +46,7 @@ public class ConstraintStatement extends BtrPlaceTree {
      * Make a new Tree parser.
      *
      * @param t    the root symbol
+     * @param scr the script we analyse
      * @param cat  the catalog of available constraints
      * @param errs the errors to report
      */

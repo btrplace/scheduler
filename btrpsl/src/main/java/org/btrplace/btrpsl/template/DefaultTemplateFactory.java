@@ -54,6 +54,7 @@ public class DefaultTemplateFactory implements TemplateFactory {
      *
      * @param srvNodes the nodes naming service to rely on
      * @param srvVMs   the vms naming service to rely on
+     * @param m the model we focus on
      */
     public DefaultTemplateFactory(NamingService<Node> srvNodes, NamingService<VM> srvVMs, Model m) {
         this.namingServerNodes = srvNodes;

@@ -18,7 +18,6 @@
 
 package org.btrplace.safeplace.spec.term;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.btrplace.safeplace.spec.type.ColType;
 import org.btrplace.safeplace.spec.type.SetType;
 import org.btrplace.safeplace.spec.type.Type;

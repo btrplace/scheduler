@@ -36,6 +36,7 @@ public interface IterateProcedure<E extends Element> {
      * @param key   the partition key
      * @param from  the value lower bound
      * @param to    the value upper bound (exclusive)
+     * @return {@code true} to continue
      */
     boolean extract(SplittableElementSet<E> index, int key, int from, int to);
 }

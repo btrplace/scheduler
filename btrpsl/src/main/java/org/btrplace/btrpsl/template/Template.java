@@ -37,6 +37,7 @@ public interface Template {
      * Build a new element that inherit from a template.
      *
      * @return a new element
+     * @throws ElementBuilderException if an error occurred while building the element
      */
     BtrpElement check() throws ElementBuilderException;
 

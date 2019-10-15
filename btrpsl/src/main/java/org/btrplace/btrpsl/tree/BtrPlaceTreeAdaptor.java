@@ -62,9 +62,15 @@ public class BtrPlaceTreeAdaptor extends CommonTreeAdaptor {
 
     /**
      * Build a new adaptor.
-     *
+     * @param scr the script we analyse
+     * @param mo the model we focus on
+     * @param nsNodes nameservice for the nodes
+     * @param nsVMs nameservice for the vms
+     * @param tplFactory the factory to create templates
      * @param errs the errors to report
      * @param s    the symbol table to use
+     * @param incs the includes
+     * @param c the constraint catalog
      */
     public BtrPlaceTreeAdaptor(Script scr, Model mo, NamingService<Node> nsNodes, NamingService<VM> nsVMs, TemplateFactory tplFactory, ErrorReporter errs, SymbolsTable s, Includes incs, ConstraintsCatalog c) {
         this.errors = errs;

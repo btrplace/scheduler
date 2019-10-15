@@ -94,6 +94,7 @@ public class ScriptBuilder {
      * Make a new builder.
      *
      * @param cacheSize the size of the cache
+     * @param mo the model we focus on
      */
     public ScriptBuilder(final int cacheSize, Model mo) {
 

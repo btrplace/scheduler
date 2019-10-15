@@ -66,10 +66,9 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
 
     /**
-     * @param name
-     * @param t
-     * @return
-     * @throws SpecException
+     * @param name the proposition name
+     * @param t the tree
+     * @return the parsed proposition
      */
     public Proposition getProposition(String name, ParseTree t) {
         symbols = symbols.enterSpec();
@@ -83,10 +82,9 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
     /**
      *
-     * @param name
-     * @param t
-     * @throws SpecException
-     * @return
+     * @param name the variable identifier
+     * @param t the tree
+     * @return the parsed variable
      */
     public UserVar getUserVar(String name, ParseTree t) {
         symbols = symbols.enterSpec();

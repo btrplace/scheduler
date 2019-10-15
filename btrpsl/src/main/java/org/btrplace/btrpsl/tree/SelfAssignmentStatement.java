@@ -63,8 +63,10 @@ public class SelfAssignmentStatement extends BtrPlaceTree {
     /**
      * Make a new parser
      *
-     * @param t    the root token
+     * @param t    the type
+     * @param tok the analysed token
      * @param errs the errors to report
+     * @param syms the symbol table
      */
     public SelfAssignmentStatement(Type t, Token tok, ErrorReporter errs, SymbolsTable syms) {
         super(tok, errs);

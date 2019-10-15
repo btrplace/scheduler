@@ -45,6 +45,9 @@ public class ElementTree extends BtrPlaceTree {
      * Make a new parser.
      *
      * @param t    the token to analyze
+     * @param nsNodes the Naming Service for the nodes
+     * @param nsVMs the Naming Service for the VMs
+     * @param scr the script we analyse
      * @param errs the errors to report
      */
     public ElementTree(Token t, NamingService<Node> nsNodes, NamingService<VM> nsVMs, Script scr, ErrorReporter errs) {

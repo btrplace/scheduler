@@ -31,6 +31,7 @@ public abstract class DefaultConstraintParam<E> implements ConstraintParam<E> {
      * Make a new number parameter.
      *
      * @param n the parameter value
+     * @param t the parameter type
      */
     public DefaultConstraintParam(String n, String t) {
         this.name = n;

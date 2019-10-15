@@ -68,7 +68,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     /**
      * Get the number of workers that are used to solve instances.
      *
-     * @return a number >= 1
+     * @return a number &gt;= 1
      */
     public int getWorkersCount() {
         return workersCount;
@@ -77,7 +77,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     /**
      * Set the number of workers that solve instances.
      *
-     * @param s a number >= 1
+     * @param s a number &gt;= 1
      */
     public void setWorkersCount(int s) {
         this.workersCount = s;

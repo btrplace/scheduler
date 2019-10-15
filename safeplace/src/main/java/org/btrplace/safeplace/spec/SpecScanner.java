@@ -58,7 +58,9 @@ public class SpecScanner {
     }
 
     /**
-     * @throws SpecException
+     * Scan the specifications inside the classpath.
+     * @throws SpecException if the scan failed
+     * @return the parsed constraints.
      */
     public List<org.btrplace.safeplace.spec.Constraint> scan() throws IllegalAccessException, InstantiationException, IOException {
         List<CoreConstraint> coreAnnots = Collections.synchronizedList(new ArrayList<>());

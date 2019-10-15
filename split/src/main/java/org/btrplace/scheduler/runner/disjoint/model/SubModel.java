@@ -30,7 +30,6 @@ import java.util.Set;
  * Define a model that is a sub-model of a bigger one.
  * The operation on a sub-model are limited to the elements that belong
  * to the given scope.
- * <p>
  * <ul>
  * <li>Elements created in a sub-model are integrated automatically into the
  * parent component</li>

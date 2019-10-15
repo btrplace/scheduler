@@ -19,6 +19,7 @@
 package org.btrplace.safeplace;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
@@ -145,8 +146,8 @@ public class DSN {
                 .filter(Files::isRegularFile).collect(Collectors.toList());
         for (Path p : paths) {
             try (InputStream in = Files.newInputStream(p)) {
-                CompilationUnit cu = JavaParser.parse(in);
-                new FunctionVisitor(funcs).visit(cu, null);
+                ParseResult<CompilationUnit> cu = new JavaParser().parse(in);
+                new FunctionVisitor(funcs).visit(cu.getResult().get(), null);
             }
         }
         path = Paths.get(root, "func.csv");
@@ -298,8 +299,8 @@ public class DSN {
         List<Path> paths = Files.list(Paths.get("choco/src/test/java/org/btrplace/scheduler/choco/constraint/")).filter(Files::isRegularFile).collect(Collectors.toList());
         for (Path p : paths) {
             try (InputStream in = Files.newInputStream(p)){
-                CompilationUnit cu = JavaParser.parse(in);
-                new UnitTestsVisitor(unitTests).visit(cu, null);
+                ParseResult<CompilationUnit> cu = new JavaParser().parse(in);
+                new UnitTestsVisitor(unitTests).visit(cu.getResult().get(), null);
             }
         }
 
@@ -307,8 +308,8 @@ public class DSN {
         List<Integer> safeTests = new ArrayList<>();
 
         try (InputStream in = Files.newInputStream(Paths.get("safeplace/src/test/java/org/btrplace/safeplace/testing/TestSafePlace.java"))){
-            CompilationUnit cu = JavaParser.parse(in);
-            new SafeplaceTestsVisitor(safeTests).visit(cu, null);
+            ParseResult<CompilationUnit> cu = new JavaParser().parse(in);
+            new SafeplaceTestsVisitor(safeTests).visit(cu.getResult().get(), null);
         }
 
         String sb = "testing;sloc\n" +

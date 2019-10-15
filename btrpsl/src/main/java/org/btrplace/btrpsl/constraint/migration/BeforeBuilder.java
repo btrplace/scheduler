@@ -54,8 +54,7 @@ public class BeforeBuilder extends DefaultSatConstraintBuilder {
      * Build a precedence constraint.
      *
      * @param t    the current tree
-     * @param args can be a non-empty set of vms ({@see Precedence} constraint) or
-     *             a timestamp string ({@see Deadline} constraint)
+     * @param args can be a non-empty set of vms or a timestamp string (
      * @return a constraint
      */
     @Override

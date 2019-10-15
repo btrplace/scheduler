@@ -36,6 +36,7 @@ public class EqComparisonOperator extends BtrPlaceTree {
      * Make a new parser.
      *
      * @param t    the root token
+     * @param opp {@code true} for non-equality check.
      * @param errs the errors to report
      */
     public EqComparisonOperator(Token t, boolean opp, ErrorReporter errs) {

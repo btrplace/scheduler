@@ -18,8 +18,7 @@
 
 package org.btrplace.safeplace.testing;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

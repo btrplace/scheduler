@@ -45,6 +45,7 @@ public class NameSpaceStatement extends BtrPlaceTree {
      *
      * @param t    the token to consider
      * @param scr  the built script
+     * @param syms the symbol table
      * @param errs the reported errors
      */
     public NameSpaceStatement(Token t, Script scr, SymbolsTable syms, ErrorReporter errs) {

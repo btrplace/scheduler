@@ -47,7 +47,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
      * Make a new splittable set.
      *
      * @param c   the elements, no duplicates are supposed
-     * @param idx the partition associated to each element. Format {@link org.btrplace.model.Element#id()} -> key
+     * @param idx the partition associated to each element. Format {@link org.btrplace.model.Element#id()} to key
      */
     public SplittableElementSet(Collection<E> c, TIntIntHashMap idx) {
 
@@ -104,6 +104,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
      * The partition is indicated by its bounds on the backend array.
      *
      * @param p the procedure to execute
+     * @return {@code true} if we visited every element
      */
     public boolean forEachPartition(IterateProcedure<E> p) {
         int curIdx = index.get(values.get(0).id());
@@ -154,7 +155,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
     /**
      * Get the index associated to each element.
      *
-     * @return a map of {@link org.btrplace.model.Element#id()} -> index value
+     * @return a map of {@link org.btrplace.model.Element#id()} to index value
      */
     public TIntIntHashMap getRespectiveIndex() {
         return index;
