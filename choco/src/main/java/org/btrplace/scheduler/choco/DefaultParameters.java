@@ -28,6 +28,7 @@ import org.btrplace.scheduler.choco.view.DefaultCumulatives;
 import org.btrplace.scheduler.choco.view.VectorPacking;
 import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.memory.trailing.EnvironmentTrailing;
+import org.chocosolver.solver.DefaultSettings;
 import org.chocosolver.solver.Settings;
 
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class DefaultParameters implements Parameters {
 
         solutionListeners = new ArrayList<>();
 
-        chocoSettings = new Settings() {
+        chocoSettings = new DefaultSettings() {
             @Override
             public boolean checkDeclaredConstraints() {
                 return false;

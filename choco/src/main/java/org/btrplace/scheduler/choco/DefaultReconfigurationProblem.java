@@ -324,7 +324,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void defaultHeuristic() {
         IntStrategy intStrat = Search.intVarSearch(new FirstFail(csp), new IntDomainMin(), csp.retrieveIntVars(true));
         SetStrategy setStrat = new SetStrategy(csp.retrieveSetVars(), new InputOrder<>(csp), new SetDomainMin(), true);
-      RealStrategy realStrat = new RealStrategy(csp.retrieveRealVars(), new Occurrence<>(), new RealDomainMiddle(), 1e-2);
+      RealStrategy realStrat = new RealStrategy(csp.retrieveRealVars(), new Occurrence<>(), new RealDomainMiddle(), 1e-2, true);
         solver.setSearch(new StrategiesSequencer(intStrat, realStrat, setStrat));
     }
 
