@@ -94,7 +94,7 @@ public class CResourceCapacity implements ChocoConstraint {
         Model csp = rp.getModel();
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
-            throw new SchedulerModelingException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
+            throw SchedulerModelingException.missingView(rp.getSourceModel(), cstr.getResource());
         }
 
         if (cstr.getInvolvedNodes().size() == 1) {

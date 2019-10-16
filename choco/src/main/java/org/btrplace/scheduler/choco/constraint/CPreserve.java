@@ -54,8 +54,7 @@ public class CPreserve implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         CShareableResource map = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (map == null) {
-            throw new SchedulerModelingException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
-                    cstr.getResource() + "'");
+            throw SchedulerModelingException.missingView(rp.getSourceModel(), cstr.getResource());
         }
         VM vm = cstr.getInvolvedVMs().iterator().next();
         if (rp.getFutureRunningVMs().contains(vm)) {

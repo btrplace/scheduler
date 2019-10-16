@@ -58,7 +58,7 @@ public class COverbook implements ChocoConstraint {
 
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
-            throw new SchedulerModelingException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
+            throw SchedulerModelingException.missingView(rp.getSourceModel(), cstr.getResource());
         }
 
         Node u = cstr.getInvolvedNodes().iterator().next();
