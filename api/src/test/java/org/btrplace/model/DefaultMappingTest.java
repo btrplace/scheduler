@@ -101,6 +101,11 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getAllNodes().isEmpty());
         Assert.assertFalse(c.remove(ns.get(0)));
         Assert.assertEquals(c.getNbNodes(), 0);
+
+        Assert.assertEquals(c.on(ns.toArray(new Node[0])), c);
+        for (final Node no : ns) {
+            Assert.assertEquals(c.getState(no), NodeState.ONLINE);
+        }
     }
 
     /**
@@ -123,6 +128,10 @@ public class DefaultMappingTest {
         Assert.assertEquals(c.getNbNodes(), 1);
         Assert.assertEquals(1, c.getAllNodes().size());
 
+        Assert.assertEquals(c.off(ns.toArray(new Node[0])), c);
+        for (final Node no : ns) {
+            Assert.assertEquals(c.getState(no), NodeState.OFFLINE);
+        }
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testRunningVM", "testSleeping", "testOnlineNode", "testOfflineNode"})
@@ -208,6 +217,12 @@ public class DefaultMappingTest {
         nodes.add(ns.get(2));
         Set<VM> on = c.getRunningVMs(nodes);
         Assert.assertTrue(on.size() == 2 && on.contains(vms.get(0)) && on.contains(vms.get(1)));
+
+        c.on(ns.get(0));
+        Assert.assertEquals(c.run(ns.get(0), vms.toArray(new VM[0])), c);
+        for (final VM vm : vms) {
+            Assert.assertEquals(c.getState(vm), VMState.RUNNING);
+        }
     }
 
     /**
@@ -239,6 +254,11 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getAllVMs().isEmpty());
         Assert.assertEquals(c.getNbVMs(), 0);
 
+        c.on(ns.get(0));
+        Assert.assertEquals(c.sleep(ns.get(0), vms.toArray(new VM[0])), c);
+        for (final VM vm : vms) {
+            Assert.assertEquals(c.getState(vm), VMState.SLEEPING);
+        }
     }
 
     /**
@@ -257,6 +277,11 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.remove(vms.get(0)));
         Assert.assertTrue(c.getAllVMs().isEmpty());
         Assert.assertEquals(c.getNbVMs(), 0);
+
+        Assert.assertEquals(c.ready(vms.toArray(new VM[0])), c);
+        for (final VM vm : vms) {
+            Assert.assertEquals(c.getState(vm), VMState.READY);
+        }
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testOfflineNode", "testOnlineNode"})

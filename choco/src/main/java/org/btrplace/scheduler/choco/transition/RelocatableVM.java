@@ -124,7 +124,6 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // The VM can move (to re-instantiate or migrate) OR STAY to the same host
-        stay = csp.boolVar(rp.makeVarLabel(vm, "stay"));
         cSlice = new SliceBuilder(rp, vm, PREFIX, vm, ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)))
                 .setEnd(rp.makeUnboundedDuration(PREFIX, vm, ").cSlice_end"))
@@ -201,6 +200,7 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // If the VM stay (src host == dst host), then duration = 0
+        stay = csp.boolVar(rp.makeVarLabel(vm, "stay"));
         csp.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         csp.post(new FastIFFEq(stay, duration, 0));
         //We have to force the migration duration equals to 0 if it stays
