@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import gnu.trove.list.array.TIntArrayList;
-
 import org.btrplace.model.Instance;
 import org.btrplace.model.Mapping;
 import org.btrplace.model.Node;
@@ -74,10 +73,15 @@ public class CLonely implements ChocoConstraint {
                 otherVMs.add(vm);
             }
         }
+        if (myHosts.isEmpty() || otherHosts.isEmpty()) {
+            // There is no VMs to isolate.
+            return true;
+        }
+
         //Link the assignment variables with the set
         Model s = rp.getModel();
-        s.post(new Disjoint(myHosts.toArray(new IntVar[myHosts.size()]),
-                otherHosts.toArray(new IntVar[otherHosts.size()]),
+        s.post(new Disjoint(myHosts.toArray(new IntVar[0]),
+                otherHosts.toArray(new IntVar[0]),
                 rp.getNodes().size()));
 
         if (cstr.isContinuous()) {

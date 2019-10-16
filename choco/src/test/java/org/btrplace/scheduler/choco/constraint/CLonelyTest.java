@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Lonely;
 import org.btrplace.model.constraint.MinMTTR;
@@ -122,5 +127,27 @@ public class CLonelyTest {
         Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
         map.addRunningVM(vm2, n2);
         Assert.assertEquals(c.getMisPlacedVMs(i), map.getRunningVMs(n2));
+    }
+
+    @Test
+    public void testWithNonPersistingVMs() {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        mo.getMapping().on(n1, n2, n3)
+                .ready(vm1, vm2);
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2));
+        Lonely l = new Lonely(mine);
+        Instance i = new Instance(mo, Collections.singleton(l), new MinMTTR());
+        ChocoScheduler cra = new DefaultChocoScheduler();
+        Assert.assertNotNull(cra.solve(i));
+        Assert.assertEquals(cra.getStatistics().lastSolution().getSize(), 0);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,13 +18,19 @@
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.Util;
+import org.btrplace.model.VM;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,6 +38,21 @@ import java.util.List;
  */
 public class NoDelayTest {
 
+    @Test
+    public void TestInstantiation() {
+        final Model mo = new DefaultModel();
+        final VM vm = mo.newVM();
+        final NoDelay nd = new NoDelay(vm);
+        Assert.assertEquals(nd.getInvolvedVMs(), Collections.singleton(vm));
+        Assert.assertTrue(nd.setContinuous(false));
+        Assert.assertFalse(nd.setContinuous(true));
+        Assert.assertFalse(nd.isContinuous());
+        Assert.assertTrue(nd.equals(nd));
+        Assert.assertTrue(nd.equals(new NoDelay(vm)));
+        Assert.assertEquals(nd.hashCode(), new NoDelay(vm).hashCode());
+        final VM vm2 = mo.newVM();
+        Assert.assertFalse(nd.equals(new NoDelay(vm2)));
+    }
 
     @Test
     public void testIsSatisfied() {
@@ -80,14 +101,5 @@ public class NoDelayTest {
         // Re-Migrate the first VM (constrained) at t=1 to the first node
         plan.add(new MigrateVM(vms.get(0), ns.get(2), ns.get(0), 1, 2));
         Assert.assertEquals(nd.isSatisfied(plan), false);
-
-
-        // Shutdown node
-        //plan.add(new ShutdownNode(ns.get(2), 0, 1));
-        //Assert.assertEquals(nd.isSatisfied(plan), true);
-
-        // Boot node
-        //plan.add(new BootNode(ns.get(2), 1, 3));
-        //Assert.assertEquals(nd.isSatisfied(plan), false);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ public class NoDelay implements SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        return b;
+        return !b;
     }
 
     @Override
