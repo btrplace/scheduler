@@ -5,9 +5,12 @@ version 1.10.1 - soon come
 ----------------------
 See milestone [1.10.1](https://github.com/btrplace/scheduler/milestones/1.10.1)
 
-- Close #176
-- Close #178
-- Move to choco-4.0.6
+This milestone fixes a few bugs and performance issues on micro benchmarks.
+It also bump the version of many dependencies.
+
+Finally, it improves slightly the code and the documentation quality. Long term,
+the plan is to prepare for a version 2.0 that will be JPMS compliant and build for
+jdk8 and jdk11 until jdk8 End-of-Life.
 
 
 version 1.10.0 - 08 Nov 2018
