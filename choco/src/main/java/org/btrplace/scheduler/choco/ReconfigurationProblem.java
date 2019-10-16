@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
@@ -319,6 +320,21 @@ public interface ReconfigurationProblem {
      * @return the view if exists, {@code null} otherwise
      */
     ChocoView getView(String id);
+
+  /**
+   * Get the view associated to a given identifier.
+   *
+   * @param id the view identifier
+   * @return the view
+   * @throws SchedulerModelingException if the view is missing.
+   */
+  default ChocoView getRequiredView(String id) throws SchedulerModelingException {
+    ChocoView v = getView(id);
+    if (v == null) {
+      throw SchedulerModelingException.missingView(getSourceModel(), id);
+    }
+    return v;
+  }
 
     /**
      * Get all the declared view keys.

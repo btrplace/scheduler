@@ -18,35 +18,32 @@
 
 package org.btrplace.scheduler;
 
-import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * An exception to state the computed reconfiguration plan is not viable.
- * It basically indicates a bug inside the scheduler.
- *
- * @author Fabien Hermenier
+ * Unit tests for {@link SchedulerModelingException}.
  */
-public class InconsistentSolutionException extends SchedulerModelingException {
+public class SchedulerModelingExceptionTest {
 
-  private ReconfigurationPlan plan;
+  @Test
+  public void simpleTests() {
 
-  /**
-   * New exception.
-   *
-   * @param p   the faulty plan.
-   * @param msg the error message.
-   */
-  public InconsistentSolutionException(ReconfigurationPlan p, String msg) {
-    super(p.getOrigin(), msg);
-    plan = p;
+    final Model mo = new DefaultModel();
+
+    // The missing view helper.
+    SchedulerModelingException ex = SchedulerModelingException.missingView(mo, "foo");
+    Assert.assertEquals(ex.getModel(), mo);
+    Assert.assertTrue(ex.getMessage().contains("foo"));
+
+    // The full constructor.
+    final Exception baz = new Exception("baz");
+    ex = new SchedulerModelingException(mo, "foo", baz);
+    Assert.assertEquals(ex.getModel(), mo);
+    Assert.assertEquals(ex.getMessage(), "foo");
+    Assert.assertEquals(ex.getCause(), baz);
   }
 
-  /**
-   * Return the faulty plan.
-   *
-   * @return a reconfiguration plan.
-   */
-  public ReconfigurationPlan getResult() {
-    return plan;
-  }
 }

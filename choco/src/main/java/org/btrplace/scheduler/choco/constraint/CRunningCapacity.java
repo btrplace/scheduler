@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -24,12 +24,10 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.RunningCapacity;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
-import org.btrplace.scheduler.choco.view.Cumulatives;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -104,10 +102,7 @@ public class CRunningCapacity implements ChocoConstraint {
         Arrays.fill(cUse, 1);
         Arrays.fill(dUse, csp.intVar(1));
 
-        ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
-        if (v == null) {
-            throw SchedulerModelingException.missingView(rp.getSourceModel(), Cumulatives.VIEW_ID);
-        }
+      ChocoView v = rp.getRequiredView(AliasedCumulatives.VIEW_ID);
         ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse, dUse, alias);
         return true;
     }

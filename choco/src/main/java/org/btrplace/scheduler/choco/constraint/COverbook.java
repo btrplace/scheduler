@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
@@ -55,11 +54,7 @@ public class COverbook implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
-
-        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rcm == null) {
-            throw SchedulerModelingException.missingView(rp.getSourceModel(), cstr.getResource());
-        }
+        CShareableResource rcm = (CShareableResource) rp.getRequiredView(ShareableResource.getIdentifier(cstr.getResource()));
 
         Node u = cstr.getInvolvedNodes().iterator().next();
         rcm.capOverbookRatio(rp.getNode(u), cstr.getRatio());

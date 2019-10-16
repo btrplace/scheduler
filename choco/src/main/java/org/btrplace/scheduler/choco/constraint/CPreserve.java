@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.view.CShareableResource;
@@ -52,10 +51,7 @@ public class CPreserve implements ChocoConstraint {
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
-        CShareableResource map = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (map == null) {
-            throw SchedulerModelingException.missingView(rp.getSourceModel(), cstr.getResource());
-        }
+        CShareableResource map = (CShareableResource) rp.getRequiredView(ShareableResource.getIdentifier(cstr.getResource()));
         VM vm = cstr.getInvolvedVMs().iterator().next();
         if (rp.getFutureRunningVMs().contains(vm)) {
             int idx = rp.getVM(vm);

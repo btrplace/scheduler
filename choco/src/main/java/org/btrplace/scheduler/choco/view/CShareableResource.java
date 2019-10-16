@@ -278,10 +278,7 @@ public class CShareableResource implements ChocoView {
 
         }
 
-        ChocoView v = rp.getView(Packing.VIEW_ID);
-        if (v == null) {
-            throw SchedulerModelingException.missingView(rp.getSourceModel(), Packing.VIEW_ID);
-        }
+        ChocoView v = rp.getRequiredView(Packing.VIEW_ID);
 
         IntVar[] host = new IntVar[p.getFutureRunningVMs().size()];
         int[] demand = new int[host.length];
@@ -430,7 +427,7 @@ public class CShareableResource implements ChocoView {
             }
         }
 
-        Cumulatives v = (Cumulatives) rp.getView(Cumulatives.VIEW_ID);
+        Cumulatives v = (Cumulatives) rp.getRequiredView(Cumulatives.VIEW_ID);
         v.addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
 
         checkInitialSatisfaction();

@@ -204,9 +204,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         linkCardinalityWithSlices();
         addContinuousResourceCapacities();
-        getView(Packing.VIEW_ID).beforeSolve(this);
-        getView(Cumulatives.VIEW_ID).beforeSolve(this);
-        getView(AliasedCumulatives.VIEW_ID).beforeSolve(this);
+        getRequiredView(Packing.VIEW_ID).beforeSolve(this);
+        getRequiredView(Cumulatives.VIEW_ID).beforeSolve(this);
+        getRequiredView(AliasedCumulatives.VIEW_ID).beforeSolve(this);
 
         //Set the timeout
         if (timeLimit > 0) {
@@ -499,7 +499,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (p.getDuration() != s.getIntVal(end)) {
             String msg = String.format("The plan effective duration (%s) and the computed duration (%s) mismatch",
                     p.getDuration(), s.getIntVal(end));
-          throw new InconsistentSolutionException(p.getOrigin(), p, msg);
+            throw new InconsistentSolutionException(p, msg);
         }
         return true;
     }

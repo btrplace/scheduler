@@ -82,11 +82,11 @@ public class WorstFit implements IntValueSelector {
     this.stayFirst = stayFirst;
     this.vmMap = vmMap;
     globalLoad = load;
-    packing = (VectorPacking) rp.getView(Packing.VIEW_ID);
+    packing = (VectorPacking) rp.getRequiredView(Packing.VIEW_ID);
     this.rp = rp;
     rcs = new ArrayList<>();
     for (String s : rp.getViews()) {
-      ChocoView cv = rp.getView(s);
+      ChocoView cv = rp.getRequiredView(s);
       if (cv instanceof CShareableResource) {
         rcs.add((CShareableResource) cv);
       }

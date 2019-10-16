@@ -18,35 +18,22 @@
 
 package org.btrplace.scheduler;
 
-import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Model;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * An exception to state the computed reconfiguration plan is not viable.
- * It basically indicates a bug inside the scheduler.
- *
- * @author Fabien Hermenier
+ * Unit tests for {@link UnstatableProblemException}.
  */
-public class InconsistentSolutionException extends SchedulerModelingException {
+public class UnstatableProblemExceptionTest {
 
-  private ReconfigurationPlan plan;
-
-  /**
-   * New exception.
-   *
-   * @param p   the faulty plan.
-   * @param msg the error message.
-   */
-  public InconsistentSolutionException(ReconfigurationPlan p, String msg) {
-    super(p.getOrigin(), msg);
-    plan = p;
-  }
-
-  /**
-   * Return the faulty plan.
-   *
-   * @return a reconfiguration plan.
-   */
-  public ReconfigurationPlan getResult() {
-    return plan;
+  @Test
+  public void test() {
+    final Model mo = new DefaultModel();
+    final UnstatableProblemException ex = new UnstatableProblemException(mo, 7);
+    Assert.assertEquals(ex.getModel(), mo);
+    Assert.assertEquals(ex.timeout(), 7);
+    Assert.assertTrue(ex.getMessage().contains("Unable to state about the problem feasibility within the allotted 7 seconds"));
   }
 }

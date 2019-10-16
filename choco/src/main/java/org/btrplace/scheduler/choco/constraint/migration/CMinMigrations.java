@@ -108,7 +108,7 @@ public class CMinMigrations implements CObjective {
 
         List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
                 .filter(v -> v instanceof ShareableResource)
-                .map(v -> (CShareableResource) rp.getView(v.getIdentifier()))
+                .map(v -> (CShareableResource) rp.getRequiredView(v.getIdentifier()))
                 .collect(Collectors.toList());
         useResources = !rcs.isEmpty();
 

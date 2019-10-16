@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -140,7 +140,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
 
             Model result = p.getResult();
             if (result == null) {
-                throw new InconsistentSolutionException(mo, p, "The plan cannot be applied");
+                throw new InconsistentSolutionException(p, "The plan cannot be applied");
             }
             // Add Root constraints to all staying VMs
             newCstrs.addAll(mo.getMapping().getRunningVMs().stream().filter(v -> p.getOrigin().getMapping().getVMLocation(v).id() ==

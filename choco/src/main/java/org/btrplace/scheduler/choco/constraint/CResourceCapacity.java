@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,6 @@ import org.btrplace.model.VM;
 import org.btrplace.model.constraint.ResourceCapacity;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
@@ -92,10 +91,7 @@ public class CResourceCapacity implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         Model csp = rp.getModel();
-        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rcm == null) {
-            throw SchedulerModelingException.missingView(rp.getSourceModel(), cstr.getResource());
-        }
+        CShareableResource rcm = (CShareableResource) rp.getRequiredView(ShareableResource.getIdentifier(cstr.getResource()));
 
         if (cstr.getInvolvedNodes().size() == 1) {
             return injectWithSingleNode(rcm, rp);
@@ -143,10 +139,7 @@ public class CResourceCapacity implements ChocoConstraint {
                 dUse.add(rp.fixed(m, "vmAllocation('", rcm.getResourceIdentifier(), "', '", vmId, "'"));
             }
         }
-        ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
-        if (v == null) {
-            throw SchedulerModelingException.missingView(rp.getSourceModel(), AliasedCumulatives.VIEW_ID);
-        }
+        ChocoView v = rp.getRequiredView(AliasedCumulatives.VIEW_ID);
         ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
         return true;
     }
