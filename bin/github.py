@@ -4,6 +4,8 @@ import sys
 import ssl
 ssl.HAS_SNI = False
 import requests
+import urllib3
+urllib3.disable_warnings()
 import os
 import re
 import version
@@ -85,7 +87,6 @@ def getLog(v):
 		if not line: break
 		if re.match("version "+v, line):
 			f.readline()
-			print("found")
 			while True:
 				log = f.readline()
 				#2 consecutive empty lines == we stop

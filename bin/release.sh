@@ -17,7 +17,7 @@ echo "Ok"
 ####
 VERSION=$(./bin/version.py --release)
 echo "** Version to release: ${VERSION} **"
-./bin/github.py milestone-close "${VERSION}" >milestone.out 2>&1 ||err "  unable to close the milestone ${VERSION}" milestone.out
+./bin/github.py milestone-close "${VERSION}"||exit 1
 echo "  Milestone ${VERSION} closed"
 
 #### 
@@ -25,19 +25,19 @@ echo "  Milestone ${VERSION} closed"
 #### 
 git checkout -b release || exit 1
 
-# Establish the version, maven side.
+# Set the version, maven side.
 mvn versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false||exit 1
-# changelog side
+# changelog side.
 ./bin/changelog.py timestamp||exit 1
 git commit -m "Release version ${VERSION}" -a
 
 TAG="btrplace-scheduler-${VERSION}"
 COMMIT=$(git rev-parse HEAD)
-git tag "${TAG}" >tag.out 2>&1 ||err "Unable to tag with ${TAG}" tag.out
+git tag "${TAG}"||exit 1
 echo "** Release ${TAG} cut from ${COMMIT} **"
 
 ####
-# Prepare the next version
+# Prepare the next version.
 ####
 NEW_VERSION=$(./bin/version.py --next)
 DEV_VERSION="${NEW_VERSION}-SNAPSHOT"
