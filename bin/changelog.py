@@ -65,7 +65,6 @@ def getLog(v):
 			f.readline() # skip the ####
 			while True:
 				log = f.readline()
-				# 2 consecutive empty lines == we stop
 				if not log or re.match("version ", log):
 					return cnt.rstrip()
 				cnt += log
@@ -102,6 +101,8 @@ if __name__ == "__main__":
 	    log = getLog(sys.argv[2])
 	    if log:
 	        print(log)
+	    else:
+	        exit(1)
 	else:
 		print("Unsupported operation '%s'" % op, file=sys.stderr)
 		exit(1)

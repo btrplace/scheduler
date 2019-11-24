@@ -32,21 +32,12 @@ def createRelease(tag, changes):
 	print("ERROR %d\n:%s" % (r.status_code, r.text), file=sys.stderr)
 	return False
 
-
 def getRelease(tag):
 	r = requests.get(api() + "/releases/tags/%s%s" %(TAG_HEADER,tag), headers=header())
 	if r.status_code == 200:
 		return r.json()
 	print ("Unable to get the release object '%s%s': %d\n%s" % (TAG_HEADER,tag, r.status_code, r.text), file=sys.stderr)
 	return False
-
-def pushChanges(r, changes):
-	data = changes.replace('"', '\\"')
-	dta = {"draft":False, "body": data}
-	r = requests.patch(api() + "/releases/%s" %  r["id"], json=dta, headers= header())
-	if r.status_code == 200:
-		return True
-	print("ERROR %d: %s" % (r.status_code, r.text), file=sys.stderr)
 
 def getMilestoneId(v):
 	res = requests.get(api() + "/milestones?state=all", headers=header())
@@ -78,29 +69,8 @@ def closeMilestone(ms):
 		print ("ERROR %s:\n%s" % (req.status_code, req.text), file=sys.stderr)
 		return False
 
-def getLog(v):
-	f = open('CHANGES.md', 'r')
-	cnt=""
-	cpt=0
-	while True:
-		line = f.readline()
-		if not line: break
-		if re.match("version "+v, line):
-			f.readline()
-			while True:
-				log = f.readline()
-				#2 consecutive empty lines == we stop
-				if not log or log == "\n":
-					cpt=cpt+1
-					if cpt == 2:
-						return cnt
-				else:
-					cpt = 0
-				cnt += log
-	return False
-
 def usage():
-		print("Usage %s [milestone-open|milestone-close|push-changelog] version?" % sys.argv[0], file=sys.stderr)
+		print("Usage %s [milestone-open|milestone-close] version?" % sys.argv[0], file=sys.stderr)
 		exit(1)
 
 ####### ---------- MAIN ------------- ################
