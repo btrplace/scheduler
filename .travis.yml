@@ -38,7 +38,7 @@ before_deploy: ./bin/changelog.py log $(./bin/version.py) > release_notes.txt
 deploy:
   - provider: script
     skip_cleanup: true
-    script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} source:jar deploy"
+    script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} -Dmaven.javadoc.skip=true source:jar deploy"
     on:
       branch : master
   - provider: script
