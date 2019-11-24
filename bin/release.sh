@@ -5,11 +5,8 @@
 
 source bin/commons.sh
 
-if [ $? -eq 0 ]; then
-    echo "Error: A release is already under progress"
-    exit 1
-fi
-echo "Ok"
+echo "** switching to the 'release' branch **"
+git checkout -b release ||exit 1
 
 ####
 #No open issues in the current milestone
@@ -21,8 +18,7 @@ echo "  Milestone ${VERSION} closed"
 
 #### 
 # Prepare the release.
-#### 
-git checkout -b release || exit 1
+####
 
 # Set the version, maven side.
 mvn versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false||exit 1
@@ -47,6 +43,7 @@ mvn versions:set -DnewVersion="${DEV_VERSION}" -DgenerateBackupPoms=false >versi
 git commit -m "Initiate new version ${NEW_VERSION}" -a
 
 # Back to master, we rebase to be in sync.
+echo "** switching back to the master branch **"
 git checkout master
 git rebase release
 git branch -d release
