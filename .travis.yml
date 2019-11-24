@@ -49,11 +49,13 @@ jobs:
         script: echo "skipping tests"
         deploy:
           provider: script
+          skip_cleanup: true
           script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
       - stage: deploy github release
         script: ./bin/changelog.py log $(./bin/version.py) > release_notes.txt
         deploy:
           provider: releases
+          skip_cleanup: true
           token: ${GH_TOKEN}
           release_notes_file: release_notes.txt
           draft: false
