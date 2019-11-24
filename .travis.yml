@@ -18,8 +18,7 @@ before_install:
 - git config --global user.name "Build Bot"
 - git config --global user.email "buildbot@btrplace.org"
 - export MAVEN_OPTS=-Xmx512m
-install:
-- true
+
 jdk:
 - openjdk8
 language: java
@@ -28,34 +27,25 @@ notifications:
   webhooks:
     urls:
     - https://webhooks.gitter.im/e/08e84639ce79857bcff2
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: never     # options: [always|never|change] default: always
+    on_success: always
+    on_failure: always
+    on_start: never
 
-stages:
-  - compile and test
-  - name: deploy sonatype
-    if: branch = master OR tag IS present
-  - name: deploy github release
-    if: tag IS present
-jobs:
-  include:
-      # We always compile and test
-      - stage: compile and test
-        script: mvn compile test
-        after_success:
-          - bash <(curl -s https://codecov.io/bash)
-      - stage: deploy sonatype
-        script: echo "skipping tests"
-        deploy:
-          provider: script
-          skip_cleanup: true
-          script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
-      - stage: deploy github release
-        script: ./bin/changelog.py log $(./bin/version.py) > release_notes.txt
-        deploy:
-          provider: releases
-          skip_cleanup: true
-          token: ${GH_TOKEN}
-          release_notes_file: release_notes.txt
-          draft: false
+before_deploy: ./bin/changelog.py log $(./bin/version.py) > release_notes.txt
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
+    on:
+      condition: branch = master OR tag IS present
+  - provider: releases
+    skip_cleanup: true
+    token: ${GH_TOKEN}
+    release_notes_file: release_notes.txt
+    draft: false
+    on:
+      tags: true
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
