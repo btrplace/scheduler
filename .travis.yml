@@ -31,13 +31,12 @@ notifications:
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
+
 stages:
   - compile and test
-  - deploy sonatype
-     # We deploy to sonatype snapshot releases (in master branch) or on tags.
+  - name: deploy sonatype
     if: branch = master OR tag IS present
-  - deploy github release
-     # We declare the release iff this is a tag.
+  - name: deploy github release
     if: tag IS present
 jobs:
   include:
