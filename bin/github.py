@@ -85,6 +85,7 @@ def getLog(v):
 		if not line: break
 		if re.match("version "+v, line):
 			f.readline()
+			print("found")
 			while True:
 				log = f.readline()
 				#2 consecutive empty lines == we stop

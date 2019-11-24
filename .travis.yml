@@ -1,11 +1,6 @@
-sudo: false
 cache:
   directories:
     - $HOME/.m2
-branches:
-  except:
-    - /^exp-.*$/
-    - /^btrplace-scheduler-.*$/
 env:
   global:
   - secure: fIpwqTk0CaukDz2gGEW8R7Pwa+dLPuPA5hcDm5d5vuqNH2FA02oX09fUrqZWPBlM79ve6UmRTt0TNM2kKCMuZQB175dY/CCPHO22aOw+uMP7ywFkq2FIK8+1qvkTUwWmNsA+sHTMrdmNBM4unguwBq8v3627dik8FAOAkqVWtUI=
@@ -19,37 +14,51 @@ env:
 before_install:
 - openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
   -in etc/gpg.enc -out etc/gpg -d
-- openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
-  -in etc/autobot.enc -out etc/autobot -d
-- eval "$(ssh-agent)"
 - gpg --import etc/gpg
-- chmod 600 etc/autobot
-- ssh-add etc/autobot
 - git config --global user.name "Build Bot"
 - git config --global user.email "buildbot@btrplace.org"
-- git remote add deploy git@github.com:btrplace/scheduler.git
 - export MAVEN_OPTS=-Xmx512m
-- export PYTHONPATH=".:./bin:$PYTHONPATH"
-- python --version
-- pip install --user requests
 install:
 - true
 jdk:
 - openjdk8
 language: java
+os: linux
 notifications:
-  email:
-    on_failure: always
-    on_success: always
-    recipients:
-    - btrplace-ci@googlegroups.com
   webhooks:
     urls:
     - https://webhooks.gitter.im/e/08e84639ce79857bcff2
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
-script: ./bin/build.sh
-after_success:
-- bash <(curl -s https://codecov.io/bash)
-- curl http://testr-1154.appspot.com/assets/testR.py |python
+stages:
+  - compile
+  - test
+  - deploy sonatype
+  - deploy github release
+
+jobs:
+  include:
+      # We always compile and test
+      - stage: compile
+        script: mvn compile
+      - stage: test
+        script: mvn test
+        after_success:
+          - bash <(curl -s https://codecov.io/bash)
+      # We deploy to sonatype and to github releases iff this is a tag.
+      - stage: deploy sonatype
+        deploy:
+          provider: script
+          script: bash bin/deploy.sh
+          on:
+            tags: true
+      - stage: deploy github release
+        script: ./bin/changelog.py log $(./bin/version.py) > release_notes.txt
+        deploy:
+          provider: releases
+          token:
+          on:
+            tags: true
+          release_notes_file: release_notes.txt
+          draft: false

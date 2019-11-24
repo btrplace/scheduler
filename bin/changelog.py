@@ -55,6 +55,22 @@ def timestamp(v):
 	f.close()
 	return True
 
+def getLog(v):
+	f = open('CHANGES.md', 'r')
+	cnt=""
+	while True:
+		line = f.readline()
+		if not line: break
+		if re.match("version "+v, line):
+			f.readline() # skip the ####
+			while True:
+				log = f.readline()
+				# 2 consecutive empty lines == we stop
+				if not log or re.match("version ", log):
+					return cnt.rstrip()
+				cnt += log
+	return False
+
 def usage():
 		print("Usage %s [new|timestamp] version?" % sys.argv[0], file=sys.stderr)
 		exit(1)
@@ -82,6 +98,10 @@ if __name__ == "__main__":
 		if not timestamp(v):
 			exit(1)
 		print("Changelog timestamped to version " + v)
+	elif (op == "log"):
+	    log = getLog(sys.argv[2])
+	    if log:
+	        print(log)
 	else:
 		print("Unsupported operation '%s'" % op, file=sys.stderr)
 		exit(1)
