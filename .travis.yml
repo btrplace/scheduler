@@ -19,7 +19,7 @@ before_install:
 - git config --global user.email "buildbot@btrplace.org"
 - export MAVEN_OPTS=-Xmx512m
 
-script: mvn -B test -Dgpg.skip=true
+install: true
 
 jdk:
 - openjdk8
