@@ -5,7 +5,6 @@
 
 source bin/commons.sh
 
-git ls-remote --exit-code --heads origin release
 if [ $? -eq 0 ]; then
     echo "Error: A release is already under progress"
     exit 1
