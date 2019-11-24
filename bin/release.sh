@@ -5,7 +5,6 @@
 
 source bin/commons.sh
 
-echo "** switching to the 'release' branch **"
 git checkout -b release ||exit 1
 
 ####

@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version 1.10.1 - 22 Nov 2019
+version 1.10.1 - 23 Nov 2019
 ----------------------
 See milestone [1.10.1](https://github.com/btrplace/scheduler/milestones/1.10.1)
 
