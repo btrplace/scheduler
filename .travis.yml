@@ -32,21 +32,20 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 stages:
-  - compile
-  - test
+  - compile and test
   - deploy sonatype
+     # We deploy to sonatype snapshot releases (in master branch) or on tags.
+    if: branch = master OR tag IS present
   - deploy github release
-
+     # We declare the release iff this is a tag.
+    if: tag IS present
 jobs:
   include:
       # We always compile and test
-      - stage: compile
-        script: mvn compile
-      - stage: test
-        script: mvn test
+      - stage: compile and test
+        script: mvn compile test
         after_success:
           - bash <(curl -s https://codecov.io/bash)
-      # We deploy to sonatype and to github releases iff this is a tag.
       - stage: deploy sonatype
         deploy:
           provider: script
@@ -57,8 +56,6 @@ jobs:
         script: ./bin/changelog.py log $(./bin/version.py) > release_notes.txt
         deploy:
           provider: releases
-          token:
-          on:
-            tags: true
+          token: ${GH_TOKEN}
           release_notes_file: release_notes.txt
           draft: false
