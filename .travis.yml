@@ -40,7 +40,8 @@ deploy:
     skip_cleanup: true
     script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
     on:
-      condition: branch = master OR tag IS present
+      branch : master
+      tags: true
   - provider: releases
     skip_cleanup: true
     token: ${GH_TOKEN}
