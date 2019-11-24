@@ -61,7 +61,7 @@ def getMilestoneId(v):
 def openMilestone(v):
 	req = "{\"title\": \"%s\"}" % v
 	res = requests.post(api() + "/milestones", data=req, headers=header())
-	if res.status_code == 201:
+	if res.status_code == 201 or "already_exists" in res.text:
 		return True
 	else:
 		print("ERROR %d\n:%s" % (res.status_code, res.text), file=sys.stderr)
@@ -124,8 +124,8 @@ if __name__ == "__main__":
 			exit(1)
 
 	if (op == "milestone-open"):
-		print("Opening milestone %s" % v, file=sys.stderr)
-		openMilestone(v)
+		if not openMilestone(v):
+			exit(1)
 	elif (op == "milestone-close"):
 		ms = getMilestoneId(v)
 		if not ms:

@@ -39,6 +39,7 @@ echo "** New development version: ${DEV_VERSION} **"
 mvn versions:set -DnewVersion="${DEV_VERSION}" -DgenerateBackupPoms=false >version.out 2>&1 ||warn "Unable to set the new version" version.out
 ./bin/changelog.py new "${NEW_VERSION}"
 ./bin/github.py milestone-open ${NEW_VERSION}||exit 1
+echo "  Milestone ${NEW_VERSION} opened"
 git commit -m "Initiate new version ${NEW_VERSION}" -a
 
 # Back to master, we rebase to be in sync.
@@ -48,8 +49,8 @@ git rebase release
 git branch -d release
 
 ####
-# Push everything.
+# Push the master branch then the tag to launch the test & deploy.
 ####
-git push --follow-tags
+git push
+git push origin ${TAG}
 
-# We are done here, travis will react on the tag push and will launch deploy.
