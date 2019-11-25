@@ -12,19 +12,20 @@ env:
   #Coverity
   - secure: "hQp8o1ihvUxHps9CyohAncDYImybrkkeg//1UY+bn8pFIgbQDr7Pfu/osUiNfa5B+l7NZXzw4TqK+2lFFs2/aXpV1vMNOmY7e9awY2qSRhrUDMj/9ReJm+tL2HsIev6ZH1oS8hMEOYeUa3+qC7vOQhBn9GtHXIgSdqU8EHxJTdU="
 before_install:
+# GPG key for the deployment to sonatype.
 - openssl aes-256-cbc -K $encrypted_e836d0488b25_key -iv $encrypted_e836d0488b25_iv
   -in etc/gpg.enc -out etc/gpg -d
 - gpg --import etc/gpg
-- git config --global user.name "Build Bot"
-- git config --global user.email "buildbot@btrplace.org"
+# Enough RAM for the biggest tests.
 - export MAVEN_OPTS=-Xmx512m
 
 install: true
 
+os: linux
+langage: java
 jdk:
 - openjdk8
-language: java
-os: linux
+
 notifications:
   webhooks:
     urls:
@@ -36,16 +37,21 @@ notifications:
 before_deploy: ./bin/changelog.py log $(./bin/version.py --release) > release_notes.txt
 
 deploy:
+  # We deploy snapshots (jar & sources) to sonatype from the master branch.
   - provider: script
     skip_cleanup: true
     script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} -Dmaven.javadoc.skip=true source:jar deploy"
     on:
       branch : master
+
+  # We deploy releases (jar, javadoc & sources) to sonatype from tags.
   - provider: script
     skip_cleanup: true
     script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
     on:
       tags : true
+
+  # We deploy github releases with no files (github will provide the source code) from tags.
   - provider: releases
     skip_cleanup: true
     token: ${GH_TOKEN}
