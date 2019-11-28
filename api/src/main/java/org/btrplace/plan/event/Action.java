@@ -184,7 +184,7 @@ public abstract class Action implements Event {
                 Set<Event> l = entry.getValue();
                 Hook k = entry.getKey();
                 b.append(", @").append(k).append("= {");
-              b.append(l.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
+                b.append(l.stream().map(Object::toString).collect(Collectors.joining(", ")));
                 b.append('}');
             }
         }

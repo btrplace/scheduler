@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -320,7 +320,7 @@ public class DefaultChocoSchedulerTest {
         VM vm = mo.newVM();
         Node node = mo.newNode();
         mo.getMapping().on(node).run(node, vm);
-        Instance i = new Instance(mo, Running.newRunning(Arrays.asList(vm)), new MinMTTR());
+        Instance i = new Instance(mo, Running.newRunning(vm), new MinMTTR());
         List<ReconfigurationPlan> onSolutions = new ArrayList<>();
 
         cra.addSolutionListener((rp, plan) -> onSolutions.add(plan));

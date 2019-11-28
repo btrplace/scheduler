@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -73,22 +73,14 @@ public class MovementGraph {
 
     private void addOutgoing(Slice cSlice) {
         Node h = rp.getNode(cSlice.getHoster().getLB());
-        List<IntVar> l = outgoings.get(h);
-        if (l == null) {
-            l = new ArrayList<>();
-            outgoings.put(h, l);
-        }
-        l.add(cSlice.getStart());
+        outgoings.putIfAbsent(h, new ArrayList<>());
+        outgoings.get(h).add(cSlice.getStart());
     }
 
     private void addIncoming(Slice cSlice) {
         Node h = rp.getNode(cSlice.getHoster().getLB());
-        List<IntVar> l = incoming.get(h);
-        if (l == null) {
-            l = new ArrayList<>();
-            incoming.put(h, l);
-        }
-        l.add(cSlice.getStart());
+        incoming.putIfAbsent(h, new ArrayList<>());
+        incoming.get(h).add(cSlice.getStart());
     }
 
     /**
@@ -99,11 +91,7 @@ public class MovementGraph {
      * @return a list of start moment. May be empty
      */
     public List<IntVar> getIncoming(Node n) {
-        List<IntVar> l = incoming.get(n);
-        if (l == null) {
-            l = Collections.emptyList();
-        }
-        return l;
+        return incoming.getOrDefault(n, Collections.emptyList());
     }
 
     /**
@@ -114,11 +102,6 @@ public class MovementGraph {
      * @return a list of start moment. May be empty
      */
     public List<IntVar> getOutgoing(Node n) {
-        List<IntVar> l = outgoings.get(n);
-        if (l == null) {
-            l = Collections.emptyList();
-        }
-        return l;
-
+        return outgoings.getOrDefault(n, Collections.emptyList());
     }
 }

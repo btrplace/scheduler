@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@ import org.btrplace.model.VM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -47,14 +46,14 @@ public class VMConsumptionComparatorTest {
         }
 
         VMConsumptionComparator c1 = new VMConsumptionComparator(rc, true);
-        Collections.sort(vms, c1);
+        vms.sort(c1);
         for (int i = 0; i < vms.size() - 1; i++) {
             Assert.assertTrue(rc.getConsumption(vms.get(i)) - rc.getConsumption(vms.get(i + 1)) <= 0);
         }
 
         //Descending order
         c1 = new VMConsumptionComparator(rc, false);
-        Collections.sort(vms, c1);
+        vms.sort(c1);
         for (int i = 0; i < vms.size() - 1; i++) {
             Assert.assertTrue(rc.getConsumption(vms.get(i)) - rc.getConsumption(vms.get(i + 1)) >= 0);
         }
@@ -86,7 +85,7 @@ public class VMConsumptionComparatorTest {
 
         VMConsumptionComparator c1 = new VMConsumptionComparator(rc, true);
         c1.append(rc2, false);
-        Collections.sort(vms, c1);
+        vms.sort(c1);
 
         for (int i = 0; i < vms.size() - 1; i++) {
             VM id = vms.get(i);
@@ -98,7 +97,7 @@ public class VMConsumptionComparatorTest {
         //The 2 criteria are ascending
         c1 = new VMConsumptionComparator(rc, true);
         c1.append(rc2, true);
-        Collections.sort(vms, c1);
+        vms.sort(c1);
 
         for (int i = 0; i < vms.size() - 1; i++) {
             VM id = vms.get(i);

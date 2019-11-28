@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,11 @@ package org.btrplace.plan;
 import org.btrplace.model.Model;
 import org.btrplace.plan.event.Action;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * An applier that relies on the estimated start moment and
@@ -37,7 +41,7 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
     public Model apply(ReconfigurationPlan p) {
         Model res = p.getOrigin().copy();
         List<Action> actions = new ArrayList<>(p.getActions());
-        Collections.sort(actions, startFirstComparator);
+        actions.sort(startFirstComparator);
         for (Action a : actions) {
             if (!a.apply(res)) {
                 return null;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.model.constraint;
 
 import org.btrplace.model.Node;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -94,4 +95,13 @@ public class Online extends SimpleConstraint {
         return nodes.stream().map(Online::new).collect(Collectors.toList());
     }
 
+    /**
+     * Instantiate discrete constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Online> newOnline(Node... nodes) {
+        return newOnline(Arrays.asList(nodes));
+    }
 }

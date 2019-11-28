@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -19,7 +19,11 @@
 package org.btrplace.examples.migration;
 
 import org.btrplace.examples.Example;
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.SatConstraint;
@@ -149,9 +153,9 @@ public class AdvancedMigScheduling implements Example {
         // Create constraints
         List<SatConstraint> cstrs = new ArrayList<>();
         // We want to boot the destination nodes
-        cstrs.addAll(Online.newOnline(Arrays.asList(dstNode1, dstNode2)));
+        cstrs.addAll(Online.newOnline(dstNode1, dstNode2));
         // We want to shutdown the source nodes
-        cstrs.addAll(Offline.newOffline(Arrays.asList(srcNode1, srcNode2, srcNode3, srcNode4)));
+        cstrs.addAll(Offline.newOffline(srcNode1, srcNode2, srcNode3, srcNode4));
 
         // Try to solve as is, and show the computed plan
         solve(mo, cstrs);

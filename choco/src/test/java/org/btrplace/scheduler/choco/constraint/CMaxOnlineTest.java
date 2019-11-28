@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,12 @@
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.MappingUtils;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MaxOnline;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.SatConstraint;
@@ -30,7 +35,12 @@ import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link CMaxOnline}.
@@ -175,7 +185,7 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<>();
         constraints.add(maxOn);
         constraints.add(maxOn2);
-        constraints.addAll(Online.newOnline(Arrays.asList(n4, n5)));
+        constraints.addAll(Online.newOnline(n4, n5));
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.setTimeLimit(3);

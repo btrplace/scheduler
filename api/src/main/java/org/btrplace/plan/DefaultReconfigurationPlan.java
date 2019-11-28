@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@ import org.btrplace.model.Model;
 import org.btrplace.plan.event.Action;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -127,7 +126,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     @Override
     public String toString() {
         List<Action> l = new ArrayList<>(actions);
-        Collections.sort(l, sorter);
+        l.sort(sorter);
         StringJoiner joiner = new StringJoiner("\n");
         for (Action a : l) {
             joiner.add(String.format("%d:%d %s", a.getStart(), a.getEnd(), a.toString()));

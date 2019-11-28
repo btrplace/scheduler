@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,9 +21,26 @@ package org.btrplace.plan;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.view.ShareableResource;
-import org.btrplace.plan.event.*;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.ActionVisitor;
+import org.btrplace.plan.event.Allocate;
+import org.btrplace.plan.event.AllocateEvent;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.ForgeVM;
+import org.btrplace.plan.event.KillVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SubstitutedVMEvent;
+import org.btrplace.plan.event.SuspendVM;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Detect dependencies between actions.
@@ -54,21 +71,13 @@ public class DependenciesExtractor implements ActionVisitor {
     }
 
     private Set<Action> getFreeings(Node u) {
-        Set<Action> actions = freeing.get(u);
-        if (actions == null) {
-            actions = new HashSet<>();
-            freeing.put(u, actions);
-        }
-        return actions;
+        freeing.putIfAbsent(u, new HashSet<>());
+        return freeing.get(u);
     }
 
     private Set<Action> getDemandings(Node u) {
-        Set<Action> actions = demanding.get(u);
-        if (actions == null) {
-            actions = new HashSet<>();
-            demanding.put(u, actions);
-        }
-        return actions;
+        demanding.putIfAbsent(u, new HashSet<>());
+        return demanding.get(u);
     }
 
     @Override

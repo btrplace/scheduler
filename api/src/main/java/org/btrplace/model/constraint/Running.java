@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.model.constraint;
 
 import org.btrplace.model.VM;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +34,6 @@ import java.util.stream.Collectors;
  */
 @SideConstraint(args = {"v : vms"}, inv = "vmState(v) = running")
 public class Running extends SimpleConstraint {
-
 
     private VM vm;
 
@@ -94,4 +94,13 @@ public class Running extends SimpleConstraint {
         return vms.stream().map(Running::new).collect(Collectors.toList());
     }
 
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Running> newRunning(VM... vms) {
+        return newRunning(Arrays.asList(vms));
+    }
 }

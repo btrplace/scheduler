@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -18,7 +18,13 @@
 
 package org.btrplace.scheduler.runner.disjoint;
 
-import org.btrplace.model.*;
+import org.btrplace.model.DefaultElementBuilder;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Instance;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.SynchronizedElementBuilder;
+import org.btrplace.model.VM;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Running;
@@ -97,7 +103,7 @@ public class StaticPartitioningTest {
         Assert.assertEquals(dst.getMapping().getRunningVMs().size(), 2);
 
         //Now, there is no solution for i2. the resulting plan should be null
-        i2.getSatConstraints().addAll(Offline.newOffline(Collections.singletonList(n2)));
+        i2.getSatConstraints().addAll(Offline.newOffline(n2));
         plan = st.solve(p, i0);
         Assert.assertNull(plan);
         Assert.assertEquals(st.getStatistics().getSolutions().size(), 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,11 @@ package org.btrplace.plan;
 import org.btrplace.model.Model;
 import org.btrplace.plan.event.Action;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Simulated execution of a {@link ReconfigurationPlan}.
@@ -75,11 +79,8 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
                     Dependency dep = new Dependency(a, deps);
                     this.dependencies.put(a, dep);
                     for (Action x : dep.getDependencies()) {
+                        pre.putIfAbsent(x, new HashSet<>());
                         Set<Dependency> pres = pre.get(x);
-                        if (pres == null) {
-                            pres = new HashSet<>();
-                            pre.put(x, pres);
-                        }
                         pres.add(dep);
                     }
                 }

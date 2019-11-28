@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@ package org.btrplace.model.constraint;
 
 import org.btrplace.model.VM;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -60,16 +61,6 @@ public class Ready extends SimpleConstraint {
         return "ready(vms=" + vm + ")";
     }
 
-    /**
-     * Instantiate discrete constraints for a collection of VMs.
-     *
-     * @param vms the VMs to integrate
-     * @return the associated list of constraints
-     */
-    public static List<Ready> newReady(Collection<VM> vms) {
-        return vms.stream().map(Ready::new).collect(Collectors.toList());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -95,5 +86,25 @@ public class Ready extends SimpleConstraint {
     @Override
     public Collection<VM> getInvolvedVMs() {
         return Collections.singleton(vm);
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Ready> newReady(Collection<VM> vms) {
+        return vms.stream().map(Ready::new).collect(Collectors.toList());
+    }
+
+    /**
+     * Instantiate discrete constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Ready> newReady(VM... vms) {
+        return newReady(Arrays.asList(vms));
     }
 }
