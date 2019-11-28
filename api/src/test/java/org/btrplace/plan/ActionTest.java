@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,10 @@ import org.btrplace.plan.event.Event;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.btrplace.plan.event.Action}.
@@ -48,10 +51,17 @@ public class ActionTest {
     public void testEvents() {
         Action a1 = new MockAction(new VM(1), 1, 3);
         Event e = mock(Event.class);
-        a1.addEvent(Action.Hook.PRE, e);
+        Assert.assertTrue(a1.addEvent(Action.Hook.PRE, e));
+        Assert.assertFalse(a1.addEvent(Action.Hook.PRE, e));
         Assert.assertEquals(1, a1.getEvents(Action.Hook.PRE).size());
         a1.addEvent(Action.Hook.POST, e);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.POST).size());
+        Event e2 = mock(Event.class);
+        a1.addEvent(Action.Hook.POST, e2);
+        Assert.assertEquals(2, a1.getEvents(Action.Hook.POST).size());
+        String str = a1.toString();
+        // Check for issue #203. Only one occurrence of the event is reported.
+        Assert.assertEquals(str.indexOf(String.valueOf(e2.hashCode())), str.lastIndexOf(String.valueOf(e2.hashCode())));
     }
 
     @Test

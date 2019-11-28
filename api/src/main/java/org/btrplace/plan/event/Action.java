@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
+ * Copyright (c) 2019 University Nice Sophia Antipolis
  *
  * This file is part of btrplace.
  * This library is free software; you can redistribute it and/or
@@ -20,7 +20,12 @@ package org.btrplace.plan.event;
 
 import org.btrplace.model.Model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -149,12 +154,8 @@ public abstract class Action implements Event {
      * @return {@code true} iff the event was added
      */
     public boolean addEvent(Hook k, Event n) {
-        Set<Event> l = events.get(k);
-        if (l == null) {
-            l = new HashSet<>();
-            events.put(k, l);
-        }
-        return l.add(n);
+      events.putIfAbsent(k, new HashSet<>());
+      return events.get(k).add(n);
     }
 
     /**
@@ -164,8 +165,7 @@ public abstract class Action implements Event {
      * @return a list of events that may be empty
      */
     public Set<Event> getEvents(Hook k) {
-        Set<Event> l = events.get(k);
-        return l == null ? Collections.emptySet() : l;
+      return events.getOrDefault(k, Collections.emptySet());
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class Action implements Event {
                 Set<Event> l = entry.getValue();
                 Hook k = entry.getKey();
                 b.append(", @").append(k).append("= {");
-                b.append(l.stream().map(e -> l.toString()).collect(Collectors.joining(", ")));
+              b.append(l.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
                 b.append('}');
             }
         }
