@@ -5,6 +5,9 @@ version 1.10.2 - soon come
 ----------------------
 See milestone [1.10.2](https://github.com/btrplace/scheduler/milestones/1.10.2)
 
+Minor update that refresh the dependencies and fix a mis-leading Action.toString().
+
+
 version 1.10.1 - 23 Nov 2019
 ----------------------
 See milestone [1.10.1](https://github.com/btrplace/scheduler/milestones/1.10.1)
