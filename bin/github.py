@@ -40,7 +40,7 @@ def getRelease(tag):
 	return False
 
 def getMilestoneId(v):
-	res = requests.get(api() + "/milestones?state=all", headers=header())
+	res = requests.get(api() + "/milestones?state=all&direction=dsc", headers=header())
 	if res.status_code != 200:
 		print("ERROR %d\n:%s" % (res.status_code, res.text), file=sys.stderr)
 		return False
