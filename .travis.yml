@@ -44,13 +44,6 @@ deploy:
     on:
       branch : master
 
-  # We deploy releases (jar, javadoc & sources) to sonatype from tags.
-  - provider: script
-    skip_cleanup: true
-    script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
-    on:
-      tags : true
-
   # We deploy github releases with no files (github will provide the source code) from tags.
   - provider: releases
     skip_cleanup: true
@@ -59,6 +52,13 @@ deploy:
     draft: false
     on:
       tags: true
+
+  # We deploy releases (jar, javadoc & sources) to sonatype from tags.
+  - provider: script
+    skip_cleanup: true
+    script: "mvn -s etc/sonatype.xml -DskipTests=true -Dgpg.keyname=BF1447AC -Dgpg.passphrase=${GPG_PASSPHRASE} javadoc:aggregate-jar source:jar deploy"
+    on:
+      tags : true
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
