@@ -72,11 +72,8 @@ public class CShareableResourceTest {
         CShareableResource rcm = new CShareableResource(rc);
         rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        //Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm1)).getLB());
         Assert.assertEquals(-1, rcm.getVMAllocation(rp.getVM(vm1)));
-        //Assert.assertEquals(-1, rcm.getVMsAllocation(rp.getVM(vm2)).getLB());
         Assert.assertEquals(-1, rcm.getVMAllocation(rp.getVM(vm2)));
-        //Assert.assertEquals(0, rcm.getVMsAllocation(rp.getVM(vm3)).getUB()); //Will not be running so 0
         Assert.assertEquals(0, rcm.getVMAllocation(rp.getVM(vm3))); //Will not be running so 0
         IntVar pn1 = rcm.getPhysicalUsage().get(rp.getNode(n1));
         IntVar pn2 = rcm.getPhysicalUsage().get(rp.getNode(n2));
@@ -129,8 +126,8 @@ public class CShareableResourceTest {
         Assert.assertNotNull(p);
         Model res = p.getResult();
         rc = (ShareableResource.get(res, "foo"));
-        Assert.assertEquals(2, rc.getConsumption(vm1));//rcm.getVirtualUsage(0).isInstantiatedTo(2));
-        Assert.assertEquals(3, rc.getConsumption(vm2));//rcm.getVirtualUsage(1).isInstantiatedTo(3));
+        Assert.assertEquals(2, rc.getConsumption(vm1));
+        Assert.assertEquals(3, rc.getConsumption(vm2));
     }
 
     @Test
@@ -197,7 +194,7 @@ public class CShareableResourceTest {
 
         Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2);
 
-        org.btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         rc.setCapacity(n1, 32);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 2);

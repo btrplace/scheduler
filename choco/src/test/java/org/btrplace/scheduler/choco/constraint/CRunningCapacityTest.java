@@ -68,7 +68,7 @@ public class CRunningCapacityTest {
                 .run(n3, vm3, vm4)
                 .sleep(n2, vm5);
         List<SatConstraint> l = new ArrayList<>();
-        org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
+        RunningCapacity x = new RunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -93,7 +93,7 @@ public class CRunningCapacityTest {
                 .run(n2, vm3, vm4, vm5);
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
-        org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 4);
+        RunningCapacity x = new RunningCapacity(on, 4);
         x.setContinuous(false);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -122,7 +122,7 @@ public class CRunningCapacityTest {
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm5));
         l.add(new Fence(vm5, Collections.singleton(n1)));
-        org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 4);
+        RunningCapacity x = new RunningCapacity(on, 4);
         x.setContinuous(true);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -162,7 +162,7 @@ public class CRunningCapacityTest {
         l.add(new Root(vm4));
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
-        org.btrplace.model.constraint.RunningCapacity x = new org.btrplace.model.constraint.RunningCapacity(on, 3);
+        RunningCapacity x = new RunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
         ChocoScheduler cra = new DefaultChocoScheduler();
@@ -213,7 +213,7 @@ public class CRunningCapacityTest {
                 .run(n2, vm3)
                 .run(n3, vm4);
         Collection<SatConstraint> ctrs = new HashSet<>();
-        ctrs.add(new org.btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 2));
+        ctrs.add(new RunningCapacity(map.getAllNodes(), 2));
 
         ChocoScheduler cra = new DefaultChocoScheduler();
         ReconfigurationPlan plan = cra.solve(model, ctrs);

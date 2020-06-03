@@ -89,16 +89,16 @@ public class CBanTest {
                 .run(n3, vm4)
                 .sleep(n4, vm5);
 
-        Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
+      Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
 
-        CBan c = new CBan(new Ban(vm1, ns));
-        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
-        org.testng.Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
-        ns.add(mo.newNode());
-        org.testng.Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
-        ns.add(n1);
-        Set<VM> bad = c.getMisPlacedVMs(i);
-        org.testng.Assert.assertEquals(1, bad.size());
-        org.testng.Assert.assertTrue(bad.contains(vm1));
+      CBan c = new CBan(new Ban(vm1, ns));
+      Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
+      Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
+      ns.add(mo.newNode());
+      Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
+      ns.add(n1);
+      Set<VM> bad = c.getMisPlacedVMs(i);
+      Assert.assertEquals(1, bad.size());
+      Assert.assertTrue(bad.contains(vm1));
     }
 }

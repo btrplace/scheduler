@@ -67,45 +67,45 @@ public class DurationEvaluatorsTest {
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered"})
     public void testUnregister() {
         DurationEvaluators d = DurationEvaluators.newBundle();
-        Assert.assertTrue(d.unRegister(org.btrplace.plan.event.MigrateVM.class));
-        Assert.assertFalse(d.isRegistered(org.btrplace.plan.event.MigrateVM.class));
-        Assert.assertFalse(d.unRegister(org.btrplace.plan.event.MigrateVM.class));
+        Assert.assertTrue(d.unRegister(MigrateVM.class));
+        Assert.assertFalse(d.isRegistered(MigrateVM.class));
+        Assert.assertFalse(d.unRegister(MigrateVM.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"})
     public void testRegister() {
         DurationEvaluators d = new DurationEvaluators();
-        Assert.assertTrue(d.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration<>(7)));
-        Assert.assertFalse(d.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration<>(3)));
+        Assert.assertTrue(d.register(MigrateVM.class, new ConstantActionDuration<>(7)));
+        Assert.assertFalse(d.register(MigrateVM.class, new ConstantActionDuration<>(3)));
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
     public void testGetEvaluator() {
         DurationEvaluators d = new DurationEvaluators();
         ActionDurationEvaluator<Element> ev = new ConstantActionDuration<>(7);
-        d.register(org.btrplace.plan.event.MigrateVM.class, ev);
-        Assert.assertEquals(d.getEvaluator(org.btrplace.plan.event.MigrateVM.class), ev);
+        d.register(MigrateVM.class, ev);
+        Assert.assertEquals(d.getEvaluator(MigrateVM.class), ev);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
     public void testEvaluate() throws SchedulerException {
         DurationEvaluators d = new DurationEvaluators();
         ActionDurationEvaluator<Element> ev = new ConstantActionDuration<>(7);
-        d.register(org.btrplace.plan.event.MigrateVM.class, ev);
+        d.register(MigrateVM.class, ev);
 
-        Assert.assertEquals(d.evaluate(mo, org.btrplace.plan.event.MigrateVM.class, vm1), 7);
+        Assert.assertEquals(d.evaluate(mo, MigrateVM.class, vm1), 7);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SchedulerException.class})
     public void testEvaluateUnregisteredAction() throws SchedulerException {
         DurationEvaluators d = new DurationEvaluators();
-        d.evaluate(mo, org.btrplace.plan.event.MigrateVM.class, vm1);
+        d.evaluate(mo, MigrateVM.class, vm1);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SchedulerException.class})
     public void testEvaluateWithError() throws SchedulerException {
         DurationEvaluators d = new DurationEvaluators();
-        d.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration<>(-5));
-        d.evaluate(mo, org.btrplace.plan.event.MigrateVM.class, vm1);
+        d.register(MigrateVM.class, new ConstantActionDuration<>(-5));
+        d.evaluate(mo, MigrateVM.class, vm1);
     }
 }

@@ -24,7 +24,6 @@ import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.plan.event.SubstitutedVMEvent;
 import org.btrplace.plan.event.SuspendVM;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -48,7 +47,7 @@ public class DefaultPlanApplierTest {
     @Test
     public void testEventCommittedListeners() {
         DefaultPlanApplier app = new MockApplier();
-        EventCommittedListener ev = Mockito.mock(EventCommittedListener.class);
+        EventCommittedListener ev = mock(EventCommittedListener.class);
         app.addEventCommittedListener(ev);
         Assert.assertTrue(app.removeEventCommittedListener(ev));
     }

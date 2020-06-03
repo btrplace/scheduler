@@ -158,7 +158,7 @@ public class RelocatableVMTest {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
-        org.btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10, 10);
+        ShareableResource rc = new ShareableResource("cpu", 10, 10);
         rc.setCapacity(n1, 7);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 3);
@@ -226,7 +226,7 @@ public class RelocatableVMTest {
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         Parameters ps = new DefaultParameters();
         DurationEvaluators dev = ps.getDurationEvaluators();
-        dev.register(org.btrplace.plan.event.MigrateVM.class, new ConstantActionDuration<>(20));
+        dev.register(MigrateVM.class, new ConstantActionDuration<>(20));
         dev.register(org.btrplace.plan.event.ForgeVM.class, new ConstantActionDuration<>(3));
         dev.register(org.btrplace.plan.event.BootVM.class, new ConstantActionDuration<>(2));
         dev.register(org.btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration<>(1));

@@ -92,7 +92,7 @@ public class CResourceCapacityTest {
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
 
-        org.btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
         rc.setConsumption(vm1, 2);
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 3);
@@ -128,7 +128,7 @@ public class CResourceCapacityTest {
                 .ready(vm5);
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
 
-        org.btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+      ShareableResource rc = new ShareableResource("cpu", 5, 5);
         rc.setConsumption(vm1, 2);
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 3);
@@ -236,7 +236,7 @@ public class CResourceCapacityTest {
 
         mo.getMapping().on(n1).run(n1, vm1, vm2);
 
-        org.btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+      ShareableResource rc = new ShareableResource("cpu", 5, 5);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 2);
 

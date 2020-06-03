@@ -52,7 +52,7 @@ public class COverbookTest {
         VM[] vms = new VM[3];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
-        org.btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
+        ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = mo.newNode();
@@ -113,9 +113,6 @@ public class COverbookTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        /*for (SatConstraint cstr : c) {
-            Assert.assertEquals(SatConstraint.Sat.SATISFIED, cstr.isSatisfied(p.getResult()));
-        } */
     }
 
     @Test
@@ -218,7 +215,7 @@ public class COverbookTest {
         Node n1 = mo.newNode();
         Mapping map = mo.getMapping().on(n1).run(n1, vm1, vm2);
 
-        org.btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         rc.setCapacity(n1, 5);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 2);

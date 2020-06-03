@@ -56,8 +56,6 @@ public class CLonelyTest {
         l.setContinuous(false);
         ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(l));
         Assert.assertNotNull(plan);
-        //System.out.println(plan);
-        //Assert.assertEquals(l.isSatisfied(plan.getResult()), SatConstraint.Sat.SATISFIED);
     }
 
     /**
@@ -122,9 +120,6 @@ public class CLonelyTest {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
