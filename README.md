@@ -67,4 +67,7 @@ If the build succeeded, the resulting jars will be automatically installed in yo
 
 
 ## Copyright ##
-Copyright (c) 2019 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
+
+Copyright (c) The BtrPlace Authors. All rights reserved. Use of this source
+code is governed by a LGPL-style license that can be found in the LICENSE.txt
+file.
