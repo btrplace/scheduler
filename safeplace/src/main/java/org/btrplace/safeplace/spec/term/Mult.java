@@ -26,22 +26,22 @@ public class Mult implements Term {
   public Object eval(Context mo, Object... args) {
     Object o1 = a.eval(mo);
     Object o2 = b.eval(mo);
-        if (o1 == null || o2 == null) {
-            return null;
-        }
-        if (o1 instanceof Integer) {
-          return o1 * o2;
-        }
-        throw new IllegalArgumentException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
+    if (o1 == null || o2 == null) {
+      return null;
     }
+    if (o1 instanceof Integer) {
+      return ((Integer) o1) * ((Integer) o2);
+    }
+    throw new IllegalArgumentException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
+  }
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
         return a.toString() + " * " + b.toString();
-    }
+  }
 
-    @Override
-    public Type type() {
-        return a.type();
-    }
+  @Override
+  public Type type() {
+    return a.type();
+  }
 }
