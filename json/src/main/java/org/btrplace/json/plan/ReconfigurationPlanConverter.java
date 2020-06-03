@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.btrplace.json.JSONs.checkKeys;
-
 /**
  * JSON converter for {@link ReconfigurationPlan}.
  * By default, the converter does not support any kind of actions or events.
@@ -88,7 +86,7 @@ public class ReconfigurationPlanConverter implements
     public ReconfigurationPlan fromJSON(JSONObject ob)
         throws JSONConverterException {
 
-        checkKeys(ob, ORIGIN_LABEL, ACTIONS_LABEL);
+        JSONs.checkKeys(ob, ORIGIN_LABEL, ACTIONS_LABEL);
         final Model m = mc.fromJSON((JSONObject) ob.get(ORIGIN_LABEL));
         final ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
         for (final JSONObject json : (List<JSONObject>) ob.get(ACTIONS_LABEL)) {
