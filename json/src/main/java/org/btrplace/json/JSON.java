@@ -152,7 +152,8 @@ public class JSON {
      */
     public static ReconfigurationPlan readReconfigurationPlan(Reader r) {
         try {
-            ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
+            ReconfigurationPlanConverter c =
+                ReconfigurationPlanConverter.newBundle();
             return c.fromJSON(r);
         } catch (JSONConverterException e) {
             throw new IllegalArgumentException(e);
@@ -183,7 +184,8 @@ public class JSON {
      */
     public static void write(ReconfigurationPlan plan, Appendable a) {
         try {
-            ReconfigurationPlanConverter c = new ReconfigurationPlanConverter();
+            ReconfigurationPlanConverter c =
+                ReconfigurationPlanConverter.newBundle();
             c.toJSON(plan).writeJSONString(a);
         } catch (IOException | JSONConverterException e) {
             throw new IllegalArgumentException(e);
