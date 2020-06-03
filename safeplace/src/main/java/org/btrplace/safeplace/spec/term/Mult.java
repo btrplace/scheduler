@@ -30,7 +30,7 @@ public class Mult implements Term {
             return null;
         }
         if (o1 instanceof Integer) {
-          return o1 * o2;
+          return (Integer) o1 * (Integer) o2;
         }
         throw new IllegalArgumentException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
     }
