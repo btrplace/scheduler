@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.btrpsl.tree;
@@ -36,20 +24,20 @@ import org.btrplace.model.view.NamingService;
  */
 public class ElementTree extends BtrPlaceTree {
 
-    private Script script;
+  private final Script script;
 
-    private NamingService<Node> namingServiceNodes;
-    private NamingService<VM> namingServiceVMs;
+  private final NamingService<Node> namingServiceNodes;
+  private final NamingService<VM> namingServiceVMs;
 
-    /**
-     * Make a new parser.
-     *
-     * @param t    the token to analyze
-     * @param nsNodes the Naming Service for the nodes
-     * @param nsVMs the Naming Service for the VMs
-     * @param scr the script we analyse
-     * @param errs the errors to report
-     */
+  /**
+   * Make a new parser.
+   *
+   * @param t       the token to analyze
+   * @param nsNodes the Naming Service for the nodes
+   * @param nsVMs   the Naming Service for the VMs
+   * @param scr     the script we analyse
+   * @param errs    the errors to report
+   */
     public ElementTree(Token t, NamingService<Node> nsNodes, NamingService<VM> nsVMs, Script scr, ErrorReporter errs) {
         super(t, errs);
         this.script = scr;
@@ -64,8 +52,8 @@ public class ElementTree extends BtrPlaceTree {
         BtrpElement btrpEl;
         switch (token.getType()) {
             case ANTLRBtrplaceSL2Parser.NODE_NAME:
-                String ref = lbl.substring(1, lbl.length());
-                el = namingServiceNodes.resolve(lbl);
+                String ref = lbl.substring(1);
+              el = namingServiceNodes.resolve(lbl);
                 if (el == null) {
                     return ignoreError("Unknown node '" + ref + "'");
                 }

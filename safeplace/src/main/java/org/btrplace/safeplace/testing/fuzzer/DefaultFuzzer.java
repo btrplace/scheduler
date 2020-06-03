@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace.testing.fuzzer;
@@ -57,15 +45,15 @@ import java.util.stream.Collectors;
  */
 public class DefaultFuzzer implements ConfigurableFuzzer {
 
-    private Random rnd;
+  private final Random rnd;
 
-    private ReconfigurationPlanFuzzer fuzzer;
+  private final ReconfigurationPlanFuzzer fuzzer;
 
-    private Validator predicates;
+  private final Validator predicates;
 
-    private Map<String, Domain<?>> doms;
+  private final Map<String, Domain<?>> doms;
 
-    private Constraint cstr;
+  private final Constraint cstr;
 
     private Set<Restriction> restrictions;
 
@@ -182,11 +170,7 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
                 return;
             }
             //Force the right one
-            if (restrictions.contains(Restriction.CONTINUOUS)) {
-                impl.setContinuous(true);
-            } else {
-                impl.setContinuous(false);
-            }
+          impl.setContinuous(restrictions.contains(Restriction.CONTINUOUS));
             return;
         }
         //Only 1 possible, go for it if allowed

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions.pack;
@@ -37,11 +25,11 @@ public class VectorPackingHeapDecorator {
     /**
      * the core BinPacking propagator
      */
-    private VectorPackingPropagator p;
+    private final VectorPackingPropagator p;
     /**
      * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
      */
-    private List<PriorityQueue<Integer>> maxSlackBinHeap;
+    private final List<PriorityQueue<Integer>> maxSlackBinHeap;
 
     private int lastWorld = -1;
     private long lastNbOfBacktracks = -1;
@@ -94,8 +82,8 @@ public class VectorPackingHeapDecorator {
      * a comparator of load slacks
      */
     static class LoadSlackComparator implements Comparator<Integer> {
-        private int dimension;
-        private VectorPackingHeapDecorator hp;
+        private final int dimension;
+        private final VectorPackingHeapDecorator hp;
 
         public LoadSlackComparator(int dim, VectorPackingHeapDecorator hp) {
             this.dimension = dim;

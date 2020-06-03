@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan;
@@ -39,23 +27,23 @@ import java.util.TreeSet;
  */
 public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
-    private Model src;
+  private final Model src;
 
-    private Set<Action> actions;
+  private final Set<Action> actions;
 
     private DependenciesExtractor depsExtractor;
 
-    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true, true);
+  private static final Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true, true);
 
     private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
-    private static Comparator<Action> sorter = (o1, o2) -> {
-        int diffStart = o1.getStart() - o2.getStart();
-        if (diffStart == 0) {
-            return o1.getEnd() - o2.getEnd();
-        }
-        return diffStart;
-    };
+  private static final Comparator<Action> sorter = (o1, o2) -> {
+    int diffStart = o1.getStart() - o2.getStart();
+    if (diffStart == 0) {
+      return o1.getEnd() - o2.getEnd();
+    }
+    return diffStart;
+  };
 
     /**
      * Make a new plan that starts from a given model.

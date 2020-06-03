@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.transition;
@@ -61,26 +49,26 @@ import org.chocosolver.solver.variables.Task;
  */
 public class RelocatableVM implements KeepRunningVM {
 
-    public static final String PREFIX = "relocatable(";
-    public static final String PREFIX_STAY = "stayRunningOn(";
-    private final VM vm;
-    private Slice cSlice;
-    private Slice dSlice;
-    private ReconfigurationProblem rp;
-    private BoolVar state;
-    private BoolVar stay;
-    private IntVar duration;
-    private IntVar start;
-    private IntVar end;
-    private IntVar bandwidth;
-    private Node src;
-    private boolean manageable = true;
-    private boolean postCopy = false;
-    private Task migrationTask;
-    /**
-     * The relocation method. 0 for migration, 1 for relocation.
-     */
-    private BoolVar doReinstantiation;
+  public static final String PREFIX = "relocatable(";
+  public static final String PREFIX_STAY = "stayRunningOn(";
+  private final VM vm;
+  private final Slice cSlice;
+  private final Slice dSlice;
+  private final ReconfigurationProblem rp;
+  private final BoolVar state;
+  private final BoolVar stay;
+  private IntVar duration;
+  private IntVar start;
+  private IntVar end;
+  private IntVar bandwidth;
+  private final Node src;
+  private boolean manageable = true;
+  private boolean postCopy = false;
+  private Task migrationTask;
+  /**
+   * The relocation method. 0 for migration, 1 for relocation.
+   */
+  private final BoolVar doReinstantiation;
 
     /**
      * Make a new model.

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace.testing.verification.spec;
@@ -57,22 +45,22 @@ import java.util.stream.Collectors;
  */
 public class ReconfigurationSimulator implements ActionVisitor {
 
-    private Context co;
+  private final Context co;
 
-    private ReconfigurationPlan p;
+  private final ReconfigurationPlan p;
 
-    private Map<Integer, List<Action>> starts;
-    private Map<Integer, List<Action>> ends;
+  private final Map<Integer, List<Action>> starts;
+  private final Map<Integer, List<Action>> ends;
 
-    private List<Integer> timeStamps;
+  private List<Integer> timeStamps;
 
-    private boolean start = false;
+  private boolean start = false;
 
-    /**
-     * Make a new simulator.
-     *
-     * @param origin the original context
-     * @param p      the plan to apply.
+  /**
+   * Make a new simulator.
+   *
+   * @param origin the original context
+   * @param p      the plan to apply.
      */
     public ReconfigurationSimulator(Context origin, ReconfigurationPlan p) {
         co = origin;

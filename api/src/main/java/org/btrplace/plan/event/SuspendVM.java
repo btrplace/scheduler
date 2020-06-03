@@ -1,25 +1,17 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan.event;
 
 
-import org.btrplace.model.*;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
+import org.btrplace.model.VMState;
 
 import java.util.Objects;
 
@@ -30,20 +22,20 @@ import java.util.Objects;
  */
 public class SuspendVM extends Action implements VMStateTransition {
 
-    private VM vm;
+  private final VM vm;
 
-    private Node src;
-    private Node dst;
+  private final Node src;
+  private final Node dst;
 
-    /**
-     * Make a new suspend action.
-     *
-     * @param v     the virtual machine to suspend
-     * @param from  The node that host the virtual machine
-     * @param to    the destination node.
-     * @param start the moment the action starts.
-     * @param end   the moment the action finish
-     */
+  /**
+   * Make a new suspend action.
+   *
+   * @param v     the virtual machine to suspend
+   * @param from  The node that host the virtual machine
+   * @param to    the destination node.
+   * @param start the moment the action starts.
+   * @param end   the moment the action finish
+   */
     public SuspendVM(VM v, Node from, Node to, int start, int end) {
         super(start, end);
         this.vm = v;

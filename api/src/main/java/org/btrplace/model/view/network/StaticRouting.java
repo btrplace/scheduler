@@ -1,26 +1,19 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.view.network;
 
 import org.btrplace.model.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Statical implementation of {@link Routing}.
@@ -34,7 +27,7 @@ import java.util.*;
  */
 public class StaticRouting extends Routing {
 
-    private Map<NodesMap, Map<Link, Boolean>> routes;
+  private final Map<NodesMap, Map<Link, Boolean>> routes;
 
     /**
      * Make a new static routing.
@@ -115,23 +108,23 @@ public class StaticRouting extends Routing {
         return clone;
     }
 
-    /**
-     * Inner class that map two nodes to ease the routing.
-     * It allows to easily compare and differentiate and the nodes pair (src, dst).
-     */
-    public static class NodesMap {
-        private Node n1;
-        private Node n2;
+  /**
+   * Inner class that map two nodes to ease the routing.
+   * It allows to easily compare and differentiate and the nodes pair (src, dst).
+   */
+  public static class NodesMap {
+    private final Node n1;
+    private final Node n2;
 
-        /**
-         * Make a new pair.
-         *
-         * @param n1 the first node
-         * @param n2 the second node
-         */
-        public NodesMap(Node n1, Node n2) {
-            this.n1 = n1;
-            this.n2 = n2;
+    /**
+     * Make a new pair.
+     *
+     * @param n1 the first node
+     * @param n2 the second node
+     */
+    public NodesMap(Node n1, Node n2) {
+      this.n1 = n1;
+      this.n2 = n2;
         }
 
         /**

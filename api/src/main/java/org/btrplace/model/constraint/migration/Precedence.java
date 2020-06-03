@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.constraint.migration;
@@ -22,7 +10,12 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A constraint to force one or more VMs to migrate before one or more other VMs.
@@ -31,18 +24,18 @@ import java.util.*;
  */
 public class Precedence implements SatConstraint {
 
-    private VM before;
-    private VM after;
+  private final VM before;
+  private final VM after;
 
-    /**
-     * Make a new precedence constraint.
-     *
-     * @param vmBefore the vm to schedule before the other one
-     * @param vmAfter  the vm to schedule after the other one
-     */
-    public Precedence(VM vmBefore, VM vmAfter) {
-        this.before = vmBefore;
-        this.after = vmAfter;
+  /**
+   * Make a new precedence constraint.
+   *
+   * @param vmBefore the vm to schedule before the other one
+   * @param vmAfter  the vm to schedule after the other one
+   */
+  public Precedence(VM vmBefore, VM vmAfter) {
+    this.before = vmBefore;
+    this.after = vmAfter;
     }
 
     @Override

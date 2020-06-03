@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan.event;
@@ -35,20 +23,20 @@ import java.util.Objects;
  */
 public class MigrateVM extends Action implements RunningVMPlacement {
 
-    private VM vm;
+  private final VM vm;
 
-    private Node src;
-    private Node dst;
+  private final Node src;
+  private final Node dst;
 
-    private int bw;
+  private int bw;
 
-    /**
-     * Make a new action.
-     *
-     * @param v         the VM to migrate
-     * @param from      the node the VM is currently running on
-     * @param to        the node where to place the VM
-     * @param start     the moment the action will consume
+  /**
+   * Make a new action.
+   *
+   * @param v         the VM to migrate
+   * @param from      the node the VM is currently running on
+   * @param to        the node where to place the VM
+   * @param start     the moment the action will consume
      * @param end       the moment the action will stop
      * @param bandwidth the reserved bandwidth in MB. {@link Integer#MAX_VALUE} for an unlimited bandwidth
      */

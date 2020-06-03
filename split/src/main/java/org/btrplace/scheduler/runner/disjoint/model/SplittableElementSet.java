@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.runner.disjoint.model;
@@ -23,7 +11,12 @@ import org.btrplace.model.Element;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A collection of supposed unique {@link Element} that can be split
@@ -39,9 +32,9 @@ import java.util.*;
  */
 public class SplittableElementSet<E extends Element> implements Comparator<E> {
 
-    private TIntIntHashMap index;
+  private final TIntIntHashMap index;
 
-    private List<E> values;
+  private final List<E> values;
 
     /**
      * Make a new splittable set.

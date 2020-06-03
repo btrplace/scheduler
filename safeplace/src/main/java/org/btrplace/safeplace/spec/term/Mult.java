@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace.spec.term;
@@ -26,23 +14,23 @@ import org.btrplace.safeplace.testing.verification.spec.Context;
  */
 public class Mult implements Term {
 
-    private Term a;
-    private Term b;
+  private final Term a;
+  private final Term b;
 
-    public Mult(Term t1, Term t2) {
-        this.a = t1;
-        this.b = t2;
-    }
+  public Mult(Term t1, Term t2) {
+    this.a = t1;
+    this.b = t2;
+  }
 
-    @Override
-    public Object eval(Context mo, Object... args) {
-        Object o1 = a.eval(mo);
-        Object o2 = b.eval(mo);
+  @Override
+  public Object eval(Context mo, Object... args) {
+    Object o1 = a.eval(mo);
+    Object o2 = b.eval(mo);
         if (o1 == null || o2 == null) {
             return null;
         }
         if (o1 instanceof Integer) {
-            return (Integer) o1 * (Integer) o2;
+          return o1 * o2;
         }
         throw new IllegalArgumentException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
     }

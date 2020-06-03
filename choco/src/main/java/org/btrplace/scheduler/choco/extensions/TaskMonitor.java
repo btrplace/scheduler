@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions;
@@ -30,19 +18,19 @@ import org.chocosolver.solver.variables.events.IEventType;
  */
 public class TaskMonitor implements IVariableMonitor<IntVar> {
 
-    private IntVar start;
-    private IntVar duration;
-    private IntVar end;
+  private final IntVar start;
+  private final IntVar duration;
+  private final IntVar end;
 
-    /**
-     * Make a new monitor.
-     *
-     * @param start    the task start moment
-     * @param duration the task duration
-     * @param end      the task end
-     */
-    private TaskMonitor(IntVar start, IntVar duration, IntVar end) {
-        this.start = start;
+  /**
+   * Make a new monitor.
+   *
+   * @param start    the task start moment
+   * @param duration the task duration
+   * @param end      the task end
+   */
+  private TaskMonitor(IntVar start, IntVar duration, IntVar end) {
+    this.start = start;
         this.duration = duration;
         this.end = end;
 

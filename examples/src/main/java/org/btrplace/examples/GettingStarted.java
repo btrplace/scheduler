@@ -1,25 +1,22 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.examples;
 
-import org.btrplace.model.*;
-import org.btrplace.model.constraint.*;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.Mapping;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
+import org.btrplace.model.constraint.Offline;
+import org.btrplace.model.constraint.Preserve;
+import org.btrplace.model.constraint.Ready;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.constraint.Spread;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.DependencyBasedPlanApplier;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -41,18 +38,18 @@ import java.util.List;
 @SuppressWarnings("squid:S106")
 public class GettingStarted implements Example {
 
-    private List<VM> vms = new ArrayList<>();
-    private List<Node> nodes = new ArrayList<>();
+  private final List<VM> vms = new ArrayList<>();
+  private final List<Node> nodes = new ArrayList<>();
 
-    /**
-     * Make a model with 4 online nodes, 6 VMs (5 running, 1 ready).
-     * Declare 2 resources.
-     */
-    private Model makeModel() {
-        Model model = new DefaultModel();
-        Mapping map = model.getMapping();
+  /**
+   * Make a model with 4 online nodes, 6 VMs (5 running, 1 ready).
+   * Declare 2 resources.
+   */
+  private Model makeModel() {
+    Model model = new DefaultModel();
+    Mapping map = model.getMapping();
 
-        //Create 4 online nodes
+    //Create 4 online nodes
         for (int i = 0; i < 4; i++) {
             Node n = model.newNode();
             nodes.add(n);

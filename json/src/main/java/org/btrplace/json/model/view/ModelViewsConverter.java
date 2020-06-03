@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.json.model.view;
@@ -37,18 +25,18 @@ import static org.btrplace.json.JSONs.checkKeys;
  */
 public class ModelViewsConverter {
 
-    private Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
-    private Map<String, ModelViewConverter<? extends ModelView>> json2java;
+  private final Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
+  private final Map<String, ModelViewConverter<? extends ModelView>> json2java;
 
-    /**
-     * Make a new empty converter.
-     */
-    public ModelViewsConverter() {
-        java2json = new HashMap<>();
-        json2java = new HashMap<>();
-    }
+  /**
+   * Make a new empty converter.
+   */
+  public ModelViewsConverter() {
+    java2json = new HashMap<>();
+    json2java = new HashMap<>();
+  }
 
-    /**
+  /**
      * Make a new {@code ModelViewsConverter} and fulfill it using converters for the following decorators:
      * <ul>
      * <li>{@link org.btrplace.json.model.view.ShareableResourceConverter}</li>

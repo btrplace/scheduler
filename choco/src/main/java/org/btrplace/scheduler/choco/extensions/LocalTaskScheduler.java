@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions;
@@ -37,60 +25,60 @@ import java.util.BitSet;
  */
 public class LocalTaskScheduler {
 
-  private static int DEBUG = -3;
-    public static final int NO_ASSOCIATIONS = -1;
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
-    private int me;
-    /**
-     * out[i] = true <=> the consuming slice i will leave me.
-     */
-    private BitSet out;
+  private static final int DEBUG = -3;
+  public static final int NO_ASSOCIATIONS = -1;
+  private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+  private final int me;
+  /**
+   * out[i] = true <=> the consuming slice i will leave me.
+   */
+  private final BitSet out;
 
-    //The indexes of the slices that will leave me
-    private int[] outIdx;
-    /**
-     * The moment the consuming slices ends. Same order as the hosting variables.
-     */
-    private IntVar[] cEnds;
-    private IStateIntVector vIn;
-    private IStateInt vInSize;
-    private final IntVar[] cHosters;
+  //The indexes of the slices that will leave me
+  private final int[] outIdx;
+  /**
+   * The moment the consuming slices ends. Same order as the hosting variables.
+   */
+  private final IntVar[] cEnds;
+  private final IStateIntVector vIn;
+  private final IStateInt vInSize;
+  private final IntVar[] cHosters;
 
-    /*
-     * The moment the demanding slices ends. Same order as the hosting variables.
-     */
-    private IntVar[] dStarts;
-    private final IntVar[] dHosters;
+  /*
+   * The moment the demanding slices ends. Same order as the hosting variables.
+   */
+  private final IntVar[] dStarts;
+  private final IntVar[] dHosters;
 
-    private int[] startupFree;
+  private final int[] startupFree;
 
-    private int[] associateCTask;
-    private int[] associateDTask;
-    private int[] sortedMinProfile;
+  private final int[] associateCTask;
+  private final int[] associateDTask;
+  private int[] sortedMinProfile;
 
-    private TIntIntHashMap[] profilesMin;
+  private final TIntIntHashMap[] profilesMin;
 
-    private TIntIntHashMap[] profilesMax;
+  private final TIntIntHashMap[] profilesMax;
 
-    private int[] sortedMaxProfile;
+  private int[] sortedMaxProfile;
 
-    private int[][] capacities;
+  private final int[][] capacities;
 
-    private int[][] cUsages;
+    private final int[][] cUsages;
 
-    private int[][] dUsages;
+  private final int[][] dUsages;
 
-    private int nbDims;
+  private final int nbDims;
 
-    private IntVar early;
+  private final IntVar early;
 
-    private IntVar last;
+  private final IntVar last;
 
-    private Propagator<?> aCause;
+  private final Propagator<?> aCause;
 
-    private IStateBool entailed;
+  private final IStateBool entailed;
 
-    public LocalTaskScheduler(int me,
+  public LocalTaskScheduler(int me,
                               IntVar early,
                               IntVar last,
                               int[][] capacities,

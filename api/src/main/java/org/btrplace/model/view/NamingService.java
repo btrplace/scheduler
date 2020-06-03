@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.view;
@@ -37,8 +25,8 @@ import java.util.StringJoiner;
  */
 public final class NamingService<E extends Element> implements ModelView {
 
-    private Map<String, E> resolve;
-    private Map<E, String> rev;
+    private final Map<String, E> resolve;
+    private final Map<E, String> rev;
 
     /**
      * The root view identifier.
@@ -46,7 +34,7 @@ public final class NamingService<E extends Element> implements ModelView {
      */
     public static final String ID = "btrpsl.ns.";
 
-    private String elemId;
+    private final String elemId;
 
     /**
      * Make a new service.

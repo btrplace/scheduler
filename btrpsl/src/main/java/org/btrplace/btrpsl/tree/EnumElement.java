@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.btrpsl.tree;
@@ -21,7 +9,11 @@ package org.btrplace.btrpsl.tree;
 import org.antlr.runtime.Token;
 import org.btrplace.btrpsl.ErrorReporter;
 import org.btrplace.btrpsl.Script;
-import org.btrplace.btrpsl.element.*;
+import org.btrplace.btrpsl.element.BtrpElement;
+import org.btrplace.btrpsl.element.BtrpOperand;
+import org.btrplace.btrpsl.element.BtrpSet;
+import org.btrplace.btrpsl.element.BtrpString;
+import org.btrplace.btrpsl.element.IgnorableOperand;
 import org.btrplace.model.Element;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
@@ -34,13 +26,13 @@ import org.btrplace.model.view.NamingService;
  */
 public class EnumElement extends BtrPlaceTree {
 
-    private BtrpOperand.Type type;
+  private final BtrpOperand.Type type;
 
-    private Script script;
+  private final Script script;
 
-    private NamingService<Node> namingServiceNodes;
+  private final NamingService<Node> namingServiceNodes;
 
-    private NamingService<VM> namingServiceVMs;
+  private final NamingService<VM> namingServiceVMs;
 
     /**
      * Make a new tree.

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan;
@@ -22,7 +10,19 @@ import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.Util;
 import org.btrplace.model.VM;
-import org.btrplace.plan.event.*;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.AllocateEvent;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.EventCommittedListener;
+import org.btrplace.plan.event.ForgeVM;
+import org.btrplace.plan.event.KillVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SubstitutedVMEvent;
+import org.btrplace.plan.event.SuspendVM;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -30,7 +30,10 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link DefaultPlanApplier}.

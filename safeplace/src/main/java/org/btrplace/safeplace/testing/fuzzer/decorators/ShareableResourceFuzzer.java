@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace.testing.fuzzer.decorators;
@@ -23,7 +11,12 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.*;
+import org.btrplace.plan.event.Action;
+import org.btrplace.plan.event.Allocate;
+import org.btrplace.plan.event.AllocateEvent;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.RunningVMPlacement;
+import org.btrplace.plan.event.VMEvent;
 
 import java.util.Random;
 import java.util.Set;
@@ -34,24 +27,24 @@ import java.util.stream.Collectors;
  */
 public class ShareableResourceFuzzer implements FuzzerDecorator {
 
-    private String id;
+  private final String id;
 
-    private Random rnd;
+  private final Random rnd;
 
-    private int minCons;
-    private int maxCons;
-    private int minCapa;
-    private int maxCapa;
+  private final int minCons;
+  private final int maxCons;
+  private final int minCapa;
+  private final int maxCapa;
 
-    private double variability = 0.5;
+  private double variability = 0.5;
 
-    public ShareableResourceFuzzer(String rc, int minCons, int maxCons, int minCapa, int maxCapa) {
-        id = rc;
-        rnd = new Random();
-        this.minCons = minCons;
-        this.minCapa = minCapa;
-        this.maxCapa = maxCapa;
-        this.maxCons = maxCons;
+  public ShareableResourceFuzzer(String rc, int minCons, int maxCons, int minCapa, int maxCapa) {
+    id = rc;
+    rnd = new Random();
+    this.minCons = minCons;
+    this.minCapa = minCapa;
+    this.maxCapa = maxCapa;
+    this.maxCons = maxCons;
     }
 
     public ShareableResourceFuzzer variability(double v) {

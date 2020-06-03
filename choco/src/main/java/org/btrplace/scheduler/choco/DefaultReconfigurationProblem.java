@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco;
@@ -88,17 +76,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
     private boolean useLabels = false;
     private IntVar objective;
-    private Model model;
+    private final Model model;
 
-    private Solver solver;
-    private org.chocosolver.solver.Model csp;
+    private final Solver solver;
+    private final org.chocosolver.solver.Model csp;
 
-    private Set<VM> ready;
-    private Set<VM> running;
-    private Set<VM> sleeping;
-    private Set<VM> killed;
+    private final Set<VM> ready;
+    private final Set<VM> running;
+    private final Set<VM> sleeping;
+    private final Set<VM> killed;
 
-    private Set<VM> manageable;
+    private final Set<VM> manageable;
 
     private List<VM> vms;
     private TObjectIntHashMap<VM> revVMs;
@@ -106,26 +94,26 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private List<Node> nodes;
     private TObjectIntHashMap<Node> revNodes;
 
-    private IntVar start;
-    private IntVar end;
+    private final IntVar start;
+    private final IntVar end;
 
     private List<VMTransition> vmActions;
     private List<NodeTransition> nodeActions;
 
-    private DurationEvaluators durEval;
+    private final DurationEvaluators durEval;
 
     private List<IntVar> vmsCountOnNodes;
 
 
     private ResolutionPolicy solvingPolicy;
 
-    private TransitionFactory amFactory;
+    private final TransitionFactory amFactory;
 
-    private Map<String, ChocoView> coreViews;
+    private final Map<String, ChocoView> coreViews;
 
-    private List<Solution> solutions;
+    private final List<Solution> solutions;
 
-    private StopButton stopButton;
+    private final StopButton stopButton;
 
     /**
      * Make a new RP where the next state for every VM is indicated.

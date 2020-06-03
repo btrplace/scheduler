@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.btrpsl.tree;
@@ -41,19 +29,19 @@ import java.util.List;
  */
 public class ImportStatement extends BtrPlaceTree {
 
-    /**
-     * The list of available includes.
-     */
-    private Includes includes;
+  /**
+   * The list of available includes.
+   */
+  private final Includes includes;
 
     /**
      * The symbol table to fulfil.
      */
-    private SymbolsTable symTable;
+    private final SymbolsTable symTable;
 
-    private Script script;
+  private final Script script;
 
-    /**
+  /**
      * Make a new statement
      *
      * @param t      the 'IMPORT' token
@@ -90,7 +78,7 @@ public class ImportStatement extends BtrPlaceTree {
             script.getDependencies().addAll(res);
         } catch (ScriptBuilderException e) {
             int nb = e.getErrorReporter().getErrors().size();
-            return ignoreError(Integer.toString(nb) + " error(s) imported through '" + id + "'");
+            return ignoreError(nb + " error(s) imported through '" + id + "'");
         }
         if (res.isEmpty()) {
             return ignoreError(getChild(0).getToken(), "Unable to locate '" + id + "'");

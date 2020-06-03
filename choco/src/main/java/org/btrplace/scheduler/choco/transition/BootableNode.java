@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.transition;
@@ -77,24 +65,24 @@ import org.chocosolver.solver.variables.IntVar;
  */
 public class BootableNode implements NodeTransition {
 
-    public static final String PREFIX = "bootableNode(";
-    private IntVar start;
-    private IntVar end;
-    private BoolVar isOnline;
-    private IntVar hostingStart;
-    private IntVar hostingEnd;
-    private IntVar effectiveDuration;
-    private Node node;
+  public static final String PREFIX = "bootableNode(";
+  private final IntVar start;
+  private final IntVar end;
+  private final BoolVar isOnline;
+  private final IntVar hostingStart;
+  private final IntVar hostingEnd;
+  private final IntVar effectiveDuration;
+  private final Node node;
 
-    /**
-     * Make a new model.
-     *
-     * @param rp  the RP to use as a basis.
-     * @param nId the node managed by the action
-     * @throws org.btrplace.scheduler.SchedulerException if an error occurred
-     */
-    public BootableNode(ReconfigurationProblem rp, Node nId) throws SchedulerException {
-        node = nId;
+  /**
+   * Make a new model.
+   *
+   * @param rp  the RP to use as a basis.
+   * @param nId the node managed by the action
+   * @throws org.btrplace.scheduler.SchedulerException if an error occurred
+   */
+  public BootableNode(ReconfigurationProblem rp, Node nId) throws SchedulerException {
+    node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
         Model csp = rp.getModel();

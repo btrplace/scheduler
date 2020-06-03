@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model;
@@ -21,7 +9,11 @@ package org.btrplace.model;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * An instance aggregates a model and a list of constraints.
@@ -30,11 +22,11 @@ import java.util.*;
  */
 public class Instance {
 
-    private Model mo;
+  private final Model mo;
 
-    private List<SatConstraint> cstrs;
+  private final List<SatConstraint> cstrs;
 
-    private OptConstraint opt;
+  private final OptConstraint opt;
 
     /**
      * Make a new instance.

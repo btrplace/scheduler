@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.constraint.migration;
@@ -31,7 +19,11 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.migration.Serialize} constraint.
@@ -40,12 +32,12 @@ import java.util.*;
  */
 public class CSerialize implements ChocoConstraint {
 
-    private Serialize ser;
+    private final Serialize ser;
 
     /**
      * The list of VMs to serialize.
      */
-    private List<RelocatableVM> migrationList;
+    private final List<RelocatableVM> migrationList;
 
     /**
      * Make a new constraint.

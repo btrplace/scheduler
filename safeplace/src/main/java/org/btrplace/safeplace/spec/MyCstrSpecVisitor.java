@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace.spec;
@@ -24,12 +12,50 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.btrplace.safeplace.spec.antlr.CstrSpecBaseVisitor;
 import org.btrplace.safeplace.spec.antlr.CstrSpecParser;
-import org.btrplace.safeplace.spec.prop.*;
-import org.btrplace.safeplace.spec.term.*;
+import org.btrplace.safeplace.spec.prop.And;
+import org.btrplace.safeplace.spec.prop.Eq;
+import org.btrplace.safeplace.spec.prop.Exists;
+import org.btrplace.safeplace.spec.prop.ForAll;
+import org.btrplace.safeplace.spec.prop.Iff;
+import org.btrplace.safeplace.spec.prop.Implies;
+import org.btrplace.safeplace.spec.prop.In;
+import org.btrplace.safeplace.spec.prop.Inc;
+import org.btrplace.safeplace.spec.prop.Leq;
+import org.btrplace.safeplace.spec.prop.Lt;
+import org.btrplace.safeplace.spec.prop.NEq;
+import org.btrplace.safeplace.spec.prop.NIn;
+import org.btrplace.safeplace.spec.prop.NInc;
+import org.btrplace.safeplace.spec.prop.NoPackings;
+import org.btrplace.safeplace.spec.prop.Or;
+import org.btrplace.safeplace.spec.prop.Packings;
+import org.btrplace.safeplace.spec.prop.Proposition;
+import org.btrplace.safeplace.spec.prop.ProtectedProposition;
+import org.btrplace.safeplace.spec.term.Constant;
+import org.btrplace.safeplace.spec.term.ConstraintCall;
+import org.btrplace.safeplace.spec.term.ExplodedSet;
+import org.btrplace.safeplace.spec.term.IntMinus;
+import org.btrplace.safeplace.spec.term.IntPlus;
+import org.btrplace.safeplace.spec.term.ListBuilder;
+import org.btrplace.safeplace.spec.term.Mult;
+import org.btrplace.safeplace.spec.term.ProtectedTerm;
+import org.btrplace.safeplace.spec.term.SetBuilder;
+import org.btrplace.safeplace.spec.term.SetMinus;
+import org.btrplace.safeplace.spec.term.SetPlus;
+import org.btrplace.safeplace.spec.term.Term;
+import org.btrplace.safeplace.spec.term.UserVar;
+import org.btrplace.safeplace.spec.term.Var;
 import org.btrplace.safeplace.spec.term.func.Function;
 import org.btrplace.safeplace.spec.term.func.FunctionCall;
 import org.btrplace.safeplace.spec.term.func.ValueAt;
-import org.btrplace.safeplace.spec.type.*;
+import org.btrplace.safeplace.spec.type.Atomic;
+import org.btrplace.safeplace.spec.type.BoolType;
+import org.btrplace.safeplace.spec.type.IntType;
+import org.btrplace.safeplace.spec.type.ListType;
+import org.btrplace.safeplace.spec.type.NodeStateType;
+import org.btrplace.safeplace.spec.type.SetType;
+import org.btrplace.safeplace.spec.type.StringType;
+import org.btrplace.safeplace.spec.type.Type;
+import org.btrplace.safeplace.spec.type.VMStateType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -279,7 +305,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     @Override
     public Constant visitStringTerm(@NotNull CstrSpecParser.StringTermContext ctx) {
         String txt = ctx.STRING().getText();
-        return StringType.getInstance().parse(txt.substring(1, txt.length()));
+        return StringType.getInstance().parse(txt.substring(1));
     }
 
     private void assertEqualsTypes(Token to, Type expected, Type... got) {

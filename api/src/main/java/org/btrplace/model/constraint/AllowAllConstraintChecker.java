@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.constraint;
@@ -21,9 +9,25 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.plan.event.*;
+import org.btrplace.plan.event.Allocate;
+import org.btrplace.plan.event.AllocateEvent;
+import org.btrplace.plan.event.BootNode;
+import org.btrplace.plan.event.BootVM;
+import org.btrplace.plan.event.ForgeVM;
+import org.btrplace.plan.event.KillVM;
+import org.btrplace.plan.event.MigrateVM;
+import org.btrplace.plan.event.ResumeVM;
+import org.btrplace.plan.event.RunningVMPlacement;
+import org.btrplace.plan.event.ShutdownNode;
+import org.btrplace.plan.event.ShutdownVM;
+import org.btrplace.plan.event.SubstitutedVMEvent;
+import org.btrplace.plan.event.SuspendVM;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A default constraint checker that allow every action and event.
@@ -35,22 +39,22 @@ import java.util.*;
  */
 public class AllowAllConstraintChecker<C extends SatConstraint> implements SatConstraintChecker<C> {
 
-    /**
-     * VMs involved in the constraint.
-     * Updated after each {@link SubstitutedVMEvent} event.
-     */
-    private Set<VM> vms;
+  /**
+   * VMs involved in the constraint.
+   * Updated after each {@link SubstitutedVMEvent} event.
+   */
+  private final Set<VM> vms;
 
     /**
      * Nodes involved in the constraint.
      */
-    private Set<Node> nodes;
+    private final Set<Node> nodes;
 
-    private C cstr;
+  private final C cstr;
 
-    private List<Collection<VM>> tracked;
+  private final List<Collection<VM>> tracked;
 
-    /**
+  /**
      * Make a new checker.
      *
      * @param c the constraint associated to the checker.

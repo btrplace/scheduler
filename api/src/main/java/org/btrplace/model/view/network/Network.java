@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.view.network;
@@ -37,14 +25,14 @@ import java.util.stream.Collectors;
  * A network view that allows to create switches and connect them to nodes or together using links.
  * It contains the mapping between connected physical elements and allows to retrieve a full path
  * between two nodes through a specific routing implementation {@link Routing#getPath(Node, Node)}
- * 
+ *
  * @author Vincent Kherbache
  * @see Routing#getPath(Node, Node)
  */
 public class Network implements ModelView {
 
-    private List<Switch> switches;
-    private List<Link> links;
+    private final List<Switch> switches;
+    private final List<Link> links;
     private Routing routing;
     private SwitchBuilder swBuilder;
     private LinkBuilder lnBuilder;

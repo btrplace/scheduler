@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions;
@@ -71,36 +59,36 @@ public class AliasedCumulatives extends Constraint {
 
     static class AliasedCumulativesPropagator extends Propagator<IntVar> {
 
-        private AliasedCumulativesFiltering resource;
+      private final AliasedCumulativesFiltering resource;
 
-        private IntVar[] cHosters;
+      private final IntVar[] cHosters;
 
-        private IntVar[] cEnds;
+      private final IntVar[] cEnds;
 
-        private IntVar[] dHosters;
+      private final IntVar[] dHosters;
 
-        private IntVar[] dStarts;
+      private final IntVar[] dStarts;
 
-        private int nbDims;
+      private final int nbDims;
 
-        private int[] capacities;
+      private final int[] capacities;
 
-        private int[][] cUsages;
+      private final int[][] cUsages;
 
-        private int[][] dUsages;
+      private final int[][] dUsages;
 
-        private IStateIntVector vIns;
+      private final IStateIntVector vIns;
 
-        private IStateInt vInsSize;
-        /**
-         * 0 [0,1,2,4]
-         * 1 [0,1,2,4]
-         * 2 [2]
-         * 3 [3,5]
-         * 4 [0,1,2,4]
-         * 5 [3,5]
-         */
-        private TIntHashSet alias;
+      private final IStateInt vInsSize;
+      /**
+       * 0 [0,1,2,4]
+       * 1 [0,1,2,4]
+       * 2 [2]
+       * 3 [3,5]
+       * 4 [0,1,2,4]
+       * 5 [3,5]
+       */
+      private final TIntHashSet alias;
 
         private IStateInt toInstantiate;
 

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions.pack;
@@ -99,25 +87,25 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     protected String[] name;
 
-    /**
-     * Must the sumLoads be recompute since the last propagation ?
-     */
-    private IStateBool loadsHaveChanged;
-    /**
-     * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
-     */
-    private VectorPackingHeapDecorator decoHeap;
-    private KnapsackDecorator decoKPSimple;
+  /**
+   * Must the sumLoads be recompute since the last propagation ?
+   */
+  private IStateBool loadsHaveChanged;
+  /**
+   * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
+   */
+  private final VectorPackingHeapDecorator decoHeap;
+  private final KnapsackDecorator decoKPSimple;
 
-    /**
-     * constructor of the VectorPacking global constraint
-     *
-     * @param labels   the label describing each dimension [nbDims]
-     * @param l        array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param s        array of nbDims x nbItems, each figuring the item size.
-     * @param b        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
-     */
-    public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
+  /**
+   * constructor of the VectorPacking global constraint
+   *
+   * @param labels the label describing each dimension [nbDims]
+   * @param l      array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+   * @param s      array of nbDims x nbItems, each figuring the item size.
+   * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+   */
+  public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
         this.name = labels;
         this.loads = l;

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.view.network;
@@ -24,29 +12,29 @@ import java.util.List;
 
 /**
  * Model a link that connects a {@link Switch} to a {@link PhysicalElement} (links between two nodes are not supported).
- * 
+ *
  * A link should not be instantiated directly. Typically, new links are automatically created by connecting
  * PhysicalElement together, see {@link Network#connect(int, Switch, org.btrplace.model.PhysicalElement)}
- * 
+ *
  * @author Vincent Kherbache
  * @see Network#connect(int, Switch, org.btrplace.model.PhysicalElement)
  */
 public class Link implements NetworkElement {
 
-    private int id;
-    private int capacity;
-    private Switch sw;
-    private PhysicalElement pe;
+  private final int id;
+  private final int capacity;
+  private final Switch sw;
+  private final PhysicalElement pe;
 
-    /**
-     * Make a new Link.
-     * Should not be used directly.
-     *
-     * @param id        the link identifier, avoid duplicate
-     * @param capacity  the link maximal capacity (or bandwidth)
-     * @param sw        the switch to connect
-     * @param pe        the physical element to connect
-     *
+  /**
+   * Make a new Link.
+   * Should not be used directly.
+   *
+   * @param id        the link identifier, avoid duplicate
+   * @param capacity  the link maximal capacity (or bandwidth)
+   * @param sw        the switch to connect
+   * @param pe        the physical element to connect
+   *
      * @see Network#connect(int, Switch, List)
      */
     public Link(int id, int capacity, Switch sw, PhysicalElement pe) {

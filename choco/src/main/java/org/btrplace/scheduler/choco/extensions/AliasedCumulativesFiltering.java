@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions;
@@ -38,67 +26,67 @@ public class AliasedCumulativesFiltering {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
-    /**
-     * out[i] = true <=> the consuming slice i will leave me.
-     */
-    private BitSet out;
+  /**
+   * out[i] = true <=> the consuming slice i will leave me.
+   */
+  private final BitSet out;
 
     /**
      * The moment the consuming slices ends. Same order as the hosting variables.
      */
-    private IntVar[] cEnds;
+    private final IntVar[] cEnds;
 
-    private IStateIntVector vIn;
+  private final IStateIntVector vIn;
 
-    /**
-     * As choco 4.0.5 no longer provide the vector size.
-     */
-    private IStateInt vInSize;
+  /**
+   * As choco 4.0.5 no longer provide the vector size.
+   */
+  private final IStateInt vInSize;
 
-    /*
-     * The moment the demanding slices ends. Same order as the hosting variables.
-     */
-    private IntVar[] dStarts;
+  /*
+   * The moment the demanding slices ends. Same order as the hosting variables.
+   */
+  private final IntVar[] dStarts;
 
-    private int[] startupFree;
+  private final int[] startupFree;
 
-    private static final boolean DEBUG = true;
+  private static final boolean DEBUG = true;
 
-    private int[] associations;
+    private final int[] associations;
 
-    private int[] revAssociations;
+  private final int[] revAssociations;
 
-    public static final int NO_ASSOCIATIONS = -1;
+  public static final int NO_ASSOCIATIONS = -1;
 
     private int[] sortedMinProfile;
 
-    private TIntIntHashMap[] profilesMin;
+    private final TIntIntHashMap[] profilesMin;
 
-    private TIntIntHashMap[] profilesMax;
+  private final TIntIntHashMap[] profilesMax;
 
-    private int[] sortedMaxProfile;
+  private int[] sortedMaxProfile;
 
     /**
      * LB of the moment the last c-slice leaves.
      */
-    private IStateInt lastCendInf;
+    private final IStateInt lastCendInf;
 
-    /**
-     * UB of the moment the last c-slice leaves.
-     */
-    private IStateInt lastCendSup;
+  /**
+   * UB of the moment the last c-slice leaves.
+   */
+  private final IStateInt lastCendSup;
 
-    private int[] capacities;
+  private final int[] capacities;
 
-    private int[][] cUsages;
+  private final int[][] cUsages;
 
-    private int[][] dUsages;
+  private final int[][] dUsages;
 
-    private int nbDims = 0;
+  private int nbDims = 0;
 
-    private ICause aCause;
+    private final ICause aCause;
 
-    public AliasedCumulativesFiltering(int[] capacities,
+  public AliasedCumulativesFiltering(int[] capacities,
                                        int[][] cUsages,
                                        IntVar[] cEnds,
                                        BitSet outs,

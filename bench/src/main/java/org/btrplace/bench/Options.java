@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.bench;
@@ -45,8 +33,8 @@ public class Options {
     @Option(name = "-m", aliases = "--optimize", usage = "Enable the 'optimize' feature")
     private boolean optimize;
 
-    @Option(name = "-t", aliases = "--timeout", usage = "Set a timeout (in sec)")
-    private int timeout = 0;
+  @Option(name = "-t", aliases = "--timeout", usage = "Set a timeout (in sec)")
+  private final int timeout = 0;
 
     @Option(name = "-i", aliases = "--instance", usage = "An instance  ('.json' or '.json.gz')", forbids = {"-l"})
     private String instance;
@@ -54,15 +42,15 @@ public class Options {
     @Option(name = "-l", aliases = "--list", usage = "a list of instance files (one path per line)", forbids = {"-i"})
     private String instances;
 
-    @Option(name = "-o", aliases = "--output", usage = "Output folder where the CSV and the plans are stored", depends = {"-l"})
-    private String output = "./";
+  @Option(name = "-o", aliases = "--output", usage = "Output folder where the CSV and the plans are stored", depends = {"-l"})
+  private final String output = "./";
 
-    @Option(name = "-c", aliases = "--chunked", usage = "Use the chunked memory environment (false by default)")
-    private boolean chunk = false;
+  @Option(name = "-c", aliases = "--chunked", usage = "Use the chunked memory environment (false by default)")
+  private final boolean chunk = false;
 
 
-    @Option(name = "-v", usage = "Set the verbosity level. With '-i' it controls the solver verbosity. With '-l' the bench progress")
-    private int verbosity = 0;
+  @Option(name = "-v", usage = "Set the verbosity level. With '-i' it controls the solver verbosity. With '-l' the bench progress")
+  private final int verbosity = 0;
 
     /**
      * Get the parameters from the options.

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace;
@@ -43,7 +31,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -321,7 +313,7 @@ public class DSN {
 
     private static class FunctionVisitor extends VoidVisitorAdapter<Void> {
 
-        private List<Integer> l;
+      private final List<Integer> l;
 
         FunctionVisitor(List<Integer> numbers) {
             this.l = numbers;
@@ -338,9 +330,9 @@ public class DSN {
 
     private static class UnitTestsVisitor extends VoidVisitorAdapter<Void> {
 
-        private List<Integer> l;
-        
-        private PrettyPrinterConfiguration noComments = new PrettyPrinterConfiguration().setPrintComments(false);
+      private final List<Integer> l;
+
+      private final PrettyPrinterConfiguration noComments = new PrettyPrinterConfiguration().setPrintComments(false);
 
         UnitTestsVisitor(List<Integer> numbers) {
             this.l = numbers;
@@ -358,7 +350,7 @@ public class DSN {
 
     private static class SafeplaceTestsVisitor extends VoidVisitorAdapter<Void> {
 
-        private List<Integer> l;
+      private final List<Integer> l;
 
         SafeplaceTestsVisitor(List<Integer> numbers) {
             this.l = numbers;

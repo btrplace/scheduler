@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.safeplace.spec.term;
@@ -35,19 +23,19 @@ import java.util.List;
  */
 public class ListBuilder<T> implements Term<List<T>> {
 
-    private Proposition p;
+  private final Proposition p;
 
-    private UserVar<?> v;
-    private Term<T> t;
+  private final UserVar<?> v;
+  private final Term<T> t;
 
-    private Type type;
+  private final Type type;
 
-    public ListBuilder(Term<T> t, UserVar<?> v, Proposition p) {
-        this.p = p;
-        this.t = t;
-        this.v = v;
-        type = new ListType(t.type());
-    }
+  public ListBuilder(Term<T> t, UserVar<?> v, Proposition p) {
+    this.p = p;
+    this.t = t;
+    this.v = v;
+    type = new ListType(t.type());
+  }
 
     @Override
     public Type type() {

@@ -1,24 +1,18 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.runner.disjoint.model;
 
-import org.btrplace.model.*;
+import org.btrplace.model.Attributes;
+import org.btrplace.model.DefaultModel;
+import org.btrplace.model.ElementBuilder;
+import org.btrplace.model.MappingUtils;
+import org.btrplace.model.Model;
+import org.btrplace.model.Node;
+import org.btrplace.model.VM;
 import org.btrplace.model.view.ModelView;
 
 import java.util.Collection;
@@ -41,13 +35,13 @@ import java.util.Set;
  */
 public class SubModel implements Model {
 
-    private Model parent;
+  private final Model parent;
 
-    private Collection<Node> scope;
+  private final Collection<Node> scope;
 
-    private SubMapping sm;
+  private final SubMapping sm;
 
-    private ElementBuilder eb;
+  private final ElementBuilder eb;
 
     /**
      * Make a new sub-model with an empty scope for ready VMs.

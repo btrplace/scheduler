@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2017 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.transition;
@@ -37,22 +25,23 @@ import org.chocosolver.solver.variables.IntVar;
  */
 public class StayAwayVM implements VMTransition {
 
-    private VM vm;
+  private final VM vm;
 
-    private BoolVar zero;
+  private final BoolVar zero;
 
-    private VMState from;
-    private VMState to;
-    /**
-     * Make a new model.
-     *
-     * @param from the VM initial state
-     * @param to the VM next state
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
-     */
-    public StayAwayVM(VMState from, VMState to, ReconfigurationProblem rp, VM e) {
-        vm = e;
+  private final VMState from;
+  private final VMState to;
+
+  /**
+   * Make a new model.
+   *
+   * @param from the VM initial state
+   * @param to   the VM next state
+   * @param rp   the RP to use as a basis.
+   * @param e    the VM managed by the action
+   */
+  public StayAwayVM(VMState from, VMState to, ReconfigurationProblem rp, VM e) {
+    vm = e;
         this.from = from;
         this.to = to;
         zero = rp.getModel().boolVar(false);

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.btrpsl;
@@ -24,7 +12,14 @@ import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A btrplace script that contains the declaration of VMs, nodes, and constraints.
@@ -33,11 +28,11 @@ import java.util.*;
  */
 public class Script {
 
-    private Set<VM> vms;
+    private final Set<VM> vms;
 
-    private Set<Node> nodes;
+    private final Set<Node> nodes;
 
-    private List<Script> dependencies;
+    private final List<Script> dependencies;
 
     /**
      * The identifier of the script.
@@ -47,7 +42,7 @@ public class Script {
     /**
      * the list of placement constraints.
      */
-    private Set<SatConstraint> cstrs;
+    private final Set<SatConstraint> cstrs;
 
     /**
      * Default file extension for script.
@@ -57,7 +52,7 @@ public class Script {
     /**
      * The list of exported operand.
      */
-    private Map<String, BtrpOperand> exported;
+    private final Map<String, BtrpOperand> exported;
 
     /**
      * The limitations of the exported operands.
@@ -65,7 +60,7 @@ public class Script {
      * with a *; the beginning of the namespace as to be used to
      * match.
      */
-    private Map<String, Set<String>> exportScopes;
+    private final Map<String, Set<String>> exportScopes;
 
     /**
      * Make a new script with a given identifier.
@@ -107,7 +102,7 @@ public class Script {
      */
     public String getlocalName() {
         if (fqn.contains(".")) {
-            return this.fqn.substring(fqn.lastIndexOf('.') + 1, this.fqn.length());
+            return this.fqn.substring(fqn.lastIndexOf('.') + 1);
         }
         return fqn;
     }

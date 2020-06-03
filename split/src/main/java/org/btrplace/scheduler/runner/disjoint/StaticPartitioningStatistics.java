@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.runner.disjoint;
@@ -35,31 +23,31 @@ import java.util.List;
  */
 public class StaticPartitioningStatistics implements SolvingStatistics {
 
-    private List<SolvingStatistics> partResults;
+  private final List<SolvingStatistics> partResults;
 
-    private int nbWorkers;
-    private int nbPartitions;
-    private long splitDuration;
-    private long solvingDuration;
-    private int managed = 0;
+  private final int nbWorkers;
+  private int nbPartitions;
+  private long splitDuration;
+  private long solvingDuration;
+  private final int managed = 0;
 
-    private Instance instance;
-    private Parameters params;
-    private long start;
-    private boolean completed = false;
+  private final Instance instance;
+  private final Parameters params;
+  private final long start;
+  private final boolean completed = false;
 
-    private long core = -1;
-    private long spe = -1;
+  private final long core = -1;
+  private final long spe = -1;
 
-    /**
-     * Make the statistics.
-     *
-     * @param ps the scheduler parameters
-     * @param i the instance to solve;
-     * @param st      the moment the computation starts (epoch format)
-     * @param w       the number of workers to solve the partitions in parallel
-     */
-    public StaticPartitioningStatistics(Parameters ps, Instance i, long st, int w) {
+  /**
+   * Make the statistics.
+   *
+   * @param ps the scheduler parameters
+   * @param i  the instance to solve;
+   * @param st the moment the computation starts (epoch format)
+   * @param w  the number of workers to solve the partitions in parallel
+   */
+  public StaticPartitioningStatistics(Parameters ps, Instance i, long st, int w) {
         instance = i;
         params = ps;
         start = st;

@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2016 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.constraint;
@@ -21,7 +9,11 @@ package org.btrplace.model.constraint;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
@@ -41,17 +33,17 @@ import java.util.*;
 @SideConstraint(args = {"vs <<: vms", "part <<: nodes"}, inv = "(!(v : vs) Among(v, part)) & Split(vs)")
 public class SplitAmong extends SimpleConstraint {
 
-    /**
-     * Set of set of vms.
-     */
-    private Collection<Collection<VM>> vGroups;
+  /**
+   * Set of set of vms.
+   */
+  private final Collection<Collection<VM>> vGroups;
 
     /**
      * Set of set of nodes.
      */
-    private Collection<Collection<Node>> pGroups;
+    private final Collection<Collection<Node>> pGroups;
 
-    /**
+  /**
      * Make a new constraint having a discrete restriction.
      *
      * @param vParts the disjoint sets of VMs

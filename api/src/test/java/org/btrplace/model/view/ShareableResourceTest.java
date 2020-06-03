@@ -1,19 +1,7 @@
 /*
- * Copyright (c) 2019 University Nice Sophia Antipolis
- *
- * This file is part of btrplace.
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Use of this source code is governed by a LGPL-style
+ * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.view;
@@ -37,19 +25,19 @@ import java.util.Set;
  */
 public class ShareableResourceTest {
 
-    private static Model mo = new DefaultModel();
-    private static List<VM> vms = Util.newVMs(mo, 10);
-    private static List<Node> nodes = Util.newNodes(mo, 10);
+  private static final Model mo = new DefaultModel();
+  private static final List<VM> vms = Util.newVMs(mo, 10);
+  private static final List<Node> nodes = Util.newNodes(mo, 10);
 
-    @Test
-    public void testInstantiation() {
-        ShareableResource rc = new ShareableResource("foo");
-        Assert.assertEquals(rc.getIdentifier(), "ShareableResource.foo");
-        Assert.assertEquals(rc.getResourceIdentifier(), "foo");
-        Assert.assertEquals(rc.getDefaultCapacity(), ShareableResource.DEFAULT_NO_VALUE);
-        Assert.assertEquals(rc.getDefaultConsumption(), ShareableResource.DEFAULT_NO_VALUE);
+  @Test
+  public void testInstantiation() {
+    ShareableResource rc = new ShareableResource("foo");
+    Assert.assertEquals(rc.getIdentifier(), "ShareableResource.foo");
+    Assert.assertEquals(rc.getResourceIdentifier(), "foo");
+    Assert.assertEquals(rc.getDefaultCapacity(), ShareableResource.DEFAULT_NO_VALUE);
+    Assert.assertEquals(rc.getDefaultConsumption(), ShareableResource.DEFAULT_NO_VALUE);
 
-        rc = new ShareableResource("bar", 7, 3);
+    rc = new ShareableResource("bar", 7, 3);
         Assert.assertEquals(rc.getIdentifier(), "ShareableResource.bar");
     }
 
