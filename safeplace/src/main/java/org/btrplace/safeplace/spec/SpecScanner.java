@@ -51,20 +51,21 @@ public class SpecScanner {
 
     /**
      * Scan the specifications inside the classpath.
-     * @throws SpecException if the scan failed
+     *
      * @return the parsed constraints.
+     * @throws SpecException if the scan failed
      */
-    public List<org.btrplace.safeplace.spec.Constraint> scan() throws IllegalAccessException, InstantiationException, IOException {
+    public List<Constraint> scan() throws IllegalAccessException, InstantiationException, IOException {
         List<CoreConstraint> coreAnnots = Collections.synchronizedList(new ArrayList<>());
         List<Class<? extends Function>> funcs = Collections.synchronizedList(new ArrayList<>());
         scanner.matchClassesImplementing(Function.class, funcs::add);
 
         scanner.matchClassesWithAnnotation(CoreConstraint.class,
-                c -> coreAnnots.add(c.getAnnotation(CoreConstraint.class)));
+            c -> coreAnnots.add(c.getAnnotation(CoreConstraint.class)));
         scanner.matchClassesWithAnnotation(CoreConstraints.class,
-                c -> {
-                    CoreConstraint[] x = c.getAnnotationsByType(CoreConstraint.class);
-                    coreAnnots.addAll(Arrays.asList(x));
+            c -> {
+                CoreConstraint[] x = c.getAnnotationsByType(CoreConstraint.class);
+                coreAnnots.addAll(Arrays.asList(x));
                 });
 
         scanner.matchClassesWithAnnotation(SideConstraint.class,
@@ -86,16 +87,16 @@ public class SpecScanner {
             }
         });
 
-        List<org.btrplace.safeplace.spec.Constraint> cstrs = new ArrayList<>();
+        List<Constraint> cstrs = new ArrayList<>();
 
         for (CoreConstraint c : coreAnnots) {
             cstrs.add(parseCore2(c));
         }
 
-        List<org.btrplace.safeplace.spec.Constraint> l = new ArrayList<>();
+        List<Constraint> l = new ArrayList<>();
 
         for (Side s : resolveDependencies(sides)) {
-            org.btrplace.safeplace.spec.Constraint c = parseSide(s, l);
+            Constraint c = parseSide(s, l);
             l.add(c);
         }
 
@@ -158,13 +159,13 @@ public class SpecScanner {
     /**
      * @throws SpecException
      */
-    private org.btrplace.safeplace.spec.Constraint parseSide(Side s, List<Constraint> known) throws IOException {
+    private Constraint parseSide(Side s, List<Constraint> known) throws IOException {
         List<UserVar<?>> args = makeArgs(s.impl.getSimpleName(), s.s.args());
         CstrSpecParser parser = new CstrSpecParser(getTokens(s.s.inv()));
         ParseTree tree = parser.formula();
         MyCstrSpecVisitor v = new MyCstrSpecVisitor().library(functions).args(args).constraints(known);
         Proposition p = v.getProposition(s.impl.getSimpleName(), tree);
-        return new org.btrplace.safeplace.spec.Constraint(s.impl.getSimpleName(), p).args(args).impl(s.impl);
+        return new Constraint(s.impl.getSimpleName(), p).args(args).impl(s.impl);
     }
 
     private static CommonTokenStream getTokens(String source) throws IOException {

@@ -92,6 +92,6 @@ public interface ChocoView extends Injectable, MisplacedVMsEstimator {
      */
     @Override
     default Set<VM> getMisPlacedVMs(Instance i) {
-        return i.getModel().getMapping().getAllVMs();
+        return Collections.emptySet();
     }
 }
