@@ -63,25 +63,6 @@ public class UCC15 {
     }
 
 
-    /*@Test
-    public void go() throws Exception {
-        StringBuilder res = new StringBuilder("SIZE;DURATION\n");
-        int nb = 1;
-        for (int i = 0; i < nb; i++) {
-            res.append("x1;" + duration(decommissioning_10gb()) + "\n");
-        }
-        for (int i = 0; i < nb; i++) {
-            res.append("x2;" + duration(decommissioning_20gb()) + "\n");
-        }
-        for (int i = 0; i < nb; i++) {
-            res.append("x4;" + duration(decommissioning_40gb()) + "\n");
-        }
-        for (int i = 0; i < nb; i++) {
-            res.append("x10;" + duration(decommissioning_100gb()) + "\n");
-        }
-        System.err.println(res);
-    }*/
-
     public double duration(SolvingStatistics s) {
         SolutionStatistics x = s.getSolutions().get(0);
         System.out.println(s);
@@ -97,18 +78,29 @@ public class UCC15 {
         int nbVMs = nbSrcNodes * 2;
 
         // Set mem + cpu for VMs and Nodes
-        int memVM = 4, cpuVM = 1;
-        int memSrcNode = 16, cpuSrcNode = 4;
-        int memDstNode = 16, cpuDstNode = 4;
+        int memVM = 4;
+        int cpuVM = 1;
+        int memSrcNode = 16;
+        int cpuSrcNode = 4;
+        int memDstNode = 16;
+        int cpuDstNode = 4;
 
         // Set memoryUsed and dirtyRate (for all VMs)
-        int tpl1MemUsed = 2000, tpl1MaxDirtySize = 5, tpl1MaxDirtyDuration = 3;
+        int tpl1MemUsed = 2000;
+        int tpl1MaxDirtySize = 5;
+        int tpl1MaxDirtyDuration = 3;
         double tpl1DirtyRate = 0; // idle vm
-        int tpl2MemUsed = 4000, tpl2MaxDirtySize = 96, tpl2MaxDirtyDuration = 2;
+        int tpl2MemUsed = 4000;
+        int tpl2MaxDirtySize = 96;
+        int tpl2MaxDirtyDuration = 2;
         double tpl2DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl3MemUsed = 2000, tpl3MaxDirtySize = 96, tpl3MaxDirtyDuration = 2;
+        int tpl3MemUsed = 2000;
+        int tpl3MaxDirtySize = 96;
+        int tpl3MaxDirtyDuration = 2;
         double tpl3DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl4MemUsed = 4000, tpl4MaxDirtySize = 5, tpl4MaxDirtyDuration = 3;
+        int tpl4MemUsed = 4000;
+        int tpl4MaxDirtySize = 5;
+        int tpl4MaxDirtyDuration = 3;
         double tpl4DirtyRate = 0; // idle vm
 
         // New default model
@@ -116,7 +108,8 @@ public class UCC15 {
         Mapping ma = mo.getMapping();
 
         // Create online source nodes and offline destination nodes
-        List<Node> srcNodes = new ArrayList<>(), dstNodes = new ArrayList<>();
+        List<Node> srcNodes = new ArrayList<>();
+        List<Node> dstNodes = new ArrayList<>();
         for (int i = 0; i < nbSrcNodes; i++) {
             srcNodes.add(mo.newNode());
             ma.addOnlineNode(srcNodes.get(i));
@@ -248,18 +241,29 @@ public class UCC15 {
         int nbVMs = nbSrcNodes * 2;
 
         // Set mem + cpu for VMs and Nodes
-        int memVM = 4, cpuVM = 1;
-        int memSrcNode = 16, cpuSrcNode = 4;
-        int memDstNode = 16, cpuDstNode = 4;
+        int memVM = 4;
+        int cpuVM = 1;
+        int memSrcNode = 16;
+        int cpuSrcNode = 4;
+        int memDstNode = 16;
+        int cpuDstNode = 4;
 
         // Set memoryUsed and dirtyRate (for all VMs)
-        int tpl1MemUsed = 2000, tpl1MaxDirtySize = 5, tpl1MaxDirtyDuration = 3;
+        int tpl1MemUsed = 2000;
+        int tpl1MaxDirtySize = 5;
+        int tpl1MaxDirtyDuration = 3;
         double tpl1DirtyRate = 0; // idle vm
-        int tpl2MemUsed = 4000, tpl2MaxDirtySize = 96, tpl2MaxDirtyDuration = 2;
+        int tpl2MemUsed = 4000;
+        int tpl2MaxDirtySize = 96;
+        int tpl2MaxDirtyDuration = 2;
         double tpl2DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl3MemUsed = 2000, tpl3MaxDirtySize = 96, tpl3MaxDirtyDuration = 2;
+        int tpl3MemUsed = 2000;
+        int tpl3MaxDirtySize = 96;
+        int tpl3MaxDirtyDuration = 2;
         double tpl3DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl4MemUsed = 4000, tpl4MaxDirtySize = 5, tpl4MaxDirtyDuration = 3;
+        int tpl4MemUsed = 4000;
+        int tpl4MaxDirtySize = 5;
+        int tpl4MaxDirtyDuration = 3;
         double tpl4DirtyRate = 0; // idle vm
 
         // New default model
@@ -267,7 +271,8 @@ public class UCC15 {
         Mapping ma = mo.getMapping();
 
         // Create online source nodes and offline destination nodes
-        List<Node> srcNodes = new ArrayList<>(), dstNodes = new ArrayList<>();
+        List<Node> srcNodes = new ArrayList<>();
+        List<Node> dstNodes = new ArrayList<>();
         for (int i = 0; i < nbSrcNodes; i++) {
             srcNodes.add(mo.newNode());
             ma.addOnlineNode(srcNodes.get(i));
@@ -406,18 +411,29 @@ public class UCC15 {
         int nbVMs = nbSrcNodes * 2;
 
         // Set mem + cpu for VMs and Nodes
-        int memVM = 4, cpuVM = 1;
-        int memSrcNode = 16, cpuSrcNode = 4;
-        int memDstNode = 16, cpuDstNode = 4;
+        int memVM = 4;
+        int cpuVM = 1;
+        int memSrcNode = 16;
+        int cpuSrcNode = 4;
+        int memDstNode = 16;
+        int cpuDstNode = 4;
 
         // Set memoryUsed and dirtyRate (for all VMs)
-        int tpl1MemUsed = 2000, tpl1MaxDirtySize = 5, tpl1MaxDirtyDuration = 3;
+        int tpl1MemUsed = 2000;
+        int tpl1MaxDirtySize = 5;
+        int tpl1MaxDirtyDuration = 3;
         double tpl1DirtyRate = 0; // idle vm
-        int tpl2MemUsed = 4000, tpl2MaxDirtySize = 96, tpl2MaxDirtyDuration = 2;
+        int tpl2MemUsed = 4000;
+        int tpl2MaxDirtySize = 96;
+        int tpl2MaxDirtyDuration = 2;
         double tpl2DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl3MemUsed = 2000, tpl3MaxDirtySize = 96, tpl3MaxDirtyDuration = 2;
+        int tpl3MemUsed = 2000;
+        int tpl3MaxDirtySize = 96;
+        int tpl3MaxDirtyDuration = 2;
         double tpl3DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl4MemUsed = 4000, tpl4MaxDirtySize = 5, tpl4MaxDirtyDuration = 3;
+        int tpl4MemUsed = 4000;
+        int tpl4MaxDirtySize = 5;
+        int tpl4MaxDirtyDuration = 3;
         double tpl4DirtyRate = 0; // idle vm
 
         // New default model
@@ -425,7 +441,8 @@ public class UCC15 {
         Mapping ma = mo.getMapping();
 
         // Create online source nodes and offline destination nodes
-        List<Node> srcNodes = new ArrayList<>(), dstNodes = new ArrayList<>();
+        List<Node> srcNodes = new ArrayList<>();
+        List<Node> dstNodes = new ArrayList<>();
         for (int i = 0; i < nbSrcNodes; i++) {
             srcNodes.add(mo.newNode());
             ma.addOnlineNode(srcNodes.get(i));
@@ -577,18 +594,29 @@ public class UCC15 {
         int nbVMs = nbSrcNodes * 2;
 
         // Set mem + cpu for VMs and Nodes
-        int memVM = 4, cpuVM = 1;
-        int memSrcNode = 16, cpuSrcNode = 4;
-        int memDstNode = 16, cpuDstNode = 4;
+        int memVM = 4;
+        int cpuVM = 1;
+        int memSrcNode = 16;
+        int cpuSrcNode = 4;
+        int memDstNode = 16;
+        int cpuDstNode = 4;
 
         // Set memoryUsed and dirtyRate (for all VMs)
-        int tpl1MemUsed = 2000, tpl1MaxDirtySize = 5, tpl1MaxDirtyDuration = 3;
+        int tpl1MemUsed = 2000;
+        int tpl1MaxDirtySize = 5;
+        int tpl1MaxDirtyDuration = 3;
         double tpl1DirtyRate = 0; // idle vm
-        int tpl2MemUsed = 4000, tpl2MaxDirtySize = 96, tpl2MaxDirtyDuration = 2;
+        int tpl2MemUsed = 4000;
+        int tpl2MaxDirtySize = 96;
+        int tpl2MaxDirtyDuration = 2;
         double tpl2DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl3MemUsed = 2000, tpl3MaxDirtySize = 96, tpl3MaxDirtyDuration = 2;
+        int tpl3MemUsed = 2000;
+        int tpl3MaxDirtySize = 96;
+        int tpl3MaxDirtyDuration = 2;
         double tpl3DirtyRate = 3; // stress --vm 1000 --bytes 70K
-        int tpl4MemUsed = 4000, tpl4MaxDirtySize = 5, tpl4MaxDirtyDuration = 3;
+        int tpl4MemUsed = 4000;
+        int tpl4MaxDirtySize = 5;
+        int tpl4MaxDirtyDuration = 3;
         double tpl4DirtyRate = 0; // idle vm
 
         // New default model
@@ -596,7 +624,8 @@ public class UCC15 {
         Mapping ma = mo.getMapping();
 
         // Create online source nodes and offline destination nodes
-        List<Node> srcNodes = new ArrayList<>(), dstNodes = new ArrayList<>();
+        List<Node> srcNodes = new ArrayList<>();
+        List<Node> dstNodes = new ArrayList<>();
         for (int i = 0; i < nbSrcNodes; i++) {
             srcNodes.add(mo.newNode());
             ma.addOnlineNode(srcNodes.get(i));

@@ -50,7 +50,8 @@ public class CNetworkTest {
         Mapping ma = mo.getMapping();
 
         // Create and boot 1 source and 1 destination node
-        Node srcNode = mo.newNode(), dstNode = mo.newNode();
+        Node srcNode = mo.newNode();
+        Node dstNode = mo.newNode();
         ma.addOnlineNode(srcNode);
         ma.addOnlineNode(dstNode);
 
@@ -67,7 +68,9 @@ public class CNetworkTest {
         ma.addRunningVM(vm, srcNode);
 
         // The VM consumes 6 GiB memory and has a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"
-        int memUsed = 6000, hotDirtySize = 46, hotDirtyDuration = 2;
+        int memUsed = 6000;
+        int hotDirtySize = 46;
+        int hotDirtyDuration = 2;
         double coldDirtyRate = 23.6;
         mo.getAttributes().put(vm, "memUsed", memUsed); // 6 GiB
         mo.getAttributes().put(vm, "hotDirtySize", hotDirtySize); // 46 MiB
@@ -95,7 +98,11 @@ public class CNetworkTest {
         Assert.assertEquals(mig.getBandwidth(), bw);
 
         // Check the migration duration computation
-        double bandwidth_octet = mig.getBandwidth() / 9, durationMin, durationColdPages, durationHotPages, durationTotal;
+        double bandwidth_octet = mig.getBandwidth() / 9;
+        double durationMin;
+        double durationColdPages;
+        double durationHotPages;
+        double durationTotal;
         durationMin = memUsed / bandwidth_octet;
         durationColdPages = ((hotDirtySize + ((durationMin - hotDirtyDuration) * coldDirtyRate)) /
                 (bandwidth_octet - coldDirtyRate));

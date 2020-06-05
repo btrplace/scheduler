@@ -45,7 +45,9 @@ public class CDeadlineTest {
         Mapping ma = mo.getMapping();
 
         // Create and boot 2 source nodes and 1 destination node
-        Node srcNode1 = mo.newNode(), srcNode2 = mo.newNode(), dstNode = mo.newNode();
+        Node srcNode1 = mo.newNode();
+        Node srcNode2 = mo.newNode();
+        Node dstNode = mo.newNode();
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
         ma.addOnlineNode(dstNode);
@@ -66,8 +68,14 @@ public class CDeadlineTest {
         ma.addRunningVM(vm2, srcNode2);
 
         // Attach CPU and Mem resource views and assign nodes capacity and VMs consumption
-        int mem_vm = 8, cpu_vm = 4, mem_src = 8, cpu_src = 4, mem_dst = 16, cpu_dst = 8;
-        ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
+        int mem_vm = 8;
+        int cpu_vm = 4;
+        int mem_src = 8;
+        int cpu_src = 4;
+        int mem_dst = 16;
+        int cpu_dst = 8;
+        ShareableResource rcMem = new ShareableResource("mem", 0, 0);
+        ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         mo.attach(rcMem);
         mo.attach(rcCPU);
         // VMs
@@ -78,7 +86,9 @@ public class CDeadlineTest {
         rcCPU.setCapacity(srcNode1, cpu_src).setCapacity(srcNode2, cpu_src).setCapacity(dstNode, cpu_dst);
 
         // Set VM attributes 'memory used', 'hot dirty page size', 'hot dirty page duration' and 'cold dirty pages rate'
-        int vm_mu = 6000, vm_mds = 46, vm_mdd = 2;
+        int vm_mu = 6000;
+        int vm_mds = 46;
+        int vm_mdd = 2;
         double vm_cdr = 23.6;
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 6 GiB of memory
         mo.getAttributes().put(vm1, "memUsed", vm_mu);
@@ -121,7 +131,9 @@ public class CDeadlineTest {
         Mapping ma = mo.getMapping();
 
         // Create and boot 2 source nodes and 1 destination node
-        Node srcNode1 = mo.newNode(), srcNode2 = mo.newNode(), dstNode = mo.newNode();
+        Node srcNode1 = mo.newNode();
+        Node srcNode2 = mo.newNode();
+        Node dstNode = mo.newNode();
         ma.addOnlineNode(srcNode1);
         ma.addOnlineNode(srcNode2);
         ma.addOnlineNode(dstNode);
@@ -141,8 +153,14 @@ public class CDeadlineTest {
         ma.addRunningVM(vm2, srcNode2);
 
         // Attach CPU and Mem resource views and assign nodes capacity and VMs consumption
-        int mem_vm = 8, cpu_vm = 4, mem_src = 8, cpu_src = 4, mem_dst = 16, cpu_dst = 8;
-        ShareableResource rcMem = new ShareableResource("mem", 0, 0), rcCPU = new ShareableResource("cpu", 0, 0);
+        int mem_vm = 8;
+        int cpu_vm = 4;
+        int mem_src = 8;
+        int cpu_src = 4;
+        int mem_dst = 16;
+        int cpu_dst = 8;
+        ShareableResource rcMem = new ShareableResource("mem", 0, 0);
+        ShareableResource rcCPU = new ShareableResource("cpu", 0, 0);
         mo.attach(rcMem);
         mo.attach(rcCPU);
         // VMs
@@ -153,7 +171,9 @@ public class CDeadlineTest {
         rcCPU.setCapacity(srcNode1, cpu_src).setCapacity(srcNode2, cpu_src).setCapacity(dstNode, cpu_dst);
 
         // Set VM attributes 'memory used', 'hot dirty page size', 'hot dirty page duration' and 'cold dirty pages rate'
-        int vm_mu = 6000, vm_mds = 46, vm_mdd = 2;
+        int vm_mu = 6000;
+        int vm_mds = 46;
+        int vm_mdd = 2;
         double vm_cdr = 23.6;
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 6 GiB of memory
         mo.getAttributes().put(vm1, "memUsed", vm_mu);
