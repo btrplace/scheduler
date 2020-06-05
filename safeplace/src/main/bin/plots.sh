@@ -4,7 +4,7 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 o=$1/img
-mkdir -p ${o}
+mkdir -p "${o}"
 WD="safeplace/src/main/bin"
 
 if [ -e "$1/testing-speed-trans.csv" ]; then
@@ -35,7 +35,7 @@ fi
 
 if [ -e "$1/mode_stable.csv" ]; then
     echo "-- Rebuild vs. Repair --"
-    ${WD}/mode.R $1/mode_stable.csv ${o}/mode
+    ${WD}/mode.R "$1/mode_stable.csv" "${o}/mode"
 fi
 
 if [ -e "$1/fuzzer.csv" ]; then
