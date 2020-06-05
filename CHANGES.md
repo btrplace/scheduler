@@ -1,9 +1,9 @@
 Release notes
 ======================
 
-version 1.10.3 - soon come
+version 1.11.0 - soon come
 ----------------------
-See milestone [1.10.3](https://github.com/btrplace/scheduler/milestones/1.10.3)
+See milestone [1.11.0](https://github.com/btrplace/scheduler/milestones/1.11.0)
 
 - users can now provide custom JSON converters for actions and events.
 - dependencies update and code quality improvement.
