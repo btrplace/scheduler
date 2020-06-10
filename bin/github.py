@@ -47,6 +47,7 @@ def getMilestoneId(v):
 def openMilestone(v):
 	req = "{\"title\": \"%s\"}" % v
 	res = requests.post(api() + "/milestones", data=req, headers=header())
+
 	if res.status_code == 201 or "already_exists" in res.text:
 		return True
 	else:
