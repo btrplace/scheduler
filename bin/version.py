@@ -1,7 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #Script to get the maven project version and manipulate it a bit
 #basically, it is faster and more robust than mvn versions
-from __future__ import print_function
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import ParseError
 import sys

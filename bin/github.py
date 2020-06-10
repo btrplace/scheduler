@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-from __future__ import print_function
+#!/usr/bin/env python3
 import sys
 import ssl
-ssl.HAS_SNI = False
 import requests
-import urllib3
-urllib3.disable_warnings()
 import os
 import version
 
