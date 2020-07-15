@@ -26,11 +26,11 @@ import org.btrplace.model.constraint.RunningCapacity;
 import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.constraint.Spread;
 import org.btrplace.model.view.ShareableResource;
+import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.extensions.ChocoUtils;
-import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Cause;
@@ -613,9 +613,34 @@ public class IssuesTest {
         final Instance ii = new Instance(mo, cstrs, new MinMigrations());
         ChocoScheduler sched = new DefaultChocoScheduler();
         Assert.assertNotNull(sched.solve(ii));
-        SolvingStatistics stats = sched.getStatistics();
-        // We branch over the placement variables, but no longer on the VM scheduling tasks.
+    }
+
+    @Test
+    public void testIssue241() {
+        DefaultModel model = new DefaultModel();
+        Mapping map = model.getMapping();
+
+        ArrayList<Node> nodes = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Node node = model.newNode();
+            nodes.add(node);
+            map.addOnlineNode(node);
+            for (int j = 0; j < 2; j++) {
+                VM vm = model.newVM();
+                model.getAttributes().put(vm, "memUsed", 2);
+                map.addRunningVM(vm, node);
+            }
+        }
+
+        ChocoScheduler sched = new DefaultChocoScheduler();
+        Network.createDefaultNetwork(model);
+        ArrayList<SatConstraint> constraints = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            constraints.add(new Offline(nodes.get(i)));
+        }
+        ReconfigurationPlan plan = sched.solve(model, constraints);
+        Assert.assertNotNull(plan);
+        System.out.println(plan);
         System.out.println(sched.getStatistics());
-        Assert.assertTrue(stats.getMetrics().nodes() < mo.getMapping().getReadyVMs().size() * 2);
     }
 }

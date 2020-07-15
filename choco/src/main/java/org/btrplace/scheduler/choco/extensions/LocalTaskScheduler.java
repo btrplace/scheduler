@@ -198,8 +198,8 @@ public class LocalTaskScheduler {
 
   /**
    * Check if the initial free space (capacity - cSlices) is enough to accumulate all the dslices.
-   * If so, and if earlyStart is instantiated, we directly instantiate the dSlices start to
-   * max(earliest, dSlice.start), which indicate we don't want un-justified delays.
+   * If so, and if earlyStart is instantiated, we directly update the LB of the
+   * dSlices start to max(earliest, dSlice.start).
    */
   private boolean fastIn() throws ContradictionException {
     if (!early.isInstantiated()) {
@@ -227,7 +227,7 @@ public class LocalTaskScheduler {
     for (int idx = 0; idx < s; idx++) {
       int i = vIn.quickGet(idx);
       if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
-        dStarts[i].instantiateTo(Math.max(earliest, dStarts[i].getLB()), this.aCause);
+        dStarts[i].updateLowerBound(Math.max(earliest, dStarts[i].getLB()), this.aCause);
       }
     }
     return true;
