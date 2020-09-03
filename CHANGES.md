@@ -5,6 +5,10 @@ version 1.11.1 - soon come
 ----------------------
 See milestone [1.11.1](https://github.com/btrplace/scheduler/milestones/1.11.1)
 
+- Dependencies update
+- Fix an overfiltering in the task scheduler (#241)
+
+
 version 1.11.0 - 10 Jun 2020
 ----------------------
 See milestone [1.11.0](https://github.com/btrplace/scheduler/milestones/1.11.0)
