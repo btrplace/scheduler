@@ -1,0 +1,10 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  milestone: 43
+  default_assignees:
+  - fhermeni
