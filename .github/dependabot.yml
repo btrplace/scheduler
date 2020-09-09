@@ -6,5 +6,3 @@ updates:
     interval: daily
   open-pull-requests-limit: 10
   milestone: 43
-  default_assignees:
-  - fhermeni
