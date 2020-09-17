@@ -2,6 +2,7 @@
 
 This repository contains the main sources of the flexible VM scheduler BtrPlace (see http://www.btrplace.org)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d15dade6abc544a59d33f49ff415233a)](https://app.codacy.com/gh/btrplace/scheduler?utm_source=github.com&utm_medium=referral&utm_content=btrplace/scheduler&utm_campaign=Badge_Grade_Dashboard)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/btrplace/chat?utm_source=share-link&utm_medium=link&utm_campaign=share-link) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.btrplace/scheduler/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.btrplace/scheduler) [![javadoc](https://javadoc.io/badge2/org.btrplace/scheduler%20/javadoc.svg)](https://javadoc.io/doc/org.btrplace/scheduler%20)
 
 
