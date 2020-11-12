@@ -62,3 +62,22 @@ deploy:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+addons:
+  coverity_scan:
+
+    # GitHub project metadata
+    # ** specific to your project **
+    project:
+      name: btrplace/scheduler
+      version: SNAPSHOT
+      description: btrplace scheduler
+
+    # Where email notification of build analysis results will be sent
+    notification_email: hermenierfabien@gmail.com
+
+    # The command that will be added as an argument to "cov-build" to compile your project for analysis,
+    # ** likely specific to your build **
+    build_command: mvn compile
+    
+    branch_pattern: coverity_scan
