@@ -45,6 +45,7 @@ import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -81,9 +82,6 @@ public class CShareableResource implements ChocoView {
     private Map<VM, VM> references;
     private Map<VM, VM> clones;
 
-    private final TObjectDoubleMap<Node> wantedRatios;
-    private final TObjectIntMap<VM> wantedAmount;
-    private final TObjectIntMap<Node> wantedCapacity;
 
     /**
      * The default value of ratio is not logical to detect an unchanged value
@@ -98,9 +96,6 @@ public class CShareableResource implements ChocoView {
     public CShareableResource(ShareableResource r) throws SchedulerException {
         this.rc = r;
         this.id = r.getIdentifier();
-        wantedCapacity = new TObjectIntHashMap<>();
-        wantedAmount = new TObjectIntHashMap<>();
-        wantedRatios = new TObjectDoubleHashMap<>();
     }
 
     @Override
@@ -189,6 +184,7 @@ public class CShareableResource implements ChocoView {
     public List<IntVar> getVirtualUsage() {
         return virtRcUsage;
     }
+
     /**
      * Get the minimum amount of resource to allocate to a VM.
      *
@@ -485,27 +481,6 @@ public class CShareableResource implements ChocoView {
         return true;
     }
 
-    private double ratio(Node n, double d) {
-        if (wantedRatios.containsKey(n)) {
-            return Math.min(d, wantedRatios.get(n));
-        }
-        return d;
-    }
-
-    private int consumption(VM v, int a) {
-        if (wantedAmount.containsKey(v)) {
-            return Math.max(a, wantedAmount.get(v));
-        }
-        return a;
-    }
-
-    private int capacity(Node n, int a) {
-        if (wantedCapacity.containsKey(n)) {
-            return Math.max(a, wantedCapacity.get(n));
-        }
-        return a;
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -515,32 +490,60 @@ public class CShareableResource implements ChocoView {
      */
     @Override
     public Set<VM> getMisPlacedVMs(Instance i) {
+
+        final TObjectDoubleMap<Node> wantedRatios =
+            new TObjectDoubleHashMap<>();
+        final TObjectIntMap<VM> wantedAmount = new TObjectIntHashMap<>();
+        final TObjectIntMap<Node> wantedCapacity = new TObjectIntHashMap<>();
+
         for (SatConstraint c : i.getSatConstraints()) {
             if (!(c instanceof ResourceRelated && ((ResourceRelated) c).getResource().equals(rc.getResourceIdentifier()))) {
                 continue;
             }
             if (c instanceof Preserve) {
+                // We guarantee the highest request so far.
                 VM v = c.getInvolvedVMs().iterator().next();
-                wantedAmount.put(v, consumption(v, ((Preserve) c).getAmount()));
+                int qty = ((Preserve) c).getAmount();
+                wantedAmount.put(v, Math.max(wantedAmount.get(v), qty));
             } else if (c instanceof Overbook) {
                 Node n = c.getInvolvedNodes().iterator().next();
-                wantedRatios.put(n, ratio(n, ((Overbook) c).getRatio()));
+                double min = ((Overbook) c).getRatio();
+                if (wantedRatios.containsKey(n)) {
+                    min = Math.min(min, wantedRatios.get(n));
+                }
+                wantedRatios.put(n, min);
             } else if (c instanceof ResourceCapacity && c.getInvolvedNodes().size() == 1) {
                 Node n = c.getInvolvedNodes().iterator().next();
-                wantedCapacity.put(n, capacity(n, ((ResourceCapacity) c).getAmount()));
+                int qty = ((ResourceCapacity) c).getAmount();
+                wantedCapacity.put(n, Math.max(qty, wantedCapacity.get(n)));
             }
         }
         Mapping m = i.getModel().getMapping();
         Set<VM> candidates = new HashSet<>();
         for (Node n : m.getOnlineNodes()) {
-            if (overloaded(m, n)) {
-                candidates.addAll(m.getRunningVMs(n));
+            Set<VM> running = m.getRunningVMs(n);
+            if (overloaded(wantedRatios, wantedAmount, wantedCapacity, running, n)) {
+                candidates.addAll(running);
             }
         }
         return candidates;
     }
 
-    public boolean overloaded(Mapping m, Node n) {
+    /**
+     * State if a given node is overloaded.
+     *
+     * @param wantedRatios   the desired overbooking ratio if modified.
+     * @param wantedAmount   the desired allocation per VM if modified.
+     * @param wantedCapacity the desired node capacity if modified.
+     * @param vms            the running VMs.
+     * @param n              the hosting node.
+     * @return {@code true} iff the node is overloaded.
+     */
+    private boolean overloaded(final TObjectDoubleMap<Node> wantedRatios,
+                               final TObjectIntMap<VM> wantedAmount,
+                               final TObjectIntMap<Node> wantedCapacity,
+                               final Collection<VM> vms, Node n) {
+
         int free = rc.getCapacity(n);
         if (wantedCapacity.containsKey(n)) {
             free = wantedCapacity.get(n);
@@ -548,7 +551,7 @@ public class CShareableResource implements ChocoView {
         if (wantedRatios.containsKey(n)) {
             free *= (int) (wantedRatios.get(n));
         }
-        for (VM vm : m.getRunningVMs(n)) {
+        for (VM vm : vms) {
             if (wantedAmount.containsKey(vm)) {
                 free -= wantedAmount.get(vm);
             } else {
