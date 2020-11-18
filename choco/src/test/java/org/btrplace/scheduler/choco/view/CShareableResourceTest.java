@@ -72,14 +72,18 @@ public class CShareableResourceTest {
         CShareableResource rcm = new CShareableResource(rc);
         rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMAllocation(rp.getVM(vm1)));
-        Assert.assertEquals(-1, rcm.getVMAllocation(rp.getVM(vm2)));
-        Assert.assertEquals(0, rcm.getVMAllocation(rp.getVM(vm3))); //Will not be running so 0
+        Assert.assertEquals(0, rcm.getFutureVMAllocation(rp.getVM(vm1)));
+        Assert.assertEquals(3, rcm.getFutureVMAllocation(rp.getVM(vm2)));
+        Assert.assertEquals(0, rcm.getFutureVMAllocation(rp.getVM(vm3))); //Will not be running so 0
         IntVar pn1 = rcm.getPhysicalUsage().get(rp.getNode(n1));
         IntVar pn2 = rcm.getPhysicalUsage().get(rp.getNode(n2));
         Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
         Assert.assertTrue(pn2.getLB() == 0 && pn2.getUB() == 0);
 
+        Assert.assertEquals(rc.getCapacity(n1),
+            rcm.getFutureNodeCapacity(rp.getNode(n1)));
+        Assert.assertEquals(rc.getCapacity(n2),
+            rcm.getFutureNodeCapacity(rp.getNode(n2)));
         pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
         Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
 
@@ -89,7 +93,6 @@ public class CShareableResourceTest {
         Assert.assertEquals(vn2.getLB(), 0);
 
         Assert.assertEquals(rc, rcm.getSourceResource());
-
     }
 
     /**

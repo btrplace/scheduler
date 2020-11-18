@@ -58,6 +58,8 @@ public class CResourceCapacity implements ChocoConstraint {
         IntVar v = rcm.getVirtualUsage().get(nIdx);
         csp.post(csp.arithm(v, "<=", amount));
 
+        // Notify the view about the future node capacity.
+        rcm.minNodeCapacity(nIdx, amount);
         //Continuous in practice ?
         if (cstr.isContinuous()) {
             if (cstr.isSatisfied(rp.getSourceModel())) {
@@ -123,7 +125,7 @@ public class CResourceCapacity implements ChocoConstraint {
                 cUse.add(rcm.getSourceResource().getConsumption(vmId));
             }
             if (d != null) {
-                int m = rcm.getVMAllocation(rp.getVM(vmId));
+                int m = rcm.getFutureVMAllocation(rp.getVM(vmId));
                 dUse.add(rp.fixed(m, "vmAllocation('", rcm.getResourceIdentifier(), "', '", vmId, "'"));
             }
         }

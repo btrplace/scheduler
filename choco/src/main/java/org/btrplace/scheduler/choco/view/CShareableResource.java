@@ -67,7 +67,15 @@ public class CShareableResource implements ChocoView {
 
     private List<IntVar> virtRcUsage;
 
+    /**
+     * Next VM resource usage.
+     */
     private TIntList vmAllocation;
+
+    /**
+     * Next node capacity.
+     */
+    private TIntList nodeCapacity;
 
     private TDoubleList ratios;
 
@@ -128,11 +136,14 @@ public class CShareableResource implements ChocoView {
                 //The VMs will not be running, so its consumption is set to 0
                 vmAllocation.add(0);
             } else {
-                //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
-                //non-updated value.
                 vmAllocation.add(-1);
             }
         }
+
+        //We don't know about the next node capacity for the moment, -1
+        // is used by default to detect an non-updated value.
+        nodeCapacity = new TIntArrayList(p.getNodes().size());
+        nodeCapacity.fill(0, p.getNodes().size(), -1);
         return true;
 
     }
@@ -186,16 +197,6 @@ public class CShareableResource implements ChocoView {
     }
 
     /**
-     * Get the minimum amount of resource to allocate to a VM.
-     *
-     * @param vmIdx the VM identifier
-     * @return the variable denoting the virtual resources to allocate to the VM
-     */
-    public int getVMAllocation(int vmIdx) {
-        return vmAllocation.get(vmIdx);
-    }
-
-    /**
      * Change the VM resource allocation.
      *
      * @param vmIdx the VM identifier
@@ -206,6 +207,51 @@ public class CShareableResource implements ChocoView {
         int vv = Math.max(v, vmAllocation.get(vmIdx));
         vmAllocation.set(vmIdx, vv);
         return vv;
+    }
+
+    /**
+     * Change the node resource capacity.
+     *
+     * @param nodeIdx the node identifier
+     * @param v       the expected capacity.
+     * @return the retained value. May be bigger than {@code v} if a previous call asks for more
+     */
+    public int minNodeCapacity(int nodeIdx, int v) {
+        int vv = Math.max(v, nodeCapacity.get(nodeIdx));
+        nodeCapacity.set(nodeIdx, vv);
+        return vv;
+    }
+
+    /**
+     * Get the future node capacity.
+     *
+     * @param nodeIdx the node identifier.
+     * @return the capacity.
+     */
+    public int getFutureNodeCapacity(int nodeIdx) {
+        int next = nodeCapacity.get(nodeIdx);
+        if (next == -1) {
+            // The value has not been changed by a ResourceCapacity constraint.
+            // Thus we consider that the capacity equals the current one.
+            return rc.getCapacity(rp.getNode(nodeIdx));
+        }
+        return nodeCapacity.get(nodeIdx);
+    }
+
+    /**
+     * Get the future amount of resource to allocate to a VM.
+     *
+     * @param vmIdx the VM identifier
+     * @return the variable denoting the virtual resources to allocate to the VM
+     */
+    public int getFutureVMAllocation(int vmIdx) {
+        int next = vmAllocation.get(vmIdx);
+        if (next == -1) {
+            // The value has not been changed by a Preserve constraint.
+            // Thus we consider that the demands equals the current one.
+            return rc.getConsumption(rp.getVM(vmIdx));
+        }
+        return vmAllocation.get(vmIdx);
     }
 
     /**
@@ -252,15 +298,6 @@ public class CShareableResource implements ChocoView {
      */
     @Override
     public boolean beforeSolve(ReconfigurationProblem p) throws SchedulerException {
-        for (VM vm : source.getMapping().getAllVMs()) {
-            int vmId = p.getVM(vm);
-            int v = getVMAllocation(vmId);
-            if (v < 0) {
-                int prevUsage = rc.getConsumption(vm);
-                minVMAllocation(vmId, prevUsage);
-            }
-
-        }
 
         ChocoView v = rp.getRequiredView(Packing.VIEW_ID);
 
@@ -269,13 +306,11 @@ public class CShareableResource implements ChocoView {
         int i = 0;
         for (VM vm : p.getFutureRunningVMs()) {
             host[i] = rp.getVMAction(vm).getDSlice().getHoster();
-            demand[i] = getVMAllocation(p.getVM(vm));
+            demand[i] = getFutureVMAllocation(p.getVM(vm));
             i++;
         }
         ((Packing) v).addDim(rc.getResourceIdentifier(),
-                virtRcUsage,
-                demand,
-                host);
+            virtRcUsage, demand, host);
 
         return linkVirtualToPhysicalUsage();
     }
@@ -324,7 +359,7 @@ public class CShareableResource implements ChocoView {
         if (rc.consumptionDefined(sVM)) {
             prev = rc.getConsumption(sVM);
         }
-        int now = getVMAllocation(rp.getVM(sVM));
+        int now = getFutureVMAllocation(rp.getVM(sVM));
         if (prev != now) {
             AllocateEvent ev = new AllocateEvent(vm, getResourceIdentifier(), now);
             a.addEvent(h, ev);
@@ -334,7 +369,7 @@ public class CShareableResource implements ChocoView {
     private boolean insertAllocateAction(ReconfigurationPlan p, VM vm, Node destNode, int st) {
         String rcId = getResourceIdentifier();
         int prev = rc.getConsumption(vm);
-        int now = getVMAllocation(rp.getVM(vm));
+        int now = getFutureVMAllocation(rp.getVM(vm));
         if (prev != now) {
             Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
             return p.add(a);
@@ -405,7 +440,7 @@ public class CShareableResource implements ChocoView {
                 cUse.add(getSourceResource().getConsumption(vm));
             }
             if (d != null) {
-                int m = getVMAllocation(rp.getVM(vm));
+                int m = getFutureVMAllocation(rp.getVM(vm));
                 dUse.add(rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'"));
 
             }
@@ -595,7 +630,7 @@ public class CShareableResource implements ChocoView {
 
         for (VM v : mo.getMapping().getAllVMs()) {
             for (int i = 0; i < rcs.size(); i++) {
-                cons[i] += rcs.get(i).getVMAllocation(rp.getVM(v));
+                cons[i] += rcs.get(i).getFutureVMAllocation(rp.getVM(v));
             }
         }
 
@@ -604,7 +639,7 @@ public class CShareableResource implements ChocoView {
             for (int i = 0; i < rcs.size(); i++) {
                 double ratio = 0;
                 if (cons[i] > 0) {
-                    ratio = 1.0 * rcs.get(i).getVMAllocation(rp.getVM(v)) / capa[i];
+                    ratio = 1.0 * rcs.get(i).getFutureVMAllocation(rp.getVM(v)) / capa[i];
                 }
                 sum += ratio;
             }

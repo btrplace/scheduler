@@ -33,33 +33,6 @@ import java.util.List;
  */
 public class CPreserveTest {
 
-    /*@Test
-    public void testGetMisplaced() {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-
-        Mapping map = mo.getMapping().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
-        ShareableResource rc = new ShareableResource("cpu", 7, 7);
-        rc.setConsumption(vm1, 3);
-        rc.setConsumption(vm2, 3);
-        rc.setConsumption(vm3, 5);
-
-        Preserve p = new Preserve(vm1, "cpu", 5);
-
-        mo.attach(rc);
-        //Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(mo));
-
-        CPreserve cp = new CPreserve(p);
-        Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
-        Set<VM> bads = cp.getMisPlacedVMs(i);
-        Assert.assertEquals(1, bads.size());
-        Assert.assertEquals(vm1, bads.iterator().next());
-    }*/
-
     /**
      * A preserve constraint asks for a minimum amount of resources but
      * their is no overbook ratio so, the default value of 1 is used

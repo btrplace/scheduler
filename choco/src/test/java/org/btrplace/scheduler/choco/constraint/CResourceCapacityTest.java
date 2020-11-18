@@ -280,6 +280,38 @@ public class CResourceCapacityTest {
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);
+    }
 
+    /**
+     * Test how CResourceCapacity notifies the view about the future capacity.
+     */
+    @Test
+    public void testCapacityEstimation() {
+        final Model mo = new DefaultModel();
+        final Node n0 = mo.newNode();
+        final Node n1 = mo.newNode();
+        final VM vm = mo.newVM();
+
+        final ShareableResource cpu = new ShareableResource("cpu");
+        mo.attach(cpu);
+        cpu.setCapacity(n0, 5).setCapacity(n1, 7);
+        cpu.setConsumption(vm, 3);
+        mo.getMapping().on(n0, n1).ready(vm);
+        final List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Running(vm));
+
+        final Instance i = new Instance(mo, cstrs, new MinMTTR());
+        // Because of the worst-fit approach, the VM will go on n0 which has the
+        // highest capacity.
+        final ChocoScheduler sched = new DefaultChocoScheduler();
+        ReconfigurationPlan res = sched.solve(i);
+        Assert.assertEquals(n1, res.getResult().getMapping().getVMLocation(vm));
+
+        // With a ResourceCapacity, we restrict n1 so that now n0 is the node
+        // that will have the highest capacity. So the wort-fit approach inside
+        // MinMTTR() should pick n0.
+        i.getSatConstraints().add(new ResourceCapacity(n1, "cpu", 4));
+        res = sched.solve(i);
+        Assert.assertEquals(n0, res.getResult().getMapping().getVMLocation(vm));
     }
 }

@@ -86,7 +86,7 @@ public class WorstFit implements IntValueSelector {
       int nIdx = rp.getNode(node);
       int[] capa = new int[rcs.size()];
       for (int i = 0; i < rcs.size(); i++) {
-        capa[i] += (int) (rcs.get(i).getVirtualUsage().get(nIdx).getUB() * rcs.get(i).getOverbookRatio(nIdx));
+        capa[i] += (int) (rcs.get(i).getFutureNodeCapacity(nIdx) * rcs.get(i).getOverbookRatio(nIdx));
       }
       capacities.put(nIdx, capa);
 
@@ -134,7 +134,7 @@ public class WorstFit implements IntValueSelector {
     if (usage == null) {
       usage = new int[rcs.size()];
       for (int i = 0; i < rcs.size(); i++) {
-        usage[i] += rcs.get(i).getVMAllocation(vId);
+        usage[i] += rcs.get(i).getFutureVMAllocation(vId);
       }
       usages.put(vId, usage);
     }
