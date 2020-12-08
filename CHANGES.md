@@ -5,6 +5,10 @@ version 1.11.2 - soon come
 ----------------------
 See milestone [1.11.2](https://github.com/btrplace/scheduler/milestones/1.11.2)
 
+- Ticket #266 should lead to a better balancing when ResourceCapacity
+  constraints restrict the node capacities.
+  
+
 version 1.11.1 - 03 Sep 2020
 ----------------------
 See milestone [1.11.1](https://github.com/btrplace/scheduler/milestones/1.11.1)
