@@ -301,7 +301,7 @@ public class CResourceCapacityTest {
         cstrs.add(new Running(vm));
 
         final Instance i = new Instance(mo, cstrs, new MinMTTR());
-        // Because of the worst-fit approach, the VM will go on n0 which has the
+        // Because of the worst-fit approach, the VM will go on n1 which has the
         // highest capacity.
         final ChocoScheduler sched = new DefaultChocoScheduler();
         ReconfigurationPlan res = sched.solve(i);

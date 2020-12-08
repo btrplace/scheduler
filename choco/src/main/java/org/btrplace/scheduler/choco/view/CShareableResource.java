@@ -197,7 +197,9 @@ public class CShareableResource implements ChocoView {
     }
 
     /**
-     * Change the VM resource allocation.
+     * Change the minimal VM resource allocation.
+     * For example, with a first request of 7 and a second request of 4, then
+     * the retained minimal allocation will be 7.
      *
      * @param vmIdx the VM identifier
      * @param v     the amount to ask.
@@ -210,8 +212,9 @@ public class CShareableResource implements ChocoView {
     }
 
     /**
-     * Change the node resource capacity.
-     *
+     * Change the minimal node resource capacity to provide.
+     * For example, with a first request of 7 and a second request of 4, then
+     * the retained minimal capacity will be 7.
      * @param nodeIdx the node identifier
      * @param v       the expected capacity.
      * @return the retained value. May be bigger than {@code v} if a previous call asks for more
@@ -229,13 +232,13 @@ public class CShareableResource implements ChocoView {
      * @return the capacity.
      */
     public int getFutureNodeCapacity(int nodeIdx) {
-        int next = nodeCapacity.get(nodeIdx);
+        final int next = nodeCapacity.get(nodeIdx);
         if (next == -1) {
             // The value has not been changed by a ResourceCapacity constraint.
             // Thus we consider that the capacity equals the current one.
             return rc.getCapacity(rp.getNode(nodeIdx));
         }
-        return nodeCapacity.get(nodeIdx);
+        return next;
     }
 
     /**
@@ -245,13 +248,13 @@ public class CShareableResource implements ChocoView {
      * @return the variable denoting the virtual resources to allocate to the VM
      */
     public int getFutureVMAllocation(int vmIdx) {
-        int next = vmAllocation.get(vmIdx);
+        final int next = vmAllocation.get(vmIdx);
         if (next == -1) {
             // The value has not been changed by a Preserve constraint.
             // Thus we consider that the demands equals the current one.
             return rc.getConsumption(rp.getVM(vmIdx));
         }
-        return vmAllocation.get(vmIdx);
+        return next;
     }
 
     /**
