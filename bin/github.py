@@ -63,6 +63,7 @@ def closeMilestone(ms):
 	if req.status_code != 200:
 		print ("ERROR %s:\n%s" % (req.status_code, req.text), file=sys.stderr)
 		return False
+	return True
 
 def usage():
 		print("Usage %s [milestone-open|milestone-close] version?" % sys.argv[0], file=sys.stderr)
