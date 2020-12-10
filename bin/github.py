@@ -3,6 +3,7 @@ import sys
 import requests
 import os
 import version
+import changelog
 
 REPOS = "btrplace/scheduler"
 TAG_HEADER = "btrplace-scheduler-"
@@ -14,16 +15,27 @@ def api():
 	return "https://api.github.com/repos/" + REPOS
 
 def createRelease(tag, changes):
+	rr = getRelease(tag)
 	dta = {
-	"draft" : False,
-	"tag_name" : TAG_HEADER + tag,
-	"name": tag,
-	"body": changes,
+		"draft" : False,
+		"tag_name" : TAG_HEADER + tag,
+		"name": tag,
+		"body": changes,
 	}
-	r = requests.post(api() + "/releases", json=dta, headers=header())
-	if r.status_code == 201:
+
+	if not rr:
+		print("The release for tag '%s' does not exist. Creating it" % tag)
+		r = requests.post(api() + "/releases", json=dta, headers=header())
+		if r.status_code == 201:
+			return True
+		print("ERROR %d:%s" % (r.status_code, r.text), file=sys.stderr)
+		return False
+
+	print("The release for tag '%s' exists. Updating it" % tag)
+	r = requests.patch(api() + "/releases/%d" % rr["id"], json=dta, headers=header())	
+	if r.status_code == 200:
 		return True
-	print("ERROR %d\n:%s" % (r.status_code, r.text), file=sys.stderr)
+
 	return False
 
 def getRelease(tag):
@@ -66,7 +78,8 @@ def closeMilestone(ms):
 	return True
 
 def usage():
-		print("Usage %s [milestone-open|milestone-close] version?" % sys.argv[0], file=sys.stderr)
+		print("Usage %s [milestone-open|milestone-close|release] version?" % sys
+		.argv[0], file=sys.stderr)
 		exit(1)
 
 ####### ---------- MAIN ------------- ################
@@ -99,25 +112,12 @@ if __name__ == "__main__":
 			exit(1)
 		if not closeMilestone(ms):
 			exit(1)
-	elif (op =="push-changelog"):
-		r = getRelease(v)
-		if not r:
-			exit(1)
-		log = getLog(v)
+	elif (op == "release"):
+		log = changelog.getLog(v)
 		if not log:
 			print("No log for version '" + v + "'", file=sys.stderr)
 			exit(1)
-		print("Captured log:")
-		print(log)
-		if not pushChanges(r, log):
-			exit(1)
-	elif (op =="release"):
-		log = getLog(v)
-		if not log:
-			print("No log for version '" + v + "'", file=sys.stderr)
-			exit(1)
-		print("Captured log:")
-		print(log)
+		print("--- Captured log ---\n%s\n----" % log)
 		if not createRelease(v, log):
 			exit(1)
 

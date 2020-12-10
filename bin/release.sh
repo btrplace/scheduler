@@ -54,3 +54,6 @@ git branch -d release
 git push
 git push origin "${TAG}"
 
+# We declare the release.
+./bin/github.py release ${VERSION}
+
