@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -53,7 +53,6 @@ public class RunningCapacityBuilderTest {
     public Object[][] getGoodSignatures() {
         return new Object[][]{
                 new Object[]{">>runningCapacity(@N1,3);", 1, 3, false},
-                new Object[]{"runningCapacity(@N[1..4],7);", 4, 7, true},
                 new Object[]{">>runningCapacity(@N[1..3],7-5%2);", 3, 6, false},
         };
     }

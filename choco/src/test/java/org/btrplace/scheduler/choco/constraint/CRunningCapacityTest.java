@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -7,25 +7,9 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.json.JSON;
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Among;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.Ready;
-import org.btrplace.model.constraint.Root;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.RunningCapacity;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Seq;
-import org.btrplace.model.constraint.Sleeping;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.Action;
-import org.btrplace.plan.event.BootVM;
 import org.btrplace.plan.event.ShutdownVM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -35,14 +19,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -101,75 +78,6 @@ public class CRunningCapacityTest {
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 1);
-    }
-
-
-    @Test
-    public void testFeasibleContinuousResolution() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-        mo.getMapping().on(n1, n2, n3)
-                .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4).ready(vm5);
-        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
-        List<SatConstraint> l = new ArrayList<>();
-        l.add(new Running(vm5));
-        l.add(new Fence(vm5, Collections.singleton(n1)));
-        RunningCapacity x = new RunningCapacity(on, 4);
-        x.setContinuous(true);
-        l.add(x);
-        ChocoScheduler cra = new DefaultChocoScheduler();
-
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
-        ReconfigurationPlan plan = cra.solve(mo, l);
-        Assert.assertNotNull(plan);
-        Assert.assertEquals(plan.getSize(), 2);
-    }
-
-    @Test
-    public void testUnFeasibleContinuousResolution() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-        mo.getMapping().on(n1, n2, n3)
-                .ready(vm1)
-                .run(n1, vm2)
-                .run(n2, vm3, vm4)
-                .run(n3, vm5);
-        List<SatConstraint> l = new ArrayList<>();
-
-        List<VM> seq = new ArrayList<>();
-        seq.add(vm1);
-        seq.add(vm2);
-        l.add(new Seq(seq));
-        l.add(new Fence(vm1, Collections.singleton(n1)));
-        l.add(new Sleeping(vm2));
-        l.add(new Running(vm1));
-        l.add(new Root(vm3));
-        l.add(new Root(vm4));
-
-        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
-        RunningCapacity x = new RunningCapacity(on, 3);
-        x.setContinuous(true);
-        l.add(x);
-        ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.setMaxEnd(5);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
-        ReconfigurationPlan plan = cra.solve(mo, l);
-        Assert.assertNull(plan);
     }
 
     @Test
@@ -240,36 +148,6 @@ public class CRunningCapacityTest {
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(2, plan.getSize());
-    }
-
-    @Test
-    public void testSingleContinuousResolution() throws SchedulerException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        Node n1 = mo.newNode();
-
-        mo.getMapping().on(n1).run(n1, vm1, vm2).ready(vm3);
-        List<SatConstraint> l = new ArrayList<>();
-        l.add(new Running(vm1));
-        l.add(new Ready(vm2));
-        l.add(new Running(vm3));
-        RunningCapacity sc = new RunningCapacity(Collections.singleton(n1), 2, true);
-        sc.setContinuous(true);
-        l.add(sc);
-        ChocoScheduler cra = new DefaultChocoScheduler();
-        cra.setTimeLimit(3);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
-        ReconfigurationPlan plan = cra.solve(mo, l);
-        Assert.assertNotNull(plan);
-        Iterator<Action> ite = plan.iterator();
-        Assert.assertEquals(2, plan.getSize());
-        Action a1 = ite.next();
-        Action a2 = ite.next();
-        Assert.assertTrue(a1 instanceof ShutdownVM);
-        Assert.assertTrue(a2 instanceof BootVM);
-        Assert.assertTrue(a1.getEnd() <= a2.getStart());
     }
 
     @Test

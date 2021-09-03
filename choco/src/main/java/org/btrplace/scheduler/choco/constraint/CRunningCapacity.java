@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -14,13 +14,10 @@ import org.btrplace.model.constraint.RunningCapacity;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.view.AliasedCumulatives;
-import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,9 +46,7 @@ public class CRunningCapacity implements ChocoConstraint {
         if (cstr.getInvolvedNodes().size() == 1) {
             return filterWithSingleNode(rp);
         }
-        if (cstr.isContinuous() && !injectContinuous(rp)) {
-            return false;
-        }
+
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs().get(rp.getNode(u)));
@@ -69,40 +64,12 @@ public class CRunningCapacity implements ChocoConstraint {
         return true;
     }
 
-    private boolean injectContinuous(ReconfigurationProblem rp) throws SchedulerException {
-        Model csp = rp.getModel();
-        //The constraint must be already satisfied
-        if (!cstr.isSatisfied(rp.getSourceModel())) {
-            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
-            return false;
-        }
-        int[] alias = new int[cstr.getInvolvedNodes().size()];
-        int i = 0;
-        for (Node n : cstr.getInvolvedNodes()) {
-            alias[i++] = rp.getNode(n);
-        }
-        int nbRunning = 0;
-        for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
-            nbRunning += rp.getSourceModel().getMapping().getRunningVMs(n).size();
-        }
-        int[] cUse = new int[nbRunning];
-        IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
-        Arrays.fill(cUse, 1);
-        Arrays.fill(dUse, csp.intVar(1));
-
-      ChocoView v = rp.getRequiredView(AliasedCumulatives.VIEW_ID);
-        ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse, dUse, alias);
-        return true;
-    }
-
     private boolean filterWithSingleNode(ReconfigurationProblem rp) {
         Node n = cstr.getInvolvedNodes().iterator().next();
         IntVar v = rp.getNbRunningVMs().get(rp.getNode(n));
         Model csp = rp.getModel();
         csp.post(csp.arithm(v, "<=", cstr.getAmount()));
-
-
-        return !cstr.isContinuous() || injectContinuous(rp);
+        return true;
     }
 
     @Override

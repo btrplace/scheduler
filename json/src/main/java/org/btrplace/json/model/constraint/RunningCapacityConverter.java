@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -13,10 +13,7 @@ import org.btrplace.model.constraint.RunningCapacity;
 
 import java.util.HashSet;
 
-import static org.btrplace.json.JSONs.nodesToJSON;
-import static org.btrplace.json.JSONs.requiredBoolean;
-import static org.btrplace.json.JSONs.requiredInt;
-import static org.btrplace.json.JSONs.requiredNodes;
+import static org.btrplace.json.JSONs.*;
 
 /**
  * JSON Converter for the constraint {@link RunningCapacity}.
@@ -40,8 +37,7 @@ public class RunningCapacityConverter implements ConstraintConverter<RunningCapa
     public RunningCapacity fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
         return new RunningCapacity(new HashSet<>(requiredNodes(mo, o, "nodes")),
-                requiredInt(o, "amount"),
-                requiredBoolean(o, "continuous"));
+                requiredInt(o, "amount"));
     }
 
     @Override
@@ -50,7 +46,6 @@ public class RunningCapacityConverter implements ConstraintConverter<RunningCapa
         c.put("id", getJSONId());
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         c.put("amount", o.getAmount());
-        c.put("continuous", o.isContinuous());
         return c;
     }
 }

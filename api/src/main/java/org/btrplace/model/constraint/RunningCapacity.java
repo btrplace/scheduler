@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -17,12 +17,9 @@ import java.util.Set;
  * Restrict to a given value, the total amount of VMs running
  * on the given set of nodes.
  * <p>
- * The restriction provided by the constraint can be either discrete or continuous.
- * If it is discrete, the constraint only considers the model obtained as the end
- * of the reconfiguration process.
- * <p>
- * If the restriction is continuous, then the total usage must never exceed
- * the given amount, in the source model, during the reconfiguration and at the end.
+ * The restriction provided by the constraint is discrete: it
+ * only considers the model obtained as the end of the reconfiguration
+ * process.
  *
  * @author Fabien Hermenier
  */
@@ -41,18 +38,7 @@ public class RunningCapacity extends SimpleConstraint {
      * @param amount the maximum amount running VMs running on the given node. &gt;= 0
      */
     public RunningCapacity(Node n, int amount) {
-        this(Collections.singleton(n), amount, false);
-    }
-
-    /**
-     * Make a new constraint on a single node
-     *
-     * @param n          the node involved in the constraint
-     * @param amount     the maximum amount running VMs running on the given node. &gt;= 0
-     * @param continuous {@code true} for a continuous restriction
-     */
-    public RunningCapacity(Node n, int amount, boolean continuous) {
-        this(Collections.singleton(n), amount, continuous);
+        this(Collections.singleton(n), amount);
     }
 
     /**
@@ -62,18 +48,7 @@ public class RunningCapacity extends SimpleConstraint {
      * @param amount the maximum amount running VMs running on the given nodes. &gt;= 0
      */
     public RunningCapacity(Set<Node> nodes, int amount) {
-        this(nodes, amount, false);
-    }
-
-    /**
-     * Make a new constraint.
-     *
-     * @param nodes      the nodes involved in the constraint
-     * @param amount     the maximum amount running VMs running on the given nodes. &gt;= 0
-     * @param continuous {@code true} for a continuous restriction
-     */
-    public RunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
-        super(continuous);
+        super(false);
         this.nodes = nodes;
         this.qty = amount;
         if (amount < 0) {
@@ -92,8 +67,7 @@ public class RunningCapacity extends SimpleConstraint {
 
     @Override
     public String toString() {
-        return "runningCapacity(" + "nodes=" + nodes
-                + ", amount=" + qty + ", " + (isContinuous() ? "continuous" : "discrete") + ')';
+        return "runningCapacity(" + "nodes=" + nodes + ", amount=" + qty + ')';
     }
 
     @Override
@@ -107,6 +81,11 @@ public class RunningCapacity extends SimpleConstraint {
     }
 
     @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -116,12 +95,11 @@ public class RunningCapacity extends SimpleConstraint {
         }
         RunningCapacity that = (RunningCapacity) o;
         return qty == that.qty &&
-                isContinuous() == that.isContinuous() &&
                 Objects.equals(nodes, that.nodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(qty, nodes, isContinuous());
+        return Objects.hash(qty, nodes);
     }
 }
