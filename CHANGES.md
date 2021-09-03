@@ -1,9 +1,9 @@
 Release notes
 ======================
 
-version 1.11.3 - soon come
+version 1.12.0 - soon come
 ----------------------
-See milestone [1.11.3](https://github.com/btrplace/scheduler/milestones/1.11.3)
+See milestone [1.12.0](https://github.com/btrplace/scheduler/milestones/1.12.0)
 
 version 1.11.2 - 09 Dec 2020
 ----------------------
