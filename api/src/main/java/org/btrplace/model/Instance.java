@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -9,11 +9,7 @@ package org.btrplace.model;
 import org.btrplace.model.constraint.OptConstraint;
 import org.btrplace.model.constraint.SatConstraint;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * An instance aggregates a model and a list of constraints.
@@ -76,6 +72,16 @@ public class Instance {
      */
     public OptConstraint getOptConstraint() {
         return opt;
+    }
+
+    /**
+     * Set the optimisation constraint.
+     *
+     * @param opt the constraint.
+     * @return {@code this}
+     */
+    public Instance setOptConstraint(final OptConstraint opt) {
+        this.opt = opt;
     }
 
     @Override
