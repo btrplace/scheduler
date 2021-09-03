@@ -22,7 +22,7 @@ public class Instance {
 
   private final List<SatConstraint> cstrs;
 
-  private final OptConstraint opt;
+  private OptConstraint opt;
 
     /**
      * Make a new instance.
@@ -82,6 +82,7 @@ public class Instance {
      */
     public Instance setOptConstraint(final OptConstraint opt) {
         this.opt = opt;
+        return this;
     }
 
     @Override
