@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -16,11 +16,12 @@ import java.util.ArrayList;
 /**
  * An optional extension of VectorPacking allowing knapsack process.
  * - when an item is assigned to a bin and if then assignedLoad == sup(binLoad)
- *   for this bin then remove all candidate items from this bin
+ * for this bin then remove all candidate items from this bin
  * - when an item is assigned to a bin then all the candidate items that are
- *   too big to fit the new remaining space are filtered out.
+ * too big to fit the new remaining space are filtered out.
+ * <p>
+ * This decorator is called every time an item is assigned to a bin or removed from a bin.
  *
- *   This decorator is called every time an item is assigned to a bin or removed from a bin.
  * @author Sophie Demassey
  */
 public class KnapsackDecorator {
@@ -29,24 +30,21 @@ public class KnapsackDecorator {
      * Track the biggest item usage per dimension and bin.
      */
     private final IStateInt[][] dynBiggest;
-  /**
-   * the list of candidate items for each bin [nbBins][]
-   */
-  protected ArrayList<IStateBitSet> candidate;
-  /**
-   * the core BinPacking propagator
-   */
-  private final VectorPackingPropagator prop;
+    /**
+     * the list of candidate items for each bin [nbBins][]
+     */
+    protected ArrayList<IStateBitSet> candidate;
+    /**
+     * the core BinPacking propagator
+     */
+    private final VectorPackingPropagator prop;
 
     public KnapsackDecorator(VectorPackingPropagator p) {
         this.prop = p;
         this.candidate = new ArrayList<>(p.nbBins);
         for (int i = 0; i < p.nbBins; i++) {
-          final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), p.bins.length);
-          // By default, the VMs are candidate for every node.
-          // We will check that in postInitialise().
-          bs.set(0, p.bins.length);
-          candidate.add(bs);
+            final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), p.bins.length);
+            candidate.add(bs);
         }
 
         dynBiggest = new IStateInt[prop.nbDims][prop.nbBins];
@@ -66,31 +64,52 @@ public class KnapsackDecorator {
     }
 
     /**
+     * Initialize the lists of candidates by considering that items are candidate
+     * for every bin by default.
+     */
+    private void postInitializeOpen() {
+
+        // By default, the items are candidate for every bin.
+        for (final IStateBitSet bs : candidate) {
+            bs.set(0, prop.bins.length);
+        }
+
+        for (int i = 0; i < prop.bins.length; i++) {
+            if (!prop.bins[i].isInstantiated()) {
+                // We only put holes in the bitset if for sure some items can't
+                // can't go on some bins.
+                if (prop.bins[i].getDomainSize() != prop.nbBins) {
+                    for (int b = 0; b < prop.nbBins; b++) {
+                        if (!prop.bins[i].contains(b)) {
+                            candidate.get(b).clear(i);
+                        }
+                    }
+                }
+            } else {
+                // Instantiated, candidate for no bin.
+                for (int b = 0; b < prop.nbBins; b++) {
+                    candidate.get(b).clear(i);
+                }
+            }
+        }
+    }
+
+    /**
      * initialize the lists of candidates.
+     *
      * @throws ContradictionException if a contradiction occurs.
      */
     public void postInitialize() throws ContradictionException {
+
         final int[] biggest = new int[prop.nbDims];
+        int nbOpens = 0;
         for (int i = 0; i < prop.bins.length; i++) {
+            if (!prop.bins[i].isInstantiated()) {
+                nbOpens++;
+            }
             for (int d = 0; d < prop.nbDims; d++) {
                 biggest[d] = Math.max(biggest[d], prop.iSizes[d][i]);
             }
-            if (!prop.bins[i].isInstantiated()) {
-              // We only put holes in the bitset if for sure some VMs
-              // can't go on some nodes.
-              if (prop.bins[i].getDomainSize() != prop.nbBins) {
-                for (int b = 0; b < prop.nbBins; b++) {
-                  if (!prop.bins[i].contains(b)) {
-                    candidate.get(b).clear(i);
-                  }
-                }
-              }
-            } else {
-                for (int b = 0; b < prop.nbBins; b++) {
-                    candidate.get(b).clear(i);
-                }
-            }
-
         }
 
         for (int b = 0; b < prop.nbBins; b++) {
@@ -99,7 +118,33 @@ public class KnapsackDecorator {
                         prop.getVars()[0].getEnvironment().makeInt(biggest[d]);
             }
         }
+
+        if (nbOpens > prop.bins.length / 2) {
+            // More than half the items are candidates for multiple bins,
+            postInitializeOpen();
+        } else {
+            postInitializeClose();
+        }
         fullKnapsack();
+    }
+
+    /**
+     * Initialize the lists of candidates by considering that items are not
+     * candidate for any bin by default.
+     */
+    public void postInitializeClose() {
+
+        // By default, VMs are not candidate for any node.
+        for (int i = 0; i < prop.bins.length; i++) {
+            if (prop.bins[i].isInstantiated()) {
+                continue;
+            }
+            for (int b = 0; b < prop.nbBins; b++) {
+                if (prop.bins[i].contains(b)) {
+                    candidate.get(b).set(i);
+                }
+            }
+        }
     }
 
     /**
@@ -117,11 +162,11 @@ public class KnapsackDecorator {
             if (prop.iSizes[dim][i] == 0) {
                 continue;
             }
-          // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
-          // ie. !prop.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
+            // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
+            // ie. !prop.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
             if (prop.bins[i].removeValue(bin, prop)) {
                 candidate.get(bin).clear(i);
-              prop.updateLoads(i, bin);
+                prop.updateLoads(i, bin);
 
                 if (prop.bins[i].isInstantiated()) {
                     prop.assignItem(i, prop.bins[i].getValue());
@@ -183,8 +228,9 @@ public class KnapsackDecorator {
     /**
      * Propagate a knapsack on a given dimension and bin.
      * If the usage of an item exceeds the bin free capacity, it is filtered out.
+     *
      * @param bin the bin
-     * @param d the dimension
+     * @param d   the dimension
      * @throws ContradictionException
      */
     private void knapsack(int bin, int d) throws ContradictionException {
@@ -195,7 +241,6 @@ public class KnapsackDecorator {
             // fail fast. The remaining space > the biggest item.
             return;
         }
-
         if (free > 0) {
             // The bin is not full and some items exceeds the remaining space. We
             // get rid of them
@@ -219,4 +264,4 @@ public class KnapsackDecorator {
             dynBiggest[d][bin].set(newMax);
         }
     }
- }
+}

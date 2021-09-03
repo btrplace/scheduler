@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -374,8 +374,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             bins[i].updateLowerBound(0, this);
             bins[i].updateUpperBound(nbBins - 1, this);
             if (bins[i].isInstantiated()) {
+              int bIdx = bins[i].getValue();
                 for (int d = 0; d < nbDims; d++) {
-                    rLoads[d][bins[i].getValue()] += iSizes[d][i];
+                  rLoads[d][bIdx] += iSizes[d][i];
                 }
                 // Items placed are no longer candidate for any nodes.
                 for (int n = 0; n < nbBins; n++) {
