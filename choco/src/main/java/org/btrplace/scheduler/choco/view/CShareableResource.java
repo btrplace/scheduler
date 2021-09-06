@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -14,11 +14,7 @@ import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.constraint.Overbook;
 import org.btrplace.model.constraint.Preserve;
 import org.btrplace.model.constraint.ResourceCapacity;
@@ -26,11 +22,7 @@ import org.btrplace.model.constraint.SatConstraint;
 import org.btrplace.model.view.ResourceRelated;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
-import org.btrplace.plan.event.Action;
-import org.btrplace.plan.event.Allocate;
-import org.btrplace.plan.event.AllocateEvent;
-import org.btrplace.plan.event.MigrateVM;
-import org.btrplace.plan.event.RunningVMPlacement;
+import org.btrplace.plan.event.*;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.Parameters;
@@ -43,15 +35,7 @@ import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Specify, for a given resource, the physical resource usage associated to each server,
@@ -402,7 +386,7 @@ public class CShareableResource implements ChocoView {
             //Restrict the hosting capacity.
             rp.getNbRunningVMs().get(nIdx).updateUpperBound(card, Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to cap the hosting capacity of '" + n + " ' to " + card, ex);
+            rp.getLogger().debug("Unable to cap the hosting capacity of '" + n + " ' to " + card, ex);
             return false;
         }
         return true;
@@ -502,7 +486,7 @@ public class CShareableResource implements ChocoView {
         try {
             phyRcUsage.get(nIdx).instantiateTo(0, Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to restrict the physical '" + getResourceIdentifier() + "' capacity of " + n + " to " + maxPhy, ex);
+            rp.getLogger().debug("Unable to restrict the physical '" + getResourceIdentifier() + "' capacity of " + n + " to " + maxPhy, ex);
             return false;
         }
         return true;
@@ -513,7 +497,7 @@ public class CShareableResource implements ChocoView {
         try {
             virtRcUsage.get(nIdx).updateUpperBound(phyRcUsage.get(nIdx).getUB(), Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to restrict the virtual '" + getResourceIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + phyRcUsage.get(nIdx).getUB(), ex);
+            rp.getLogger().debug("Unable to restrict the virtual '" + getResourceIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + phyRcUsage.get(nIdx).getUB(), ex);
             return false;
         }
         return true;

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -18,12 +18,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.Among} constraint.
@@ -111,10 +106,10 @@ public class CAmong implements ChocoConstraint {
             return false;
         }
         if (g == -1) {
-            rp.getLogger().error("The VM in '{}' will be placed out of any of the allowed group", vm);
+            rp.getLogger().debug("The VM in '{}' will be placed out of any of the allowed group", vm);
             return true;
         } else if (futureGroup != g) {
-            rp.getLogger().error("The VMs in '{}' cannot be spread over multiple group of nodes", cstr.getInvolvedVMs());
+            rp.getLogger().debug("The VMs in '{}' cannot be spread over multiple group of nodes", cstr.getInvolvedVMs());
             return true;
         }
         return false;

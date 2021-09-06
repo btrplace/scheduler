@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -46,7 +46,7 @@ public class CBan implements ChocoConstraint {
         if (ban.isContinuous()) {
             for (VM vm : ban.getInvolvedVMs()) {
                 if (ban.getInvolvedNodes().contains(rp.getSourceModel().getMapping().getVMLocation(vm))) {
-                    rp.getLogger().error("Constraint {} is not satisfied initially", ban);
+                    rp.getLogger().debug("Constraint {} is not satisfied initially", ban);
                     return false;
                 }
             }
@@ -65,7 +65,7 @@ public class CBan implements ChocoConstraint {
                 try {
                     t.getHoster().removeValue(x, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to disallow " + vm + " to be running on " + rp.getNode(x), e);
+                    rp.getLogger().debug("Unable to disallow " + vm + " to be running on " + rp.getNode(x), e);
                     return false;
                 }
             }

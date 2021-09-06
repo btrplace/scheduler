@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -40,7 +40,7 @@ public class CKilled implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
-            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            rp.getLogger().debug("Constraint {} is not satisfied initially", cstr);
             return false;
         }
 

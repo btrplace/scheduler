@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -19,11 +19,7 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of {@link org.btrplace.model.constraint.Gather}.
@@ -77,7 +73,7 @@ public class CGather implements ChocoConstraint {
                 if (loc == null) {
                     loc = node;
                 } else if (!loc.equals(node)) {
-                    rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
+                    rp.getLogger().debug("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
                     return false;
                 }
             }
@@ -97,7 +93,7 @@ public class CGather implements ChocoConstraint {
             try {
                 s.getHoster().instantiateTo(nIdx, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in " + cstr.getInvolvedVMs(), ex);
+                rp.getLogger().debug("Unable to maintain the co-location of all the future-running VMs in " + cstr.getInvolvedVMs(), ex);
                 return false;
             }
         }
@@ -126,7 +122,7 @@ public class CGather implements ChocoConstraint {
         try {
             i.instantiateTo(v, Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'", ex);
+            rp.getLogger().debug("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'", ex);
             return false;
         }
         return true;

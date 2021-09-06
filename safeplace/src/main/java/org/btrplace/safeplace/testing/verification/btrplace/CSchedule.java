@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -46,7 +46,7 @@ public class CSchedule implements ChocoConstraint {
             am.getStart().instantiateTo(cstr.getStart(), Cause.Null);
             am.getEnd().instantiateTo(cstr.getEnd(), Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr, ex);
+            rp.getLogger().debug("Unable to force the schedule of " + am + " to " + cstr, ex);
             return false;
         }
         return true;

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -45,7 +45,7 @@ public class CSplitAmong implements ChocoConstraint {
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
 
         if (cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel())) {
-            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            rp.getLogger().debug("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
         }
 

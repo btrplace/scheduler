@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -42,7 +42,7 @@ public class COnline implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
-            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            rp.getLogger().debug("Constraint {} is not satisfied initially", cstr);
             return false;
         }
         Node nId = cstr.getInvolvedNodes().iterator().next();
@@ -53,7 +53,7 @@ public class COnline implements ChocoConstraint {
                 m.getStart().instantiateTo(0, Cause.Null);
             }
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force node '" + nId + "' at being online", ex);
+            rp.getLogger().debug("Unable to force node '" + nId + "' at being online", ex);
             return false;
         }
         return true;

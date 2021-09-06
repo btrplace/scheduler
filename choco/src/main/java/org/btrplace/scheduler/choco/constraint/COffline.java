@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -44,7 +44,7 @@ public class COffline implements ChocoConstraint {
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
         if (cstr.isContinuous() && !cstr.getChecker().startsWith(rp.getSourceModel())) {
-            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+            rp.getLogger().debug("Constraint {} is not satisfied initially", cstr);
             return false;
         }
 
@@ -57,7 +57,7 @@ public class COffline implements ChocoConstraint {
                 m.getStart().instantiateTo(0, Cause.Null);
             }
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force node '" + nId + "' at being offline", ex);
+            rp.getLogger().debug("Unable to force node '" + nId + "' at being offline", ex);
             return false;
         }
         for (VMTransition am : rp.getVMActions()) {
@@ -66,7 +66,7 @@ public class COffline implements ChocoConstraint {
                 try {
                     s.getHoster().removeValue(id, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to remove " + am.getVM() + " of node " + nId, e);
+                    rp.getLogger().debug("Unable to remove " + am.getVM() + " of node " + nId, e);
                 }
             }
         }

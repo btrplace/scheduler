@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -51,7 +51,7 @@ public class CRoot implements ChocoConstraint {
                 dSlice.getHoster().instantiateTo(cSlice.getHoster().getValue(), Cause.Null);
             } catch (ContradictionException ex) {
                 Node n = rp.getSourceModel().getMapping().getVMLocation(vm);
-                rp.getLogger().error("Unable to force '" + vm + "' to be running on node '" + n + "'", ex);
+                rp.getLogger().debug("Unable to force '" + vm + "' to be running on node '" + n + "'", ex);
                 return false;
             }
         }

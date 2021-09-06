@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -26,11 +26,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of {@link org.btrplace.model.constraint.ResourceCapacity}.
@@ -66,11 +62,11 @@ public class CResourceCapacity implements ChocoConstraint {
                 try {
                     v.updateUpperBound(cstr.getAmount(), Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to restrict to up to " + cstr.getAmount() + ", the maximum '" + rcm.getResourceIdentifier() + "' usage on " + n, e);
+                    rp.getLogger().debug("Unable to restrict to up to " + cstr.getAmount() + ", the maximum '" + rcm.getResourceIdentifier() + "' usage on " + n, e);
                     return false;
                 }
             } else {
-                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+                rp.getLogger().debug("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
                 return false;
             }
         }
@@ -105,7 +101,7 @@ public class CResourceCapacity implements ChocoConstraint {
     private boolean injectContinuous(ReconfigurationProblem rp, CShareableResource rcm) throws SchedulerException {
         //The constraint must be already satisfied
         if (!cstr.isSatisfied(rp.getSourceModel())) {
-            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            rp.getLogger().debug("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
         }
         int[] alias = new int[cstr.getInvolvedNodes().size()];

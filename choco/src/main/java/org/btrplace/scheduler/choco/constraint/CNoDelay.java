@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -61,7 +61,7 @@ public class CNoDelay implements ChocoConstraint {
 
                 d.getStart().instantiateTo(0, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to prevent any delay on '" + v + "'", ex);
+                rp.getLogger().debug("Unable to prevent any delay on '" + v + "'", ex);
                 return false;
             }
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -22,11 +22,7 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of the {@link org.btrplace.model.constraint.Split} constraint.
@@ -78,7 +74,7 @@ public class CSplit implements ChocoConstraint {
 
     private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups) {
         if (!cstr.isSatisfied(rp.getSourceModel())) {
-            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            rp.getLogger().debug("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
         }
         //Each VM on a group, can not go to a node until all the VMs from the other groups have leaved

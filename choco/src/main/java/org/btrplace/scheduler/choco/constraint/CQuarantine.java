@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -52,7 +52,7 @@ public class CQuarantine implements ChocoConstraint {
                 try {
                     d.instantiateTo(nIdx, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to root " + vm + " on " + n, e);
+                    rp.getLogger().debug("Unable to root " + vm + " on " + n, e);
                     return false;
                 }
             } else {
@@ -60,7 +60,7 @@ public class CQuarantine implements ChocoConstraint {
                 try {
                     d.removeValue(nIdx, Cause.Null);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to disallow " + vm + " to be hosted on " + n, e);
+                    rp.getLogger().debug("Unable to disallow " + vm + " to be hosted on " + n, e);
                     return false;
                 }
             }

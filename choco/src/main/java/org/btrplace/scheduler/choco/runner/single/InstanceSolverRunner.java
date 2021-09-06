@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -10,13 +10,7 @@ import org.btrplace.model.Instance;
 import org.btrplace.model.Model;
 import org.btrplace.model.Node;
 import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Constraint;
-import org.btrplace.model.constraint.Killed;
-import org.btrplace.model.constraint.OptConstraint;
-import org.btrplace.model.constraint.Ready;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Sleeping;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.SchedulerModelingException;
@@ -41,12 +35,7 @@ import org.chocosolver.solver.search.measure.Measures;
 import org.chocosolver.solver.search.measure.MeasuresRecorder;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -239,7 +228,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         try {
             p.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
         } catch (ContradictionException e) {
-            p.getLogger().error("Unable to restrict the maximum plan duration to " + params.getMaxEnd(), e);
+            p.getLogger().debug("Unable to restrict the maximum plan duration to " + params.getMaxEnd(), e);
             return null;
         }
         return p;

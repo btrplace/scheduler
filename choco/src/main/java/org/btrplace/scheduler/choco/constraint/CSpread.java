@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -20,12 +20,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Continuous implementation of {@link Spread}.
@@ -52,7 +47,7 @@ public class CSpread implements ChocoConstraint {
         for (VM vm : cstr.getInvolvedVMs()) {
           Node node = rp.getSourceModel().getMapping().getVMLocation(vm);
           if (node != null && !usedNodes.add(node)) {
-            rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+              rp.getLogger().debug("Constraint {} is not satisfied initially", cstr);
             //System.out.println(rp.getSourceModel().getMapping());
             return false;
           }

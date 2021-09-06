@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -50,7 +50,7 @@ public class CPrecedence implements ChocoConstraint {
 
         // Not enough / too much VMs
         if (pr.getInvolvedVMs().size() != 2) {
-            rp.getLogger().error("Unable to inject the constraint '" + pr + "', the amount of involved VMs must be 2.");
+            rp.getLogger().debug("Unable to inject the constraint '" + pr + "', the amount of involved VMs must be 2.");
             return false;
         }
 
@@ -64,7 +64,7 @@ public class CPrecedence implements ChocoConstraint {
 
         // Not enough migrations
         if (migrationList.size() < 2) {
-            rp.getLogger().error("Unable to inject the constraint '" + pr + "', the involved VMs are not migrating..");
+            rp.getLogger().debug("Unable to inject the constraint '" + pr + "', the involved VMs are not migrating..");
             return false;
         }
 

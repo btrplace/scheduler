@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -48,7 +48,7 @@ public class CFence implements ChocoConstraint {
             for (VM vm : cstr.getInvolvedVMs()) {
                 Node location = rp.getSourceModel().getMapping().getVMLocation(vm);
                 if (location != null && !cstr.getInvolvedNodes().contains(location)) {
-                    rp.getLogger().error("Constraint {} is not satisfied initially", cstr);
+                    rp.getLogger().debug("Constraint {} is not satisfied initially", cstr);
                     return false;
                 }
             }
@@ -73,7 +73,7 @@ public class CFence implements ChocoConstraint {
                 try {
                     hoster.removeValue(idx, Cause.Null);
                 } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to prevent VM '" + vm + "' to run on node '" + n + "'", ex);
+                    rp.getLogger().debug("Unable to prevent VM '" + vm + "' to run on node '" + n + "'", ex);
                     return false;
                 }
             }
@@ -87,7 +87,7 @@ public class CFence implements ChocoConstraint {
         try {
             h.instantiateTo(rp.getNode(n), Cause.Null);
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force VM '" + vm + "' to be running on node '" + n + "'", ex);
+            rp.getLogger().debug("Unable to force VM '" + vm + "' to be running on node '" + n + "'", ex);
             return false;
         }
         return true;
