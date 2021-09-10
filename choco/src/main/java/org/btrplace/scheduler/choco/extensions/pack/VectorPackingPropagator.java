@@ -28,6 +28,8 @@ import java.util.Arrays;
  * enforce:
  * 1) globally: sum(binLoads) == sumItemSizes
  * 2) on each bin: binLoad = sumAssignedItemSizes
+ * <p>
+ * TODO: simplified filtering for the cardinality dimension.
  *
  * @author Sophie Demassey, Fabien Hermenier
  */
@@ -87,26 +89,47 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     protected String[] name;
 
-  /**
-   * Must the sumLoads be recompute since the last propagation ?
-   */
-  private IStateBool loadsHaveChanged;
-  /**
-   * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
-   */
-  private final VectorPackingHeapDecorator decoHeap;
-  private final KnapsackDecorator decoKPSimple;
+    /**
+     * Number of non-zero items per dimension.
+     */
+    protected int[] nonZeroes;
 
-  /**
-   * constructor of the VectorPacking global constraint
-   *
-   * @param labels the label describing each dimension [nbDims]
-   * @param l      array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-   * @param s      array of nbDims x nbItems, each figuring the item size.
-   * @param b      array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
-   */
-  public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
+    /**
+     * Smallest non-zero item per dimension.
+     */
+    protected int[] smallest;
+
+    /**
+     * Must the sumLoads be recompute since the last propagation ?
+     */
+    private IStateBool loadsHaveChanged;
+
+    /**
+     * The list of bins as a maxSlackBinHeap for quick access to the bin with the maximum slack load. [nbDims]
+     */
+    private final VectorPackingHeapDecorator decoHeap;
+
+    private final KnapsackDecorator decoKPSimple;
+
+    /**
+     * Is the last dimension the cardinality one ?
+     */
+    private final boolean withCardinality;
+
+    /**
+     * constructor of the VectorPacking global constraint
+     *
+     * @param labels      the label describing each dimension [nbDims]
+     * @param l           array of nbDims x nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+     * @param s           array of nbDims x nbItems, each figuring the item size.
+     * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param cardinality {@code true} to indicate that the last dimension is the
+     *                    number of items on the bin.
+     */
+    public VectorPackingPropagator(String[] labels, IntVar[][] l, int[][] s,
+                                   IntVar[] b, boolean cardinality) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
+        this.withCardinality = cardinality;
         this.name = labels;
         this.loads = l;
         this.nbBins = l[0].length;
@@ -121,6 +144,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         decoHeap = new VectorPackingHeapDecorator(this);
         decoKPSimple = new KnapsackDecorator(this);
+
+        nonZeroes = new int[nbDims - 1];
+        smallest = new int[nbDims - 1];
 
         //make backtrackable stuff.
         this.potentialLoad = new IStateInt[nbDims][nbBins];
@@ -288,7 +314,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * apply rule 2 (binLoad &lt;= binPotentialLoad) when an item has been removed from the bin candidate list
      *
      * @param item the item index
-     * @param bin the bin index
+     * @param bin  the bin index
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
@@ -312,7 +338,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * apply rule 2 (binLoad &gt;= binAssignedLoad) when an item has been assign to the bin
      *
      * @param item the item index
-     * @param bin the bin index
+     * @param bin  the bin index
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void assignItem(int item, int bin) throws ContradictionException {
@@ -359,24 +385,34 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         sumISizes = new long[nbDims];
         computeSumItemSizes();
-
+        Arrays.fill(smallest, -1);
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
         // By default, the cLoad is the cumulative item size as by default, they may go to all the
         // bins.
         for (int d = 0; d < nbDims; d++) {
-            for (int n = 0; n < nbBins; n++) {
-                cLoads[d][n] = (int) sumISizes[d];
-            }
+            Arrays.fill(cLoads[d], (int) sumISizes[d]);
         }
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, this);
             bins[i].updateUpperBound(nbBins - 1, this);
+            if (withCardinality) {
+                for (int d = 0; d < nbDims - 1; d++) {
+                    if (iSizes[d][i] > 0) {
+                        nonZeroes[d]++;
+                        if (smallest[d] == -1) {
+                            smallest[d] = iSizes[d][i];
+                        } else {
+                            smallest[d] = Math.min(smallest[d], iSizes[d][i]);
+                        }
+                    }
+                }
+            }
             if (bins[i].isInstantiated()) {
-              int bIdx = bins[i].getValue();
+                int bIdx = bins[i].getValue();
                 for (int d = 0; d < nbDims; d++) {
-                  rLoads[d][bIdx] += iSizes[d][i];
+                    rLoads[d][bIdx] += iSizes[d][i];
                 }
                 // Items placed are no longer candidate for any nodes.
                 for (int n = 0; n < nbBins; n++) {
@@ -429,8 +465,58 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (IIntDeltaMonitor delta : deltaMonitor) {
             delta.unfreeze();
         }
+
+        if (withCardinality && nbDims > 1) {
+            maxCards();
+        }
     }
 
+    /**
+     * Update the UB of the cardinality dimension for every item.
+     * Given the smallest >0 item on every dimension, it computes the number of items that can fit in the
+     * worst case given the bin capacity and the number of 0 items.
+     * The constraint verifies that per dimension, the number of non-zeroes items is <= the number of slots.
+     */
+    private void maxCards() throws ContradictionException {
+        // The number of slots per item wrt. the smallest items and the dimension capacity.
+        int[] slots = new int[nbBins];
+        Arrays.fill(slots, -1);
+        for (int d = 0; d < nbDims - 1; d++) {
+            // Cumulative number of slots for the dimension.
+            int sumSlots = 0;
+            // Number of zero items on the dimension.
+            int zeroes = bins.length - nonZeroes[d];
+
+            for (int n = 0; n < nbBins; n++) {
+                // The bin capacity.
+                int ub = loads[d][n].getUB();
+                if (ub > 0 && smallest[d] > 0) {
+                    // Number of slots for items with a non-zero size for that bin.
+                    int m = ub / smallest[d];
+                    sumSlots += m;
+
+                    // Per dimension, the number of items is the number of slots plus the zeroes items. Over dimensions,
+                    // we pick the highest number.
+                    if (slots[n] == -1) {
+                        slots[n] = m + zeroes;
+                    } else {
+                        slots[n] = Math.max(slots[n], m + zeroes);
+                    }
+                }
+            }
+            if (sumSlots < nonZeroes[d]) {
+                // On that dimension, the number of slots for non-zeroes items is smaller than the number of non-zeroes
+                // items. For sure, it cannot fit.
+                fails();
+            }
+        }
+        // Propagate the new cardinality.
+        for (int n = 0; n < nbBins; n++) {
+            if (slots[n] >= 0) {
+                filterLoadSup(nbDims - 1, n, slots[n]);
+            }
+        }
+    }
 
     //***********************************************************************************************************************//
     // HELPER
@@ -438,16 +524,21 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
     /**
      * Compute the sum of the item sizes for each dimension.
+     * With the cardinality dimension, the sum will be replaced by the number of items.
      */
     private void computeSumItemSizes() {
-        for (int d = 0; d < nbDims; d++) {
+        int ub = nbDims;
+        if (withCardinality && nbDims > 1) {
+            ub--;
+            this.sumISizes[nbDims - 1] = iSizes[nbDims - 1].length;
+        }
+        for (int d = 0; d < ub; d++) {
             long sum = 0;
             for (int i = 0; i < iSizes[d].length; i++) {
                 sum += iSizes[d][i];
             }
             this.sumISizes[d] = sum;
         }
-
     }
 
     /**

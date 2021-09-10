@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -7,7 +7,15 @@
 package org.btrplace.scheduler.choco.extensions;
 
 
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.MinMigrations;
+import org.btrplace.model.constraint.Running;
+import org.btrplace.model.view.ShareableResource;
+import org.btrplace.plan.ReconfigurationPlan;
+import org.btrplace.scheduler.choco.ChocoScheduler;
+import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.btrplace.scheduler.choco.extensions.pack.VectorPacking;
+import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.constraints.Constraint;
@@ -19,6 +27,7 @@ import org.chocosolver.util.ESat;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -95,6 +104,76 @@ public class VectorPackingTest {
         ctx.testPack(true, "failed with " + Arrays.toString(height));
     }
 
+
+    /**
+     * 1GB free on every node and only 2GB VMs. We ask for booting a 2GB VM. No
+     * solution detected immediately if the hosting capacity is capped to the
+     * max number of VMs per node (100) as their sum will not exceed the
+     * number of running VMs.
+     */
+    @Test
+    public void testSlotFilteringWithUniformVMs() {
+        int capa = 201;
+        DefaultModel mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        ShareableResource mem = new ShareableResource("mem");
+        ShareableResource cpu = new ShareableResource("cpu");
+        ShareableResource ctrl = new ShareableResource("ctrl");
+        mo.attach(mem);
+        mo.attach(cpu);
+        mo.attach(ctrl);
+        Instance ii = new Instance(mo, new ArrayList<>(), new MinMigrations());
+        for (int i = 0; i < 50; i++) {
+            final Node no = mo.newNode();
+            map.on(no);
+            mem.setCapacity(no, capa);
+            cpu.setCapacity(no, capa);
+            ctrl.setCapacity(no, capa);
+            // 1 left on every node.
+            for (int j = 0; j < capa / 2; j++) {
+                final VM vm = mo.newVM();
+                map.run(no, vm);
+                mem.setConsumption(vm, 2);
+                cpu.setConsumption(vm, 2);
+                ctrl.setConsumption(vm, 2);
+            }
+            final VM vm = mo.newVM();
+            map.run(no, vm);
+            mem.setConsumption(vm, 0);
+            cpu.setConsumption(vm, 0);
+            ctrl.setConsumption(vm, 0);
+        }
+        final VM p = mo.newVM();
+        mem.setConsumption(p, 2);
+        cpu.setConsumption(p, 2);
+        ctrl.setConsumption(p, 2);
+        map.addReadyVM(p);
+        final ChocoScheduler sched = new DefaultChocoScheduler();
+        ii.getSatConstraints().add(new Running(p));
+        sched.doRepair(true);
+        ReconfigurationPlan plan = sched.solve(ii);
+        Assert.assertNull(plan);
+
+        // The problem is stated during the initial propagation.
+        SolvingStatistics stats = sched.getStatistics();
+        Assert.assertEquals(0, stats.getMetrics().nodes());
+        // With 0 size VMs, same conclusion.
+        for (Node no : map.getOnlineNodes()) {
+            final VM vm = mo.newVM();
+            map.run(no, vm);
+            mem.setConsumption(vm, 0);
+            ctrl.setConsumption(vm, 0);
+            cpu.setConsumption(vm, 0);
+        }
+        plan = sched.solve(ii);
+        Assert.assertNull(plan);
+
+        // The problem is stated during the initial propagation.
+        stats = sched.getStatistics();
+        Assert.assertEquals(0, stats.getMetrics().nodes());
+        System.out.println(stats);
+    }
+
     private static class Context {
         Model s;
         IntVar[][] loads;
@@ -147,7 +226,7 @@ public class VectorPackingTest {
             }
             sizes = height;
             bins = s.intVarArray("b", nItems, 0, nBins, false);
-            Constraint cPack = new VectorPacking(name, loads, sizes, bins);
+            Constraint cPack = new VectorPacking(name, loads, sizes, bins, false);
             s.post(cPack);
         }
 
@@ -165,5 +244,4 @@ public class VectorPackingTest {
             }
         }
     }
-
 }
