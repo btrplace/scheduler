@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -8,12 +8,7 @@ package org.btrplace.scheduler.choco;
 
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.NodeState;
-import org.btrplace.model.VM;
-import org.btrplace.model.VMState;
+import org.btrplace.model.*;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.InconsistentSolutionException;
@@ -21,11 +16,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.UnstatableProblemException;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.btrplace.scheduler.choco.transition.NodeTransition;
-import org.btrplace.scheduler.choco.transition.NodeTransitionBuilder;
-import org.btrplace.scheduler.choco.transition.TransitionFactory;
-import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.btrplace.scheduler.choco.transition.VMTransitionBuilder;
+import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.AliasedCumulatives;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.btrplace.scheduler.choco.view.Cumulatives;
@@ -51,17 +42,7 @@ import org.chocosolver.util.ESat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -381,14 +362,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void fillElements() {
-        Set<VM> allVMs = new HashSet<>();
-        allVMs.addAll(model.getMapping().getSleepingVMs());
-        allVMs.addAll(model.getMapping().getRunningVMs());
+
+        Set<VM> allVMs = new HashSet<>(model.getMapping().getNbVMs());
         allVMs.addAll(model.getMapping().getReadyVMs());
-        //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
         allVMs.addAll(ready);
+        for (final Node no : model.getMapping().getOnlineNodes()) {
+            allVMs.addAll(model.getMapping().getRunningVMs(no));
+            allVMs.addAll(model.getMapping().getSleepingVMs(no));
+        }
 
         vms = new ArrayList<>(allVMs.size());
+
         //0.5f is a default load factor in trove.
         revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1);
 

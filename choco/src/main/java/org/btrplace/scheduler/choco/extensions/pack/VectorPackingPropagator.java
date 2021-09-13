@@ -443,6 +443,10 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 Arrays.fill(cLoads[d], (int) sumISizes[d]);
             }
             for (int i = 0; i < bins.length; i++) {
+                if (bins[i].getDomainSize() == nbBins) {
+                    // Fast path: no holes to do.
+                    continue;
+                }
                 for (int n = 0; n < nbBins; n++) {
                     if (bins[i].isInstantiated() || !bins[i].contains(n)) {
                         // Instantiated or not candidate. The cLoads are decreased accordingly.

@@ -150,7 +150,7 @@ public class VectorPackingTest {
         map.addReadyVM(p);
         final ChocoScheduler sched = new DefaultChocoScheduler();
         ii.getSatConstraints().add(new Running(p));
-        sched.doRepair(true);
+        sched.doRepair(false);
         ReconfigurationPlan plan = sched.solve(ii);
         Assert.assertNull(plan);
 
@@ -171,6 +171,7 @@ public class VectorPackingTest {
         // The problem is stated during the initial propagation.
         stats = sched.getStatistics();
         Assert.assertEquals(0, stats.getMetrics().nodes());
+        System.out.println(stats);
     }
 
     private static class Context {
@@ -214,6 +215,7 @@ public class VectorPackingTest {
             int nBins = capa[0].length;
             int nItems = height[0].length;
             s = new Model();
+            s.getSettings().setWarnUser(false);
             loads = new IntVar[nRes][nBins];
             bins = new IntVar[nItems];
             String[] name = new String[nRes];
