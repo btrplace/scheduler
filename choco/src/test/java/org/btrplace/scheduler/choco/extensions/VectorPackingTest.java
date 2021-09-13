@@ -123,7 +123,7 @@ public class VectorPackingTest {
         mo.attach(cpu);
         mo.attach(ctrl);
         Instance ii = new Instance(mo, new ArrayList<>(), new MinMigrations());
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 500; i++) {
             final Node no = mo.newNode();
             map.on(no);
             mem.setCapacity(no, capa);
@@ -171,7 +171,6 @@ public class VectorPackingTest {
         // The problem is stated during the initial propagation.
         stats = sched.getStatistics();
         Assert.assertEquals(0, stats.getMetrics().nodes());
-        System.out.println(stats);
     }
 
     private static class Context {

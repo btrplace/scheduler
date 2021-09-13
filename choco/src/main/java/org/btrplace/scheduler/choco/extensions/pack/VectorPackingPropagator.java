@@ -389,11 +389,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
-        // By default, the cLoad is the cumulative item size as by default, they may go to all the
-        // bins.
-        for (int d = 0; d < nbDims; d++) {
-            Arrays.fill(cLoads[d], (int) sumISizes[d]);
-        }
+        int nbInstantiated = 0;
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, this);
             bins[i].updateUpperBound(nbBins - 1, this);
@@ -409,25 +405,47 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                     }
                 }
             }
+
             if (bins[i].isInstantiated()) {
+                nbInstantiated++;
                 int bIdx = bins[i].getValue();
                 for (int d = 0; d < nbDims; d++) {
                     rLoads[d][bIdx] += iSizes[d][i];
                 }
-                // Items placed are no longer candidate for any nodes.
-                for (int n = 0; n < nbBins; n++) {
-                    for (int d = 0; d < nbDims; d++) {
-                        cLoads[d][n] -= iSizes[d][i];
-                    }
-                }
-            } else {
-                // We undeclare them candidate for the nodes where they can't go.
-                if (bins[i].getDomainSize() == nbBins) {
-                    // Fastpath.
+            }
+        }
+
+        // Candidate load management. An item is candidate for a bin if it is not instantiated and can go on the bin.
+        if (nbInstantiated > iSizes[0].length / 2) {
+            // Most of the items are already placed. We just focus on the other items with an initial candidate load
+            // set to 0.
+            for (int d = 0; d < nbDims; d++) {
+                Arrays.fill(cLoads[d], 0);
+            }
+            for (int i = 0; i < bins.length; i++) {
+                if (bins[i].isInstantiated()) {
+                    // Not candidate for any node.
                     continue;
                 }
                 for (int n = 0; n < nbBins; n++) {
-                    if (!bins[i].contains(n)) {
+                    if (bins[i].contains(n)) {
+                        // The item is candidate for that node, the cLoad is increased accordingly.
+                        for (int d = 0; d < nbDims; d++) {
+                            cLoads[d][n] += iSizes[d][i];
+                        }
+                    }
+                }
+            }
+        } else {
+            // Most of the items are not already placed.
+            for (int d = 0; d < nbDims; d++) {
+                // Everyone is candidate to everything by default.
+                Arrays.fill(cLoads[d], (int) sumISizes[d]);
+            }
+            for (int i = 0; i < bins.length; i++) {
+                for (int n = 0; n < nbBins; n++) {
+                    if (bins[i].isInstantiated() || !bins[i].contains(n)) {
+                        // Instantiated or not candidate. The cLoads are decreased accordingly.
                         for (int d = 0; d < nbDims; d++) {
                             cLoads[d][n] -= iSizes[d][i];
                         }
