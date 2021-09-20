@@ -1,22 +1,13 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Ready;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.scheduler.SchedulerException;
@@ -25,12 +16,7 @@ import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link org.btrplace.model.constraint.Fence}.
@@ -109,7 +95,5 @@ public class CFenceTest {
         Assert.assertNotNull(p);
         Assert.assertEquals(1, p.getSize()); //Just the suspend of vm2
         //Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(p.getResult()));
-
-
     }
 }

@@ -67,6 +67,14 @@ public class CFence implements ChocoConstraint {
     }
 
     private static boolean allBut(ReconfigurationProblem rp, IntVar hoster, VM vm, Collection<Node> nodes) {
+        if (hoster.isInstantiated()) {
+            final Node n = rp.getNode(hoster.getValue());
+            if (!nodes.contains(n)) {
+                rp.getLogger().debug("Unable to prevent VM '" + vm + "' to run on node '" + n + "'");
+                return false;
+            }
+            return true;
+        }
         for (Node n : rp.getNodes()) {
             int idx = rp.getNode(n);
             if (!nodes.contains(n)) {
