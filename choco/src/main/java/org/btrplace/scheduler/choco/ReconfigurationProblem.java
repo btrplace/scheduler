@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.NodeState;
-import org.btrplace.model.VM;
-import org.btrplace.model.VMState;
+import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.SchedulerModelingException;
@@ -259,6 +255,15 @@ public interface ReconfigurationProblem {
      * @return a variable
      */
     IntVar makeHostVariable(Object... n);
+
+    /**
+     * Create a variable that indicate the placement of an element on a node.
+     *
+     * @param candidates the candidate nodes.
+     * @param n          the variable label as a possible concatenation of objects
+     * @return a variable
+     */
+    IntVar makeHostVariable(List<Node> candidates, Object... n);
 
     /**
      * Create a variable that indicate the current placement of a VM.

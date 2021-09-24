@@ -183,8 +183,9 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
         cConstraints = new ArrayList<>();
 
+        final Set<Node> involvedNodes = new HashSet<>(origin.getMapping().getNbNodes());
         for (SatConstraint cstr : cstrs) {
-            checkNodesExistence(origin, cstr.getInvolvedNodes());
+            involvedNodes.addAll(cstr.getInvolvedNodes());
 
             //We cannot check for VMs that are going to the ready state
             //as they are not forced to be a part of the initial model
@@ -207,6 +208,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
             cConstraints.add(build(cstr));
         }
+        checkNodesExistence(origin, involvedNodes);
         cConstraints.add(build(obj));
 
         views = makeViews();

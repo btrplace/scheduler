@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.view.ModelView;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -18,18 +14,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.UnstatableProblemException;
 import org.btrplace.scheduler.choco.constraint.mttr.CMinMTTR;
 import org.btrplace.scheduler.choco.duration.DurationEvaluators;
-import org.btrplace.scheduler.choco.transition.BootVM;
-import org.btrplace.scheduler.choco.transition.BootableNode;
-import org.btrplace.scheduler.choco.transition.ForgeVM;
-import org.btrplace.scheduler.choco.transition.KillVM;
-import org.btrplace.scheduler.choco.transition.NodeTransition;
-import org.btrplace.scheduler.choco.transition.RelocatableVM;
-import org.btrplace.scheduler.choco.transition.ResumeVM;
-import org.btrplace.scheduler.choco.transition.ShutdownVM;
-import org.btrplace.scheduler.choco.transition.ShutdownableNode;
-import org.btrplace.scheduler.choco.transition.StayAwayVM;
-import org.btrplace.scheduler.choco.transition.SuspendVM;
-import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.scheduler.choco.transition.*;
 import org.btrplace.scheduler.choco.view.ChocoView;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
@@ -90,33 +75,6 @@ public class DefaultReconfigurationProblemTest {
             throw new UnsupportedOperationException();
         }
     }
-
-    /*private static Model defaultModel() {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        return mo;
-    }                 */
-
 
     /**
      * Just test the state definition of the actions.

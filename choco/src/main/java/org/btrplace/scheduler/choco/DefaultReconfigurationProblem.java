@@ -38,7 +38,9 @@ import org.chocosolver.solver.search.strategy.strategy.RealStrategy;
 import org.chocosolver.solver.search.strategy.strategy.SetStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.impl.BitsetIntVarImpl;
 import org.chocosolver.util.ESat;
+import org.chocosolver.util.tools.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -513,6 +515,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public IntVar makeHostVariable(Object... n) {
         return csp.intVar(makeVarLabel(n), 0, nodes.size() - 1, false);
+    }
+
+    @Override
+    public IntVar makeHostVariable(List<Node> candidates, Object... n) {
+        if (candidates.size() == 1) {
+            return makeCurrentNode(candidates.get(0), n);
+        }
+        final int[] ids = new int[candidates.size()];
+        int idx = 0;
+        for (final Node no : candidates) {
+            ids[idx++] = getNode(no);
+        }
+        // We don't rely on csp.makeInt() as this may lead to unnecessary clone().
+        final int[] sorted = ArrayUtils.mergeAndSortIfNot(ids);
+        return new BitsetIntVarImpl(makeVarLabel(n), sorted, csp.ref());
     }
 
     @Override
