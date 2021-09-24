@@ -107,7 +107,7 @@ public class ShareableResource implements ModelView {
   /**
    * Get the VMs with defined consumptions.
    * @deprecated this operation is costly in terms of performance as it allocate VM objects.
-   * Switch to {@link #forEachVmId(IntMap.Entry)} if needed.
+   * Switch to {@link #forEachVMId(IntMap.Entry)}} if needed.
    * @return a set that may be empty
    */
   @Deprecated

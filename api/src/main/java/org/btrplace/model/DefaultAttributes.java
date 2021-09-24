@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Default implementation for {@link Attributes}.
@@ -124,12 +119,22 @@ public class DefaultAttributes implements Attributes {
         Map<String, Object> m;
         if (e instanceof Node) {
             m = nodeAttrs.get(e);
+            if (m != null && m.remove(k) != null) {
+                if (m.isEmpty()) {
+                    nodeAttrs.remove(e);
+                }
+                return true;
+            }
         } else if (e instanceof VM) {
             m = vmAttrs.get(e);
-        } else {
-            return false;
+            if (m != null && m.remove(k) != null) {
+                if (m.isEmpty()) {
+                    vmAttrs.remove(e);
+                }
+                return true;
+            }
         }
-        return m != null && m.remove(k) != null;
+        return false;
     }
 
     @Override
@@ -142,7 +147,6 @@ public class DefaultAttributes implements Attributes {
         for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
             cpy.nodeAttrs.put(e.getKey(), new HashMap<>(e.getValue()));
         }
-
         return cpy;
     }
 
