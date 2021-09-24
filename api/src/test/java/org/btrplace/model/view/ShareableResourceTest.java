@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.view;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -77,18 +73,6 @@ public class ShareableResourceTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
-    public void testDefined() {
-        ShareableResource rc = new ShareableResource("foo");
-        Model mo = new DefaultModel();
-        VM v = mo.newVM();
-        Node n = mo.newNode();
-        rc.setConsumption(v, v.id());
-        rc.setCapacity(n, n.id());
-        Assert.assertTrue(rc.capacityDefined(n));
-        Assert.assertTrue(rc.consumptionDefined(v));
-    }
-
-    @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testUnset() {
         ShareableResource rc = new ShareableResource("foo");
         rc.setConsumption(vms.get(0), 3);
@@ -100,11 +84,14 @@ public class ShareableResourceTest {
         rc.unset(nodes.get(0));
         Assert.assertFalse(rc.capacityDefined(nodes.get(0)));
 
-        rc.unset(nodes.get(0));
         rc.unset(nodes.toArray(new Node[0]));
         rc.unset(vms.toArray(new VM[0]));
-        Assert.assertTrue(rc.getDefinedVMs().isEmpty());
-        Assert.assertTrue(rc.getDefinedNodes().isEmpty());
+        for (final Node no : nodes) {
+            Assert.assertFalse(rc.capacityDefined(no));
+        }
+        for (final VM vm : vms) {
+            Assert.assertFalse(rc.consumptionDefined(vm));
+        }
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
@@ -113,7 +100,7 @@ public class ShareableResourceTest {
 
         rc.setConsumption(vms.get(0), 3);
         rc.setConsumption(vms.get(1), 7);
-        Assert.assertEquals(10, rc.sumConsumptions(rc.getDefinedVMs(), false));
+        Assert.assertEquals(10, rc.sumConsumptions(vms.subList(0, 2), false));
         Set<VM> x = new HashSet<>();
         x.add(vms.get(1));
         Assert.assertEquals(7, rc.sumConsumptions(x, false));
@@ -124,7 +111,7 @@ public class ShareableResourceTest {
 
         rc.setCapacity(nodes.get(0), 3);
         rc.setCapacity(nodes.get(1), 6);
-        Assert.assertEquals(9, rc.sumCapacities(rc.getDefinedNodes(), false));
+        Assert.assertEquals(9, rc.sumCapacities(nodes.subList(0, 2), false));
 
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -14,13 +14,8 @@ import org.btrplace.model.VM;
 import org.btrplace.model.view.ShareableResource;
 
 import java.util.Map;
-import java.util.Set;
 
-import static org.btrplace.json.JSONs.checkKeys;
-import static org.btrplace.json.JSONs.getNode;
-import static org.btrplace.json.JSONs.getVM;
-import static org.btrplace.json.JSONs.requiredInt;
-import static org.btrplace.json.JSONs.requiredString;
+import static org.btrplace.json.JSONs.*;
 
 /**
  * Serialize/Un-serialize an {@link org.btrplace.model.view.ShareableResource}.
@@ -62,19 +57,19 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
         o.put(DEFAULT_CAPACITY, rc.getDefaultCapacity());
         o.put("rcId", rc.getResourceIdentifier());
 
-        Set<VM> vms = rc.getDefinedVMs();
-        JSONObject values = new JSONObject();
-        for (VM u : vms) {
-            values.put(Integer.toString(u.id()), rc.getConsumption(u));
-        }
-        o.put("vms", values);
+        final JSONObject vmValues = new JSONObject();
+        rc.forEachVMId((id, c) -> {
+            vmValues.put(Integer.toString(id), c);
+            return true;
+        });
+        o.put("vms", vmValues);
 
-        Set<Node> nodes = rc.getDefinedNodes();
-        values = new JSONObject();
-        for (Node u : nodes) {
-            values.put(Integer.toString(u.id()), rc.getCapacity(u));
-        }
-        o.put("nodes", values);
+        final JSONObject nodeValues = new JSONObject();
+        rc.forEachNodeId((id, c) -> {
+            nodeValues.put(Integer.toString(id), c);
+            return true;
+        });
+        o.put("nodes", nodeValues);
 
         return o;
     }

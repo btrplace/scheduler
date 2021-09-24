@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -33,17 +33,6 @@ public class ShareableResourceConverterTest {
         ShareableResourceConverter s = new ShareableResourceConverter();
         ShareableResource rc2 = s.fromJSON(mo, s.toJSON(rc));
         Assert.assertEquals(rc, rc2);
-/*        Assert.assertEquals(rc.getIdentifier(), rc2.getIdentifier());
-        Assert.assertEquals(rc.getResourceIdentifier(), rc2.getResourceIdentifier());
-        Assert.assertEquals(rc.getDefinedVMs(), rc2.getDefinedVMs());
-        Assert.assertEquals(rc.getDefinedNodes(), rc2.getDefinedNodes());
-        for (VM u : rc.getDefinedVMs()) {
-            Assert.assertEquals(rc.getConsumption(u), rc2.getConsumption(u));
-        }
-        for (Node u : rc.getDefinedNodes()) {
-            Assert.assertEquals(rc.getCapacity(u), rc2.getCapacity(u));
-        }
-                                 */
     }
 
     @Test(dependsOnMethods = {"testSimple"})

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -38,6 +38,16 @@ public class Node implements Element,PhysicalElement {
 
     @Override
     public String toString() {
+        return toString(id);
+    }
+
+    /**
+     * Helper to stringify a Node.
+     *
+     * @param id the node identifier.
+     * @return the string version of a node having the given identifier.
+     */
+    public static String toString(int id) {
         return TYPE + "#" + id;
     }
 
