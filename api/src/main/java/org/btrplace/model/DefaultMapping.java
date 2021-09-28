@@ -1,25 +1,24 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.THashSet;
+import org.btrplace.util.IntMap;
+import org.btrplace.util.IntObjectMap;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Default implementation of {@link Mapping}.
  * <p>
  * Methods {@link #getRunningVMs()}, {@link #getSleepingVMs()}, {@link #getAllVMs()}, {@link #getAllNodes()},
- * {@link #getRunningVMs(Collection)}, {@link #getSleepingVMs(java.util.Collection)} have a O(n) complexity.
+ * {@link #getRunningVMs(Collection)}, {@link #getSleepingVMs(Collection)} have a O(n) complexity.
  * <p>
  * Methods {@code is*()} have a O(1) complexity.
  *
@@ -37,32 +36,32 @@ public class DefaultMapping extends AbstractMapping {
 
     private static final int OFFLINE_STATE = 1;
 
-  /**
-   * The node by states (online, offline)
-   */
-  private final Set<Node>[] nodeState;
+    /**
+     * The node by states (online, offline)
+     */
+    private final Set<Node>[] nodeState;
 
     /**
      * The state of each VM.
      */
-    private final TIntIntHashMap st;
+    private final IntMap st;
 
-  /**
-   * The current location of the VMs.
-   */
-  private final TIntObjectHashMap<Node> place;
+    /**
+     * The current location of the VMs.
+     */
+    private final IntObjectMap<Node> place;
 
-  /**
-   * The VMs that are in the ready state.
-   */
-  private final Set<VM> vmReady;
+    /**
+     * The VMs that are in the ready state.
+     */
+    private final Set<VM> vmReady;
 
-  /**
-   * The VMs hosted by each node, by state (running or sleeping)
-   */
-  private final TIntObjectHashMap<Set<VM>>[] host;
+    /**
+     * The VMs hosted by each node, by state (running or sleeping)
+     */
+    private final IntObjectMap<Set<VM>>[] host;
 
-  /**
+    /**
      * Create a new mapping.
      */
     @SuppressWarnings("unchecked")
@@ -74,13 +73,12 @@ public class DefaultMapping extends AbstractMapping {
 
         vmReady = new THashSet<>();
 
-        place = new TIntObjectHashMap<>();
+        place = new IntObjectMap<>();
 
-        host = new TIntObjectHashMap[2];
-        host[RUNNING_STATE] = new TIntObjectHashMap<>();
-        host[SLEEPING_STATE] = new TIntObjectHashMap<>();
-
-        st = new TIntIntHashMap(100, 0.5f, -1, -1);
+        host = new IntObjectMap[2];
+        host[RUNNING_STATE] = new IntObjectMap<>();
+        host[SLEEPING_STATE] = new IntObjectMap<>();
+        st = new IntMap(-1);
     }
 
     /**
@@ -88,9 +86,30 @@ public class DefaultMapping extends AbstractMapping {
      *
      * @param m the mapping to copy
      */
-    public DefaultMapping(Mapping m) {
-        this();
-        MappingUtils.fill(m, this);
+    public DefaultMapping(DefaultMapping m) {
+
+        // Safe copies are values are immutable.
+        st = m.st.copy();
+        place = m.place.copy();
+
+        // Copy set contents.
+        nodeState = new Set[2];
+        nodeState[ONLINE_STATE] = new THashSet<>(m.nodeState[ONLINE_STATE]);
+        nodeState[OFFLINE_STATE] = new THashSet<>(m.nodeState[OFFLINE_STATE]);
+
+        vmReady = new THashSet<>(m.vmReady);
+
+        host = new IntObjectMap[2];
+        host[RUNNING_STATE] = new IntObjectMap<>();
+        m.host[RUNNING_STATE].forEach((int id, Set<VM> vms) -> {
+            host[RUNNING_STATE].put(id, new THashSet<>(vms));
+            return true;
+        });
+        host[SLEEPING_STATE] = new IntObjectMap<>();
+        m.host[SLEEPING_STATE].forEach((int id, Set<VM> vms) -> {
+            host[SLEEPING_STATE].put(id, new THashSet<>(vms));
+            return true;
+        });
     }
 
     @Override
@@ -210,14 +229,14 @@ public class DefaultMapping extends AbstractMapping {
     @Override
     public boolean addReadyVM(VM vm) {
 
-        Node n = place.remove(vm.id());
+        Node n = place.clear(vm.id());
         int state = st.get(vm.id());
         if (state == RUNNING_STATE) {
             //If was running, sync the state
             host[RUNNING_STATE].get(n.id()).remove(vm);
         } else if (state == SLEEPING_STATE) {
-                //If was sleeping, sync the state
-                host[SLEEPING_STATE].get(n.id()).remove(vm);
+            //If was sleeping, sync the state
+            host[SLEEPING_STATE].get(n.id()).remove(vm);
         }
         st.put(vm.id(), READY_STATE);
         vmReady.add(vm);
@@ -226,20 +245,22 @@ public class DefaultMapping extends AbstractMapping {
 
     @Override
     public boolean remove(VM vm) {
-        if (place.containsKey(vm.id())) {
-            Node n = this.place.remove(vm.id());
+        if (place.has(vm.id())) {
+            Node n = this.place.clear(vm.id());
             //The VM exists and is already placed
             if (st.get(vm.id()) == RUNNING_STATE) {
                 host[RUNNING_STATE].get(n.id()).remove(vm);
             } else if (st.get(vm.id()) == SLEEPING_STATE) {
                 host[SLEEPING_STATE].get(n.id()).remove(vm);
             }
-            st.remove(vm.id());
+            //st.remove(vm.id());
+            st.clear(vm.id());
             return true;
         } else if (st.get(vm.id()) == READY_STATE) {
 
             vmReady.remove(vm);
-            st.remove(vm.id());
+            //st.remove(vm.id());
+            st.clear(vm.id());
             return true;
         }
         return false;
@@ -254,7 +275,7 @@ public class DefaultMapping extends AbstractMapping {
                 if (!on.isEmpty()) {
                     return false;
                 }
-                host[RUNNING_STATE].remove(nId);
+                host[RUNNING_STATE].clear(nId);
             }
 
             on = host[SLEEPING_STATE].get(nId);
@@ -262,7 +283,7 @@ public class DefaultMapping extends AbstractMapping {
                 if (!on.isEmpty()) {
                     return false;
                 }
-                host[SLEEPING_STATE].remove(nId);
+                host[SLEEPING_STATE].clear(nId);
             }
             return nodeState[ONLINE_STATE].remove(n);
         }
@@ -340,12 +361,13 @@ public class DefaultMapping extends AbstractMapping {
 
     @Override
     public Set<VM> getAllVMs() {
-        final Set<VM> s = new HashSet<>(vmReady);
-        host[RUNNING_STATE].forEachEntry((a, b) -> {
+        final Set<VM> s = new THashSet<>(st.size());
+        s.addAll(vmReady);
+        host[RUNNING_STATE].forEach((a, b) -> {
             s.addAll(b);
             return true;
         });
-        host[SLEEPING_STATE].forEachEntry((a, b) -> {
+        host[SLEEPING_STATE].forEach((a, b) -> {
             s.addAll(b);
             return true;
         });
@@ -398,7 +420,7 @@ public class DefaultMapping extends AbstractMapping {
 
     @Override
     public boolean contains(VM vm) {
-        return st.get(vm.id()) >= 0;
+        return st.get(vm.id()) != st.noEntryValue();
     }
 
     @Override
@@ -409,20 +431,21 @@ public class DefaultMapping extends AbstractMapping {
         st.clear();
         vmReady.clear();
         place.clear();
-        for (TIntObjectHashMap<Set<VM>> h : host) {
-            h.clear();
-        }
+        host[SLEEPING_STATE].clear();
+        host[RUNNING_STATE].clear();
     }
 
     @Override
     public void clearNode(Node u) {
         //Get the VMs on the node
-        for (TIntObjectHashMap<Set<VM>> h : host) {
+        for (int i = 0; i < host.length; i++) {
+            IntObjectMap<Set<VM>> h = host[i];
             Set<VM> s = h.get(u.id());
             if (s != null) {
                 for (VM vm : s) {
-                    place.remove(vm.id());
-                    st.remove(vm.id());
+                    place.clear(vm.id());
+                    //st.remove(vm.id());
+                    st.clear(vm.id());
                 }
                 s.clear();
             }
@@ -434,9 +457,8 @@ public class DefaultMapping extends AbstractMapping {
         place.clear();
         st.clear();
         vmReady.clear();
-        for (TIntObjectHashMap<Set<VM>> h : host) {
-            h.clear();
-        }
+        host[SLEEPING_STATE].clear();
+        host[RUNNING_STATE].clear();
     }
 
     @Override

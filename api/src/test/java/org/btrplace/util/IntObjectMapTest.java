@@ -11,11 +11,14 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class IntMapTest {
+/**
+ * Unit tests for {@link IntObjectMap}.
+ */
+public class IntObjectMapTest {
 
     @Test
     public void testPutHasGet() {
-        final IntMap m = new IntMap(-1);
+        final IntObjectMap m = new IntObjectMap(-1);
         Assert.assertEquals(m.noEntryValue(), -1);
         Assert.assertFalse(m.has(0));
         Assert.assertEquals(m.get(0), -1);
@@ -38,7 +41,7 @@ public class IntMapTest {
 
     @Test
     public void testForEach() {
-        final IntMap m = new IntMap(-1);
+        final IntObjectMap m = new IntObjectMap(-1);
         for (int i = 0; i < 10; i += 2) {
             m.put(i, i * 2);
         }
@@ -60,7 +63,7 @@ public class IntMapTest {
 
     @Test
     public void testClear() {
-        final IntMap m = new IntMap(-1);
+        final IntObjectMap m = new IntObjectMap(-1);
         m.put(7, 12);
         Assert.assertEquals(m.clear(7), 12);
         Assert.assertEquals(m.clear(-1), -1);
@@ -78,13 +81,13 @@ public class IntMapTest {
 
     @Test
     public void testCopy() {
-        final IntMap m = new IntMap(-1);
+        final IntObjectMap m = new IntObjectMap(-1);
         for (int i = 0; i < 100; i += 2) {
             m.put(i, i * 2);
         }
         Assert.assertTrue(m.equals(m));
         Assert.assertNotEquals(new Object(), m);
-        IntMap cp = m.copy();
+        IntObjectMap cp = m.copy();
 
         Assert.assertEquals(m.size(), cp.size());
         m.forEach((k, v) -> {
@@ -112,7 +115,7 @@ public class IntMapTest {
 
     @Test
     public void testSize() {
-        final IntMap m = new IntMap(-1);
+        final IntObjectMap m = new IntObjectMap(-1);
         // Empty.
         Assert.assertEquals(0, m.size());
 

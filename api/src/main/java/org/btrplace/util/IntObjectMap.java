@@ -10,12 +10,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * A map to associate an integer to an element.
+ * A map to associate an Object to an element.
  * The map does not compact the key space so it is very efficient in terms of memory when there is no or a very few
  * holes. For the best performances, it is also wise to set the capacity as early as possible to bypass the incremental
  * expansion.
  */
-public class IntMap {
+public class IntObjectMap<V> {
 
     /**
      * Default size for the map.
@@ -25,25 +25,36 @@ public class IntMap {
     /**
      * Value stating that the key is missing.
      */
-    private final int noValue;
+    private final V noValue;
 
     /**
      * Value backend.
      */
-    private int[] values;
+    private V[] values;
 
     /**
      * Biggest key in the map.
      */
     private int lastKey;
 
+    /**
+     * Number of entries in the map.
+     */
     private int count;
+
+    /**
+     * Empty may with {@code null} to indicate no value.
+     */
+    public IntObjectMap() {
+        this(null, DEFAULT_SIZE);
+    }
+
     /**
      * New map.
      *
      * @param noValue the value to use to report a missing key.
      */
-    public IntMap(int noValue) {
+    public IntObjectMap(V noValue) {
         this(noValue, DEFAULT_SIZE);
     }
 
@@ -53,10 +64,10 @@ public class IntMap {
      * @param noValue the value to use to report a missing key.
      * @param size    the backend size.
      */
-    public IntMap(int noValue, int size) {
+    public IntObjectMap(V noValue, int size) {
         this.noValue = noValue;
-        this.values = new int[size];
-        if (noValue != 0) {
+        this.values = (V[]) new Object[size];
+        if (noValue != null) {
             Arrays.fill(values, noValue);
         }
         count = 0;
@@ -67,9 +78,9 @@ public class IntMap {
      *
      * @param backend the backend.
      */
-    private IntMap(final IntMap backend) {
-        this.values = Arrays.copyOf(backend.values, backend.values.length);
+    private IntObjectMap(final IntObjectMap<V> backend) {
         this.noValue = backend.noValue;
+        this.values = Arrays.copyOf(backend.values, backend.values.length);
         this.lastKey = backend.lastKey;
         this.count = backend.count;
     }
@@ -81,7 +92,7 @@ public class IntMap {
      */
     public void expand(final int newSize) {
         if (newSize > values.length) {
-            int[] bigger = Arrays.copyOf(values, newSize);
+            V[] bigger = Arrays.copyOf(values, newSize);
             Arrays.fill(bigger, values.length, newSize, noValue);
             values = bigger;
         }
@@ -94,7 +105,7 @@ public class IntMap {
      * @param key the key.
      * @return the value associated to the key. {@link #noEntryValue()} otherwise.
      */
-    public int get(final int key) {
+    public V get(final int key) {
         if (key < 0 || key >= values.length) {
             return noValue;
         }
@@ -107,7 +118,7 @@ public class IntMap {
      * @param key the key.
      * @return the value.
      */
-    public int quickGet(final int key) {
+    public V quickGet(final int key) {
         return values[key];
     }
 
@@ -126,7 +137,7 @@ public class IntMap {
      *
      * @return the value.
      */
-    public int noEntryValue() {
+    public V noEntryValue() {
         return noValue;
     }
 
@@ -135,9 +146,8 @@ public class IntMap {
      *
      * @param key   the entry key.
      * @param value the value.
-     * @return the previous value.
      */
-    public int put(final int key, int value) {
+    public V put(final int key, V value) {
         if (key < 0) {
             return noValue;
         }
@@ -146,8 +156,8 @@ public class IntMap {
             // 50% grow at minimum, up to key.
             expand(Math.max(key + 1, curCap + curCap / 2));
         }
-        int old = values[key];
-        if (values[key] == noValue) {
+        V old = values[key];
+        if (old == noValue) {
             // put a new key.
             count++;
         }
@@ -158,22 +168,22 @@ public class IntMap {
 
     /**
      * Returns a copy of the map.
+     * The values associated to the keys are not copied.
      *
-     * @return a clean copy.
+     * @return a copy.
      */
-    public IntMap copy() {
-        return new IntMap(this);
+    public IntObjectMap<V> copy() {
+        return new IntObjectMap<>(this);
     }
 
     /**
      * Clear the given key. The value will be set to {@link #noEntryValue()}.
      *
      * @param key the key.
-     * @return the previous value.
      */
-    public int clear(final int key) {
+    public V clear(final int key) {
         if (key >= 0 && key < values.length) {
-            int old = values[key];
+            V old = values[key];
             values[key] = noValue;
             if (old != noValue) {
                 count--;
@@ -199,9 +209,9 @@ public class IntMap {
      *
      * @param e the iterator to use.
      */
-    public void forEach(final Entry e) {
+    public void forEach(final Entry<V> e) {
         for (int i = 0; i <= lastKey; i++) {
-            final int v = values[i];
+            final V v = values[i];
             if (v == noValue) {
                 continue;
             }
@@ -219,7 +229,7 @@ public class IntMap {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        IntMap intMap = (IntMap) o;
+        IntObjectMap<V> intMap = (IntObjectMap<V>) o;
         return noValue == intMap.noValue && Arrays.equals(values, intMap.values);
     }
 
@@ -234,7 +244,7 @@ public class IntMap {
      * Interface used to iterate over the entries.
      */
     @FunctionalInterface
-    public interface Entry {
+    public interface Entry<V> {
 
         /**
          * Gives an entry.
@@ -243,13 +253,13 @@ public class IntMap {
          * @param v the value
          * @return {@code true} to continue the iteration.
          */
-        boolean entry(final int k, final int v);
+        boolean entry(final int k, final V v);
     }
 
     /**
-     * Return the number of elements in the map.
+     * Get the number of entries in the map.
      *
-     * @return positive number.
+     * @return a positive number.
      */
     public int size() {
         return count;

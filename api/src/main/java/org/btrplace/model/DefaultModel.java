@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -8,11 +8,7 @@ package org.btrplace.model;
 
 import org.btrplace.model.view.ModelView;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * Default implementation for a {@link Model}.
@@ -21,7 +17,7 @@ import java.util.StringJoiner;
  */
 public class DefaultModel implements Model {
 
-  private final Mapping cfg;
+    private Mapping cfg;
 
   private final Map<String, ModelView> resources;
 
@@ -122,7 +118,7 @@ public class DefaultModel implements Model {
     @Override
     public Model copy() {
         DefaultModel m = new DefaultModel(elemBuilder.copy());
-        MappingUtils.fill(cfg, m.cfg);
+        m.cfg = cfg.copy();
         for (ModelView rc : resources.values()) {
             m.attach(rc.copy());
         }
@@ -151,7 +147,7 @@ public class DefaultModel implements Model {
             for (Map.Entry<String, ModelView> entry : resources.entrySet()) {
                 joiner.add(String.format("%s: %s", entry.getKey(), entry.getValue()));
             }
-            b.append(joiner.toString());
+            b.append(joiner);
         }
         return b.toString();
     }
