@@ -534,10 +534,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeCurrentHost(VM vmId, Object... n) throws SchedulerException {
-        int idx = getVM(vmId);
-        if (idx < 0) {
-            throw new SchedulerModelingException(model, "Unknown VM '" + vmId + "'");
-        }
         return makeCurrentNode(model.getMapping().getVMLocation(vmId), useLabels ? n : "");
     }
 

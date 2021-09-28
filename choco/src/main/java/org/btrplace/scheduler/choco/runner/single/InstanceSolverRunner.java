@@ -183,15 +183,18 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
 
         cConstraints = new ArrayList<>();
 
-        final Set<Node> involvedNodes = new HashSet<>(origin.getMapping().getNbNodes());
         for (SatConstraint cstr : cstrs) {
-            involvedNodes.addAll(cstr.getInvolvedNodes());
+            if (params.getVerbosity() >= 1) {
+                checkNodesExistence(origin, cstr.getInvolvedNodes());
+            }
 
             //We cannot check for VMs that are going to the ready state
             //as they are not forced to be a part of the initial model
             //(when they will be forged)
             if (!(cstrs instanceof Ready)) {
-                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                if (params.getVerbosity() >= 1) {
+                    checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                }
             }
 
             if (cstr instanceof Running) {
@@ -199,16 +202,19 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
             } else if (cstr instanceof Sleeping) {
                 toSleep.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Ready) {
-                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                if (params.getVerbosity() >= 1) {
+                    checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                }
                 toForge.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Killed) {
-                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                if (params.getVerbosity() >= 1) {
+                    checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
+                }
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
             cConstraints.add(build(cstr));
         }
-        checkNodesExistence(origin, involvedNodes);
         cConstraints.add(build(obj));
 
         views = makeViews();
@@ -259,7 +265,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         return cc;
     }
 
-    private static void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {
+    private static boolean checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {
         for (VM v : vms) {
             //This loop prevent from a useless allocation of memory when there is no issue
             if (!m.getMapping().contains(v)) {
@@ -268,6 +274,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
                 throw new SchedulerModelingException(m, "Unknown VMs: " + unknown);
             }
         }
+        return true;
     }
 
     /**
@@ -277,12 +284,13 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
      * @param ns the nodes to check
      * @throws SchedulerModelingException if at least one of the given nodes is not in the RP.
      */
-    private static void checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerModelingException {
+    private static boolean checkNodesExistence(Model mo, Collection<Node> ns) throws SchedulerModelingException {
         for (Node node : ns) {
             if (!mo.getMapping().contains(node)) {
                 throw new SchedulerModelingException(mo, "Unknown node '" + node + "'");
             }
         }
+        return true;
     }
 
     /**
