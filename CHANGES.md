@@ -5,6 +5,13 @@ version 1.12.0 - soon come
 ----------------------
 See milestone [1.12.0](https://github.com/btrplace/scheduler/milestones/1.12.0)
 
+- This release is mostly about performance improvement (CPU and memory).
+At scale, the initialisation phase of a model is faster.
+- The minor version is updated due to the drop of the continuous version of
+RunningCapacity (see #314)
+- The packing constraint is a bit smarter.
+
+
 version 1.11.2 - 09 Dec 2020
 ----------------------
 See milestone [1.11.2](https://github.com/btrplace/scheduler/milestones/1.11.2)
