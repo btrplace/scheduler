@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -16,7 +16,6 @@ import org.btrplace.scheduler.choco.view.DefaultCumulatives;
 import org.btrplace.scheduler.choco.view.VectorPacking;
 import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.memory.trailing.EnvironmentTrailing;
-import org.chocosolver.solver.DefaultSettings;
 import org.chocosolver.solver.Settings;
 
 import java.util.ArrayList;
@@ -91,22 +90,8 @@ public class DefaultParameters implements Parameters {
 
         solutionListeners = new ArrayList<>();
 
-        chocoSettings = new DefaultSettings() {
-            @Override
-            public boolean checkDeclaredConstraints() {
-                return false;
-            }
-
-            @Override
-            public int getMinCardForSumDecomposition() {
-                return 10000;
-            }
-
-            @Override
-            public boolean cloneVariableArrayInPropagator() {
-                return false;
-            }
-        };
+        chocoSettings = Settings.prod()
+                .setMinCardinalityForSumDecomposition(10000);
     }
 
     /**

@@ -187,7 +187,6 @@ public class KnapsackDecorator {
      */
     @SuppressWarnings("squid:S3346")
     public void postRemoveItem(int item, int bin) {
-        assert candidate.get(bin).get(item);
         candidate.get(bin).clear(item);
     }
 

@@ -363,9 +363,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     @Override
     public void propagate(int idx, int mask) throws ContradictionException {
         if (idx < bins.length) {
-            deltaMonitor[idx].freeze();
             deltaMonitor[idx].forEachRemVal(remProc.set(idx));
-            deltaMonitor[idx].unfreeze();
             if (vars[idx].isInstantiated()) {
                 assignItem(idx, vars[idx].getValue());
             }
@@ -483,10 +481,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
 
         assert checkLoadConsistency();
-
-        for (IIntDeltaMonitor delta : deltaMonitor) {
-            delta.unfreeze();
-        }
 
         if (withCardinality && nbDims > 1) {
             maxCards();

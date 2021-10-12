@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright  2020 The BtrPlace Authors. All rights reserved.
+  ~ Copyright  2021 The BtrPlace Authors. All rights reserved.
   ~ Use of this source code is governed by a LGPL-style
   ~ license that can be found in the LICENSE.txt file.
   -->
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.choco-solver</groupId>
             <artifactId>choco-solver</artifactId>
-            <version>4.10.6</version>
+            <version>4.10.7</version>
         </dependency>
         <dependency>
             <groupId>org.btrplace</groupId>

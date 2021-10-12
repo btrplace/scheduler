@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -184,9 +184,7 @@ public class DisjointMultiple extends Constraint {
                 }
             }
             if (IntEventType.isRemove(mask)) {
-                idms[idx].freeze();
                 idms[idx].forEachRemVal(remProc.set(idx));
-                idms[idx].unfreeze();
             }
         }
 
