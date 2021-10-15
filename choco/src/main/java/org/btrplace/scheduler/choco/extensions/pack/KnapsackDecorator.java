@@ -184,10 +184,15 @@ public class KnapsackDecorator {
      *
      * @param item the removed item
      * @param bin  the bin
+     * @return {@code true} if the item was present and has been removed.
      */
     @SuppressWarnings("squid:S3346")
-    public void postRemoveItem(int item, int bin) {
+    public boolean postRemoveItem(int item, int bin) {
+        if (!candidate.get(bin).get(item)) {
+            return false;
+        }
         candidate.get(bin).clear(item);
+        return true;
     }
 
     /**

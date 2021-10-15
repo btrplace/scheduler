@@ -146,6 +146,7 @@ public class IntObjectMap<V> {
      *
      * @param key   the entry key.
      * @param value the value.
+     * @return the previous value.
      */
     public V put(final int key, V value) {
         if (key < 0) {
@@ -180,6 +181,7 @@ public class IntObjectMap<V> {
      * Clear the given key. The value will be set to {@link #noEntryValue()}.
      *
      * @param key the key.
+     * @return the removed value.
      */
     public V clear(final int key) {
         if (key >= 0 && key < values.length) {

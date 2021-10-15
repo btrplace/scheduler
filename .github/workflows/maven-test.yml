@@ -12,11 +12,6 @@ on:
 jobs:
   test-suite:
     runs-on: ubuntu-latest
-    # Tests matrix
-    strategy:
-      #fail-fast: false
-      matrix:
-        group: [ "1s", "10s", "checker", "mzn", "xcsp", "dimacs", "mps", "ibex" ]
 
     # The different steps
     steps:

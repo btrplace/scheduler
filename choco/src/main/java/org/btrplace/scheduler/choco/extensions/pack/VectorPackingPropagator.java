@@ -14,10 +14,12 @@ import org.chocosolver.solver.constraints.PropagatorPriority;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.delta.IIntDeltaMonitor;
+import org.chocosolver.solver.variables.delta.monitor.EnumDeltaMonitor;
 import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.solver.variables.events.PropagatorEventType;
 import org.chocosolver.util.ESat;
 import org.chocosolver.util.iterators.DisposableValueIterator;
+import org.chocosolver.util.procedure.IntProcedure;
 import org.chocosolver.util.procedure.UnaryIntProcedure;
 import org.chocosolver.util.tools.ArrayUtils;
 
@@ -232,11 +234,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
                 recomputeLoadSums(); // TODO: update rather than recompute
             }
         }
-        if (decoHeap != null) {
-            decoHeap.fixPoint(recomputeLoads);
-        } else {
-            fixPoint();
-        }
+        decoHeap.fixPoint(recomputeLoads);
         assert checkLoadConsistency();
     }
 
@@ -318,9 +316,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
-        updateLoads(item, bin);
+        /*updateLoads(item, bin);
         if (decoKPSimple != null) {
             decoKPSimple.postRemoveItem(item, bin);
+        }*/
+        if (decoKPSimple.postRemoveItem(item, bin)) {
+            updateLoads(item, bin);
         }
     }
 
@@ -345,9 +346,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         for (int d = 0; d < nbDims; d++) {
             filterLoadInf(d, bin, assignedLoad[d][bin].add(iSizes[d][item]));
         }
-        if (decoKPSimple != null) {
-            decoKPSimple.postAssignItem(item, bin);
-        }
+        decoKPSimple.postAssignItem(item, bin);
     }
 
     /**
@@ -476,9 +475,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
 
         loadsHaveChanged = getModel().getEnvironment().makeBool(false);
 
-        if (decoKPSimple != null) {
-            decoKPSimple.postInitialize();
-        }
+        decoKPSimple.postInitialize();
 
         assert checkLoadConsistency();
 
