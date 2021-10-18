@@ -28,7 +28,6 @@ jobs:
         run: mvn --batch-mode test
 
       # Update coverage report.
-      - uses: actions/checkout@v2
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
