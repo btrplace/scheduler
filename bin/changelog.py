@@ -70,7 +70,7 @@ def getLog(v):
 	return False
 
 def usage():
-		print("Usage %s [new|timestamp] version?" % sys.argv[0], file=sys.stderr)
+		print("Usage %s [new|timestamp|log] version?" % sys.argv[0], file=sys.stderr)
 		exit(1)
 
 ####### ---------- MAIN ------------- ################
