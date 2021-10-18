@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-#Script to get the maven project version and manipulate it a bit
-#basically, it is faster and more robust than mvn versions
-import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import ParseError
+#Script to get the maven project version and manipulate it a bit.
+#basically, it is faster and more robust than mvn versions.
+# Requires defusedxml.
+import defusedxml.ElementTree as ET
+from defusedxml.ElementTree import ParseError
 import sys
 
 def toRelease(v):
 	if v.endswith("-SNAPSHOT"):
 		return v[0:-1*len("-SNAPSHOT")]
 	return v
-
 
 def nextVersion(v):
 	if v.endswith("-SNAPSHOT"):
