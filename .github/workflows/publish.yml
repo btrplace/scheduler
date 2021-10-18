@@ -1,0 +1,29 @@
+# Workflow to perform CI on scheduler.
+# This includes the compilation, the testing and the generation of code coverage report.
+
+name: Continuous Integration
+on:
+  workflow_run:
+    workflows: [ "Continuous Integration" ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    needs: continuous-integration
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Maven central repository
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          server-id: sonatype
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: publish packages
+        run: mvn --batch-mode -DskipTests javadoc:aggregate-jar source:jar deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
