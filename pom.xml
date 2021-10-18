@@ -117,6 +117,9 @@
                         <exclude>org/btrplace/bench/**/*</exclude>
                         <exclude>org/btrplace/scheduler/runner/disjoint/**/*</exclude>
                     </excludes>
+                    <formats>
+                        <format>XML</format>
+                    </formats>
                 </configuration>
                 <executions>
                     <execution>
