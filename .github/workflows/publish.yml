@@ -1,7 +1,7 @@
 # Workflow to perform CI on scheduler.
 # This includes the compilation, the testing and the generation of code coverage report.
 
-name: Continuous Integration
+name: Package publisher
 on:
   workflow_run:
     workflows: [ "Continuous Integration" ]
