@@ -316,10 +316,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void removeItem(int item, int bin) throws ContradictionException {
-        /*updateLoads(item, bin);
-        if (decoKPSimple != null) {
-            decoKPSimple.postRemoveItem(item, bin);
-        }*/
         if (decoKPSimple.postRemoveItem(item, bin)) {
             updateLoads(item, bin);
         }
