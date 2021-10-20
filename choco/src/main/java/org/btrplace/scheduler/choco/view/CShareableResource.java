@@ -30,6 +30,7 @@ import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.RoundedUpDivision;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.util.IntMap;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -514,9 +515,11 @@ public class CShareableResource implements ChocoView {
     public Set<VM> getMisPlacedVMs(Instance i) {
 
         final TObjectDoubleMap<Node> wantedRatios =
-            new TObjectDoubleHashMap<>();
-        final TObjectIntMap<VM> wantedAmount = new TObjectIntHashMap<>();
-        final TObjectIntMap<Node> wantedCapacity = new TObjectIntHashMap<>();
+                new TObjectDoubleHashMap<>();
+        final int nbVMs = i.getModel().getMapping().getNbVMs();
+        final int nbNodes = i.getModel().getMapping().getNbNodes();
+        final IntMap wantedAmount = new IntMap(0, nbVMs);
+        final IntMap wantedCapacity = new IntMap(0, nbNodes);
 
         for (SatConstraint c : i.getSatConstraints()) {
             if (!(c instanceof ResourceRelated && ((ResourceRelated) c).getResource().equals(rc.getResourceIdentifier()))) {
@@ -526,7 +529,7 @@ public class CShareableResource implements ChocoView {
                 // We guarantee the highest request so far.
                 VM v = c.getInvolvedVMs().iterator().next();
                 int qty = ((Preserve) c).getAmount();
-                wantedAmount.put(v, Math.max(wantedAmount.get(v), qty));
+                wantedAmount.put(v.id(), Math.max(wantedAmount.get(v.id()), qty));
             } else if (c instanceof Overbook) {
                 Node n = c.getInvolvedNodes().iterator().next();
                 double min = ((Overbook) c).getRatio();
@@ -537,7 +540,7 @@ public class CShareableResource implements ChocoView {
             } else if (c instanceof ResourceCapacity && c.getInvolvedNodes().size() == 1) {
                 Node n = c.getInvolvedNodes().iterator().next();
                 int qty = ((ResourceCapacity) c).getAmount();
-                wantedCapacity.put(n, Math.max(qty, wantedCapacity.get(n)));
+                wantedCapacity.put(n.id(), Math.max(qty, wantedCapacity.get(n.id())));
             }
         }
         Mapping m = i.getModel().getMapping();
@@ -562,20 +565,21 @@ public class CShareableResource implements ChocoView {
      * @return {@code true} iff the node is overloaded.
      */
     private boolean overloaded(final TObjectDoubleMap<Node> wantedRatios,
-                               final TObjectIntMap<VM> wantedAmount,
-                               final TObjectIntMap<Node> wantedCapacity,
+                               final IntMap wantedAmount,
+                               final IntMap wantedCapacity,
                                final Collection<VM> vms, Node n) {
 
+        // By default, free is the current capacity.
         int free = rc.getCapacity(n);
-        if (wantedCapacity.containsKey(n)) {
-            free = wantedCapacity.get(n);
+        if (wantedCapacity.has(n.id())) {
+            free = wantedCapacity.get(n.id());
         }
         if (wantedRatios.containsKey(n)) {
             free *= (int) (wantedRatios.get(n));
         }
         for (VM vm : vms) {
-            if (wantedAmount.containsKey(vm)) {
-                free -= wantedAmount.get(vm);
+            if (wantedAmount.has(vm.id())) {
+                free -= wantedAmount.get(vm.id());
             } else {
                 free -= rc.getConsumption(vm);
             }
@@ -608,7 +612,7 @@ public class CShareableResource implements ChocoView {
 
         int[] capa = new int[rcs.size()];
         int[] cons = new int[rcs.size()];
-        TObjectIntMap<VM> cost = new TObjectIntHashMap<>();
+        TObjectIntMap<VM> cost = new TObjectIntHashMap<>(mo.getMapping().getNbVMs());
         for (Node n : mo.getMapping().getAllNodes()) {
             for (int i = 0; i < rcs.size(); i++) {
                 capa[i] += (int) (rcs.get(i).virtRcUsage.get(rp.getNode(n)).getUB() * rcs.get(i).ratios.get(rp.getNode(n)));
