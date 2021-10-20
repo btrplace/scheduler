@@ -120,7 +120,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
 
     private Boolean strictlyDecreasingOrUnchanged(VM vm) {
         //If it has non-overlapping slices
-        int[] slicesIndexes = non.get(vm);
+        int[] slicesIndexes = non.get(vm.id());
         if (slicesIndexes == null) {
             return false;
         }

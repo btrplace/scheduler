@@ -41,7 +41,17 @@ public class IntObjectMapTest {
 
     @Test
     public void testForEach() {
-        final IntObjectMap m = new IntObjectMap(-1);
+        IntObjectMap m = new IntObjectMap(null, 0);
+        m.forEach((k, v) -> {
+            Assert.fail();
+            return true;
+        });
+
+        m = new IntObjectMap(-1);
+        m.forEach((k, v) -> {
+            Assert.fail();
+            return true;
+        });
         for (int i = 0; i < 10; i += 2) {
             m.put(i, i * 2);
         }

@@ -1,24 +1,23 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2021 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.view;
 
-import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.extensions.LocalTaskScheduler;
 import org.btrplace.scheduler.choco.transition.VMTransition;
+import org.btrplace.util.IntObjectMap;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Basic for scheduling constraints related to resource management.
@@ -44,7 +43,7 @@ public abstract class AbstractCumulatives implements ChocoView {
     /**
      * Ids of non-overlapping slices.
      */
-    protected Map<VM, int[]> non;
+    protected IntObjectMap<int[]> non;
 
     @Override
     public boolean inject(Parameters ps, ReconfigurationProblem rp) throws SchedulerException {
@@ -55,7 +54,7 @@ public abstract class AbstractCumulatives implements ChocoView {
         List<Slice> cS = new ArrayList<>();
 
 
-        non = new HashMap<>();
+        non = new IntObjectMap<>(null, rp.getVMActions().size());
 
         int dIdx = 0;
         int cIdx = 0;
@@ -65,7 +64,7 @@ public abstract class AbstractCumulatives implements ChocoView {
             Slice d = a.getDSlice();
 
             if (d != null && c != null) {
-                non.put(a.getVM(), new int[]{dIdx, cIdx});
+                non.put(a.getVM().id(), new int[]{dIdx, cIdx});
             }
             if (d != null) {
                 dS.add(dIdx, d);
@@ -105,13 +104,11 @@ public abstract class AbstractCumulatives implements ChocoView {
     private int[] makeAssociations() {
         int[] res = new int[dHosts.length];
         //No associations task by default, then we create the associations.
-        for (int i = 0; i < res.length; i++) {
-            res[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
-        }
-        for (Map.Entry<VM, int[]> e : non.entrySet()) {
-            int[] assoc = e.getValue();
+        Arrays.fill(res, LocalTaskScheduler.NO_ASSOCIATIONS);
+        non.forEach((id, assoc) -> {
             res[assoc[0]] = assoc[1];
-        }
+            return true;
+        });
         return res;
     }
 }

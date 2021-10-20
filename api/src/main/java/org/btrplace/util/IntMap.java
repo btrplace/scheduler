@@ -200,6 +200,9 @@ public class IntMap {
      * @param e the iterator to use.
      */
     public void forEach(final Entry e) {
+        if (count == 0) {
+            return;
+        }
         for (int i = 0; i <= lastKey; i++) {
             final int v = values[i];
             if (v == noValue) {

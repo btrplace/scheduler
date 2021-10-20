@@ -200,7 +200,6 @@ public class IntObjectMap<V> {
      */
     public void clear() {
         Arrays.fill(values, noValue);
-        lastKey = 0;
         count = 0;
     }
 
@@ -212,6 +211,9 @@ public class IntObjectMap<V> {
      * @param e the iterator to use.
      */
     public void forEach(final Entry<V> e) {
+        if (count == 0) {
+            return;
+        }
         for (int i = 0; i <= lastKey; i++) {
             final V v = values[i];
             if (v == noValue) {

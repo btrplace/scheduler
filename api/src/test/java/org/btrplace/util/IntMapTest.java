@@ -38,7 +38,17 @@ public class IntMapTest {
 
     @Test
     public void testForEach() {
-        final IntMap m = new IntMap(-1);
+        IntMap m = new IntMap(0, 0);
+        m.forEach((k, v) -> {
+            Assert.fail();
+            return true;
+        });
+
+        m = new IntMap(-1);
+        m.forEach((k, v) -> {
+            Assert.fail();
+            return true;
+        });
         for (int i = 0; i < 10; i += 2) {
             m.put(i, i * 2);
         }
