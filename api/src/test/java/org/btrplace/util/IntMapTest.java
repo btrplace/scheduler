@@ -155,4 +155,14 @@ public class IntMapTest {
         m.clear();
         Assert.assertEquals(0, m.size());
     }
+
+    @Test
+    public void testAdjust() {
+        final IntMap m = new IntMap(-1);
+        m.put(5, 7);
+        Assert.assertEquals(m.adjust(2, 3), -1);
+        Assert.assertEquals(m.adjust(-1, 3), -1);
+        Assert.assertEquals(m.adjust(6, 3), -1);
+        Assert.assertEquals(m.adjust(5, 3), 10);
+    }
 }

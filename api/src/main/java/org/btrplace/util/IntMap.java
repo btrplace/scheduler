@@ -157,6 +157,22 @@ public class IntMap {
     }
 
     /**
+     * Adjust the value of a given known key.
+     *
+     * @param key   the key.
+     * @param value the value to add.
+     * @return the new value if the key was set. {@link #noEntryValue()} otherwise.
+     */
+    public int adjust(final int key, final int value) {
+        if (key < 0 || key >= values.length || values[key] == noValue) {
+            // Unknown key.
+            return noValue;
+        }
+        values[key] += value;
+        return values[key];
+    }
+
+    /**
      * Returns a copy of the map.
      *
      * @return a clean copy.
