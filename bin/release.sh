@@ -20,7 +20,7 @@ echo "  Milestone ${VERSION} closed"
 ####
 
 # Set the version, maven side.
-mvn versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false||exit 1
+mvn -T 1C versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false||exit 1
 # changelog side.
 ./bin/changelog.py timestamp||exit 1
 git commit -m "Release version ${VERSION}" -a
@@ -36,7 +36,7 @@ echo "** Release ${TAG} cut from ${COMMIT} **"
 NEW_VERSION=$(./bin/version.py --next)
 DEV_VERSION="${NEW_VERSION}-SNAPSHOT"
 echo "** New development version: ${DEV_VERSION} **"
-mvn versions:set -DnewVersion="${DEV_VERSION}" -DgenerateBackupPoms=false >version.out 2>&1 ||warn "Unable to set the new version" version.out
+mvn -T 1C versions:set -DnewVersion="${DEV_VERSION}" -DgenerateBackupPoms=false >version.out 2>&1 ||warn "Unable to set the new version" version.out
 ./bin/changelog.py new "${NEW_VERSION}"
 ./bin/github.py milestone-open "${NEW_VERSION}"||exit 1
 echo "  Milestone ${NEW_VERSION} opened"
