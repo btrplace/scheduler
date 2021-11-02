@@ -5,6 +5,9 @@ name: Package publisher
 on:
   workflow_run:
     workflows: [ "Continuous Integration" ]
+  push:
+    branches:
+      - master
 
 jobs:
   publish:
