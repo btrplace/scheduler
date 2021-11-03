@@ -16,7 +16,7 @@ run)
     mvn -T 1C -q -f ../ clean install -DskipTests -Dgpg.skip||exit 1
     #We run 11 times and get rid of the first run because the JIT will not be activated
     echo "Running the benchmark"
-    mvn -T 1C exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-c -l src/test/resources/std-perf/std-perf.txt --repair --timeout 300 -v 1 -o ${OUTPUT}" ||exit 1
+    mvn exec:java -Dexec.mainClass="org.btrplace.bench.Bench" -Dexec.args="-c -l src/test/resources/std-perf/std-perf.txt --repair --timeout 300 -v 1 -o ${OUTPUT}" ||exit 1
     echo "Statistics available in ${OUTPUT}. Run '$0 stats ${OUTPUT}' to generate them"
     ;;
 stats)
