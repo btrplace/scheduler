@@ -201,6 +201,9 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
+                	<parallel>classes</parallel>
+                	<useUnlimitedThreads>true</useUnlimitedThreads>
+
                 </configuration>
             </plugin>
             <plugin>

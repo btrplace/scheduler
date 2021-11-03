@@ -24,7 +24,7 @@ jobs:
 
       # Regression tests
       - name: Test
-        run: mvn --batch-mode test
+        run: mvn -T 1C --batch-mode test
 
       # Update coverage report.
       - name: Run codacy-coverage-reporter
