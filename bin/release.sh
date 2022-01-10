@@ -30,6 +30,11 @@ COMMIT=$(git rev-parse HEAD)
 git tag "${TAG}"||exit 1
 echo "** Release ${TAG} cut from ${COMMIT} **"
 
+# Git this single change to trigger the release.
+git push
+git push origin "${TAG}"
+
+
 ####
 # Prepare the next version.
 ####
