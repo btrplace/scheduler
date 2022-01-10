@@ -91,7 +91,8 @@ public class DefaultParameters implements Parameters {
         solutionListeners = new ArrayList<>();
 
         chocoSettings = Settings.prod()
-                .setMinCardinalityForSumDecomposition(10000);
+                .setMinCardinalityForSumDecomposition(10000)
+                .setCloneVariableArrayInPropagator(false);
     }
 
     /**
