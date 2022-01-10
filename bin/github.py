@@ -18,6 +18,7 @@ def createRelease(tag, changes):
 	rr = getRelease(tag)
 	dta = {
 		"draft" : False,
+		"prerelease": False,
 		"tag_name" : TAG_HEADER + tag,
 		"name": tag,
 		"body": changes,
