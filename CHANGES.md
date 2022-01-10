@@ -5,6 +5,12 @@ version 1.12.1 - soon come
 ----------------------
 See milestone [1.12.1](https://github.com/btrplace/scheduler/milestones/1.12.1)
 
+This releases is mostly about bug fix and performance improvement.
+- bug fixes and API updates in IntMap and IntObjectMap
+- performance improvement thanks to the move to choco 4.10.8
+- performance improvement in the packing and knapsack
+
+
 version 1.12.0 - 11 Oct 2021
 ----------------------
 See milestone [1.12.0](https://github.com/btrplace/scheduler/milestones/1.12.0)
