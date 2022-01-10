@@ -1,13 +1,10 @@
-# Workflow to perform CI on scheduler.
-# This includes the compilation, the testing and the generation of code coverage report.
+# Workflow to publish maven packages when a release is created.
+# In practice, this releases is initiated by bin/release.sh.
 
-name: Package publisher
+name: release package publisher
 on:
-  workflow_run:
-    workflows: [ "Continuous Integration" ]
-  push:
-    branches:
-      - master
+  release:
+    types: [created]
 
 jobs:
   publish:
@@ -25,6 +22,12 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           distribution: 'adopt'
           cache: maven
+
+      # Regression tests.
+      - name: Test
+        run: mvn -T 1C --batch-mode test
+
+      # Publish.
       - name: publish packages
         run: mvn -T 1C --batch-mode -DskipTests javadoc:aggregate-jar source:jar deploy
         env:
