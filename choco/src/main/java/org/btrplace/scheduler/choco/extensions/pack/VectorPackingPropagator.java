@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -233,6 +233,9 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
         decoHeap.fixPoint(recomputeLoads);
         assert checkLoadConsistency();
+        for (final IIntDeltaMonitor dm : deltaMonitor) {
+            dm.startMonitoring();
+        }
     }
 
 
