@@ -35,7 +35,7 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.33</slf4j.version>
         <testng.version>7.3.0</testng.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
