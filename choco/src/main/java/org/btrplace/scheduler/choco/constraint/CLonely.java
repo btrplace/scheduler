@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -20,11 +20,7 @@ import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of {@link org.btrplace.model.constraint.Lonely}.
@@ -68,8 +64,8 @@ public class CLonely implements ChocoConstraint {
 
         //Link the assignment variables with the set
         Model s = rp.getModel();
-        s.post(new Disjoint(myHosts.toArray(new IntVar[0]),
-                otherHosts.toArray(new IntVar[0]),
+        s.post(new Disjoint(
+                new IntVar[][]{myHosts.toArray(new IntVar[0]), otherHosts.toArray(new IntVar[0])},
                 rp.getNodes().size()));
 
         if (cstr.isContinuous()) {

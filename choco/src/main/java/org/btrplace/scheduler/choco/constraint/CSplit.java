@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -16,7 +16,7 @@ import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.extensions.DisjointMultiple;
+import org.btrplace.scheduler.choco.extensions.Disjoint;
 import org.btrplace.scheduler.choco.extensions.Precedences;
 import org.btrplace.scheduler.choco.transition.VMTransition;
 import org.chocosolver.solver.Model;
@@ -67,7 +67,7 @@ public class CSplit implements ChocoConstraint {
         for (int i = 0; i < groups.size(); i++) {
             vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
         }
-        csp.post(new DisjointMultiple(vars, nbNodes));
+        csp.post(new Disjoint(vars, nbNodes));
 
         return !(cstr.isContinuous() && !injectContinuous(rp, vmGroups));
     }

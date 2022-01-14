@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.constraint.Fence;
 import org.btrplace.model.constraint.Lonely;
 import org.btrplace.model.constraint.MinMTTR;
@@ -54,6 +49,7 @@ public class CLonelyTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
+        cra.setVerbosity(1);
         ReconfigurationPlan plan = cra.solve(mo, Collections.singleton(l));
         Assert.assertNotNull(plan);
     }
