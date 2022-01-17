@@ -5,6 +5,10 @@ version 1.12.2 - soon come
 ----------------------
 See milestone [1.12.2](https://github.com/btrplace/scheduler/milestones/1.12.2)
 
+Minor release to update the Disjoint constraint that was not compliant with
+Choco API.
+
+
 version 1.12.1 - 10 Jan 2022
 ----------------------
 See milestone [1.12.1](https://github.com/btrplace/scheduler/milestones/1.12.1)
