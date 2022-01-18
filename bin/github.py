@@ -86,14 +86,14 @@ def usage():
 ####### ---------- MAIN ------------- ################
 if __name__ == "__main__":
 
+	if not os.environ.get('GH_TOKEN'):
+		print("Environment variable GH_TOKEN missing", file=sys.stderr)
+		exit(1)
+
 	if (len(sys.argv) == 1):
 		usage()
 
 	op = sys.argv[1]
-
-	if not os.environ.get('GH_TOKEN'):
-		print("Environment variable GH_TOKEN missing", file=sys.stderr)
-		exit(1)
 
 	v=""
 	if len(sys.argv) > 2:

@@ -5,6 +5,10 @@
 
 source bin/commons.sh
 
+if [[ -z "$GH_TOKEN" ]]; then
+  echo "Environment variable GH_TOKEN is missing."
+  exit 1
+fi
 git checkout -b release ||exit 1
 
 ####
