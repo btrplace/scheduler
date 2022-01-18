@@ -124,7 +124,7 @@ public class DisjointTest {
 
     private Set<Map<String, Integer>> solutions(final Model m, long seed) {
         m.getSolver().setSearch(Search.randomSearch(m.retrieveIntVars(true), seed));
-        List<Solution> sols = m.getSolver().findAllSolutions(new SolutionCounter(m, 100));
+        List<Solution> sols = m.getSolver().findAllSolutions();
         Set<Map<String, Integer>> all = new HashSet<>();
         for (final Solution sol : sols) {
             Map<String, Integer> map = new HashMap<>();
