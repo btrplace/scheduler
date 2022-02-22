@@ -39,6 +39,7 @@
         <testng.version>7.3.0</testng.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+    	<closeTestReports>true</closeTestReports>
     </properties>
     <licenses>
         <license>
@@ -203,6 +204,7 @@
                     </includes>
                 	<parallel>classes</parallel>
                     <threadCount>5</threadCount>
+                	<disableXmlReport>${closeTestReports}</disableXmlReport>
                 </configuration>
             </plugin>
             <plugin>
