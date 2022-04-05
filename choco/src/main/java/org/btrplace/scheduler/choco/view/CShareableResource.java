@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -75,6 +75,11 @@ public class CShareableResource implements ChocoView {
     private Map<VM, VM> references;
     private Map<VM, VM> clones;
 
+
+    /**
+     * VMs have changing demands.
+     */
+    private Set<VM> changing;
 
     /**
      * The default value of ratio is not logical to detect an unchanged value
@@ -288,13 +293,17 @@ public class CShareableResource implements ChocoView {
     public boolean beforeSolve(ReconfigurationProblem p) throws SchedulerException {
 
         ChocoView v = rp.getRequiredView(Packing.VIEW_ID);
-
+        changing = new HashSet<>();
         IntVar[] host = new IntVar[p.getFutureRunningVMs().size()];
         int[] demand = new int[host.length];
         int i = 0;
         for (VM vm : p.getFutureRunningVMs()) {
             host[i] = rp.getVMAction(vm).getDSlice().getHoster();
             demand[i] = getFutureVMAllocation(p.getVM(vm));
+            if (demand[i] != rc.getConsumption(vm)) {
+                // The VM is asking for a change.
+                changing.add(vm);
+            }
             i++;
         }
         ((Packing) v).addDim(rc.getResourceIdentifier(),
@@ -311,12 +320,14 @@ public class CShareableResource implements ChocoView {
     public boolean insertActions(ReconfigurationProblem r, Solution s, ReconfigurationPlan p) {
         Mapping srcMapping = r.getSourceModel().getMapping();
 
-        // Encache the VM -> Action to ease the event injection.
+        // Encache the VM -> Action to ease the event injection. Focus only on the VMs that are changing (possibly
+        // indentified by a clone).
         Map<VM, Action> actions = new HashMap<>();
         p.getActions().stream().filter(RunningVMPlacement.class::isInstance)
-                .map(a -> (RunningVMPlacement) a).forEach(
-                a -> actions.put(destVM(a.getVM()), (Action) a));
-        for (VM vm : r.getFutureRunningVMs()) {
+                .map(a -> (RunningVMPlacement) a)
+                .filter(a -> changing.contains(a.getVM()) || clones.containsValue(a.getVM()))
+                .forEach(a -> actions.put(destVM(a.getVM()), (Action) a));
+        for (VM vm : changing) {
             Slice dSlice = r.getVMAction(vm).getDSlice();
             Node destNode = r.getNode(s.getIntVal(dSlice.getHoster()));
 
@@ -328,6 +339,10 @@ public class CShareableResource implements ChocoView {
             } else {
                 VM dVM = destVM(vm);
                 Action a = actions.get(dVM);
+                if (a == null) {
+                    // This is explained by a VM being clones. Accordingly, the action is assigned to its clone.
+                    a = actions.get(clones.get(dVM));
+                }
                 if (a instanceof MigrateVM) {
                     //For a migrated VM, we allocate once the migration over
                     insertAllocateEvent(a, Action.Hook.POST, dVM);
@@ -429,8 +444,11 @@ public class CShareableResource implements ChocoView {
             }
             if (d != null) {
                 int m = getFutureVMAllocation(rp.getVM(vm));
-                dUse.add(rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'"));
-
+                if (rp.labelVariables()) {
+                    dUse.add(rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'"));
+                } else {
+                    dUse.add(rp.getModel().intVar(m));
+                }
             }
         }
 
