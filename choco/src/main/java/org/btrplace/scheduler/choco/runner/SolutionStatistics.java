@@ -31,8 +31,12 @@ public class SolutionStatistics {
      * @param  plan the resulting plan. {@code null} indicates the solver stated their is no solution
      */
     public SolutionStatistics(Metrics m, ReconfigurationPlan plan) {
-        measures = m;
+        this(m);
         solution = plan;
+    }
+
+    public SolutionStatistics(Metrics m) {
+        this.measures = m;
     }
 
     /**
@@ -59,6 +63,10 @@ public class SolutionStatistics {
     public void setObjective(int v) {
         hasObjective = true;
         objective = v;
+    }
+
+    public void setReconfigurationPlan(final ReconfigurationPlan plan) {
+        this.solution = plan;
     }
 
     /**

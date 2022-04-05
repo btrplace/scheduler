@@ -69,7 +69,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private final Set<VM> sleeping;
     private final Set<VM> killed;
 
-    private final Set<VM> manageable;
+    private Set<VM> manageable;
 
     private List<VM> vms;
     private TObjectIntHashMap<VM> revVMs;
@@ -146,7 +146,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         makeNodeTransitions();
         makeVMTransitions();
-
+        manageable = Collections.unmodifiableSet(manageable);
         coreViews = new HashMap<>();
         for (Class<? extends ChocoView> c : ps.getChocoViews()) {
             try {
@@ -166,7 +166,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
 
         //Check for multiple destination state
-        if (!distinctVMStates()) {
+        if (getLogger().isDebugEnabled() && !distinctVMStates()) {
             return null;
         }
 
@@ -517,6 +517,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return csp.intVar(makeVarLabel(n), 0, nodes.size() - 1, false);
     }
 
+    public IntVar makeHostVariable() {
+        return csp.intVar(0, nodes.size() - 1, false);
+    }
+
     @Override
     public IntVar makeHostVariable(List<Node> candidates, Object... n) {
         if (candidates.size() == 1) {
@@ -557,6 +561,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public IntVar makeDuration(int ub, int lb) throws SchedulerException {
+        return csp.intVar(lb, ub, true);
+    }
+
+    @Override
     public final String makeVarLabel(Object... lbl) {
         if (!useLabels) {
             return "";
@@ -574,6 +583,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return b.toString();
     }
 
+    public boolean labelVariables() {
+        return useLabels;
+    }
+
     @Override
     public IntVar fixed(int v, Object... lbl) {
         if (useLabels) {
@@ -584,7 +597,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Set<VM> getManageableVMs() {
-        return Collections.unmodifiableSet(manageable);
+        return manageable;
     }
 
     @Override

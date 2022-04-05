@@ -32,7 +32,7 @@ public class SliceBuilder {
 
   private final VM vm;
 
-  private final Object[] lblPrefix;
+  private Object[] lblPrefix;
 
     /**
      * Make a new Builder.
@@ -47,6 +47,11 @@ public class SliceBuilder {
         lblPrefix = prefix;
     }
 
+    public SliceBuilder(ReconfigurationProblem p, VM v) {
+        this.rp = p;
+        this.vm = v;
+    }
+
     /**
      * Build the slice.
      *
@@ -55,7 +60,11 @@ public class SliceBuilder {
      */
     public Slice build() throws SchedulerException {
         if (hoster == null) {
-            hoster = rp.makeHostVariable(lblPrefix, "_hoster");
+            if (rp.labelVariables()) {
+                hoster = rp.makeHostVariable(lblPrefix, "_hoster");
+            } else {
+                hoster = rp.makeHostVariable();
+            }
         }
         if (start == null) {
             start = rp.getStart();
@@ -82,7 +91,11 @@ public class SliceBuilder {
     private IntVar makeDuration() throws SchedulerException {
         if (start.isInstantiated() && end.isInstantiated()) {
             int d = end.getValue() - start.getValue();
-            return rp.makeDuration(d, d, lblPrefix, "_duration");
+            if (rp.labelVariables()) {
+                return rp.makeDuration(d, d, lblPrefix, "_duration");
+            } else {
+                return rp.getModel().intVar(d);
+            }
         } else if (start.isInstantiated()) {
             if (start.isInstantiatedTo(0)) {
                 return end;
@@ -94,7 +107,10 @@ public class SliceBuilder {
             inf = 0;
         }
         int sup = end.getUB() - start.getLB();
-        return rp.makeDuration(sup, inf, lblPrefix, "_duration");
+        if (rp.labelVariables()) {
+            return rp.makeDuration(sup, inf, lblPrefix, "_duration");
+        }
+        return rp.makeDuration(sup, inf);
     }
 
     /**
@@ -148,7 +164,11 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.fixed(v, lblPrefix, "_hoster(", vm, ")");
+        if (rp.labelVariables()) {
+            this.hoster = rp.fixed(v, lblPrefix, "_hoster(", vm, ")");
+        } else {
+            this.hoster = rp.getModel().intVar(v);
+        }
         return this;
     }
 }

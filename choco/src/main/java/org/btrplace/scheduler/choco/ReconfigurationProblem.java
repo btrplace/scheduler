@@ -256,6 +256,8 @@ public interface ReconfigurationProblem {
      */
     IntVar makeHostVariable(Object... n);
 
+    IntVar makeHostVariable();
+
     /**
      * Create a variable that indicate the placement of an element on a node.
      *
@@ -305,6 +307,8 @@ public interface ReconfigurationProblem {
      * @throws org.btrplace.scheduler.SchedulerException if the bounds are not valid
      */
     IntVar makeDuration(int ub, int lb, Object... n) throws SchedulerException;
+
+    IntVar makeDuration(int ub, int lb) throws SchedulerException;
 
     /**
      * Get the view associated to a given identifier.
@@ -361,6 +365,8 @@ public interface ReconfigurationProblem {
      * @return the label that will be used in practice
      */
     String makeVarLabel(Object... lbl);
+
+    boolean labelVariables();
 
     /**
      * Make a constant.
