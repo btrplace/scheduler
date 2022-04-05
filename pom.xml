@@ -108,7 +108,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.8</version>
                 <configuration>
                     <excludes>
                         <exclude>org/btrplace/btrpsl/**/*</exclude>
@@ -175,7 +175,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.3.2</version>
                 <configuration>
                     <doctitle>${project.groupId}-${project.artifactId} ${project.version} API</doctitle>
                     <windowtitle>${project.groupId}-${project.artifactId} ${project.version} API</windowtitle>
