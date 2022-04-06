@@ -36,7 +36,7 @@ public final class ChocoUtils {
         if (rp.labelVariables()) {
             bC2 = s.boolVar(rp.makeVarLabel(c2.toString(), " satisfied"));
         } else {
-            bC2 = s.boolVar();
+            bC2 = s.boolVar("");
         }
         c2.reifyWith(bC2);
 
@@ -60,7 +60,7 @@ public final class ChocoUtils {
         if (rp.labelVariables()) {
             bC2 = csp.boolVar(rp.makeVarLabel(c2, " satisfied"));
         } else {
-            bC2 = csp.boolVar();
+            bC2 = csp.boolVar("");
         }
         c2.reifyWith(bC2);
         BoolVar notBC2 = bC2.not();

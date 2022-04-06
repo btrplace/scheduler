@@ -94,7 +94,7 @@ public class BootableNode implements NodeTransition {
         if (rp.labelVariables()) {
             isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, nId, ").online"));
         } else {
-            isOnline = csp.boolVar();
+            isOnline = csp.boolVar("");
         }
         BoolVar isOffline = isOnline.not();
         csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(nId)), 0));

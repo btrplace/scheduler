@@ -343,7 +343,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (useLabels) {
                 card = csp.intVar(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, true);
             } else {
-                card = csp.intVar(0, nbVMs, true);
+                card = csp.intVar("",0, nbVMs, true);
             }
             vmsCountOnNodes.add(card);
         }
@@ -525,7 +525,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeHostVariable() {
-        return csp.intVar(0, nodes.size() - 1, false);
+        return csp.intVar("", 0, nodes.size() - 1, false);
     }
 
     @Override
@@ -581,7 +581,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeUnboundedDuration() {
-        return csp.intVar(0, end.getUB(), true);
+        return csp.intVar("", 0, end.getUB(), true);
     }
 
     @Override
@@ -591,7 +591,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeDuration(int ub, int lb) throws SchedulerException {
-        return csp.intVar(lb, ub, true);
+        return csp.intVar("", lb, ub, true);
     }
 
     @Override

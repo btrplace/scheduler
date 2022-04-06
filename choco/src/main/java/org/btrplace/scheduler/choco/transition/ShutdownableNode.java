@@ -94,7 +94,7 @@ public class ShutdownableNode implements NodeTransition {
         if (rp.labelVariables()) {
             isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, e, ").online"));
         } else {
-            isOnline = csp.boolVar();
+            isOnline = csp.boolVar("");
         }
         isOffline = isOnline.not();
         csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(e)), 0));

@@ -96,7 +96,7 @@ public class CResourceCapacity implements ChocoConstraint {
         if (rp.labelVariables()) {
             mySum = csp.intVar(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, true);
         } else {
-            mySum = csp.intVar(0, Integer.MAX_VALUE / 100, true);
+            mySum = csp.intVar("", 0, Integer.MAX_VALUE / 100, true);
         }
         csp.post(csp.sum(vs.toArray(new IntVar[vs.size()]), "=", mySum));
         csp.post(csp.arithm(mySum, "<=", cstr.getAmount()));

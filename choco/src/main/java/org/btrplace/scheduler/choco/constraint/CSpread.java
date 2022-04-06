@@ -108,7 +108,7 @@ public class CSpread implements ChocoConstraint {
             if (rp.labelVariables()) {
                 eq = csp.boolVar(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"));
             } else {
-                eq = csp.boolVar();
+                eq = csp.boolVar("");
             }
 
           rp.getModel().arithm(d.getHoster(), "=", c.getHoster()).reifyWith(eq);

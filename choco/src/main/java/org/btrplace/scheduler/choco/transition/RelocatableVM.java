@@ -170,7 +170,7 @@ public class RelocatableVM implements KeepRunningVM {
             if (rp.labelVariables()) {
                 doReinstantiation = csp.boolVar(rp.makeVarLabel("relocation_method(", vm, ")"));
             } else {
-                doReinstantiation = csp.boolVar();
+                doReinstantiation = csp.boolVar("");
             }
 
             if (rp.labelVariables()) {
@@ -178,7 +178,7 @@ public class RelocatableVM implements KeepRunningVM {
                         Math.min(migrationDuration.getLB(), reInstantiateDuration),
                         Math.max(migrationDuration.getUB(), reInstantiateDuration), true);
             } else {
-                duration = csp.intVar(Math.min(migrationDuration.getLB(), reInstantiateDuration),
+                duration = csp.intVar("", Math.min(migrationDuration.getLB(), reInstantiateDuration),
                         Math.max(migrationDuration.getUB(), reInstantiateDuration), true);
             }
 
@@ -196,7 +196,7 @@ public class RelocatableVM implements KeepRunningVM {
                 time = csp.intVar(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD),
                         0, forgeD, false);
             } else {
-                time = csp.intVar(0, forgeD, false);
+                time = csp.intVar("", 0, forgeD, false);
             }
             csp.post(csp.times(doReinstantiation, forgeD, time));
             csp.post(rp.getModel().arithm(start, ">=", time));
@@ -210,7 +210,7 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // If the VM stay (src host == dst host), then duration = 0
-        stay = rp.labelVariables() ? csp.boolVar(rp.makeVarLabel(vm, "stay")) : csp.boolVar();
+        stay = rp.labelVariables() ? csp.boolVar(rp.makeVarLabel(vm, "stay")) : csp.boolVar("");
         csp.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         csp.post(new FastIFFEq(stay, duration, 0));
         //We have to force the migration duration equals to 0 if it stays

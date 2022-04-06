@@ -115,8 +115,8 @@ public class CShareableResource implements ChocoView {
                 phyU = csp.intVar(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), true);
                 virtU = csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, true);
             } else {
-                phyU = csp.intVar(0, rc.getCapacity(nId), true);
-                virtU = csp.intVar(0, Integer.MAX_VALUE / 100, true);
+                phyU = csp.intVar("", 0, rc.getCapacity(nId), true);
+                virtU = csp.intVar("", 0, Integer.MAX_VALUE / 100, true);
             }
             phyRcUsage.add(phyU);
             virtRcUsage.add(virtU);
