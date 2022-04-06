@@ -491,8 +491,7 @@ public class CShareableResource implements ChocoView {
             }
         }
     }
-
-
+    
     private boolean linkVirtualToPhysicalUsage(int nIdx) {
         double r = ratios.get(nIdx);
         if (r == UNCHECKED_RATIO) {
