@@ -444,11 +444,7 @@ public class CShareableResource implements ChocoView {
             }
             if (d != null) {
                 int m = getFutureVMAllocation(rp.getVM(vm));
-                if (rp.labelVariables()) {
-                    dUse.add(rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'"));
-                } else {
-                    dUse.add(rp.getModel().intVar(m));
-                }
+                dUse.add(rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'"));
             }
         }
 
