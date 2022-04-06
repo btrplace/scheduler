@@ -453,7 +453,6 @@ public class CShareableResource implements ChocoView {
             }
             if (d != null) {
                 int m = getFutureVMAllocation(rp.getVM(vm));
-<<<<<<< HEAD
                 final IntVar var;
                 if (rp.labelVariables()) {
                     var = rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'");
@@ -461,9 +460,6 @@ public class CShareableResource implements ChocoView {
                     var = csp.intVar(m);
                 }
                 dUse.add(var);
-=======
-                dUse.add(rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'"));
->>>>>>> aeac23d36a2933e852d4384eebde16c5e8ddbc87
             }
         }
 
