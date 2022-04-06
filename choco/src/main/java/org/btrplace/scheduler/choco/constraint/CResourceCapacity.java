@@ -92,7 +92,12 @@ public class CResourceCapacity implements ChocoConstraint {
             vs.add(rcm.getVirtualUsage().get(rp.getNode(u)));
         }
 
-        IntVar mySum = csp.intVar(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, true);
+        IntVar mySum;
+        if (rp.labelVariables()) {
+            mySum = csp.intVar(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, true);
+        } else {
+            mySum = csp.intVar(0, Integer.MAX_VALUE / 100, true);
+        }
         csp.post(csp.sum(vs.toArray(new IntVar[vs.size()]), "=", mySum));
         csp.post(csp.arithm(mySum, "<=", cstr.getAmount()));
         return true;
@@ -122,7 +127,13 @@ public class CResourceCapacity implements ChocoConstraint {
             }
             if (d != null) {
                 int m = rcm.getFutureVMAllocation(rp.getVM(vmId));
-                dUse.add(rp.fixed(m, "vmAllocation('", rcm.getResourceIdentifier(), "', '", vmId, "'"));
+                final IntVar var;
+                if (rp.labelVariables()) {
+                    var = rp.fixed(m, "vmAllocation('", rcm.getResourceIdentifier(), "', '", vmId, "'");
+                } else {
+                    var = rp.getModel().intVar(m);
+                }
+                dUse.add(var);
             }
         }
         ChocoView v = rp.getRequiredView(AliasedCumulatives.VIEW_ID);

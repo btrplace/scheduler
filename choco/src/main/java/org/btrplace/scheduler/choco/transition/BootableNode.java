@@ -65,24 +65,24 @@ import org.chocosolver.solver.variables.IntVar;
  */
 public class BootableNode implements NodeTransition {
 
-  public static final String PREFIX = "bootableNode(";
-  private final IntVar start;
-  private final IntVar end;
-  private final BoolVar isOnline;
-  private final IntVar hostingStart;
-  private final IntVar hostingEnd;
-  private final IntVar effectiveDuration;
-  private final Node node;
+    public static final String PREFIX = "bootableNode(";
+    private final IntVar start;
+    private final IntVar end;
+    private final BoolVar isOnline;
+    private final IntVar hostingStart;
+    private final IntVar hostingEnd;
+    private final IntVar effectiveDuration;
+    private final Node node;
 
-  /**
-   * Make a new model.
-   *
-   * @param rp  the RP to use as a basis.
-   * @param nId the node managed by the action
-   * @throws org.btrplace.scheduler.SchedulerException if an error occurred
-   */
-  public BootableNode(ReconfigurationProblem rp, Node nId) throws SchedulerException {
-    node = nId;
+    /**
+     * Make a new model.
+     *
+     * @param rp  the RP to use as a basis.
+     * @param nId the node managed by the action
+     * @throws org.btrplace.scheduler.SchedulerException if an error occurred
+     */
+    public BootableNode(ReconfigurationProblem rp, Node nId) throws SchedulerException {
+        node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
         Model csp = rp.getModel();
@@ -91,22 +91,34 @@ public class BootableNode implements NodeTransition {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, nId, ").online"));
+        if (rp.labelVariables()) {
+            isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, nId, ").online"));
+        } else {
+            isOnline = csp.boolVar();
+        }
         BoolVar isOffline = isOnline.not();
         csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(nId)), 0));
 
 
         /*
-        * D = {0, d}
-        * D = St * d;
-        */
-        effectiveDuration = csp.intVar(
-                rp.makeVarLabel(PREFIX, nId, ").effectiveDuration")
-                , new int[]{0, d});
+         * D = {0, d}
+         * D = St * d;
+         */
+        if (rp.labelVariables()) {
+            effectiveDuration = csp.intVar(
+                    rp.makeVarLabel(PREFIX, nId, ").effectiveDuration")
+                    , new int[]{0, d});
+        } else {
+            effectiveDuration = csp.intVar(new int[]{0, d});
+        }
         csp.post(csp.times(isOnline, csp.intVar(d), effectiveDuration));
 
         /* As */
-        start = rp.makeUnboundedDuration(PREFIX, nId, ").start");
+        if (rp.labelVariables()) {
+            start = rp.makeUnboundedDuration(PREFIX, nId, ").start");
+        } else {
+            start = rp.makeUnboundedDuration();
+        }
         /* Ae */
         end = rp.makeUnboundedDuration(PREFIX, nId, ").end");
 

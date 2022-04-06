@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -256,6 +256,10 @@ public interface ReconfigurationProblem {
      */
     IntVar makeHostVariable(Object... n);
 
+    /**
+     * Create a variable that indicate the placement of an element on a node.
+     * @return a variable
+     */
     IntVar makeHostVariable();
 
     /**
@@ -279,6 +283,16 @@ public interface ReconfigurationProblem {
     IntVar makeCurrentHost(VM vmId, Object... n) throws SchedulerException;
 
     /**
+     * Create a variable that indicate the current placement of a VM.
+     * The variable is then already instantiated
+     *
+     * @param vmId the VM identifier
+     * @return the created variable
+     * @throws org.btrplace.scheduler.SchedulerException if an error occurred while creating the variable
+     */
+    IntVar makeCurrentHost(VM vmId) throws SchedulerException;
+
+    /**
      * Create a variable that indicate a given node.
      * The variable is then already instantiated
      *
@@ -290,12 +304,29 @@ public interface ReconfigurationProblem {
     IntVar makeCurrentNode(Node nId, Object... n) throws SchedulerException;
 
     /**
+     * Create a variable that indicate a given node.
+     * The variable is then already instantiated
+     *
+     * @param nId the node identifier
+     * @return the created variable
+     * @throws org.btrplace.scheduler.SchedulerException if an error occurred while creating the variable
+     */
+    IntVar makeCurrentNode(Node nId) throws SchedulerException;
+
+    /**
      * Create a variable denoting a duration.
      *
      * @param n the variable label. The toString() representation of the objects will be used
      * @return the created variable.
      */
     IntVar makeUnboundedDuration(Object... n);
+
+    /**
+     * Create a variable denoting a duration.
+     *
+     * @return the created variable.
+     */
+    IntVar makeUnboundedDuration();
 
     /**
      * Create a variable that indicate a moment.
@@ -308,6 +339,14 @@ public interface ReconfigurationProblem {
      */
     IntVar makeDuration(int ub, int lb, Object... n) throws SchedulerException;
 
+    /**
+     * Create a variable that indicates a moment.
+     *
+     * @param ub the variable upper bound
+     * @param lb the variable lower bound
+     * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getUB()}
+     * @throws org.btrplace.scheduler.SchedulerException if the bounds are not valid
+     */
     IntVar makeDuration(int ub, int lb) throws SchedulerException;
 
     /**
@@ -366,6 +405,19 @@ public interface ReconfigurationProblem {
      */
     String makeVarLabel(Object... lbl);
 
+    /**
+     * Make a label for a variable iff the labelling is enabled
+     *
+     * @param lbl the label to make
+     * @return the label that will be used in practice
+     */
+    String makeVarLabel(Object lbl);
+
+    /**
+     * Check if variables are expected to be labelled.
+     *
+     * @return {@code true} iff variables must be labelled.
+     */
     boolean labelVariables();
 
     /**
@@ -377,6 +429,14 @@ public interface ReconfigurationProblem {
      * @return the variable
      */
     IntVar fixed(int v, Object... lbl);
+
+    /**
+     * Make a constant.
+     * @param v the constant
+     * @param lbl the label.
+     * @return the variable.
+     */
+    IntVar fixed(int v, Object lbl);
 
     /**
      * Get the VMs managed by the solver.

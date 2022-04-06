@@ -47,9 +47,16 @@ public class SliceBuilder {
         lblPrefix = prefix;
     }
 
+    /**
+     * Make a new Builder.
+     *
+     * @param p      the problem to customize
+     * @param v      the VM associated to the slice
+     */
     public SliceBuilder(ReconfigurationProblem p, VM v) {
         this.rp = p;
         this.vm = v;
+        lblPrefix = null;
     }
 
     /**
@@ -60,7 +67,7 @@ public class SliceBuilder {
      */
     public Slice build() throws SchedulerException {
         if (hoster == null) {
-            if (rp.labelVariables()) {
+            if (rp.labelVariables() && lblPrefix != null) {
                 hoster = rp.makeHostVariable(lblPrefix, "_hoster");
             } else {
                 hoster = rp.makeHostVariable();
@@ -91,7 +98,7 @@ public class SliceBuilder {
     private IntVar makeDuration() throws SchedulerException {
         if (start.isInstantiated() && end.isInstantiated()) {
             int d = end.getValue() - start.getValue();
-            if (rp.labelVariables()) {
+            if (rp.labelVariables() && lblPrefix != null) {
                 return rp.makeDuration(d, d, lblPrefix, "_duration");
             } else {
                 return rp.getModel().intVar(d);
@@ -107,7 +114,7 @@ public class SliceBuilder {
             inf = 0;
         }
         int sup = end.getUB() - start.getLB();
-        if (rp.labelVariables()) {
+        if (rp.labelVariables() && lblPrefix != null) {
             return rp.makeDuration(sup, inf, lblPrefix, "_duration");
         }
         return rp.makeDuration(sup, inf);
@@ -164,7 +171,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        if (rp.labelVariables()) {
+        if (rp.labelVariables() && lblPrefix != null) {
             this.hoster = rp.fixed(v, lblPrefix, "_hoster(", vm, ")");
         } else {
             this.hoster = rp.getModel().intVar(v);

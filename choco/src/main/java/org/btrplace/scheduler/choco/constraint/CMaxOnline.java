@@ -105,7 +105,11 @@ public class CMaxOnline implements ChocoConstraint {
                 ends[idx] = view.getPowerEnd(rp.getNode(n));
                 // ------------------------------------------------------------------------
 
-                durations[idx] = rp.makeUnboundedDuration(rp.makeVarLabel("Dur(", n, ")"));
+                if (rp.labelVariables()) {
+                    durations[idx] = rp.makeUnboundedDuration(rp.makeVarLabel("Dur(", n, ")"));
+                } else {
+                    durations[idx] = rp.makeUnboundedDuration();
+                }
                 csp.post(csp.arithm(durations[idx], "<=", rp.getEnd()));
                 // All tasks have to be scheduled
                 heights[idx] = csp.intVar(1);

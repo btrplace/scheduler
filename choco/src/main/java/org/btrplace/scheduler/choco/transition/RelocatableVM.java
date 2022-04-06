@@ -98,7 +98,12 @@ public class RelocatableVM implements KeepRunningVM {
             doReinstantiation = csp.boolVar(false);
             manageable = false;
             
-            IntVar host = rp.makeCurrentHost(vm, PREFIX_STAY, vm, ").host");
+            IntVar host;
+            if (rp.labelVariables()) {
+                host = rp.makeCurrentHost(vm, PREFIX_STAY, vm, ").host");
+            } else {
+                host = rp.makeCurrentHost(vm);
+            }
             cSlice = new SliceBuilder(rp, vm, PREFIX_STAY, vm.toString(), ").cSlice")
                     .setHoster(host)
                     .setEnd(rp.makeUnboundedDuration(PREFIX_STAY, vm, ").cSlice_end"))
@@ -151,19 +156,31 @@ public class RelocatableVM implements KeepRunningVM {
         // No networking view, set the duration from the evaluator
         else {
             // The duration can still be 0 => the VM STAY !
-            migrationDuration = csp.intVar(rp.makeVarLabel("migration(", vm, ").duration"),
-                    new int[]{0, migrateDuration});
+            if (rp.labelVariables()) {
+                migrationDuration = csp.intVar(rp.makeVarLabel("migration(", vm, ").duration"),
+                        new int[]{0, migrateDuration});
+            } else {
+                migrationDuration = csp.intVar(new int[]{0, migrateDuration});
+            }
             bandwidth = null;
         }
 
         // Possibly re-instantiate (if some attributes are defined)
         if (mo.getAttributes().get(vm, "clone", false) && mo.getAttributes().isSet(vm, "template")) {
+            if (rp.labelVariables()) {
+                doReinstantiation = csp.boolVar(rp.makeVarLabel("relocation_method(", vm, ")"));
+            } else {
+                doReinstantiation = csp.boolVar();
+            }
 
-            doReinstantiation = csp.boolVar(rp.makeVarLabel("relocation_method(", vm, ")"));
-
-            duration = csp.intVar(rp.makeVarLabel(PREFIX, vm, ").duration"),
-                    Math.min(migrationDuration.getLB(), reInstantiateDuration),
-                    Math.max(migrationDuration.getUB(), reInstantiateDuration), true);
+            if (rp.labelVariables()) {
+                duration = csp.intVar(rp.makeVarLabel(PREFIX, vm, ").duration"),
+                        Math.min(migrationDuration.getLB(), reInstantiateDuration),
+                        Math.max(migrationDuration.getUB(), reInstantiateDuration), true);
+            } else {
+                duration = csp.intVar(Math.min(migrationDuration.getLB(), reInstantiateDuration),
+                        Math.max(migrationDuration.getUB(), reInstantiateDuration), true);
+            }
 
             // Re-instantiate or migrate
             // (Prefer the re-instantiation if the duration are the same, otherwise choose the min)
@@ -174,8 +191,13 @@ public class RelocatableVM implements KeepRunningVM {
             );
 
             // If it is a re-instantiation then specify that the dSlice must start AFTER the Forge delay
-            IntVar time = csp.intVar(
-                    rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, forgeD, false);
+            IntVar time;
+            if (rp.labelVariables()) {
+                time = csp.intVar(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD),
+                        0, forgeD, false);
+            } else {
+                time = csp.intVar(0, forgeD, false);
+            }
             csp.post(csp.times(doReinstantiation, forgeD, time));
             csp.post(rp.getModel().arithm(start, ">=", time));
             // Be sure that doReinstantiation will be instantiated
@@ -188,7 +210,7 @@ public class RelocatableVM implements KeepRunningVM {
         }
 
         // If the VM stay (src host == dst host), then duration = 0
-        stay = csp.boolVar(rp.makeVarLabel(vm, "stay"));
+        stay = rp.labelVariables() ? csp.boolVar(rp.makeVarLabel(vm, "stay")) : csp.boolVar();
         csp.post(new FastIFFEq(stay, dSlice.getHoster(), cSlice.getHoster().getValue()));
         csp.post(new FastIFFEq(stay, duration, 0));
         //We have to force the migration duration equals to 0 if it stays

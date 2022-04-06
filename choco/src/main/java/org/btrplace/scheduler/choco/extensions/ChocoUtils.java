@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -32,7 +32,12 @@ public final class ChocoUtils {
      */
     public static void postImplies(ReconfigurationProblem rp, BoolVar b1, Constraint c2) {
         Model s = rp.getModel();
-        BoolVar bC2 = s.boolVar(rp.makeVarLabel(c2.toString(), " satisfied"));
+        BoolVar bC2;
+        if (rp.labelVariables()) {
+            bC2 = s.boolVar(rp.makeVarLabel(c2.toString(), " satisfied"));
+        } else {
+            bC2 = s.boolVar();
+        }
         c2.reifyWith(bC2);
 
         BoolVar notB1 = b1.not();
@@ -51,7 +56,12 @@ public final class ChocoUtils {
     public static void postIfOnlyIf(ReconfigurationProblem rp, BoolVar b1, Constraint c2) {
         Model csp = rp.getModel();
         BoolVar notBC1 = b1.not();
-        BoolVar bC2 = csp.boolVar(rp.makeVarLabel(c2.toString(), " satisfied"));
+        BoolVar bC2;
+        if (rp.labelVariables()) {
+            bC2 = csp.boolVar(rp.makeVarLabel(c2, " satisfied"));
+        } else {
+            bC2 = csp.boolVar();
+        }
         c2.reifyWith(bC2);
         BoolVar notBC2 = bC2.not();
         csp.post(rp.getModel().or(rp.getModel().or(b1, bC2), rp.getModel().or(notBC1, notBC2)));

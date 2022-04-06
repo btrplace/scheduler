@@ -66,49 +66,65 @@ import org.chocosolver.solver.variables.IntVar;
  */
 public class ShutdownableNode implements NodeTransition {
 
-  public static final String PREFIX = "shutdownableNode(";
-  private final Node node;
-  private final BoolVar isOnline;
-  private final BoolVar isOffline;
-  private final IntVar duration;
-  private final IntVar end;
-  private final IntVar hostingStart;
-  private final IntVar hostingEnd;
-  private final IntVar start;
+    public static final String PREFIX = "shutdownableNode(";
+    private final Node node;
+    private final BoolVar isOnline;
+    private final BoolVar isOffline;
+    private final IntVar duration;
+    private final IntVar end;
+    private final IntVar hostingStart;
+    private final IntVar hostingEnd;
+    private final IntVar start;
 
-  /**
-   * Make a new model.
-   *
-   * @param rp the RP to use as a basis.
-   * @param e  the node managed by the action
-   * @throws org.btrplace.scheduler.SchedulerException if an error occurred
-   */
-  public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SchedulerException {
-    this.node = e;
+    /**
+     * Make a new model.
+     *
+     * @param rp the RP to use as a basis.
+     * @param e  the node managed by the action
+     * @throws org.btrplace.scheduler.SchedulerException if an error occurred
+     */
+    public ShutdownableNode(ReconfigurationProblem rp, Node e) throws SchedulerException {
+        this.node = e;
         Model csp = rp.getModel();
 
         /*
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, e, ").online"));
+        if (rp.labelVariables()) {
+            isOnline = csp.boolVar(rp.makeVarLabel(PREFIX, e, ").online"));
+        } else {
+            isOnline = csp.boolVar();
+        }
         isOffline = isOnline.not();
         csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(e)), 0));
 
         /*
-        * D = {0, d}
-        * D = St * d;
-        */
+         * D = {0, d}
+         * D = St * d;
+         */
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
-        duration = csp.intVar(rp.makeVarLabel(PREFIX, e, ").duration"), new int[]{0, d});
+        if (rp.labelVariables()) {
+            duration = csp.intVar(rp.makeVarLabel(PREFIX, e, ").duration"), new int[]{0, d});
+        } else {
+            duration = csp.intVar(new int[]{0, d});
+        }
         csp.post(new FastIFFEq(isOnline, duration, 0));
 
         //The moment of shutdown action consume
         /* As */
-        start = rp.makeUnboundedDuration(PREFIX, e, ").start");
+        if (rp.labelVariables()) {
+            start = rp.makeUnboundedDuration(PREFIX, e, ").start");
+        } else {
+            start = rp.makeUnboundedDuration();
+        }
         //The moment of shutdown action end
         /* Ae */
-        end = rp.makeUnboundedDuration(PREFIX, e, ").end");
+        if (rp.labelVariables()) {
+            end = rp.makeUnboundedDuration(PREFIX, e, ").end");
+        } else {
+            end = rp.makeUnboundedDuration();
+        }
 
         csp.post(csp.arithm(end, "<=", rp.getEnd()));
 
@@ -119,8 +135,11 @@ public class ShutdownableNode implements NodeTransition {
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
-        hostingEnd = rp.makeUnboundedDuration(PREFIX, e, ").hostingEnd");
-
+        if (rp.labelVariables()) {
+            hostingEnd = rp.makeUnboundedDuration(PREFIX, e, ").hostingEnd");
+        } else {
+            hostingEnd = rp.makeUnboundedDuration();
+        }
         /*
           T = { As, RP.end}
           He = T[St]

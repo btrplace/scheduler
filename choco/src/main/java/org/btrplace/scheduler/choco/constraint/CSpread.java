@@ -104,7 +104,13 @@ public class CSpread implements ChocoConstraint {
         if (!(c.getHoster().isInstantiated() && !d.getHoster().contains(c.getHoster().getValue()))
                 && !(d.getHoster().isInstantiated() && !c.getHoster().contains(d.getHoster().getValue()))
                 ) {
-            BoolVar eq = csp.boolVar(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"));
+            BoolVar eq;
+            if (rp.labelVariables()) {
+                eq = csp.boolVar(rp.makeVarLabel(d.getHoster(), "", c.getHoster(), "?"));
+            } else {
+                eq = csp.boolVar();
+            }
+
           rp.getModel().arithm(d.getHoster(), "=", c.getHoster()).reifyWith(eq);
           org.chocosolver.solver.constraints.Constraint leqCstr = rp.getModel().arithm(c.getEnd(), "<=", d.getStart());
             ChocoUtils.postImplies(rp, eq, leqCstr);

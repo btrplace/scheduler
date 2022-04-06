@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -166,7 +166,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SchedulerException {
 
         //Check for multiple destination state
-        if (getLogger().isDebugEnabled() && !distinctVMStates()) {
+        if (!distinctVMStates()) {
             return null;
         }
 
@@ -339,7 +339,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmsCountOnNodes = new ArrayList<>(nodes.size());
         int nbVMs = vms.size();
         for (Node n : nodes) {
-            vmsCountOnNodes.add(csp.intVar(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, true));
+            final IntVar card;
+            if (useLabels) {
+                card = csp.intVar(makeVarLabel("nbVMsOn('", n, "')"), 0, nbVMs, true);
+            } else {
+                card = csp.intVar(0, nbVMs, true);
+            }
+            vmsCountOnNodes.add(card);
         }
         vmsCountOnNodes = Collections.unmodifiableList(vmsCountOnNodes);
     }
@@ -517,6 +523,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return csp.intVar(makeVarLabel(n), 0, nodes.size() - 1, false);
     }
 
+    @Override
     public IntVar makeHostVariable() {
         return csp.intVar(0, nodes.size() - 1, false);
     }
@@ -542,17 +549,39 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public IntVar makeCurrentHost(VM vmId) throws SchedulerException {
+        return makeCurrentNode(model.getMapping().getVMLocation(vmId));
+    }
+
+    @Override
     public IntVar makeCurrentNode(Node nId, Object... n) throws SchedulerException {
         int idx = getNode(nId);
         if (idx < 0) {
             throw new SchedulerModelingException(model, "Unknown node '" + nId + "'");
         }
-        return fixed(idx, makeVarLabel(n));
+        if (useLabels) {
+            return fixed(idx, makeVarLabel(n));
+        }
+        return csp.intVar(idx);
+    }
+
+    @Override
+    public IntVar makeCurrentNode(Node nId) throws SchedulerException {
+        int idx = getNode(nId);
+        if (idx < 0) {
+            throw new SchedulerModelingException(model, "Unknown node '" + nId + "'");
+        }
+        return csp.intVar(idx);
     }
 
     @Override
     public IntVar makeUnboundedDuration(Object... n) {
         return csp.intVar(makeVarLabel(n), 0, end.getUB(), true);
+    }
+
+    @Override
+    public IntVar makeUnboundedDuration() {
+        return csp.intVar(0, end.getUB(), true);
     }
 
     @Override
@@ -583,6 +612,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return b.toString();
     }
 
+    @Override
+    public final String makeVarLabel(Object lbl) {
+        if (!useLabels) {
+            return "";
+        }
+        return lbl.toString();
+    }
+
     public boolean labelVariables() {
         return useLabels;
     }
@@ -591,6 +628,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public IntVar fixed(int v, Object... lbl) {
         if (useLabels) {
             return csp.intVar(makeVarLabel(lbl), v);
+        }
+        return csp.intVar(v);
+    }
+
+    @Override
+    public IntVar fixed(int v, Object lbl) {
+        if (useLabels) {
+            return csp.intVar(lbl.toString(), v);
         }
         return csp.intVar(v);
     }
