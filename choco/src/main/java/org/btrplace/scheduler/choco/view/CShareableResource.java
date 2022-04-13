@@ -623,7 +623,7 @@ public class CShareableResource implements ChocoView {
     }
 
     @Override
-    public List<String> getDependencies() {
+    public List<String> getDependencies(ReconfigurationProblem rp) {
         return Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID);
     }
 

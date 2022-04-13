@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -78,9 +78,10 @@ public interface ChocoView extends Injectable, MisplacedVMsEstimator {
      * Get the view dependencies.
      * The dependencies will be injected in prior.
      *
+     * @param rp the problem to solve
      * @return a list of view identifiers that may be empty
      */
-    default List<String> getDependencies() {
+    default List<String> getDependencies(ReconfigurationProblem rp) {
         return Collections.emptyList();
     }
 

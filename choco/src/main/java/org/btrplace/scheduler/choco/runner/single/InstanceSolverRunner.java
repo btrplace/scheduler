@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -25,7 +25,6 @@ import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
-import org.btrplace.scheduler.choco.view.ChocoViews;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -159,9 +158,8 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
     }
 
     private boolean specialise() {
-        
         //Resolve the view dependencies, add them and inject them
-        views = ChocoViews.resolveDependencies(origin, views, rp.getViews());
+        views = resolveDependencies();
         views.forEach(rp::addView);
         //Inject the sat constraints, 2nd pass on the view. Then the objective for a late optimisation
         Optional<ChocoConstraint> o = cConstraints.stream().filter(c -> c instanceof CObjective).findFirst();
@@ -169,7 +167,7 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
                 cConstraints.stream().filter(c -> !(c instanceof CObjective))
                         .allMatch(c -> c.inject(params, rp)) &&
                 views.stream().allMatch(v -> v.beforeSolve(rp)) &&
-                (!o.isPresent() || o.isPresent() && o.get().inject(params, rp));
+                (!o.isPresent() || o.get().inject(params, rp));
     }
 
     private ReconfigurationProblem buildRP() throws SchedulerException {
@@ -265,9 +263,40 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
         return cc;
     }
 
+    /**
+     * Flatten the views while considering their dependencies.
+     * Operations over the views that respect the iteration order, satisfies the dependencies.
+     *
+     * @throws SchedulerException if there is a cyclic dependency
+     */
+    public List<ChocoView> resolveDependencies() throws SchedulerException {
+
+        Set<String> done = new HashSet<>(rp.getViews());
+        List<ChocoView> remaining = new ArrayList<>(views);
+        List<ChocoView> solved = new ArrayList<>();
+        while (!remaining.isEmpty()) {
+            ListIterator<ChocoView> ite = remaining.listIterator();
+            boolean blocked = true;
+            while (ite.hasNext()) {
+                ChocoView s = ite.next();
+                if (done.containsAll(s.getDependencies(rp))) {
+                    ite.remove();
+                    done.add(s.getIdentifier());
+                    solved.add(s);
+                    blocked = false;
+                }
+            }
+            if (blocked) {
+                throw new SchedulerModelingException(rp.getSourceModel(),
+                        "Missing dependencies or cyclic dependencies prevent from using: " + remaining);
+            }
+        }
+        return solved;
+    }
+
     private static boolean checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SchedulerException {
         for (VM v : vms) {
-            //This loop prevent from a useless allocation of memory when there is no issue
+            //This loop prevents from a useless allocation of memory when there is no issue
             if (!m.getMapping().contains(v)) {
                 Set<VM> unknown = new HashSet<>(vms);
                 unknown.removeAll(m.getMapping().getAllVMs());
