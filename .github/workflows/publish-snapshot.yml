@@ -25,7 +25,7 @@ jobs:
           distribution: 'adopt'
           cache: maven
       - name: publish packages
-        run: mvn -T 1C --batch-mode -DskipTests javadoc:aggregate-jar source:jar deploy
+        run: mvn --batch-mode -DskipTests javadoc:aggregate-jar source:jar deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}

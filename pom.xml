@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright  2021 The BtrPlace Authors. All rights reserved.
+  ~ Copyright  2022 The BtrPlace Authors. All rights reserved.
   ~ Use of this source code is governed by a LGPL-style
   ~ license that can be found in the LICENSE.txt file.
   -->
@@ -36,7 +36,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.36</slf4j.version>
-        <testng.version>7.3.0</testng.version>
+        <testng.version>7.5</testng.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
@@ -47,8 +47,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
@@ -66,19 +64,19 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>4.2.0</version>
+            <version>4.4.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-core</artifactId>
-            <version>1.34</version>
+            <version>1.35</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-generator-annprocess</artifactId>
-            <version>1.34</version>
+            <version>1.35</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -180,7 +178,7 @@
                     <doctitle>${project.groupId}-${project.artifactId} ${project.version} API</doctitle>
                     <windowtitle>${project.groupId}-${project.artifactId} ${project.version} API</windowtitle>
                     <bottom>Copyright © 2016 University of Nice-Sophia Antipolis. All Rights Reserved.</bottom>
-                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <doclint>none</doclint>
                     <!-- weired duplication, but aggregate does not scan module configurations -->
                     <excludePackageNames>org.btrplace.btrpsl.antlr</excludePackageNames>
                 </configuration>
@@ -196,7 +194,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.0.0-M6</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
