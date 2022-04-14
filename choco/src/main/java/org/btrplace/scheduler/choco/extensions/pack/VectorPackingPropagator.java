@@ -278,11 +278,13 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      */
     protected boolean filterLoadInf(int dim, int bin, int newLoadInf) throws ContradictionException {
         int delta = newLoadInf - loads[dim][bin].getLB();
-        if (delta <= 0)
+        if (delta <= 0) {
             return false;
+        }
         loads[dim][bin].updateLowerBound(newLoadInf, this);
-        if (sumISizes[dim] < sumLoadInf[dim].add(delta))
+        if (sumISizes[dim] < sumLoadInf[dim].add(delta)) {
             fails();
+        }
         return true;
     }
 
@@ -339,8 +341,12 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @throws ContradictionException if a contradiction (rule 2) is raised
      */
     protected void assignItem(int item, int bin) throws ContradictionException {
-        for (int d = 0; d < nbDims; d++) {
-            filterLoadInf(d, bin, assignedLoad[d][bin].add(iSizes[d][item]));
+        // This may have been called by the knapsack propagator when loads are updated before assignment variables
+        // (in case of backtracks typically). Accordingly, the loads must be updated iff the item was still a candidate.
+        if (decoKPSimple.candidate.get(bin).get(item)) {
+            for (int d = 0; d < nbDims; d++) {
+                filterLoadInf(d, bin, assignedLoad[d][bin].add(iSizes[d][item]));
+            }
         }
         decoKPSimple.postAssignItem(item, bin);
     }
@@ -575,6 +581,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @return {@code false} if not consistent.
      */
     private boolean checkLoadConsistency() {
+        //System.out.println("Consistency check in " + name[0]);
         boolean check = true;
         int[][] rs = new int[nbDims][nbBins];
         int[][] cs = new int[nbDims][nbBins];
