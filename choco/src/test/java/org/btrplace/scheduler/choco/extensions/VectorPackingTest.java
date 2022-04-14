@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -18,6 +18,7 @@ import org.btrplace.scheduler.choco.extensions.pack.VectorPacking;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
+import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
@@ -172,6 +173,67 @@ public class VectorPackingTest {
         stats = sched.getStatistics();
         Assert.assertEquals(0, stats.getMetrics().nodes());
         System.out.println(stats);
+    }
+
+    @Test
+    public void testMultiLevel() {
+
+        Model csp = new Model();
+        IntVar[] nodeLoad = new IntVar[4];
+        nodeLoad[0] = csp.intVar("N3.load", 0, 7);
+        nodeLoad[1] = csp.intVar("N2.load", 0, 2);
+        nodeLoad[2] = csp.intVar("N1.load", 0, 7);
+        nodeLoad[3] = csp.intVar("N0.load", 0, 3);
+
+        IntVar[] assignedNode = new IntVar[4];
+        for (int i = 0; i < assignedNode.length; i++) {
+            assignedNode[i] = csp.intVar("vm#" + i + ".node", 0, 3);
+        }
+
+        int[] vmNodeUse = new int[]{3, 7, 2, 3};
+        new VectorPacking("node_level", nodeLoad, vmNodeUse, assignedNode).post();
+
+        IntVar[] clusterLoads = new IntVar[2];
+        clusterLoads[0] = csp.intVar("C0.load", 0, 7);
+        clusterLoads[1] = csp.intVar("C1.load", 0, 8);
+        IntVar[] assignedCluster = new IntVar[4];
+        for (int i = 0; i < assignedCluster.length; i++) {
+            assignedCluster[i] = csp.intVar("vm#" + (3 - i) + ".cluster", 0, 1);
+        }
+        int[] vmClusterUse = new int[]{3, 2, 7, 3};
+
+        int[] mapping = new int[]{/*N3*/ 1, /*N2*/1, /*N1*/0, /*N0*/0};
+        csp.element(assignedCluster[0], mapping, assignedNode[3]).post();
+        csp.element(assignedCluster[1], mapping, assignedNode[2]).post();
+        csp.element(assignedCluster[2], mapping, assignedNode[1]).post();
+        csp.element(assignedCluster[3], mapping, assignedNode[0]).post();
+
+        // The bug occurs only using VectorPacking.
+        new VectorPacking("cluster_level", clusterLoads, vmClusterUse, assignedCluster).post();
+        //csp.binPacking(assignedCluster, vmClusterUse, clusterLoads, 0).post();
+
+        // 2 clusters, 2 nodes each.
+        // c0(cap=7): N0(cap=3) N1(cap=7)
+        // c1(cap=8): N2(cap=2) N3(cap=7)
+        // 4 VMs: vm0(cluster=3, node=3) vm1(cluster=7, node=7)
+        //        vm2(cluster=2, node=2) vm3(cluster=3, node=3)
+        // Expected:
+        //  vm1 on c1/n1 (due to node capacity)
+        //  vm0,vm2,vm3 on c2. vm2 on n2, vm0 + vm3 on n3
+
+        Solver solver = csp.getSolver();
+
+        // The following order and branching heuristic trigger the bug.
+        IntVar[] rev = new IntVar[4];
+        rev[0] = assignedCluster[3];
+        rev[1] = assignedCluster[2];
+        rev[2] = assignedCluster[1];
+        rev[3] = assignedCluster[0];
+        System.out.println(csp);
+        solver.setSearch(Search.intVarSearch(new InputOrder<>(csp), new IntDomainMin(), rev));
+        solver.showDecisions();
+        solver.showContradiction();
+        Assert.assertTrue(!solver.findAllSolutions().isEmpty());
     }
 
     private static class Context {
