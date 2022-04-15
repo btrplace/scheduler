@@ -5,6 +5,10 @@ version 1.12.3 - soon come
 ----------------------
 See milestone [1.12.3](https://github.com/btrplace/scheduler/milestones/1.12.3)
 
+This version is mostly about one bug fix(#382), some minor performance
+improvements and dependencies update.
+
+
 version 1.12.2 - 17 Jan 2022
 ----------------------
 See milestone [1.12.2](https://github.com/btrplace/scheduler/milestones/1.12.2)
