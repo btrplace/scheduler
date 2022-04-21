@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.3</version>
             <type>jar</type>
         </dependency>
         <dependency>
