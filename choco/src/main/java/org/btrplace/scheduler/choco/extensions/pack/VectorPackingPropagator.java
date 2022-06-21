@@ -343,7 +343,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     protected void assignItem(int item, int bin) throws ContradictionException {
         // This may have been called by the knapsack propagator when loads are updated before assignment variables
         // (in case of backtracks typically). Accordingly, the loads must be updated iff the item was still a candidate.
-        if (decoKPSimple.candidate.get(bin).get(item)) {
+        if (decoKPSimple.candidate[bin].get(item)) {
             for (int d = 0; d < nbDims; d++) {
                 filterLoadInf(d, bin, assignedLoad[d][bin].add(iSizes[d][item]));
             }

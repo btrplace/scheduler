@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -10,8 +10,6 @@ import org.chocosolver.memory.IStateBitSet;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.memory.structure.S64BitSet;
 import org.chocosolver.solver.exception.ContradictionException;
-
-import java.util.ArrayList;
 
 /**
  * An optional extension of VectorPacking allowing knapsack process.
@@ -33,7 +31,7 @@ public class KnapsackDecorator {
     /**
      * the list of candidate items for each bin [nbBins][]
      */
-    protected ArrayList<IStateBitSet> candidate;
+    protected IStateBitSet[] candidate;
     /**
      * the core BinPacking propagator
      */
@@ -41,10 +39,10 @@ public class KnapsackDecorator {
 
     public KnapsackDecorator(VectorPackingPropagator p) {
         this.prop = p;
-        this.candidate = new ArrayList<>(p.nbBins);
+        this.candidate = new IStateBitSet[p.nbBins];
         for (int i = 0; i < p.nbBins; i++) {
             final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), p.bins.length);
-            candidate.add(bs);
+            candidate[i] = bs;
         }
 
         dynBiggest = new IStateInt[prop.nbDims][prop.nbBins];
@@ -81,14 +79,14 @@ public class KnapsackDecorator {
                 if (prop.bins[i].getDomainSize() != prop.nbBins) {
                     for (int b = 0; b < prop.nbBins; b++) {
                         if (!prop.bins[i].contains(b)) {
-                            candidate.get(b).clear(i);
+                            candidate[b].clear(i);
                         }
                     }
                 }
             } else {
                 // Instantiated, candidate for no bin.
                 for (int b = 0; b < prop.nbBins; b++) {
-                    candidate.get(b).clear(i);
+                    candidate[b].clear(i);
                 }
             }
         }
@@ -102,11 +100,10 @@ public class KnapsackDecorator {
     public void postInitialize() throws ContradictionException {
 
         final int[] biggest = new int[prop.nbDims];
-        int nbOpens = 0;
+        // Count the number of candidates per item.
+        double sumCandidates = 0;
         for (int i = 0; i < prop.bins.length; i++) {
-            if (!prop.bins[i].isInstantiated()) {
-                nbOpens++;
-            }
+            sumCandidates += prop.bins[i].getDomainSize();
             for (int d = 0; d < prop.nbDims; d++) {
                 biggest[d] = Math.max(biggest[d], prop.iSizes[d][i]);
             }
@@ -119,10 +116,13 @@ public class KnapsackDecorator {
             }
         }
 
-        if (nbOpens > prop.bins.length / 2) {
-            // More than half the items are candidates for multiple bins,
+        double candidatesRatio = sumCandidates / (this.prop.nbBins * this.prop.bins.length);
+        if (candidatesRatio > 0.5) {
+            // On average, items have more than half the bins as candidates. Let's consider they are candidate for every
+            // bin, then create holes accordingly.
             postInitializeOpen();
         } else {
+            // Opposite reasoning. Let's consider they are candidate for nothing and set bits according to their domain.
             postInitializeClose();
         }
         fullKnapsack();
@@ -141,7 +141,7 @@ public class KnapsackDecorator {
             }
             for (int b = 0; b < prop.nbBins; b++) {
                 if (prop.bins[i].contains(b)) {
-                    candidate.get(b).set(i);
+                    candidate[b].set(i);
                 }
             }
         }
@@ -158,14 +158,15 @@ public class KnapsackDecorator {
     @SuppressWarnings("squid:S3346")
     private void filterFullDim(int bin, int dim) throws ContradictionException {
 
-        for (int i = candidate.get(bin).nextSetBit(0); i >= 0; i = candidate.get(bin).nextSetBit(i + 1)) {
+        final IStateBitSet cc = candidate[bin];
+        for (int i = cc.nextSetBit(0); i >= 0; i = cc.nextSetBit(i + 1)) {
             if (prop.iSizes[dim][i] == 0) {
                 continue;
             }
             // ISSUE 86: the event 'i removed from bin' can already been in the propagation stack but not yet considered
             // ie. !prop.bins[i].contains(bin) && candidate[bin].contains(i): in this case, do not process it yet
             if (prop.bins[i].removeValue(bin, prop)) {
-                candidate.get(bin).clear(i);
+                cc.clear(i);
                 prop.updateLoads(i, bin);
 
                 if (prop.bins[i].isInstantiated()) {
@@ -173,7 +174,7 @@ public class KnapsackDecorator {
                 }
             }
         }
-        if (candidate.get(bin).isEmpty()) {
+        if (cc.isEmpty()) {
             assert prop.potentialLoad[dim][bin].get() == prop.assignedLoad[dim][bin].get();
             assert prop.loads[dim][bin].getUB() == prop.potentialLoad[dim][bin].get();
         }
@@ -188,10 +189,11 @@ public class KnapsackDecorator {
      */
     @SuppressWarnings("squid:S3346")
     public boolean postRemoveItem(int item, int bin) {
-        if (!candidate.get(bin).get(item)) {
+        final IStateBitSet cand = candidate[bin];
+        if (!cand.get(item)) {
             return false;
         }
-        candidate.get(bin).clear(item);
+        cand.clear(item);
         return true;
     }
 
@@ -206,10 +208,11 @@ public class KnapsackDecorator {
      */
     public void postAssignItem(int item, int bin) throws
             ContradictionException {
-        if (!candidate.get(bin).get(item)) {
+        final IStateBitSet cc = candidate[bin];
+        if (!cc.get(item)) {
             return;
         }
-        candidate.get(bin).clear(item);
+        cc.clear(item);
 
         for (int d = 0; d < prop.nbDims; d++) {
             knapsack(bin, d);
@@ -217,7 +220,7 @@ public class KnapsackDecorator {
             // The bin is full. We get rid of every candidate and set the bin load.
             if (prop.loads[d][bin].getUB() == prop.assignedLoad[d][bin].get()) {
                 filterFullDim(bin, d);
-                if (candidate.get(bin).isEmpty()) {
+                if (cc.isEmpty()) {
                     for (int d2 = 0; d2 < prop.nbDims; d2++) {
                         prop.potentialLoad[d2][bin].set(prop.assignedLoad[d2][bin].get());
                         prop.filterLoadSup(d2, bin, prop.potentialLoad[d2][bin].get());
@@ -251,8 +254,9 @@ public class KnapsackDecorator {
             // In parallel, we set the new biggest candidate item for that
             // (bin,dimension)
             int newMax = -1;
-            for (int i = candidate.get(bin).nextSetBit(0); i >= 0;
-                 i = candidate.get(bin).nextSetBit(i + 1)) {
+            final IStateBitSet cc = candidate[bin];
+            for (int i = cc.nextSetBit(0); i >= 0;
+                 i = cc.nextSetBit(i + 1)) {
                 if (prop.iSizes[d][i] > free) {
                     if (prop.bins[i].removeValue(bin, prop)) {
                         prop.removeItem(i, bin);
