@@ -5,6 +5,11 @@ version 1.12.4 - soon come
 ----------------------
 See milestone [1.12.4](https://github.com/btrplace/scheduler/milestones/1.12.4)
 
+This release is mostly about dependency bump and a significant performance
+improvement in some cases (rebuild mode and small domains compared to
+the scheduling space).
+
+
 version 1.12.3 - 15 Apr 2022
 ----------------------
 See milestone [1.12.3](https://github.com/btrplace/scheduler/milestones/1.12.3)
