@@ -66,27 +66,27 @@ public class KnapsackDecorator {
      * for every bin by default.
      */
     private void postInitializeOpen() {
-
         // By default, the items are candidate for every bin.
         for (final IStateBitSet bs : candidate) {
             bs.set(0, prop.bins.length);
         }
 
         for (int i = 0; i < prop.bins.length; i++) {
-            if (!prop.bins[i].isInstantiated()) {
-                // We only put holes in the bitset if for sure some items can't
-                // can't go on some bins.
-                if (prop.bins[i].getDomainSize() != prop.nbBins) {
-                    for (int b = 0; b < prop.nbBins; b++) {
-                        if (!prop.bins[i].contains(b)) {
-                            candidate[b].clear(i);
-                        }
-                    }
-                }
-            } else {
+            if (prop.bins[i].isInstantiated()) {
                 // Instantiated, candidate for no bin.
                 for (int b = 0; b < prop.nbBins; b++) {
                     candidate[b].clear(i);
+                }
+            } else {
+                if (prop.bins[i].getDomainSize() == prop.nbBins) {
+                    // Can go everywhere. No holes to do in the bitset.
+                    continue;
+                }
+                // We only put holes in the bitset for the non-candidate items.
+                for (int b = 0; b < prop.nbBins; b++) {
+                    if (!prop.bins[i].contains(b)) {
+                        candidate[b].clear(i);
+                    }
                 }
             }
         }
@@ -133,16 +133,15 @@ public class KnapsackDecorator {
      * candidate for any bin by default.
      */
     public void postInitializeClose() {
-
         // By default, VMs are not candidate for any node.
         for (int i = 0; i < prop.bins.length; i++) {
             if (prop.bins[i].isInstantiated()) {
                 continue;
             }
-            for (int b = 0; b < prop.nbBins; b++) {
-                if (prop.bins[i].contains(b)) {
-                    candidate[b].set(i);
-                }
+            int ub = prop.bins[i].getUB();
+            for (int v = prop.bins[i].getLB(); v <= ub; v = prop.bins[i].nextValue(v)) {
+                // operate on value i here
+                candidate[v].set(i);
             }
         }
     }

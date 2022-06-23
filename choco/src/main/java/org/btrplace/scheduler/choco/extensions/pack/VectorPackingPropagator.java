@@ -388,10 +388,14 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
-        int nbInstantiated = 0;
+        // The total number of candidate bin for non-instantiated items.
+        double candidates = 0;
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateLowerBound(0, this);
             bins[i].updateUpperBound(nbBins - 1, this);
+            if (!bins[i].isInstantiated()) {
+                candidates += bins[i].getDomainSize();
+            }
             if (withCardinality) {
                 for (int d = 0; d < nbDims - 1; d++) {
                     if (iSizes[d][i] > 0) {
@@ -406,7 +410,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             }
 
             if (bins[i].isInstantiated()) {
-                nbInstantiated++;
                 int bIdx = bins[i].getValue();
                 for (int d = 0; d < nbDims; d++) {
                     rLoads[d][bIdx] += iSizes[d][i];
@@ -414,28 +417,28 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             }
         }
 
-        // Candidate load management. An item is candidate for a bin if it is not instantiated and can go on the bin.
-        if (nbInstantiated > iSizes[0].length / 2) {
-            // Most of the items are already placed. We just focus on the other items with an initial candidate load
-            // set to 0.
-            for (int d = 0; d < nbDims; d++) {
-                Arrays.fill(cLoads[d], 0);
-            }
+        // The average number of candidate bins per item.
+        double candidateRatio = candidates / (this.bins.length * this.nbBins);
+        if (candidateRatio < 0.5) {
+            // On average, a non-instantiated item can go on less that the scheduling space. To compute cLoads, it is
+            // faster to consider that bins are not expected any item and to correct that by looking at item domains.
             for (int i = 0; i < bins.length; i++) {
                 if (bins[i].isInstantiated()) {
                     // Not candidate for any node.
                     continue;
                 }
-                for (int n = 0; n < nbBins; n++) {
-                    if (bins[i].contains(n)) {
-                        // The item is candidate for that node, the cLoad is increased accordingly.
-                        for (int d = 0; d < nbDims; d++) {
-                            cLoads[d][n] += iSizes[d][i];
-                        }
+
+                final int ub = bins[i].getUB();
+                for (int n = bins[i].getLB(); n <= ub; n = bins[i].nextValue(n)) {
+                    // The item is candidate for that node, the cLoad is increased accordingly.
+                    for (int d = 0; d < nbDims; d++) {
+                        cLoads[d][n] += iSizes[d][i];
                     }
                 }
             }
         } else {
+            // On average, a non-instantiated item can go on more than half the scheduling space. To compute cLoads, it
+            // is faster to consider that bins can accept every item and to remove items that are not candidate.
             // Most of the items are not already placed.
             for (int d = 0; d < nbDims; d++) {
                 // Everyone is candidate to everything by default.
