@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version 1.12.5 - soon come
+version 1.12.5 - 23 Jun 2022
 ----------------------
 See milestone [1.12.5](https://github.com/btrplace/scheduler/milestones/1.12.5)
 
