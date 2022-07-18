@@ -28,10 +28,12 @@ public class KnapsackDecorator {
      * Track the biggest item usage per dimension and bin.
      */
     private final IStateInt[][] dynBiggest;
+
     /**
      * the list of candidate items for each bin [nbBins][]
      */
     protected IStateBitSet[] candidate;
+
     /**
      * the core BinPacking propagator
      */
@@ -40,8 +42,9 @@ public class KnapsackDecorator {
     public KnapsackDecorator(VectorPackingPropagator p) {
         this.prop = p;
         this.candidate = new IStateBitSet[p.nbBins];
+
         for (int i = 0; i < p.nbBins; i++) {
-            final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), p.bins.length);
+            final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), 32);
             candidate[i] = bs;
         }
 
@@ -134,7 +137,8 @@ public class KnapsackDecorator {
      */
     public void postInitializeClose() {
         // By default, VMs are not candidate for any node.
-        for (int i = 0; i < prop.bins.length; i++) {
+        // Iterate in descending order to set the bitset size properly in one shot.
+        for (int i = prop.bins.length - 1; i >= 0; i--) {
             if (prop.bins[i].isInstantiated()) {
                 continue;
             }
