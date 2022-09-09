@@ -12,15 +12,29 @@ import org.chocosolver.memory.structure.S64BitSet;
 
 import java.util.Arrays;
 
+/**
+ * A backtrackable bitset optimised for compaction. This implementation saves memory when the content is sparse,
+ * typically when it contains a few bit sets or clustered bitsets.
+ * The implementation relies on an allocation per block: setting a bit on a high index will only lead to the allocation
+ * of the corresponding block, contrary to {@link S64BitSet} that will allocate memory up to the desired index whatever
+ * the actual need.
+ * <p>
+ * In terms of memory efficiency, the benefits will depend on the density of the bit sets and the block size. When some
+ * memory regions are set then cleared, the memory is not reclaimed. Accordingly, if the bitset is full of 1 early and
+ * cleared over the time, then no savings are possible.
+ * <p>
+ * <p>
+ * {@link #equals(Object)} and {@link #hashCode()} supports with any kind of {@link IStateBitSet} implementation but
+ * they must not be used in any performance sensitive context.
+ */
 public class SparseBitSet implements IStateBitSet {
 
-    /**
-     * Block size in bits.
-     */
+    /** Block size in bits. */
     private final int blockSize;
 
     /**
-     * The opened blocks. Every bit set states that the associated block exists in this world but it can be empty.
+     * The index declares the opened blocks in the current world. This is not required for correctness but speed up
+     * iterations to only browse meaningful blocks.
      */
     private final S64BitSet index;
 
@@ -34,10 +48,13 @@ public class SparseBitSet implements IStateBitSet {
 
     /**
      * @param env       backtracking environment.
-     * @param blockSize block size in bits. For compactness, should be a multiple of 64.
+     * @param blockSize block size in bits.
      */
     public SparseBitSet(final IEnvironment env, final int blockSize) {
         this.env = env;
+        if (blockSize <= 0) {
+            throw new IllegalArgumentException("Block size must be > 0. Got " + blockSize);
+        }
         this.blockSize = blockSize;
         blocks = new IStateBitSet[0];
         index = new S64BitSet(env);
@@ -56,21 +73,59 @@ public class SparseBitSet implements IStateBitSet {
     }
 
     /**
+     * Check the validity of a range of indices.
+     * Both indices must be strictly positive and the second one must be greater than the first one.
+     *
+     * @param from lower bound.
+     * @param to   upper bound.
+     * @throws IndexOutOfBoundsException if the range is invalid.
+     */
+    private static void validIndexRange(final int from, final int to) {
+        requirePositiveIndex(from);
+        requirePositiveIndex(to);
+        if (from > to) {
+            throw new IndexOutOfBoundsException("Invalid range: [" + from + ", " + to + ")");
+        }
+    }
+
+    /**
      * Get the block index for a given bit.
-     * Does not ensure the block exists or the index is big enough.
+     * This does not ensure that the block exists or that the index is big enough.
      *
      * @param bit the bit
      * @return the block index.
      */
-    private int index(final int bit) {
+    private int blockIndex(final int bit) {
         return bit / blockSize;
     }
 
     /**
-     * Ensure that the index is big enough.
-     * If needed, the index is growth to the given value. No blocks are however created.
+     * Get the bitset-level index value from a block-level index.
      *
-     * @param size the desired  size.
+     * @param blockIdx   the block index.
+     * @param localIndex the block-level index.
+     * @return the absolute index.
+     */
+    private int absIndex(final int blockIdx, final int localIndex) {
+        return blockIdx * blockSize + localIndex;
+    }
+
+    /**
+     * Get the block-level index from a bitset-level one. This does
+     * not indicate which block must be used (see {@link #blockIndex(int)}).
+     *
+     * @param absIndex the bit.
+     * @return the block-level index to use.
+     */
+    private int localIndex(final int absIndex) {
+        return absIndex % blockSize;
+    }
+
+    /**
+     * Ensure that the index is big enough.
+     * The index is growth to the given value if needed but no blocks are however created.
+     *
+     * @param size the desired index size.
      */
     private void ensureIndexCapacity(final int size) {
         if (size >= blocks.length) {
@@ -79,71 +134,43 @@ public class SparseBitSet implements IStateBitSet {
     }
 
     /**
-     * Get the absolute index value.
-     *
-     * @param blockIdx the block index.
-     * @param offset   the offset for that block.
-     * @return the absolute index.
-     */
-    private int absolute(final int blockIdx, final int offset) {
-        return blockIdx * blockSize + offset;
-    }
-
-    /**
-     * Get the offset to use inside a block for a given bit.
-     *
-     * @param bit the bit.
-     * @return the offset to use inside the selected block.
-     */
-    private int offset(final int bit) {
-        return bit % blockSize;
-    }
-
-    /**
-     * If needed, create the block at the given index.
+     * If needed, create the block at the given block index.
      * The index is considered to be big enough.
      *
-     * @param idx the block index.
+     * @param blockIndex the block index.
      * @return the block at this index.
      */
-    private IStateBitSet ensureBlock(final int idx) {
-        if (blocks[idx] == null) {
+    private IStateBitSet ensureBlock(final int blockIndex) {
+        if (blocks[blockIndex] == null) {
             // Create the block and register it.
-            blocks[idx] = new S64BitSet(env);
-            index.set(idx);
+            blocks[blockIndex] = new S64BitSet(env, 64);
         }
-        // The block exists so the bit is expected to already be set.
-        assert index.get(idx);
-        return blocks[idx];
+        index.set(blockIndex);
+        return blocks[blockIndex];
     }
 
-    /**
-     * Set the given bit
-     *
-     * @param bit the bit
-     */
     @Override
     public void set(final int bit) {
         requirePositiveIndex(bit);
         // Block index.
-        final int bIdx = index(bit);
+        final int bIdx = blockIndex(bit);
         // Ensure the index is big enough.
         ensureIndexCapacity(bIdx);
         // Set the right offset in the block.
-        ensureBlock(bIdx).set(offset(bit));
+        ensureBlock(bIdx).set(localIndex(bit));
     }
 
     @Override
     public void clear(final int bit) {
         requirePositiveIndex(bit);
         // Which block.
-        final int bIdx = index(bit);
+        final int bIdx = blockIndex(bit);
         if (!index.get(bIdx)) {
             // The block is not registered in this world. Nothing to clear.
             return;
         }
         // The block exists and is registered. Clear at the offset.
-        blocks[bIdx].clear(offset(bit));
+        blocks[bIdx].clear(localIndex(bit));
     }
 
     @Override
@@ -160,12 +187,12 @@ public class SparseBitSet implements IStateBitSet {
     public boolean get(final int bit) {
         requirePositiveIndex(bit);
         // Which block.
-        final int bIdx = index(bit);
+        final int bIdx = blockIndex(bit);
         if (!index.get(bIdx)) {
             // Un-registered block.
             return false;
         }
-        return blocks[bIdx].get(offset(bit));
+        return blocks[bIdx].get(localIndex(bit));
     }
 
     @Override
@@ -175,8 +202,8 @@ public class SparseBitSet implements IStateBitSet {
 
     /**
      * Get the number of bits actually used to store data.
-     *
-     * @return
+     * This accounts for the blocks and the index sizes.
+     * @return a positive amount
      */
     public long memorySize() {
         long size = index.size();
@@ -201,10 +228,11 @@ public class SparseBitSet implements IStateBitSet {
 
     @Override
     public void clear() {
-        // Clear the content. The index is not considered.
+        // Clear the content and the index.
         for (int bIdx = index.nextSetBit(0); bIdx >= 0; bIdx = index.nextSetBit(bIdx + 1)) {
             blocks[bIdx].clear();
         }
+        index.clear();
     }
 
     @Override
@@ -229,7 +257,7 @@ public class SparseBitSet implements IStateBitSet {
             return;
         }
         // Go over every impacted blocks. The first and the last may be partially set.
-        for (int bIdx = index(from); bIdx <= index(to); bIdx++) {
+        for (int bIdx = blockIndex(from); bIdx <= blockIndex(to); bIdx++) {
             if (bIdx >= blocks.length) {
                 // The block is passed the index size. Thus for sure everything here is cleared.
                 return;
@@ -239,34 +267,19 @@ public class SparseBitSet implements IStateBitSet {
                 continue;
             }
             final int st;
-            if (bIdx == index(from)) {
+            if (bIdx == blockIndex(from)) {
                 st = from;
             } else {
                 st = 0;
             }
             // local end is the block end for all the block, except the last one
             final int ed;
-            if (bIdx == index(to)) {
-                ed = offset(to);
+            if (bIdx == blockIndex(to)) {
+                ed = localIndex(to);
             } else {
                 ed = blockSize;
             }
             ensureBlock(bIdx).clear(st, ed);
-        }
-    }
-
-    /**
-     * Check that the range is valid.
-     * The lower bound must be strictly positive while the upper bound must not be lower than the lower bound.
-     *
-     * @param from lower bound.
-     * @param to   upper bound.
-     * @throws IndexOutOfBoundsException if the range is invalid.
-     */
-    private static void validIndexRange(final int from, final int to) {
-        requirePositiveIndex(from);
-        if (from > to) {
-            throw new IndexOutOfBoundsException("Invalid range: [" + from + ", " + to + ")");
         }
     }
 
@@ -276,20 +289,23 @@ public class SparseBitSet implements IStateBitSet {
         if (from == to) {
             return;
         }
-        ensureIndexCapacity(index(to));
+        // Grows the index.
+        ensureIndexCapacity(blockIndex(to));
         // Go over every impacted blocks. The first and the last may be partially set.
-        for (int bIdx = index(from); bIdx <= index(to); bIdx++) {
+        final int firstBlock = blockIndex(from);
+        final int lastBlock = blockIndex(to);
+        for (int bIdx = firstBlock; bIdx <= lastBlock; bIdx++) {
             // local start is offset(from) for the first block only, otherwise 0.
             final int st;
-            if (bIdx == index(from)) {
-                st = from;
+            if (bIdx == firstBlock) {
+                st = localIndex(from);
             } else {
                 st = 0;
             }
             // local end is the block end for all the block, except the last one
             final int ed;
-            if (bIdx == index(to)) {
-                ed = offset(to);
+            if (bIdx == lastBlock) {
+                ed = localIndex(to);
             } else {
                 ed = blockSize;
             }
@@ -300,7 +316,7 @@ public class SparseBitSet implements IStateBitSet {
     @Override
     public int nextSetBit(final int fromIndex) {
         requirePositiveIndex(fromIndex);
-        final int startingBlock = index(fromIndex);
+        final int startingBlock = blockIndex(fromIndex);
 
         // Iterate over all the blocks starting from the current index to pick the first bit set.
         for (int bIdx = index.nextSetBit(startingBlock); bIdx >= 0; bIdx = index.nextSetBit(bIdx + 1)) {
@@ -310,12 +326,12 @@ public class SparseBitSet implements IStateBitSet {
             if (bIdx > startingBlock) {
                 offset = 0;
             } else {
-                offset = offset(fromIndex);
+                offset = localIndex(fromIndex);
             }
             int bit = blocks[bIdx].nextSetBit(offset);
             if (bit >= 0) {
                 // Found it.
-                return absolute(bIdx, bit);
+                return absIndex(bIdx, bit);
             }
         }
         return -1;
@@ -324,19 +340,19 @@ public class SparseBitSet implements IStateBitSet {
     @Override
     public int prevSetBit(final int fromIndex) {
         requirePositiveIndex(fromIndex);
-        final int lastBlockIdx = index(fromIndex);
+        final int lastBlockIdx = blockIndex(fromIndex);
         // Iterate over all the blocks backward, starting from the current index to pick the first bit set.
         for (int bIdx = index.prevSetBit(lastBlockIdx); bIdx >= 0; bIdx = index.prevSetBit(bIdx - 1)) {
             // For the current block, the offset is the one associated to fromIndex but at the moment the previous
             // blocks are browsed, the offset is 'blockSize' to grab the first bit set from the end.
-            int offset = offset(fromIndex);
+            int offset = localIndex(fromIndex);
             if (bIdx < lastBlockIdx) {
                 offset = blockSize;
             }
             int bit = blocks[bIdx].prevSetBit(offset);
             if (bit >= 0) {
                 // Found it.
-                return absolute(bIdx, bit);
+                return absIndex(bIdx, bit);
             }
         }
         return -1;
@@ -345,7 +361,7 @@ public class SparseBitSet implements IStateBitSet {
     @Override
     public int nextClearBit(final int fromIndex) {
         requirePositiveIndex(fromIndex);
-        final int fromBlock = index(fromIndex);
+        final int fromBlock = blockIndex(fromIndex);
         int curBlock = fromBlock;
         while (curBlock < blocks.length) {
             if (blocks[curBlock] == null || !index.get(curBlock)) {
@@ -361,12 +377,12 @@ public class SparseBitSet implements IStateBitSet {
                 localOff = 0;
             } else {
                 // First block, start from fromIndex.
-                localOff = offset(fromIndex);
+                localOff = localIndex(fromIndex);
             }
             final int nextClear = blocks[curBlock].nextClearBit(localOff);
             if (nextClear != blockSize) {
                 // Not all the bits are set, the first clear bit is here.
-                return absolute(curBlock, nextClear);
+                return absIndex(curBlock, nextClear);
             }
             // All the bits are set, check the next block.
             curBlock++;
@@ -377,14 +393,14 @@ public class SparseBitSet implements IStateBitSet {
     @Override
     public int prevClearBit(final int fromIndex) {
         requirePositiveIndex(fromIndex);
-        final int fromBlock = index(fromIndex);
+        final int fromBlock = blockIndex(fromIndex);
         if (fromBlock >= index.length()) {
             // Outside the current index. For sure there is a cleared bit at fromIndex.
             return fromIndex;
         }
         int curBlock = fromBlock;
         while (curBlock >= 0) {
-            if (blocks[curBlock] == null || !index.get(curBlock)) {
+            if (!index.get(curBlock)) {
                 // null block. fromIndex is then clear for sure. Possibly also a cleared block.
                 return fromIndex;
             }
@@ -395,18 +411,50 @@ public class SparseBitSet implements IStateBitSet {
                 localOff = blockSize - 1;
             } else {
                 // First block, start from fromIndex.
-                localOff = offset(fromIndex);
+                localOff = localIndex(fromIndex);
             }
             final int prevClear = blocks[curBlock].prevClearBit(localOff);
             if (prevClear >= 0) {
                 // Not all the bits are set, the first clear bit is here.
-                return absolute(curBlock, prevClear);
+                return absIndex(curBlock, prevClear);
             }
             // All the bits are set, check the previous block.
             curBlock--;
         }
         // No cleared bit in any block.
         return -1;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof IStateBitSet)) {
+            return false;
+        }
+
+        final IStateBitSet that = (IStateBitSet) o;
+        // Fail fast.
+        if (this.cardinality() != that.cardinality()) {
+            return false;
+        }
+        // Same cardinality. Iterate over the bit sets. Those must be sets in 'that' as well.
+        for (int i = nextSetBit(0); i >= 0; i = nextSetBit(i + 1)) {
+            if (!that.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 1;
+        for (int i = nextSetBit(0); i >= 0; i = nextSetBit(i + 1)) {
+            hashCode = hashCode * 31 + i;
+        }
+        return hashCode;
     }
 
     @Override

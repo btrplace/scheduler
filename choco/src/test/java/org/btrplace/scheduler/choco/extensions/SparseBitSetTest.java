@@ -166,48 +166,6 @@ public class SparseBitSetTest {
         Assert.assertEquals(bs.nextSetBit(0), -1);
     }
 
-
-    @DataProvider(name = "fabric")
-    public Object[][] fabric() {
-        final IEnvironment env = new EnvironmentTrailing();
-        return new Object[][]{
-                new Object[]{new S64BitSet(env)},
-                new Object[]{new SparseBitSet(env, 1024)},
-        };
-    }
-
-    @Test(dataProvider = "fabric")
-    public void runClustering(final IStateBitSet bs) {
-        int base = 100;
-        int clusterSize = 32;
-        int nbClusters = 400;
-        int itemsPerCluster = 2000;
-
-        long start = System.currentTimeMillis();
-        for (int c = 0; c <= nbClusters; c++) {
-            for (int n = 0; n < clusterSize; n++) {
-                for (int i = 0; i < base; i++) {
-                    bs.set(i);
-                }
-                for (int i = 0; i < itemsPerCluster; i++) {
-                    bs.set(clusterSize * c + i);
-                }
-            }
-        }
-        System.out.println("Duration: " + (System.currentTimeMillis() - start) + "ms; bytes: " + bs.size());
-    }
-
-    @Test(dataProvider = "fabric")
-    public void runRandom(final IStateBitSet bs) {
-        int max = 25000;
-        for (int i = 0; i < max; i++) {
-            bs.set(i);
-        }
-        long start = System.currentTimeMillis();
-        System.out.println("Duration: " + (System.currentTimeMillis() - start) + "ms; bytes: " + bs.size());
-    }
-
-
     @DataProvider(name = "invalidRanges")
     public Object[][] invalidRanges() {
         return new Object[][]{{-1, 3}, {5, 4}, {-1, -1}};
@@ -315,6 +273,13 @@ public class SparseBitSetTest {
         // Same LB than UB. This is a nop.
         bs.clear(250, 250);
         Assert.assertTrue(bs.get(250));
+
+        bs = new SparseBitSet(env, 32);
+        bs.set(0, 32);
+        bs.set(64, 70);
+        // Clear where there is no blocks.
+        bs.clear(32, 64);
+        Assert.assertEquals(bs.nextSetBit(64), 64);
     }
 
     @Test
@@ -376,5 +341,44 @@ public class SparseBitSetTest {
             Assert.assertEquals(ref.prevClearBit(i), got.prevClearBit(i));
         }
         Assert.assertEquals(ref.toString(), got.toString());
+    }
+
+    @Test
+    public void testEquals() {
+        final IEnvironment env = new EnvironmentTrailing();
+        final IStateBitSet ref = new S64BitSet(env, 64);
+        final IStateBitSet sparse = new SparseBitSet(env, 128);
+
+        // S64Bitset.equals is not correct, cannot use Assert.assertEquals()
+        Assert.assertTrue(sparse.equals(ref));
+        ref.set(7, 32);
+        sparse.set(7, 32);
+
+        Assert.assertTrue(sparse.equals(ref));
+        ref.set(278, 317);
+        sparse.set(278, 317);
+
+        Assert.assertTrue(sparse.equals(ref));
+
+        env.worldPush();
+        // Clear a bit already cleared. No change expected.
+        sparse.clear(3);
+        Assert.assertTrue(sparse.equals(ref));
+
+        // Bit cleared in a new world. No longer equals.
+        sparse.clear(300);
+        Assert.assertFalse(sparse.equals(ref));
+
+        // Restore the event.
+        env.worldPop();
+        Assert.assertTrue(sparse.equals(ref));
+
+        // Same cardinality, not the same bits.
+        sparse.clear(300);
+        sparse.set(1);
+        Assert.assertFalse(sparse.equals(ref));
+
+        Assert.assertEquals(sparse, sparse);
+        Assert.assertFalse(sparse.equals(null));
     }
 }
