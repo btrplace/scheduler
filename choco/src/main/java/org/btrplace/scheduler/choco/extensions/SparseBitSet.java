@@ -22,8 +22,6 @@ import java.util.Arrays;
  * In terms of memory efficiency, the benefits will depend on the density of the bit sets and the block size. When some
  * memory regions are set then cleared, the memory is not reclaimed. Accordingly, if the bitset is full of 1 early and
  * cleared over the time, then no savings are possible.
- * <p>
- * <p>
  * {@link #equals(Object)} and {@link #hashCode()} supports with any kind of {@link IStateBitSet} implementation but
  * they must not be used in any performance sensitive context.
  */

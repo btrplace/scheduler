@@ -381,4 +381,23 @@ public class SparseBitSetTest {
         Assert.assertEquals(sparse, sparse);
         Assert.assertFalse(sparse.equals(null));
     }
+
+    @Test
+    public void testHashCode() {
+        final IEnvironment env = new EnvironmentTrailing();
+        // Different block sizes but same content.
+        final IStateBitSet sparse1 = new SparseBitSet(env, 128);
+        final IStateBitSet sparse2 = new SparseBitSet(env, 64);
+        Assert.assertEquals(sparse1.hashCode(), sparse2.hashCode());
+        sparse1.set(1);
+        sparse1.set(64);
+        sparse1.set(137);
+
+        sparse2.set(1);
+        sparse2.set(64);
+        sparse2.set(137);
+        Assert.assertEquals(sparse1.hashCode(), sparse2.hashCode());
+        sparse2.clear(1);
+        Assert.assertNotEquals(sparse1.hashCode(), sparse2.hashCode());
+    }
 }
