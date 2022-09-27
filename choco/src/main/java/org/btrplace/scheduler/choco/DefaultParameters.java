@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -76,11 +76,24 @@ public class DefaultParameters implements Parameters {
 
     /**
      * New set of parameters.
+     * This provides {@link ChocoMapper#newBundle()}, {@link TransitionFactory#newBundle()},
+     * {@link DurationEvaluators#newBundle()}.
      */
     public DefaultParameters() {
-        mapper = ChocoMapper.newBundle();
-        durationEvaluators = DurationEvaluators.newBundle();
-        amf = TransitionFactory.newBundle();
+        this(ChocoMapper.newBundle(), DurationEvaluators.newBundle(), TransitionFactory.newBundle());
+    }
+
+    /**
+     * New parameters where the supported constraints/views, duration evaluators and transitions are provided.
+     *
+     * @param mapper the supported constraints/views.
+     * @param dev    the duration evaluator.
+     * @param tf     the supported transitions.
+     */
+    public DefaultParameters(final ChocoMapper mapper, final DurationEvaluators dev, final TransitionFactory tf) {
+        this.mapper = mapper;
+        this.durationEvaluators = dev;
+        this.amf = tf;
         envf = mo -> new EnvironmentTrailing();
         //Default solver views
         views = new ArrayList<>();
@@ -93,6 +106,15 @@ public class DefaultParameters implements Parameters {
         chocoSettings = Settings.prod()
                 .setMinCardinalityForSumDecomposition(10000)
                 .setCloneVariableArrayInPropagator(false);
+    }
+
+    /**
+     * New parameters that do not provide any extensions.
+     *
+     * @return the created parameters.
+     */
+    public static Parameters trimmed() {
+        return new DefaultParameters(new ChocoMapper(), new DurationEvaluators(), new TransitionFactory());
     }
 
     /**
