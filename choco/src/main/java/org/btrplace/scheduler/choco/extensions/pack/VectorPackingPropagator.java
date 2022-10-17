@@ -17,7 +17,7 @@ import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.solver.variables.events.PropagatorEventType;
 import org.chocosolver.util.ESat;
 import org.chocosolver.util.iterators.DisposableValueIterator;
-import org.chocosolver.util.procedure.UnaryIntProcedure;
+import org.chocosolver.util.procedure.IntProcedure;
 import org.chocosolver.util.tools.ArrayUtils;
 
 import java.util.Arrays;
@@ -668,7 +668,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
     /**
      * the procedure of removal for an assignment variable
      */
-    private static class RemProc implements UnaryIntProcedure<Integer> {
+    private static class RemProc implements IntProcedure {
         private final VectorPackingPropagator p;
         private int idxVar;
 
@@ -676,8 +676,7 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             this.p = p;
         }
 
-        @Override
-        public UnaryIntProcedure<Integer> set(Integer idxVar) {
+        public RemProc set(int idxVar) {
             this.idxVar = idxVar;
             return this;
         }
