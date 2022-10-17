@@ -6,9 +6,9 @@
 
 package org.btrplace.scheduler.choco.extensions.pack;
 
+import org.btrplace.scheduler.choco.extensions.SparseBitSet;
 import org.chocosolver.memory.IStateBitSet;
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.memory.structure.S64BitSet;
 import org.chocosolver.solver.exception.ContradictionException;
 
 /**
@@ -44,7 +44,7 @@ public class KnapsackDecorator {
         this.candidate = new IStateBitSet[p.nbBins];
 
         for (int i = 0; i < p.nbBins; i++) {
-            final IStateBitSet bs = new S64BitSet(p.getModel().getEnvironment(), 32);
+            final IStateBitSet bs = new SparseBitSet(p.getModel().getEnvironment(), 256);
             candidate[i] = bs;
         }
 
