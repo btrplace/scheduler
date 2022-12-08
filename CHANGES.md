@@ -5,6 +5,10 @@ version 1.12.6 - soon come
 ----------------------
 See milestone [1.12.6](https://github.com/btrplace/scheduler/milestones/1.12.6)
 
+This milestone focused on reducing the memory usage by removing some useless constraints and through the use of more
+performant data structures.
+
+
 version 1.12.5 - 23 Jun 2022
 ----------------------
 See milestone [1.12.5](https://github.com/btrplace/scheduler/milestones/1.12.5)
