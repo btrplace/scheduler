@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -11,11 +11,14 @@ import org.btrplace.model.VM;
 import org.btrplace.model.VMState;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
+import org.btrplace.scheduler.SchedulerModelingException;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.SliceBuilder;
+import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -69,14 +72,20 @@ public class BootVM implements VMTransition {
         this.rp = p;
         start = p.makeDuration(p.getEnd().getUB() - d, 0, VAR_PREFIX, "(", e, ").start");
         end = rp.getModel().intOffsetView(start, d);
-        duration = p.makeDuration(d, d, VAR_PREFIX, "(", e, ").duration");
+        String label = "";
+        if (rp.labelVariables()) {
+            label = p.makeVarLabel(VAR_PREFIX, "(", e, ").duration");
+        }
+        duration = p.fixed(d, label);
         dSlice = new SliceBuilder(p, e, VAR_PREFIX, "(", e, ").dSlice").setStart(start)
                 .setDuration(p.makeDuration(p.getEnd().getUB(), d, VAR_PREFIX, "(", e, ").dSlice_duration"))
                 .build();
 
-        csp.post(csp.arithm(end, "<=", p.getEnd()));
-        csp.post(csp.arithm(duration, "<=", p.getEnd()));
-
+        try {
+            p.getEnd().updateLowerBound(d, Cause.Null);
+        } catch (final ContradictionException ex) {
+            throw new SchedulerModelingException(rp.getSourceModel(), ex.getMessage());
+        }
         state = csp.boolVar(true);
     }
 

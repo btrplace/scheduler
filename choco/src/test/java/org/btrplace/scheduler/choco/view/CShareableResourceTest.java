@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -7,27 +7,12 @@
 package org.btrplace.scheduler.choco.view;
 
 import org.btrplace.json.JSON;
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.NoDelay;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Overbook;
-import org.btrplace.model.constraint.Preserve;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
-import org.btrplace.scheduler.choco.ChocoScheduler;
-import org.btrplace.scheduler.choco.DefaultChocoScheduler;
-import org.btrplace.scheduler.choco.DefaultParameters;
-import org.btrplace.scheduler.choco.DefaultReconfigurationProblemBuilder;
-import org.btrplace.scheduler.choco.ReconfigurationProblem;
+import org.btrplace.scheduler.choco.*;
 import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -75,17 +60,11 @@ public class CShareableResourceTest {
         Assert.assertEquals(0, rcm.getFutureVMAllocation(rp.getVM(vm1)));
         Assert.assertEquals(3, rcm.getFutureVMAllocation(rp.getVM(vm2)));
         Assert.assertEquals(0, rcm.getFutureVMAllocation(rp.getVM(vm3))); //Will not be running so 0
-        IntVar pn1 = rcm.getPhysicalUsage().get(rp.getNode(n1));
-        IntVar pn2 = rcm.getPhysicalUsage().get(rp.getNode(n2));
-        Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
-        Assert.assertTrue(pn2.getLB() == 0 && pn2.getUB() == 0);
 
         Assert.assertEquals(rc.getCapacity(n1),
             rcm.getFutureNodeCapacity(rp.getNode(n1)));
         Assert.assertEquals(rc.getCapacity(n2),
             rcm.getFutureNodeCapacity(rp.getNode(n2)));
-        pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
-        Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
 
         IntVar vn1 = rcm.getVirtualUsage().get(rp.getNode(n1));
         IntVar vn2 = rcm.getVirtualUsage().get(rp.getNode(n2));

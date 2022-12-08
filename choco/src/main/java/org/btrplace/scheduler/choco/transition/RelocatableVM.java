@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -130,7 +130,6 @@ public class RelocatableVM implements KeepRunningVM {
         start = dSlice.getStart();
         end = cSlice.getEnd();
 
-        csp.post(rp.getModel().arithm(end, "<=", rp.getEnd()));
         // Get some static durations from evaluators
         DurationEvaluators dev = rp.getDurationEvaluators();
         int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);

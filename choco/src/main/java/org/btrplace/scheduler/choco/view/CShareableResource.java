@@ -109,20 +109,16 @@ public class CShareableResource implements ChocoView {
         this.ratios = new TDoubleArrayList(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
-            final IntVar phyU;
             final IntVar virtU;
             if (rp.labelVariables()) {
-                phyU = csp.intVar(p.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nId), true);
                 virtU = csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, true);
             } else {
-                phyU = csp.intVar("", 0, rc.getCapacity(nId), true);
                 virtU = csp.intVar("", 0, Integer.MAX_VALUE / 100, true);
             }
-            phyRcUsage.add(phyU);
+            phyRcUsage.add(null);
             virtRcUsage.add(virtU);
             ratios.add(UNCHECKED_RATIO);
         }
-        phyRcUsage = Collections.unmodifiableList(phyRcUsage);
         virtRcUsage = Collections.unmodifiableList(virtRcUsage);
 
         //Bin packing for the node vmAllocation
@@ -163,25 +159,6 @@ public class CShareableResource implements ChocoView {
      */
     public ShareableResource getSourceResource() {
         return rc;
-    }
-
-    /**
-     * Get the physical resource usage of each node.
-     *
-     * @return an array of variable denoting the resource usage for each node.
-     */
-    public List<IntVar> getPhysicalUsage() {
-        return phyRcUsage;
-    }
-
-    /**
-     * Get the physical resource usage of a given node
-     *
-     * @param nIdx the node identifier
-     * @return the variable denoting the resource usage for the node.
-     */
-    public IntVar getPhysicalUsage(int nIdx) {
-        return phyRcUsage.get(nIdx);
     }
 
     /**
@@ -506,6 +483,9 @@ public class CShareableResource implements ChocoView {
     private boolean overbook(int nIdx, double r) {
         Node n = rp.getNode(nIdx);
         int maxPhy = getSourceResource().getCapacity(n);
+        final String label = rp.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nIdx, "')");
+        final IntVar phyU = csp.intVar(label, 0, maxPhy, true);
+        phyRcUsage.set(nIdx, phyU);
         int maxVirt = (int) (maxPhy * r);
         if (maxVirt != 0) {
             csp.post(new RoundedUpDivision(phyRcUsage.get(nIdx), virtRcUsage.get(nIdx), r));
@@ -522,9 +502,8 @@ public class CShareableResource implements ChocoView {
     }
 
     private boolean noOverbook(int nIdx) {
-        csp.post(csp.arithm(phyRcUsage.get(nIdx), "=", virtRcUsage.get(nIdx)));
         try {
-            virtRcUsage.get(nIdx).updateUpperBound(phyRcUsage.get(nIdx).getUB(), Cause.Null);
+            virtRcUsage.get(nIdx).updateUpperBound(rc.getCapacity(rp.getNode(nIdx)), Cause.Null);
         } catch (ContradictionException ex) {
             rp.getLogger().debug("Unable to restrict the virtual '" + getResourceIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + phyRcUsage.get(nIdx).getUB(), ex);
             return false;
