@@ -29,5 +29,5 @@ public interface AliasedCumulatives extends ChocoView {
      * @param dUse  the current demain for each VM
      * @param alias the indexes of the nodes that share the resource
      */
-    void addDim(int c, int[] cUse, IntVar[] dUse, int[] alias);
+    void addDim(int c, int[] cUse, int[] dUse, int[] alias);
 }

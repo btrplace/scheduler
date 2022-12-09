@@ -301,11 +301,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void addContinuousResourceCapacities() {
         TIntArrayList cUse = new TIntArrayList();
-        List<IntVar> iUse = new ArrayList<>();
+        TIntArrayList iUse = new TIntArrayList();
         for (int j = 0; j < getVMs().size(); j++) {
             VMTransition a = vmActions.get(j);
             if (a.getDSlice() != null) {
-                iUse.add(csp.intVar(1));
+                iUse.add(1);
             }
             if (a.getCSlice() != null) {
                 cUse.add(1);
@@ -317,7 +317,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw SchedulerModelingException.missingView(model, Cumulatives.VIEW_ID);
         }
 
-        ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
+        ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray());
     }
 
     private void linkCardinalityWithSlices() {

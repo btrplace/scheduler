@@ -28,7 +28,7 @@ public abstract class AbstractCumulatives implements ChocoView {
 
     protected List<int[]> cUsages;
 
-    protected List<IntVar[]> dUsages;
+    protected List<int[]> dUsages;
 
     protected int[] associations;
 

@@ -29,7 +29,7 @@ public interface Cumulatives extends ChocoView {
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
-    void addDim(List<IntVar> c, int[] cUse, IntVar[] dUse);
+    void addDim(List<IntVar> c, int[] cUse, int[] dUse);
 
     @Override
     default String getIdentifier() {

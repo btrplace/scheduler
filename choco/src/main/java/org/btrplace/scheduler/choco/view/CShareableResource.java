@@ -109,11 +109,13 @@ public class CShareableResource implements ChocoView {
         this.ratios = new TDoubleArrayList(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
-            final IntVar virtU;
+            final IntVar virtU; //
+            //final int ub = rc.getCapacity(nId);
+            final int ub = Integer.MAX_VALUE / 100;
             if (rp.labelVariables()) {
-                virtU = csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, true);
+                virtU = csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, ub, true);
             } else {
-                virtU = csp.intVar("", 0, Integer.MAX_VALUE / 100, true);
+                virtU = csp.intVar("", 0, ub, true);
             }
             phyRcUsage.add(null);
             virtRcUsage.add(virtU);
@@ -419,7 +421,7 @@ public class CShareableResource implements ChocoView {
 
         //The slice scheduling constraint that is necessary
         TIntArrayList cUse = new TIntArrayList();
-        List<IntVar> dUse = new ArrayList<>();
+        TIntArrayList dUse = new TIntArrayList();
 
         for (VMTransition a : rp.getVMActions()) {
             VM vm = a.getVM();
@@ -430,18 +432,18 @@ public class CShareableResource implements ChocoView {
             }
             if (d != null) {
                 int m = getFutureVMAllocation(rp.getVM(vm));
-                final IntVar var;
+                /*final IntVar var;
                 if (rp.labelVariables()) {
                     var = rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'");
                 } else {
                     var = csp.intVar(m);
-                }
-                dUse.add(var);
+                }*/
+                dUse.add(m);
             }
         }
 
         Cumulatives v = (Cumulatives) rp.getRequiredView(Cumulatives.VIEW_ID);
-        v.addDim(virtRcUsage, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+        v.addDim(virtRcUsage, cUse.toArray(), dUse.toArray());
 
         checkInitialSatisfaction();
         return true;

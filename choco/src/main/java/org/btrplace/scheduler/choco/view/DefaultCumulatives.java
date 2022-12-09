@@ -48,7 +48,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
      * @param dUse the resource usage of each of the dSlices
      */
     @Override
-    public void addDim(List<IntVar> c, int[] cUse, IntVar[] dUse) {
+    public void addDim(List<IntVar> c, int[] cUse, int[] dUse) {
         capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -97,10 +97,10 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         int nbDHosts = dUsages.get(0).length;
         int[][] dUses = new int[nbDHosts][nbDims];
         d = 0;
-        for (IntVar[] dUseDim : dUsages) {
+        for (int[] dUseDim : dUsages) {
             assert dUseDim.length == nbDHosts;
             for (int j = 0; j < nbDHosts; j++) {
-                dUses[j][d] = dUseDim[j].getLB();
+                dUses[j][d] = dUseDim[j];
             }
             d++;
         }
@@ -130,7 +130,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         Boolean decOrStay = null;
         //Get the resources usage
         for (int d = 0; d < cUsages.size(); d++) {
-            int req = dUsages.get(d)[dIdx].getLB();
+            int req = dUsages.get(d)[dIdx];
             int use = cUsages.get(d)[cIdx];
             if (decOrStay == null) {
                 decOrStay = req <= use;

@@ -54,7 +54,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
      * @param alias the resource identifiers that compose the alias
      */
     @Override
-    public void addDim(int c, int[] cUse, IntVar[] dUse, int[] alias) {
+    public void addDim(int c, int[] cUse, int[] dUse, int[] alias) {
         capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -74,8 +74,8 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements or
             int[] alias = aliases.get(i);
             int[] cUse = cUsages.get(i);
             int[] dUses = new int[dUsages.get(i).length];
-            for (IntVar dUseDim : dUsages.get(i)) {
-                dUses[i++] = dUseDim.getLB();
+            for (int dUseDim : dUsages.get(i)) {
+                dUses[i++] = dUseDim;
             }
             r.getModel().post(new AliasedCumulatives(alias,
                     new int[]{capa},

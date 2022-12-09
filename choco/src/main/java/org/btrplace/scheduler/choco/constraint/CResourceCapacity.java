@@ -116,7 +116,7 @@ public class CResourceCapacity implements ChocoConstraint {
         }
 
         TIntArrayList cUse = new TIntArrayList();
-        List<IntVar> dUse = new ArrayList<>();
+        TIntArrayList dUse = new TIntArrayList();
 
         for (VM vmId : rp.getVMs()) {
             VMTransition a = rp.getVMAction(vmId);
@@ -127,17 +127,17 @@ public class CResourceCapacity implements ChocoConstraint {
             }
             if (d != null) {
                 int m = rcm.getFutureVMAllocation(rp.getVM(vmId));
-                final IntVar var;
+                /*final IntVar var;
                 if (rp.labelVariables()) {
                     var = rp.fixed(m, "vmAllocation('", rcm.getResourceIdentifier(), "', '", vmId, "'");
                 } else {
                     var = rp.getModel().intVar(m);
-                }
-                dUse.add(var);
+                }*/
+                dUse.add(m);
             }
         }
         ChocoView v = rp.getRequiredView(AliasedCumulatives.VIEW_ID);
-        ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
+        ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse.toArray(), dUse.toArray(), alias);
         return true;
     }
 

@@ -25,6 +25,7 @@ import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
+import org.chocosolver.memory.trailing.EnvironmentTrailing;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -132,7 +133,6 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
                 st.setObjective(solution.getIntVal(o));
             }
             stats.addSolution(st);
-
           params.solutionListeners().forEach(c -> c.accept(rp, plan));
         });
 
