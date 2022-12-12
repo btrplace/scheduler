@@ -25,7 +25,6 @@ import org.btrplace.scheduler.choco.runner.Metrics;
 import org.btrplace.scheduler.choco.runner.SolutionStatistics;
 import org.btrplace.scheduler.choco.runner.SolvingStatistics;
 import org.btrplace.scheduler.choco.view.ChocoView;
-import org.chocosolver.memory.trailing.EnvironmentTrailing;
 import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.exception.ContradictionException;

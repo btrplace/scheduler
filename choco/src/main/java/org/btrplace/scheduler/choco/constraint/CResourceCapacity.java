@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -126,14 +126,7 @@ public class CResourceCapacity implements ChocoConstraint {
                 cUse.add(rcm.getSourceResource().getConsumption(vmId));
             }
             if (d != null) {
-                int m = rcm.getFutureVMAllocation(rp.getVM(vmId));
-                /*final IntVar var;
-                if (rp.labelVariables()) {
-                    var = rp.fixed(m, "vmAllocation('", rcm.getResourceIdentifier(), "', '", vmId, "'");
-                } else {
-                    var = rp.getModel().intVar(m);
-                }*/
-                dUse.add(m);
+                dUse.add(rcm.getFutureVMAllocation(rp.getVM(vmId)));
             }
         }
         ChocoView v = rp.getRequiredView(AliasedCumulatives.VIEW_ID);

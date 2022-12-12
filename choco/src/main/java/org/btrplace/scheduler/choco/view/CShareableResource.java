@@ -109,13 +109,11 @@ public class CShareableResource implements ChocoView {
         this.ratios = new TDoubleArrayList(nodes.size());
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (Node nId : p.getNodes()) {
-            final IntVar virtU; //
-            //final int ub = rc.getCapacity(nId);
-            final int ub = Integer.MAX_VALUE / 100;
+            final IntVar virtU;
             if (rp.labelVariables()) {
-                virtU = csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, ub, true);
+                virtU = csp.intVar(p.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, true);
             } else {
-                virtU = csp.intVar("", 0, ub, true);
+                virtU = csp.intVar("", 0, Integer.MAX_VALUE / 100, true);
             }
             phyRcUsage.add(null);
             virtRcUsage.add(virtU);
@@ -431,14 +429,7 @@ public class CShareableResource implements ChocoView {
                 cUse.add(getSourceResource().getConsumption(vm));
             }
             if (d != null) {
-                int m = getFutureVMAllocation(rp.getVM(vm));
-                /*final IntVar var;
-                if (rp.labelVariables()) {
-                    var = rp.fixed(m, "vmAllocation('", getResourceIdentifier(), "', '", vm, "'");
-                } else {
-                    var = csp.intVar(m);
-                }*/
-                dUse.add(m);
+                dUse.add(getFutureVMAllocation(rp.getVM(vm)));
             }
         }
 

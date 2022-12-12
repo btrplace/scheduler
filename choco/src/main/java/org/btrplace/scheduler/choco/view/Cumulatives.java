@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -25,9 +25,10 @@ public interface Cumulatives extends ChocoView {
 
     /**
      * Add a new dimension.
-     *  @param c    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
+     *
+     * @param c    the capacity of each node. The variables *must be* ordered according to {@link org.btrplace.scheduler.choco.DefaultReconfigurationProblem#getNode(org.btrplace.model.Node)}.
      * @param cUse the resource usage of each of the cSlices
-     * @param dUse the resource usage of each of the dSlices
+     * @param dUse the resource demand of each of the dSlices
      */
     void addDim(List<IntVar> c, int[] cUse, int[] dUse);
 
