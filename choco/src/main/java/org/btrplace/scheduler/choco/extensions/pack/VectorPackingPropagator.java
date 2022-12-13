@@ -137,9 +137,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         this.iSizes = s;
         this.remProc = new RemProc(this);
         this.deltaMonitor = new IIntDeltaMonitor[b.length];
-        for (int i = 0; i < deltaMonitor.length; i++) {
-            deltaMonitor[i] = this.vars[i].monitorDelta(this);
-        }
 
         decoHeap = new VectorPackingHeapDecorator(this);
         decoKPSimple = new KnapsackDecorator(this);
@@ -225,6 +222,11 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         if ((evtMask & PropagatorEventType.FULL_PROPAGATION.getMask()) != 0) {
             initialize();
             recomputeLoads = true;
+            for (int i = 0; i < deltaMonitor.length; i++) {
+                final IIntDeltaMonitor dm = this.vars[i].monitorDelta(this);
+                dm.startMonitoring();
+                deltaMonitor[i] = dm;
+            }
         } else {
             recomputeLoads = loadsHaveChanged.get();
             if (recomputeLoads) {
@@ -233,9 +235,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
         }
         decoHeap.fixPoint(recomputeLoads);
         assert checkLoadConsistency();
-        for (final IIntDeltaMonitor dm : deltaMonitor) {
-            dm.startMonitoring();
-        }
     }
 
 
