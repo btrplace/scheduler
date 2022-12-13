@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2022 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -10,18 +10,15 @@ import org.btrplace.model.VM;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
-import org.btrplace.scheduler.choco.Slice;
-import org.btrplace.scheduler.choco.extensions.FastImpliesEq;
+import org.btrplace.scheduler.choco.extensions.StayingVMsScheduling;
 import org.btrplace.scheduler.choco.extensions.TaskScheduler;
 import org.btrplace.scheduler.choco.transition.KeepRunningVM;
 import org.btrplace.scheduler.choco.transition.NodeTransition;
 import org.btrplace.scheduler.choco.transition.VMTransition;
-import org.chocosolver.solver.Cause;
-import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -104,7 +101,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             }
             d++;
         }
-        symmetryBreakingForStayingVMs(rp);
+        //symmetryBreakingForStayingVMs(rp);
         IntVar[] earlyStarts = rp.getNodeActions().stream().map(NodeTransition::getHostingStart).toArray(IntVar[]::new);
         IntVar[] lastEnd = rp.getNodeActions().stream().map(NodeTransition::getHostingEnd).toArray(IntVar[]::new);
         rp.getModel().post(
@@ -115,6 +112,21 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                         dHosts, dUses, dStarts,
                         associations)
         );
+        final List<KeepRunningVM> keepRunningVms = new ArrayList<>();
+        final BitSet decreasing = new BitSet();
+        int idx = 0;
+        for (final VMTransition trans : rp.getVMActions()) {
+            if (trans instanceof KeepRunningVM) {
+                keepRunningVms.add((KeepRunningVM) trans);
+                if (Boolean.TRUE.equals(strictlyDecreasingOrUnchanged(trans.getVM()))) {
+                    decreasing.set(idx);
+                }
+                idx++;
+            }
+        }
+        if (!keepRunningVms.isEmpty()) {
+            StayingVMsScheduling.newConstraint(keepRunningVms.toArray(new KeepRunningVM[0]), decreasing).post();
+        }
         return true;
     }
 
@@ -143,48 +155,5 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             }
         }
         return decOrStay;
-    }
-
-    /**
-     * Symmetry breaking for VMs that stay running, on the same node.
-     *
-     * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
-     */
-    private boolean symmetryBreakingForStayingVMs(ReconfigurationProblem rp) {
-        for (VM vm : rp.getFutureRunningVMs()) {
-            VMTransition a = rp.getVMAction(vm);
-            Slice dSlice = a.getDSlice();
-            Slice cSlice = a.getCSlice();
-            if (dSlice != null && cSlice != null) {
-                BoolVar stay = ((KeepRunningVM) a).isStaying();
-
-                Boolean ret = strictlyDecreasingOrUnchanged(vm);
-                if (Boolean.TRUE.equals(ret) && !zeroDuration(rp, stay, cSlice)) {
-                    return false;
-                    //Else, the resource usage is decreasing, so
-                    // we set the cSlice duration to 0 to directly reduces the resource allocation
-                } else if (Boolean.FALSE.equals(ret) && !zeroDuration(rp, stay, dSlice)) {
-                    //If the resource usage will be increasing
-                    //Then the duration of the dSlice can be set to 0
-                    //(the allocation will be performed at the end of the reconfiguration process)
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private static boolean zeroDuration(ReconfigurationProblem rp, BoolVar stay, Slice s) {
-        if (stay.isInstantiatedTo(1)) {
-            try {
-                s.getDuration().instantiateTo(0, Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().debug("Unable to set the duration of slice " + s.getSubject() + " to 0", ex);
-                return false;
-            }
-        } else {
-            rp.getModel().post(new FastImpliesEq(stay, s.getDuration(), 0));
-        }
-        return true;
     }
 }
