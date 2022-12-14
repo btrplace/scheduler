@@ -5,6 +5,11 @@ version 1.12.7 - soon come
 ----------------------
 See milestone [1.12.7](https://github.com/btrplace/scheduler/milestones/1.12.7)
 
+This milestone focuses on performance. It reduces the number of constraints required
+to model a problem and improves the solver efficiency. The biggest change is due
+to #428.
+
+
 version 1.12.6 - 08 Dec 2022
 ----------------------
 See milestone [1.12.6](https://github.com/btrplace/scheduler/milestones/1.12.6)
