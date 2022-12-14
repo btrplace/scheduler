@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>1.12.7-SNAPSHOT</version>
+        <version>1.12.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>
