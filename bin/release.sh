@@ -9,7 +9,6 @@ if [[ -z "$GH_TOKEN" ]]; then
   echo "Environment variable GH_TOKEN is missing."
   exit 1
 fi
-git checkout -b release ||exit 1
 
 ####
 #No open issues in the current milestone
@@ -18,6 +17,8 @@ VERSION=$(./bin/version.py --release)
 echo "** Version to release: ${VERSION} **"
 ./bin/github.py milestone-close "${VERSION}"||exit 1
 echo "  Milestone ${VERSION} closed"
+
+git checkout -b release ||exit 1
 
 #### 
 # Prepare the release.
