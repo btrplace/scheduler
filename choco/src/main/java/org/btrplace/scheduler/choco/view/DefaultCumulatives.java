@@ -101,7 +101,6 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
             }
             d++;
         }
-        //symmetryBreakingForStayingVMs(rp);
         IntVar[] earlyStarts = rp.getNodeActions().stream().map(NodeTransition::getHostingStart).toArray(IntVar[]::new);
         IntVar[] lastEnd = rp.getNodeActions().stream().map(NodeTransition::getHostingEnd).toArray(IntVar[]::new);
         rp.getModel().post(

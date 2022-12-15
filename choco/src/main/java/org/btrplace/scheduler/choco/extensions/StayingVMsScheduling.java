@@ -95,7 +95,7 @@ public class StayingVMsScheduling extends Propagator<IntVar> {
             dur.instantiateTo(0, this);
             // It stays.
             stay.instantiateTo(1, this);
-            if (decreasingOrStill.get(cur)) {
+            if (decreasingOrStill.get(idx)) {
                 // Decreasing or still profile. The cslice duration is set to 0 so the dslice will span up to the end.
                 // This is an early de-allocation.
                 actions[idx].getCSlice().getDuration().instantiateTo(0, this);
