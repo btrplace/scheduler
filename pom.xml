@@ -11,7 +11,7 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>scheduler</artifactId>
-    <version>1.12.8</version>
+    <version>1.12.9-SNAPSHOT</version>
     <name>scheduler</name>
     <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
