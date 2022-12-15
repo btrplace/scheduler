@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.btrplace</groupId>
         <artifactId>scheduler</artifactId>
-        <version>1.12.8-SNAPSHOT</version>
+        <version>1.12.8</version>
     </parent>
 
     <dependencies>
