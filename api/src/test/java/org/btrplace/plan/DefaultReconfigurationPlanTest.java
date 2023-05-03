@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.plan.event.Action;
 import org.btrplace.plan.event.MigrateVM;
 import org.btrplace.plan.event.ShutdownNode;
@@ -49,7 +45,7 @@ public class DefaultReconfigurationPlanTest {
 
         Model mo = new DefaultModel();
         when(ap.apply(p)).thenReturn(mo);
-        Assert.assertTrue(p.getResult() == mo);
+        Assert.assertSame(p.getResult(), mo);
     }
 
 
@@ -70,7 +66,7 @@ public class DefaultReconfigurationPlanTest {
         String s = p1.toString();
         //2 migrations
         Assert.assertNotEquals(s.indexOf("migrate("), s.lastIndexOf("migrate("));
-        System.err.println(p1.toString());
+        System.err.println(p1);
         System.err.flush();
     }
 
@@ -81,7 +77,7 @@ public class DefaultReconfigurationPlanTest {
         DefaultReconfigurationPlan p = new DefaultReconfigurationPlan(m);
         Assert.assertEquals(m, p.getOrigin());
         Assert.assertEquals(m, p.getResult());
-        Assert.assertEquals(0, p.getDuration());
+        Assert.assertEquals(p.getDuration(), 0);
         Assert.assertTrue(p.getActions().isEmpty());
         Assert.assertFalse(p.toString().contains("null"));
         Assert.assertEquals(p.getReconfigurationApplier().getClass(), TimeBasedPlanApplier.class);
@@ -98,11 +94,11 @@ public class DefaultReconfigurationPlanTest {
         Action a3 = new MockAction(vms.get(2), 2, 4);
         Action a4 = new MockAction(vms.get(3), 1, 3);
         Assert.assertTrue(p.add(a1));
-        Assert.assertEquals(3, p.getDuration());
+        Assert.assertEquals(p.getDuration(), 3);
         Assert.assertTrue(p.add(a4));
         Assert.assertTrue(p.add(a3));
         Assert.assertTrue(p.add(a2));
-        Assert.assertEquals(4, p.getDuration());
+        Assert.assertEquals(p.getDuration(), 4);
         int last = -1;
         System.out.println(p);
         for (Action a : p) {
@@ -111,7 +107,7 @@ public class DefaultReconfigurationPlanTest {
         }
         Assert.assertFalse(p.add(a2));
 
-        Assert.assertEquals(4, p.getSize());
+        Assert.assertEquals(p.getSize(), 4);
 
         Assert.assertFalse(p.toString().contains("null"));
     }

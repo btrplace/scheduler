@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.constraint.MinMTTR;
 import org.btrplace.model.constraint.Ready;
 import org.testng.Assert;
@@ -35,10 +31,10 @@ public class CReadyTest {
         mo.getMapping().ready(vm1).on(n1).run(n1, vm2, vm3);
         Instance i = new Instance(mo, Collections.emptyList(), new MinMTTR());
         CReady k = new CReady(new Ready(vm1));
-        Assert.assertEquals(0, k.getMisPlacedVMs(i).size());
+        Assert.assertEquals(k.getMisPlacedVMs(i).size(), 0);
 
         k = new CReady(new Ready(vm2));
-        Assert.assertEquals(1, k.getMisPlacedVMs(i).size());
+        Assert.assertEquals(k.getMisPlacedVMs(i).size(), 1);
         Assert.assertTrue(k.getMisPlacedVMs(i).contains(vm2));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -34,14 +34,14 @@ public class FastIFFEq extends Constraint {
     /**
      * New constraint.
      *
-     * @param b   the boolean variable.
-     * @param var the variable that can be equals to c
-     * @param c   the constraint
+     * @param b  the boolean variable.
+     * @param vv the variable that can be equals to c
+     * @param c  the constraint
      */
-    public FastIFFEq(BoolVar b, IntVar var, int c) {
-        super("IFFEq", new FastIFFEqProp(b, var, c));
+    public FastIFFEq(BoolVar b, IntVar vv, int c) {
+        super("IFFEq", new FastIFFEqProp(b, vv, c));
         this.b = b;
-        this.v = var;
+        this.v = vv;
         this.c = c;
     }
 
@@ -80,11 +80,11 @@ public class FastIFFEq extends Constraint {
          * Default constructor.
          *
          * @param b   the boolean variable
-         * @param var the integer variable
+         * @param vv the integer variable
          * @param c   the constant
          */
-        public FastIFFEqProp(BoolVar b, IntVar var, int c) {
-            super(new IntVar[]{b, var}, PropagatorPriority.BINARY, true);
+        public FastIFFEqProp(BoolVar b, IntVar vv, int c) {
+            super(new IntVar[]{b, vv}, PropagatorPriority.BINARY, true);
             this.constant = c;
         }
 

@@ -1,25 +1,16 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link Fence}.
@@ -62,9 +53,9 @@ public class FenceTest {
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
 
         Fence f = new Fence(vms.get(2), nodes);
-        Assert.assertEquals(true, f.isSatisfied(m));
+        Assert.assertTrue(f.isSatisfied(m));
         map.addRunningVM(vms.get(0), ns.get(2));
-        Assert.assertEquals(false, new Fence(vms.get(0), nodes).isSatisfied(m));
+        Assert.assertFalse(new Fence(vms.get(0), nodes).isSatisfied(m));
     }
 
     @Test
@@ -74,9 +65,9 @@ public class FenceTest {
         VM v = mo.newVM();
         Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Fence f = new Fence(v, nodes);
-        Assert.assertTrue(f.equals(f));
-        Assert.assertTrue(new Fence(v, nodes).equals(f));
-        Assert.assertFalse(new Fence(mo.newVM(), nodes).equals(f));
+        Assert.assertEquals(f, f);
+        Assert.assertEquals(f, new Fence(v, nodes));
+        Assert.assertNotEquals(f, new Fence(mo.newVM(), nodes));
         Assert.assertEquals(new Fence(v, nodes).hashCode(), f.hashCode());
     }
 

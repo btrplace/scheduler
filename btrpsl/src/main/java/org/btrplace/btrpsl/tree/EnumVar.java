@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -76,14 +76,14 @@ public class EnumVar extends BtrPlaceTree {
                 //Compose
                 String id = head + o.toString() + tail;
                 //lookup
-                BtrpOperand var = syms.getSymbol(id);
-                if (var == null) {
+                BtrpOperand vv = syms.getSymbol(id);
+                if (vv == null) {
                     return ignoreError(parent.getToken(), "Unknown variable '" + id + "'");
                 }
                 if (res == null) {
-                    res = new BtrpSet(2, var.type());
+                    res = new BtrpSet(2, vv.type());
                 }
-                res.getValues().add(var);
+                res.getValues().add(vv);
             }
         }
         return res;

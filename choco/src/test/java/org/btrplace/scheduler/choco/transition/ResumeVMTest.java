@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.transition;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.scheduler.SchedulerException;
@@ -77,7 +73,7 @@ public class ResumeVMTest {
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(n1, a.getSourceNode());
-        Assert.assertEquals(10, a.getEnd() - a.getStart());
+        Assert.assertEquals(a.getEnd() - a.getStart(), 10);
     }
 
     /**
@@ -121,7 +117,7 @@ public class ResumeVMTest {
         Assert.assertEquals(vm1, b1.getVM());
         Assert.assertEquals(vm2, b2.getVM());
         Assert.assertTrue(b1.getEnd() <= b2.getStart());
-        Assert.assertEquals(5, b1.getEnd() - b1.getStart());
-        Assert.assertEquals(5, b2.getEnd() - b2.getStart());
+        Assert.assertEquals(b1.getEnd() - b1.getStart(), 5);
+        Assert.assertEquals(b2.getEnd() - b2.getStart(), 5);
     }
 }

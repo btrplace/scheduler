@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan.event;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,10 +33,10 @@ public class AllocateTest {
         Allocate a = new Allocate(vms.get(0), ns.get(0), "foo", 3, 1, 5);
         Assert.assertEquals(vms.get(0), a.getVM());
         Assert.assertEquals(ns.get(0), a.getHost());
-        Assert.assertEquals("foo", a.getResourceId());
-        Assert.assertEquals(3, a.getAmount());
-        Assert.assertEquals(1, a.getStart());
-        Assert.assertEquals(5, a.getEnd());
+        Assert.assertEquals(a.getResourceId(), "foo");
+        Assert.assertEquals(a.getAmount(), 3);
+        Assert.assertEquals(a.getStart(), 1);
+        Assert.assertEquals(a.getEnd(), 5);
         Assert.assertFalse(a.toString().contains("null"));
     }
 
@@ -56,15 +51,15 @@ public class AllocateTest {
         ShareableResource rc = new ShareableResource("foo");
         mo.attach(rc);
         Assert.assertTrue(na.apply(mo));
-        Assert.assertEquals(3, rc.getConsumption(vms.get(0)));
+        Assert.assertEquals(rc.getConsumption(vms.get(0)), 3);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEquals() {
         Allocate a = new Allocate(vms.get(0), ns.get(0), "foo", 5, 3, 5);
         Allocate b = new Allocate(vms.get(0), ns.get(0), "foo", 5, 3, 5);
-        Assert.assertFalse(a.equals(new Object()));
-        Assert.assertTrue(a.equals(a));
+        Assert.assertNotEquals(new Object(), a);
+        Assert.assertEquals(a, a);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
         Assert.assertNotSame(a, new Allocate(vms.get(2), ns.get(0), "foo", 5, 3, 5));

@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -39,8 +34,8 @@ public class PreserveTest {
         Assert.assertNotNull(p.getChecker());
         Assert.assertTrue(p.getInvolvedVMs().contains(v));
         Assert.assertTrue(p.getInvolvedNodes().isEmpty());
-        Assert.assertEquals(3, p.getAmount());
-        Assert.assertEquals("cpu", p.getResource());
+        Assert.assertEquals(p.getAmount(), 3);
+        Assert.assertEquals(p.getResource(), "cpu");
         Assert.assertFalse(p.toString().contains("null"));
         Assert.assertFalse(p.isContinuous());
         Assert.assertFalse(p.setContinuous(true));
@@ -53,12 +48,12 @@ public class PreserveTest {
         VM v = mo.newVM();
         Preserve p = new Preserve(v, "cpu", 3);
         Preserve p2 = new Preserve(v, "cpu", 3);
-        Assert.assertTrue(p.equals(p));
-        Assert.assertTrue(p2.equals(p));
+        Assert.assertEquals(p, p);
+        Assert.assertEquals(p, p2);
         Assert.assertEquals(p2.hashCode(), p.hashCode());
-        Assert.assertFalse(new Preserve(v, "mem", 3).equals(p));
-        Assert.assertFalse(new Preserve(v, "cpu", 2).equals(p));
-        Assert.assertFalse(new Preserve(mo.newVM(), "cpu", 3).equals(p));
+        Assert.assertNotEquals(p, new Preserve(v, "mem", 3));
+        Assert.assertNotEquals(p, new Preserve(v, "cpu", 2));
+        Assert.assertNotEquals(p, new Preserve(mo.newVM(), "cpu", 3));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -79,11 +74,11 @@ public class PreserveTest {
         rc.setConsumption(vms.get(0), 3);
         rc.setConsumption(vms.get(1), 1); //Not running so we don't care
         rc.setConsumption(vms.get(2), 3);
-        Assert.assertEquals(true, p.isSatisfied(m));
+        Assert.assertTrue(p.isSatisfied(m));
 
         rc.unset(vms.get(2)); //Set to 3 by default
-        Assert.assertEquals(true, p.isSatisfied(m));
-        Assert.assertEquals(false, new Preserve(vms.get(2), "mem", 3).isSatisfied(m));
+        Assert.assertTrue(p.isSatisfied(m));
+        Assert.assertFalse(new Preserve(vms.get(2), "mem", 3).isSatisfied(m));
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
         rc.setConsumption(vms.get(1), 1);

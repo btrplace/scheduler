@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -293,27 +293,5 @@ public class Precedences extends Constraint {
             }
             return ret;
         }
-
-        private void printOthers() {
-            LOGGER.info("--- Others ---");
-            for (int i = 0; i < othersEnd.length; i++) {
-                LOGGER.info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].toString());
-            }
-        }
-
-        private void printEndsByHost() {
-            LOGGER.info("--- EndsByHost ---");
-            for (int i = 0; i < endsByHost.length; i++) {
-                StringBuilder buf = new StringBuilder();
-                buf.append("On ").append(i).append(':');
-                for (int id : endsByHost[i]) {
-                    buf.append(" ").append(othersEnd[id].toString());
-                }
-                LOGGER.info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
-            }
-            LOGGER.info("Mine placed on " + host.toString());
-            LOGGER.info("Mine starts at " + start.toString());
-        }
-
     }
 }

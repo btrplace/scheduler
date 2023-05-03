@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -30,12 +30,12 @@ public class FastImpliesEq extends Constraint {
     /**
      * New instance.
      *
-     * @param b   the boolean variable
-     * @param var the variable
-     * @param c   the constant to use to set the variable if the boolean variable is set to true
+     * @param b  the boolean variable
+     * @param vv the variable
+     * @param c  the constant to use to set the variable if the boolean variable is set to true
      */
-    public FastImpliesEq(BoolVar b, IntVar var, int c) {
-        super("FastImpliesEq", new FastImpliesEqProp(b, var, c));
+    public FastImpliesEq(BoolVar b, IntVar vv, int c) {
+        super("FastImpliesEq", new FastImpliesEqProp(b, vv, c));
     }
 
     /**
@@ -49,11 +49,11 @@ public class FastImpliesEq extends Constraint {
          * Default constructor.
          *
          * @param b   the boolean variable
-         * @param var the integer variable
+         * @param vv the integer variable
          * @param c   the constant
          */
-        public FastImpliesEqProp(BoolVar b, IntVar var, int c) {
-            super(new IntVar[]{b, var}, PropagatorPriority.BINARY, true);
+        public FastImpliesEqProp(BoolVar b, IntVar vv, int c) {
+            super(new IntVar[]{b, vv}, PropagatorPriority.BINARY, true);
             this.constant = c;
         }
 

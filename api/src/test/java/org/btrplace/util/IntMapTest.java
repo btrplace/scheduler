@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -65,7 +65,7 @@ public class IntMapTest {
             count.incrementAndGet();
             return false;
         });
-        Assert.assertEquals(1, count.get());
+        Assert.assertEquals(count.get(), 1);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class IntMapTest {
         for (int i = 0; i < 100; i += 2) {
             m.put(i, i * 2);
         }
-        Assert.assertTrue(m.equals(m));
+        Assert.assertEquals(m, m);
         Assert.assertNotEquals(new Object(), m);
         IntMap cp = m.copy();
 
@@ -124,36 +124,36 @@ public class IntMapTest {
     public void testSize() {
         final IntMap m = new IntMap(-1);
         // Empty.
-        Assert.assertEquals(0, m.size());
+        Assert.assertEquals(m.size(), 0);
 
         // Out of scope.
         m.put(-1, 3);
-        Assert.assertEquals(0, m.size());
+        Assert.assertEquals(m.size(), 0);
 
         // 2 values.
         m.put(0, 7);
-        Assert.assertEquals(1, m.size());
+        Assert.assertEquals(m.size(), 1);
         m.put(2, 7);
-        Assert.assertEquals(2, m.size());
+        Assert.assertEquals(m.size(), 2);
 
         // Update. No change.
         m.put(2, 3);
-        Assert.assertEquals(2, m.size());
+        Assert.assertEquals(m.size(), 2);
 
         // Clear unknown. No change.
         m.clear(7);
-        Assert.assertEquals(2, m.size());
+        Assert.assertEquals(m.size(), 2);
 
         // Clear known.
         m.clear(2);
-        Assert.assertEquals(1, m.size());
+        Assert.assertEquals(m.size(), 1);
 
         // Now unknown.
         m.clear(2);
-        Assert.assertEquals(1, m.size());
+        Assert.assertEquals(m.size(), 1);
 
         m.clear();
-        Assert.assertEquals(0, m.size());
+        Assert.assertEquals(m.size(), 0);
     }
 
     @Test

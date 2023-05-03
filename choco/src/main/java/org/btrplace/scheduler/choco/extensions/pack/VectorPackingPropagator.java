@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -583,7 +583,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
      * @return {@code false} if not consistent.
      */
     private boolean checkLoadConsistency() {
-        //System.out.println("Consistency check in " + name[0]);
         boolean check = true;
         int[][] rs = new int[nbDims][nbBins];
         int[][] cs = new int[nbDims][nbBins];
@@ -635,7 +634,6 @@ public class VectorPackingPropagator extends Propagator<IntVar> {
             }
             if (rs[d][b] + cs[d][b] != potentialLoad[d][b].get()) {
                 System.out.printf("%s: %s potential=%d expected=%d (%d+%d)%n", name[d], loads[d][b], potentialLoad[d][b].get(), rs[d][b] + cs[d][b], rs[d][b], cs[d][b]);
-                //System.out.println(name[d] + ": " + loads[d][b].toString() + " potential=" + potentialLoad[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]) + ());
                 check = false;
             }
             if (loads[d][b].getLB() < rs[d][b]) {

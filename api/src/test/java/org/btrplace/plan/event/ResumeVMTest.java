@@ -1,18 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan.event;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
-import org.btrplace.model.VMState;
+import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,8 +33,8 @@ public class ResumeVMTest {
         Assert.assertEquals(vms.get(0), a.getVM());
         Assert.assertEquals(ns.get(0), a.getSourceNode());
         Assert.assertEquals(ns.get(1), a.getDestinationNode());
-        Assert.assertEquals(3, a.getStart());
-        Assert.assertEquals(5, a.getEnd());
+        Assert.assertEquals(a.getStart(), 3);
+        Assert.assertEquals(a.getEnd(), 5);
         Assert.assertFalse(a.toString().contains("null"));
         Assert.assertEquals(a.getCurrentState(), VMState.SLEEPING);
         Assert.assertEquals(a.getNextState(), VMState.RUNNING);
@@ -83,8 +77,8 @@ public class ResumeVMTest {
     public void testEquals() {
         ResumeVM a = new ResumeVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
         ResumeVM b = new ResumeVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
-        Assert.assertFalse(a.equals(new Object()));
-        Assert.assertTrue(a.equals(a));
+        Assert.assertNotEquals(new Object(), a);
+        Assert.assertEquals(a, a);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
 

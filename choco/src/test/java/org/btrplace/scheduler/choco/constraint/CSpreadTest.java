@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -7,17 +7,8 @@
 package org.btrplace.scheduler.choco.constraint;
 
 import org.btrplace.json.JSON;
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Fence;
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Spread;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.ChocoScheduler;
@@ -26,12 +17,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link CSpread}.
@@ -62,7 +48,7 @@ public class CSpreadTest {
         Assert.assertNotNull(p);
         System.err.println(p);
         Mapping res = p.getResult().getMapping();
-        Assert.assertEquals(2, p.getSize());
+        Assert.assertEquals(p.getSize(), 2);
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }
 
@@ -87,7 +73,7 @@ public class CSpreadTest {
         Assert.assertNotNull(p);
         System.err.println(p);
         Mapping res = p.getResult().getMapping();
-        Assert.assertEquals(2, p.getSize());
+        Assert.assertEquals(p.getSize(), 2);
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }
 

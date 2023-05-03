@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -253,13 +253,11 @@ public class DefaultMapping extends AbstractMapping {
             } else if (st.get(vm.id()) == SLEEPING_STATE) {
                 host[SLEEPING_STATE].get(n.id()).remove(vm);
             }
-            //st.remove(vm.id());
             st.clear(vm.id());
             return true;
         } else if (st.get(vm.id()) == READY_STATE) {
 
             vmReady.remove(vm);
-            //st.remove(vm.id());
             st.clear(vm.id());
             return true;
         }
@@ -444,7 +442,6 @@ public class DefaultMapping extends AbstractMapping {
             if (s != null) {
                 for (VM vm : s) {
                     place.clear(vm.id());
-                    //st.remove(vm.id());
                     st.clear(vm.id());
                 }
                 s.clear();

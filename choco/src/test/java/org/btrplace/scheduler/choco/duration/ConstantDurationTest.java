@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -23,7 +23,7 @@ public class ConstantDurationTest {
     public void testInstantiate() {
         Model mo = new DefaultModel();
         ConstantActionDuration<Node> cd = new ConstantActionDuration<>(5);
-        Assert.assertEquals(5, cd.evaluate(mo, mo.newNode()));
+        Assert.assertEquals(cd.evaluate(mo, mo.newNode()), 5);
         Assert.assertNotNull(cd.toString());
     }
 }

@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.model.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.plan.DefaultReconfigurationPlan;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -37,9 +32,9 @@ public class OverbookTest {
         Overbook o = new Overbook(n, "foo", 1.5);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(n, o.getInvolvedNodes().iterator().next());
-        Assert.assertEquals("foo", o.getResource());
+        Assert.assertEquals(o.getResource(), "foo");
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
-        Assert.assertEquals(1.5, o.getRatio());
+        Assert.assertEquals(o.getRatio(), 1.5);
         Assert.assertNotNull(o.toString());
         Assert.assertTrue(o.isContinuous());
         Assert.assertTrue(o.setContinuous(false));
@@ -78,16 +73,16 @@ public class OverbookTest {
         i.attach(rc);
 
         Overbook o = new Overbook(n0, "cpu", 2);
-        Assert.assertEquals(o.isSatisfied(i), true);
+        Assert.assertTrue(o.isSatisfied(i));
 
         rc.setConsumption(vms.get(0), 4);
-        Assert.assertEquals(o.isSatisfied(i), false);
+        Assert.assertFalse(o.isSatisfied(i));
 
         cfg.addRunningVM(vms.get(0), n1);
-        Assert.assertEquals(new Overbook(n1, "cpu", 2).isSatisfied(i), false);
+        Assert.assertFalse(new Overbook(n1, "cpu", 2).isSatisfied(i));
 
         Overbook o2 = new Overbook(n0, "mem", 2);
-        Assert.assertEquals(o2.isSatisfied(i), false);
+        Assert.assertFalse(o2.isSatisfied(i));
     }
 
     @Test
@@ -122,23 +117,23 @@ public class OverbookTest {
         Overbook o = new Overbook(n1, "cpu", 2);
         o.setContinuous(true);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(i);
-        Assert.assertEquals(o.isSatisfied(p), true);
+        Assert.assertTrue(o.isSatisfied(p));
 
         p.add(new Allocate(vms.get(0), n0, "cpu", 1, 2, 5));
-        Assert.assertEquals(o.isSatisfied(p), true);
+        Assert.assertTrue(o.isSatisfied(p));
 
         p.add(new Allocate(vms.get(1), n1, "cpu", 5, 2, 5));
-        Assert.assertEquals(o.isSatisfied(p), false);
+        Assert.assertFalse(o.isSatisfied(p));
 
         p.add(new Allocate(vms.get(2), n1, "cpu", 2, 0, 1));
-        Assert.assertEquals(o.isSatisfied(p), true);
+        Assert.assertTrue(o.isSatisfied(p));
 
         p.add(new Allocate(vms.get(3), n1, "cpu", 3, 4, 6));
-        Assert.assertEquals(o.isSatisfied(p), false);
+        Assert.assertFalse(o.isSatisfied(p));
 
         p.add(new ShutdownVM(vms.get(2), n1, 2, 3));
 
-        Assert.assertEquals(o.isSatisfied(p), true);
+        Assert.assertTrue(o.isSatisfied(p));
     }
 
     @Test
@@ -149,13 +144,13 @@ public class OverbookTest {
 
         Overbook s = new Overbook(n, "foo", 3);
 
-        Assert.assertTrue(s.equals(s));
+        Assert.assertEquals(s, s);
         Overbook o2 = new Overbook(n, "foo", 3);
-        Assert.assertTrue(o2.equals(s));
+        Assert.assertEquals(s, o2);
         Assert.assertEquals(o2.hashCode(), s.hashCode());
-        Assert.assertFalse(new Overbook(n, "bar", 3).equals(s));
-        Assert.assertFalse(new Overbook(n, "foo", 2).equals(s));
-        Assert.assertFalse(new Overbook(mo.newNode(), "foo", 3).equals(s));
+        Assert.assertNotEquals(s, new Overbook(n, "bar", 3));
+        Assert.assertNotEquals(s, new Overbook(n, "foo", 2));
+        Assert.assertNotEquals(s, new Overbook(mo.newNode(), "foo", 3));
         Assert.assertNotEquals(new Overbook(mo.newNode(), "foo", 3, true), new Overbook(mo.newNode(), "foo", 3, false));
         Assert.assertNotEquals(new Overbook(mo.newNode(), "foo", 3, true).hashCode(), new Overbook(mo.newNode(), "foo", 3, false).hashCode());
     }

@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.plan.event;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.Util;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,15 +25,14 @@ public class BootNodeTest {
 
     static Model mo = new DefaultModel();
     static List<Node> ns = Util.newNodes(mo, 10);
-    static List<VM> vms = Util.newVMs(mo, 10);
     static BootNode a = new BootNode(ns.get(0), 3, 5);
 
     @Test
     public void testInstantiate() {
         BootNode a = new BootNode(ns.get(0), 3, 5);
         Assert.assertEquals(ns.get(0), a.getNode());
-        Assert.assertEquals(3, a.getStart());
-        Assert.assertEquals(5, a.getEnd());
+        Assert.assertEquals(a.getStart(), 3);
+        Assert.assertEquals(a.getEnd(), 5);
         Assert.assertFalse(a.toString().contains("null"));
     }
 
@@ -58,8 +52,8 @@ public class BootNodeTest {
     public void testEquals() {
         BootNode a = new BootNode(ns.get(0), 3, 5);
         BootNode b = new BootNode(ns.get(0), 3, 5);
-        Assert.assertFalse(a.equals(new Object()));
-        Assert.assertTrue(a.equals(a));
+        Assert.assertNotEquals(new Object(), a);
+        Assert.assertEquals(a, a);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
         Assert.assertNotSame(a, new BootNode(ns.get(0), 4, 5));

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -33,7 +33,7 @@ public abstract class DefaultSatConstraintBuilder implements SatConstraintBuilde
      * @param n  the constraint name
      * @param ps the expected parameters
      */
-    public DefaultSatConstraintBuilder(String n, ConstraintParam<?>[] ps) {
+    protected DefaultSatConstraintBuilder(String n, ConstraintParam<?>[] ps) {
         this.id = n;
         params = ps;
     }

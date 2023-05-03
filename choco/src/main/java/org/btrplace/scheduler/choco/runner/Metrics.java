@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -93,7 +93,7 @@ public class Metrics implements Copyable<Metrics> {
 
     @Override
     public String toString() {
-        float sec = 1f * (timeCount / 1000);
+        double sec = 1f * (timeCount / 1000.0);
         return String.format("at %dms, %d Nodes (%,.1f n/s), %d Backtracks, %d Fails, %d Restarts",
                 timeCount,
                 nodes,

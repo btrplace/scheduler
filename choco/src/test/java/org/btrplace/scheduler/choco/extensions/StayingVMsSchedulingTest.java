@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -52,8 +52,7 @@ public class StayingVMsSchedulingTest {
         // N2(cpu:4, mem=8): VM2(2, 4) VM3(2, 4)
         // No VMs go in N0, VMs on N2 must stay.
         mo.getMapping().on(n0, n1, n2).run(n0, vm0, vm1).run(n2, vm2, vm3);
-        final List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Root.newRoots(Arrays.asList(vm2, vm3)));
+        final List<SatConstraint> cstrs = new ArrayList<>(Root.newRoots(Arrays.asList(vm2, vm3)));
         final List<VM> hotspots = Arrays.asList(vm0, vm1);
         cstrs.addAll(Preserve.newPreserve(hotspots, "cpu", 3));
         cstrs.addAll(Ban.newBan(hotspots, Arrays.asList(n2)));
@@ -62,14 +61,14 @@ public class StayingVMsSchedulingTest {
         final ChocoScheduler sched = new DefaultChocoScheduler();
         final ReconfigurationPlan plan = sched.solve(ii);
         Assert.assertNotNull(plan);
-        Assert.assertEquals(2, plan.getActions().size());
+        Assert.assertEquals(plan.getActions().size(), 2);
         final Set<VM> impactedVms = Sets.newHashSet(vm0, vm1);
         for (final Action aa : plan.getActions()) {
             if (aa instanceof Allocate) {
                 final Allocate al = (Allocate) aa;
                 Assert.assertTrue(impactedVms.remove(al.getVM()));
-                Assert.assertEquals(3, al.getAmount());
-                Assert.assertEquals("cpu", al.getResourceId());
+                Assert.assertEquals(al.getAmount(), 3);
+                Assert.assertEquals(al.getResourceId(), "cpu");
             } else if (aa instanceof MigrateVM) {
                 final MigrateVM mig = (MigrateVM) aa;
                 Assert.assertTrue(impactedVms.remove(mig.getVM()));

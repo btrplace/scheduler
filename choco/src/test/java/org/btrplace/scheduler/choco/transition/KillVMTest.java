@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.transition;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.scheduler.SchedulerException;
@@ -39,9 +35,6 @@ public class KillVMTest {
 
     /**
      * Test the action model with different action models.
-     *
-     * @throws ContradictionException
-     * @throws org.btrplace.scheduler.SchedulerException
      */
     @Test
     public void testBasics() throws ContradictionException, SchedulerException {
@@ -95,8 +88,8 @@ public class KillVMTest {
         for (Action a : p) {
             if (a instanceof org.btrplace.plan.event.KillVM) {
                 org.btrplace.plan.event.KillVM vma = (org.btrplace.plan.event.KillVM) a;
-                Assert.assertEquals(1, a.getEnd());
-                Assert.assertEquals(0, a.getStart());
+                Assert.assertEquals(a.getEnd(), 1);
+                Assert.assertEquals(a.getStart(), 0);
                 if (vma.getVM().equals(vm1) || vma.getVM().equals(vm3)) {
                     Assert.assertEquals(vma.getNode(), n1);
                 } else if (vma.getVM().equals(vm2)) {

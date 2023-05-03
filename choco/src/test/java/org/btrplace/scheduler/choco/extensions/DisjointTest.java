@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -8,7 +8,6 @@ package org.btrplace.scheduler.choco.extensions;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
-import org.chocosolver.solver.search.limits.SolutionCounter;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.util.ESat;
@@ -76,7 +75,7 @@ public class DisjointTest {
         dm.post();
         while (mo.getSolver().solve()) ;
         // As the groups have non-overlapping domains, the number of solutions is the product of the variable domains.
-        Assert.assertEquals(9, mo.getSolver().getSolutionCount());
+        Assert.assertEquals(mo.getSolver().getSolutionCount(), 9);
     }
 
     @Test
@@ -89,23 +88,23 @@ public class DisjointTest {
         };
 
         // False as 1 is in group 2 and 0.
-        Assert.assertEquals(ESat.FALSE, new Disjoint(vars, 8).isSatisfied());
+        Assert.assertEquals(new Disjoint(vars, 8).isSatisfied(), ESat.FALSE);
 
         // True as the error has been fixed.
         vars[2][1] = mo.intVar(4);
-        Assert.assertEquals(ESat.TRUE, new Disjoint(vars, 8).isSatisfied());
+        Assert.assertEquals(new Disjoint(vars, 8).isSatisfied(), ESat.TRUE);
 
         // False: 4 is in group 1 and 2.
         vars[1][3] = mo.intVar(4);
-        Assert.assertEquals(ESat.FALSE, new Disjoint(vars, 8).isSatisfied());
+        Assert.assertEquals(new Disjoint(vars, 8).isSatisfied(), ESat.FALSE);
 
         // True: Last group is only 6. No more violation with group 1.
         vars[2] = new IntVar[]{mo.intVar(6)};
-        Assert.assertEquals(ESat.TRUE, new Disjoint(vars, 8).isSatisfied());
+        Assert.assertEquals(new Disjoint(vars, 8).isSatisfied(), ESat.TRUE);
 
         // False: 6 in group 1 and 2.
         vars[1][3] = mo.intVar(6);
-        Assert.assertEquals(ESat.FALSE, new Disjoint(vars, 8).isSatisfied());
+        Assert.assertEquals(new Disjoint(vars, 8).isSatisfied(), ESat.FALSE);
     }
 
     /**

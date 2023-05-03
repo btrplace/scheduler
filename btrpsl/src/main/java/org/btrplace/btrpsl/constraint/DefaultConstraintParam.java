@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -21,7 +21,7 @@ public abstract class DefaultConstraintParam<E> implements ConstraintParam<E> {
      * @param n the parameter value
      * @param t the parameter type
      */
-    public DefaultConstraintParam(String n, String t) {
+    protected DefaultConstraintParam(String n, String t) {
         this.name = n;
         this.paramType = t;
     }

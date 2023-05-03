@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -157,7 +157,7 @@ public class VectorPackingTest {
 
         // The problem is stated during the initial propagation.
         SolvingStatistics stats = sched.getStatistics();
-        Assert.assertEquals(0, stats.getMetrics().nodes());
+        Assert.assertEquals(stats.getMetrics().nodes(), 0);
         // With 0 size VMs, same conclusion.
         for (Node no : map.getOnlineNodes()) {
             final VM vm = mo.newVM();
@@ -171,7 +171,7 @@ public class VectorPackingTest {
 
         // The problem is stated during the initial propagation.
         stats = sched.getStatistics();
-        Assert.assertEquals(0, stats.getMetrics().nodes());
+        Assert.assertEquals(stats.getMetrics().nodes(), 0);
         System.out.println(stats);
     }
 
@@ -232,16 +232,16 @@ public class VectorPackingTest {
         Assert.assertEquals(solutions.size(), 1);
         final Solution sol = solutions.get(0);
         // vm0 and vm3 on N3.
-        Assert.assertEquals(0, sol.getIntVal(assignedNode[0]));
-        Assert.assertEquals(0, sol.getIntVal(assignedNode[3]));
-        Assert.assertEquals(1, sol.getIntVal(rev[0]));
-        Assert.assertEquals(1, sol.getIntVal(rev[3]));
+        Assert.assertEquals(sol.getIntVal(assignedNode[0]), 0);
+        Assert.assertEquals(sol.getIntVal(assignedNode[3]), 0);
+        Assert.assertEquals(sol.getIntVal(rev[0]), 1);
+        Assert.assertEquals(sol.getIntVal(rev[3]), 1);
         // vm1 on N1.
-        Assert.assertEquals(2, sol.getIntVal(assignedNode[1]));
-        Assert.assertEquals(0, sol.getIntVal(rev[1]));
+        Assert.assertEquals(sol.getIntVal(assignedNode[1]), 2);
+        Assert.assertEquals(sol.getIntVal(rev[1]), 0);
         // VM2 on N2.
-        Assert.assertEquals(1, sol.getIntVal(assignedNode[2]));
-        Assert.assertEquals(1, sol.getIntVal(rev[2]));
+        Assert.assertEquals(sol.getIntVal(assignedNode[2]), 1);
+        Assert.assertEquals(sol.getIntVal(rev[2]), 1);
     }
 
     private static class Context {

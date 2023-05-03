@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -100,10 +100,6 @@ public class BootableNode implements NodeTransition {
         csp.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs().get(rp.getNode(nId)), 0));
 
 
-        /*
-         * D = {0, d}
-         * D = St * d;
-         */
         if (rp.labelVariables()) {
             effectiveDuration = csp.intVar(
                     rp.makeVarLabel(PREFIX, nId, ").effectiveDuration")

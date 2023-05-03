@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -24,33 +24,30 @@ public class SparseBitSetTest {
         IEnvironment env = new EnvironmentTrailing();
         IStateBitSet bs = new SparseBitSet(env, 64);
         Assert.assertTrue(bs.isEmpty());
-        Assert.assertEquals(0, bs.cardinality());
-        Assert.assertEquals(-1, bs.nextSetBit(0));
+        Assert.assertEquals(bs.cardinality(), 0);
+        Assert.assertEquals(bs.nextSetBit(0), -1);
     }
 
     @Test
     public void testSetGet() {
         IEnvironment env = new EnvironmentTrailing();
         IStateBitSet bs = new SparseBitSet(env, 64);
-        //bs.set(-1);
-        // Outside.
-        //Assert.assertFalse(bs.get(-1));
         // Non-existing block.
         Assert.assertFalse(bs.get(72904));
         bs.set(65);
         Assert.assertTrue(bs.get(65));
         Assert.assertFalse(bs.get(64));
-        Assert.assertEquals(1, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 1);
         bs.set(0);
-        Assert.assertEquals(2, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 2);
         Assert.assertTrue(bs.get(0));
 
         // Idempotence.
         bs.set(0, true);
-        Assert.assertEquals(2, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 2);
 
         bs.set(0, false);
-        Assert.assertEquals(1, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 1);
         Assert.assertFalse(bs.get(0));
     }
 
@@ -85,18 +82,18 @@ public class SparseBitSetTest {
     public void testNextClearBit() {
         final IEnvironment env = new EnvironmentTrailing();
         IStateBitSet bs = new SparseBitSet(env, 64);
-        Assert.assertEquals(0, bs.nextClearBit(0));
+        Assert.assertEquals(bs.nextClearBit(0), 0);
         bs.set(1);
         // Before the set bit, same block.
-        Assert.assertEquals(0, bs.nextClearBit(0));
+        Assert.assertEquals(bs.nextClearBit(0), 0);
         // Right on the set bit. Expect the next one on this block.
-        Assert.assertEquals(2, bs.nextClearBit(1));
+        Assert.assertEquals(bs.nextClearBit(1), 2);
 
         // Last clear bit on the same block.
-        Assert.assertEquals(63, bs.nextClearBit(63));
+        Assert.assertEquals(bs.nextClearBit(63), 63);
 
         // On a non-existing block.
-        Assert.assertEquals(135, bs.nextClearBit(135));
+        Assert.assertEquals(bs.nextClearBit(135), 135);
 
         // Create a range of set bits over multiple blocks.
         bs.set(32, 257);
@@ -154,9 +151,9 @@ public class SparseBitSetTest {
         bs.set(128);
         bs.set(8212);
         bs.clear(54);
-        Assert.assertEquals(3, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 3);
         bs.clear(8212);
-        Assert.assertEquals(2, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 2);
         Assert.assertFalse(bs.get(8212));
         Assert.assertEquals(-1, bs.nextSetBit(8000));
 
@@ -199,7 +196,7 @@ public class SparseBitSetTest {
             Assert.assertEquals(bit, prev + 1);
             prev = bit;
         }
-        Assert.assertEquals(134, prev);
+        Assert.assertEquals(prev, 134);
         bs.set(0, 4);
         // Expand
         prev = 0;
@@ -207,14 +204,14 @@ public class SparseBitSetTest {
             Assert.assertEquals(bit, prev + 1);
             prev = bit;
         }
-        Assert.assertEquals(134, prev);
+        Assert.assertEquals(prev, 134);
 
         bs = new SparseBitSet(env, 64);
         bs.set(38, 72);
         for (int idx = 38; idx < 72; idx++) {
             Assert.assertEquals(idx, bs.nextSetBit(idx));
         }
-        Assert.assertEquals(-1, bs.nextSetBit(72));
+        Assert.assertEquals(bs.nextSetBit(72), -1);
 
         // UB and LB are the same, that is a nop.
         bs.set(155, 155);
@@ -260,10 +257,10 @@ public class SparseBitSetTest {
         Assert.assertEquals(bs.cardinality(), 0);
         bs.set(10, 237);
         bs.clear(12, 239);
-        Assert.assertEquals(2, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 2);
         Assert.assertTrue(bs.get(10) && bs.get(11));
         bs.clear(10, 12);
-        Assert.assertEquals(0, bs.cardinality());
+        Assert.assertEquals(bs.cardinality(), 0);
 
         bs = new SparseBitSet(env, 64);
         bs.set(32, 257);

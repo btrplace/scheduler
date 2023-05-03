@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -100,18 +100,18 @@ public class ShareableResourceTest {
 
         rc.setConsumption(vms.get(0), 3);
         rc.setConsumption(vms.get(1), 7);
-        Assert.assertEquals(10, rc.sumConsumptions(vms.subList(0, 2), false));
+        Assert.assertEquals(rc.sumConsumptions(vms.subList(0, 2), false), 10);
         Set<VM> x = new HashSet<>();
         x.add(vms.get(1));
-        Assert.assertEquals(7, rc.sumConsumptions(x, false));
+        Assert.assertEquals(rc.sumConsumptions(x, false), 7);
         rc.setConsumption(vms.get(1), 18);
         x.clear();
         x.add(vms.get(2));
-        Assert.assertEquals(0, rc.sumConsumptions(x, false));
+        Assert.assertEquals(rc.sumConsumptions(x, false), 0);
 
         rc.setCapacity(nodes.get(0), 3);
         rc.setCapacity(nodes.get(1), 6);
-        Assert.assertEquals(9, rc.sumCapacities(nodes.subList(0, 2), false));
+        Assert.assertEquals(rc.sumCapacities(nodes.subList(0, 2), false), 9);
 
     }
 
@@ -137,8 +137,6 @@ public class ShareableResourceTest {
         Assert.assertNotEquals(rc1, rc3);
         Assert.assertNotEquals(rc3, rc2);
         Assert.assertNotEquals(rc1.hashCode(), rc3.hashCode());
-
-        Assert.assertNotEquals(rc1, "foo");
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition", "testEqualsAndHashCode"})

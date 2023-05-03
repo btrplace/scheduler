@@ -1,16 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.transition;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.plan.event.Action;
 import org.btrplace.scheduler.SchedulerException;
@@ -67,7 +63,7 @@ public class ShutdownVMTest {
         org.btrplace.plan.event.ShutdownVM a = (org.btrplace.plan.event.ShutdownVM) p.getActions().iterator().next();
 
         Assert.assertEquals(vm1, a.getVM());
-        Assert.assertEquals(5, a.getEnd() - a.getStart());
+        Assert.assertEquals(a.getEnd() - a.getStart(), 5);
     }
 
     /**
@@ -98,18 +94,16 @@ public class ShutdownVMTest {
         ShutdownVM m2 = (ShutdownVM) rp.getVMActions().get(rp.getVM(vm2));
         rp.getNodeActions().get(0).getState().instantiateTo(1, Cause.Null);
         rp.getModel().post(rp.getModel().arithm(m2.getStart(), ">=", m1.getEnd()));
-        //System.out.println(s);
         new CMinMTTR().inject(ps, rp);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        //System.out.println(p);
         Iterator<Action> ite = p.iterator();
         org.btrplace.plan.event.ShutdownVM b1 = (org.btrplace.plan.event.ShutdownVM) ite.next();
         org.btrplace.plan.event.ShutdownVM b2 = (org.btrplace.plan.event.ShutdownVM) ite.next();
         Assert.assertEquals(vm1, b1.getVM());
         Assert.assertEquals(vm2, b2.getVM());
         Assert.assertTrue(b1.getEnd() <= b2.getStart());
-        Assert.assertEquals(5, b1.getEnd() - b1.getStart());
-        Assert.assertEquals(5, b2.getEnd() - b2.getStart());
+        Assert.assertEquals(b1.getEnd() - b1.getStart(), 5);
+        Assert.assertEquals(b2.getEnd() - b2.getStart(), 5);
     }
 }

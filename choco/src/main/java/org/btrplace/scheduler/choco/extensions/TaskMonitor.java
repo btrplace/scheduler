@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -52,7 +52,7 @@ public class TaskMonitor implements IVariableMonitor<IntVar> {
     }
 
     @Override
-    public void onUpdate(IntVar var, IEventType evt) throws ContradictionException {
+    public void onUpdate(IntVar vv, IEventType evt) throws ContradictionException {
         // start
         start.updateBounds(end.getLB() - duration.getUB(), end.getUB() - duration.getLB(), this);
         // end

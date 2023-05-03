@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -19,7 +19,6 @@ import org.testng.annotations.Test;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,14 +56,14 @@ public class CShareableResourceTest {
         CShareableResource rcm = new CShareableResource(rc);
         rcm.inject(new DefaultParameters(), rp);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(0, rcm.getFutureVMAllocation(rp.getVM(vm1)));
-        Assert.assertEquals(3, rcm.getFutureVMAllocation(rp.getVM(vm2)));
-        Assert.assertEquals(0, rcm.getFutureVMAllocation(rp.getVM(vm3))); //Will not be running so 0
+        Assert.assertEquals(rcm.getFutureVMAllocation(rp.getVM(vm1)), 0);
+        Assert.assertEquals(rcm.getFutureVMAllocation(rp.getVM(vm2)), 3);
+        Assert.assertEquals(rcm.getFutureVMAllocation(rp.getVM(vm3)), 0); //Will not be running so 0
 
         Assert.assertEquals(rc.getCapacity(n1),
-            rcm.getFutureNodeCapacity(rp.getNode(n1)));
+                rcm.getFutureNodeCapacity(rp.getNode(n1)));
         Assert.assertEquals(rc.getCapacity(n2),
-            rcm.getFutureNodeCapacity(rp.getNode(n2)));
+                rcm.getFutureNodeCapacity(rp.getNode(n2)));
 
         IntVar vn1 = rcm.getVirtualUsage().get(rp.getNode(n1));
         IntVar vn2 = rcm.getVirtualUsage().get(rp.getNode(n2));
@@ -108,8 +107,8 @@ public class CShareableResourceTest {
         Assert.assertNotNull(p);
         Model res = p.getResult();
         rc = (ShareableResource.get(res, "foo"));
-        Assert.assertEquals(2, rc.getConsumption(vm1));
-        Assert.assertEquals(3, rc.getConsumption(vm2));
+        Assert.assertEquals(rc.getConsumption(vm1), 2);
+        Assert.assertEquals(rc.getConsumption(vm2), 3);
     }
 
     @Test
@@ -183,8 +182,7 @@ public class CShareableResourceTest {
         mo.attach(rc);
 
         ChocoScheduler cra = new DefaultChocoScheduler();
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Online.newOnline(map.getAllNodes()));
+        List<SatConstraint> cstrs = new ArrayList<>(Online.newOnline(map.getAllNodes()));
         Overbook o = new Overbook(n1, "foo", 1.5, false);
         cstrs.add(o);
 
@@ -231,8 +229,7 @@ public class CShareableResourceTest {
         mo.getMapping().addRunningVM(v1, n1);
         mo.getMapping().addRunningVM(v2, n1);
         mo.attach(rc);
-        List<SatConstraint> l = new ArrayList<>();
-        l.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 5));
+        List<SatConstraint> l = new ArrayList<>(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 5));
         ChocoScheduler s = new DefaultChocoScheduler();
         s.doRepair(true);
         ReconfigurationPlan p = s.solve(mo, l);
@@ -250,42 +247,6 @@ public class CShareableResourceTest {
         ChocoScheduler s = new DefaultChocoScheduler();
         ReconfigurationPlan p = s.solve(i);
         Assert.assertNotNull(p);
-    }
-
-    /**
-     * Reproduce issue#145.
-     */
-    /*@Test*/
-    public void testInsertAction() {
-        Model mo = new DefaultModel();
-        ShareableResource cpu = new ShareableResource("cpu");
-        ShareableResource mem = new ShareableResource("mem");
-        mo.attach(cpu);
-        mo.attach(mem);
-        Node node = mo.newNode();
-        Node node2 = mo.newNode();
-        mo.getMapping().on(node, node2);
-        cpu.setCapacity(node, 100000);
-        mem.setCapacity(node, 100000);
-        cpu.setCapacity(node2, 100000);
-        mem.setCapacity(node2, 100000);
-        for (int i = 0; i < 10000; i++) {
-            VM vm = mo.newVM();
-            mo.getMapping().run(node, vm);
-            cpu.setConsumption(vm, 1);
-            mem.setConsumption(vm, 1);
-
-        }
-        ChocoScheduler sched = new DefaultChocoScheduler();
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Running.newRunning(mo.getMapping().getAllVMs()));
-        cstrs.addAll(NoDelay.newNoDelay(mo.getMapping().getAllVMs()));
-        cstrs.addAll(Fence.newFence(mo.getMapping().getAllVMs(), Arrays.asList(node2)));
-        cstrs.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "cpu", 2));
-        cstrs.addAll(Preserve.newPreserve(mo.getMapping().getAllVMs(), "mem", 2));
-        ReconfigurationPlan plan = sched.solve(mo, cstrs);
-        System.out.println(plan);
-        System.out.println(sched.getStatistics());
     }
 
     @Test

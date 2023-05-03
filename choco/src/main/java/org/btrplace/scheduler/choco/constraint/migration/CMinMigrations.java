@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -18,14 +18,7 @@ import org.btrplace.scheduler.choco.Parameters;
 import org.btrplace.scheduler.choco.ReconfigurationProblem;
 import org.btrplace.scheduler.choco.Slice;
 import org.btrplace.scheduler.choco.constraint.CObjective;
-import org.btrplace.scheduler.choco.constraint.mttr.HostingVariableSelector;
-import org.btrplace.scheduler.choco.constraint.mttr.MovementGraph;
-import org.btrplace.scheduler.choco.constraint.mttr.MyInputOrder;
-import org.btrplace.scheduler.choco.constraint.mttr.OnStableNodeFirst;
-import org.btrplace.scheduler.choco.constraint.mttr.RandomVMPlacement;
-import org.btrplace.scheduler.choco.constraint.mttr.StartOnLeafNodes;
-import org.btrplace.scheduler.choco.constraint.mttr.VMPlacementUtils;
-import org.btrplace.scheduler.choco.constraint.mttr.WorstFit;
+import org.btrplace.scheduler.choco.constraint.mttr.*;
 import org.btrplace.scheduler.choco.constraint.mttr.load.BiggestDimension;
 import org.btrplace.scheduler.choco.transition.RelocatableVM;
 import org.btrplace.scheduler.choco.transition.Transition;
@@ -42,15 +35,7 @@ import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -95,7 +80,7 @@ public class CMinMigrations implements CObjective {
     private void injectPlacementHeuristic(ReconfigurationProblem p, Parameters ps, IntVar cost) {
 
         List<CShareableResource> rcs = rp.getSourceModel().getViews().stream()
-                .filter(v -> v instanceof ShareableResource)
+                .filter(ShareableResource.class::isInstance)
                 .map(v -> (CShareableResource) rp.getRequiredView(v.getIdentifier()))
                 .collect(Collectors.toList());
         useResources = !rcs.isEmpty();
@@ -224,11 +209,6 @@ public class CMinMigrations implements CObjective {
             //With choco 4.0.1, we cannot post a simple sum() constraint due to hardcore
             //simplification it made. So we bypass the optimisation phase and post the propagator
             rp.getModel().post(rp.getModel().sum(stays.toArray(new IntVar[0]), "=", cost));
-            /*stays.add(cost);
-            Propagator<IntVar> p =
-                    new PropSum(stays.toArray(new IntVar[0]), stays.size() - 1, Operator.EQ, 0);
-            rp.getModel().post(new org.chocosolver.solver.constraints.Constraint("sumCost", p));
-*/
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -48,7 +48,6 @@ public class CSpread implements ChocoConstraint {
           Node node = rp.getSourceModel().getMapping().getVMLocation(vm);
           if (node != null && !usedNodes.add(node)) {
               rp.getLogger().debug("Constraint {} is not satisfied initially", cstr);
-            //System.out.println(rp.getSourceModel().getMapping());
             return false;
           }
         }

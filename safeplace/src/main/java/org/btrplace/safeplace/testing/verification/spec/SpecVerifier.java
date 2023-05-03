@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -32,12 +32,12 @@ public class SpecVerifier implements Verifier {
             throw new IllegalArgumentException(c.toString(values) + " cannot match " + c.signatureToString());
         }
         for (int i = 0; i < values.size(); i++) {
-            UserVar<?> var = c.args().get(i);
+            UserVar<?> vv = c.args().get(i);
             Type t = values.get(i).type();
-            if (!var.type().equals(t)) {
+            if (!vv.type().equals(t)) {
                 throw new IllegalArgumentException(c.toString(values) + " cannot match " + c.signatureToString());
             }
-            mo.setValue(var.label(), values.get(i).eval(mo));
+            mo.setValue(vv.label(), values.get(i).eval(mo));
         }
     }
 

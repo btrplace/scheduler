@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -130,22 +130,21 @@ public class Disjoint extends Constraint {
             return ESat.TRUE;
         }
 
-        public static long tot;
         /**
          * Initialise required and candidate for a given variable that belong to a given group.
          *
-         * @param var   the variable
+         * @param vv    the variable
          * @param group the group of the variable
          */
-        private void initVar(IntVar var, int group) {
-            if (var.isInstantiated()) {
+        private void initVar(IntVar vv, int group) {
+            if (vv.isInstantiated()) {
                 // The value is required in this group.
-                required[group].set(var.getValue());
+                required[group].set(vv.getValue());
                 return;
             }
             // The variable is not instantiated, this populates the candidate values for this group.
-            int ub = var.getUB();
-            for (int val = var.getLB(); val <= ub; val = var.nextValue(val)) {
+            int ub = vv.getUB();
+            for (int val = vv.getLB(); val <= ub; val = vv.nextValue(val)) {
                 candidates[group][val].add(1);
             }
         }

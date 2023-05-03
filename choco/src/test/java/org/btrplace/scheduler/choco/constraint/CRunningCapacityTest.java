@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -147,11 +147,11 @@ public class CRunningCapacityTest {
         ChocoScheduler cra = new DefaultChocoScheduler();
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration<>(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
-        Assert.assertEquals(2, plan.getSize());
+        Assert.assertEquals(plan.getSize(), 2);
     }
 
     @Test
-    public void testIssue112() throws Exception {
+    public void testIssue112() {
         String buf = "{\"model\":{\"mapping\":{\"readyVMs\":[],\"onlineNodes\":{\"0\":{\"sleepingVMs\":[],\"runningVMs\":[0]},\"1\":{\"sleepingVMs\":[],\"runningVMs\":[2,1]},\"2\":{\"sleepingVMs\":[],\"runningVMs\":[]}},\"offlineNodes\":[]},\"attributes\":{\"nodes\":{},\"vms\":{}},\"views\":[]},\"constraints\":[{\"vm\":0,\"continuous\":false,\"id\":\"running\"},{\"vm\":1,\"continuous\":false,\"id\":\"running\"},{\"vm\":2,\"continuous\":false,\"id\":\"running\"},{\"amount\":2,\"nodes\":[0],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":1,\"nodes\":[1],\"continuous\":false,\"id\":\"runningCapacity\"},{\"amount\":0,\"nodes\":[2],\"continuous\":false,\"id\":\"runningCapacity\"},{\"continuous\":false,\"parts\":[[0,1,2]],\"id\":\"among\",\"vms\":[0]},{\"continuous\":false,\"parts\":[[0,1,2]],\"id\":\"among\",\"vms\":[1]},{\"continuous\":false,\"parts\":[[0,1,2]],\"id\":\"among\",\"vms\":[2]}],\"objective\":{\"id\":\"minimizeMTTR\"}}";
         Instance i = JSON.readInstance(new StringReader(buf));
         List<SatConstraint> l = i.getSatConstraints().stream().filter(s -> !(s instanceof Among)).collect(Collectors.toList());

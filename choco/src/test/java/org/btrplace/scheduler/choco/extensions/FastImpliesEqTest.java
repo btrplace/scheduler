@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 3, true);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(5, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 5);
     }
 
     @Test
@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 3, false);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(5, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 5);
     }
 
     @Test
@@ -46,7 +46,7 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 2, true);
         int c = 3;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(3, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 3);
     }
 
     @Test
@@ -56,7 +56,7 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 2, true);
         int c = 3;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(0, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 0);
     }
 
     @Test
@@ -66,7 +66,7 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 3, true);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(1, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 1);
     }
 
     @Test
@@ -76,7 +76,7 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 3, true);
         int c = 2;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(4, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 4);
     }
 
     @Test
@@ -86,6 +86,6 @@ import org.testng.annotations.Test;
         IntVar x = s.intVar("x", 0, 2, true);
         int c = 3;
         s.post(new FastImpliesEq(b, x, c));
-        Assert.assertEquals(3, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 3);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -28,15 +28,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -184,24 +176,24 @@ public class DefaultFuzzer implements ConfigurableFuzzer {
     }
 
     @Override
-    public ConfigurableFuzzer with(String var, int val) {
-      Domain<?> d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Collections.singletonList(val));
-        return with(var, d);
+    public ConfigurableFuzzer with(String str, int val) {
+        Domain<?> d = new ConstantDomain<>(rnd, "int", IntType.getInstance(), Collections.singletonList(val));
+        return with(str, d);
     }
 
     @Override
-    public ConfigurableFuzzer with(String var, int min, int max) {
+    public ConfigurableFuzzer with(String str, int min, int max) {
         List<Integer> s = new ArrayList<>();
         for (int m = min; m <= max; m++) {
             s.add(m);
         }
-      return with(var, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
+        return with(str, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
     }
 
     @Override
-    public ConfigurableFuzzer with(String var, int[] vals) {
-      List<Integer> s = Arrays.stream(vals).boxed().collect(Collectors.toList());
-      return with(var, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
+    public ConfigurableFuzzer with(String str, int[] vals) {
+        List<Integer> s = Arrays.stream(vals).boxed().collect(Collectors.toList());
+        return with(str, new ConstantDomain<>(rnd, "int", IntType.getInstance(), s));
     }
 
     @Override

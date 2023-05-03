@@ -1,33 +1,20 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.constraint;
 
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.constraint.Ban;
-import org.btrplace.model.constraint.MinMTTR;
-import org.btrplace.model.constraint.Online;
-import org.btrplace.model.constraint.Running;
-import org.btrplace.model.constraint.SatConstraint;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.plan.ReconfigurationPlan;
 import org.btrplace.scheduler.SchedulerException;
 import org.btrplace.scheduler.choco.DefaultChocoScheduler;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link CBan}.
@@ -42,7 +29,6 @@ public class CBanTest {
         VM[] vms = new VM[5];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
-        Set<VM> sVMs = new HashSet<>();
         Set<Node> sNodes = new HashSet<>();
         for (int i = 0; i < vms.length; i++) {
             nodes[i] = mo.newNode();
@@ -50,7 +36,6 @@ public class CBanTest {
             m.addOnlineNode(nodes[i]);
             m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {
-                sVMs.add(vms[i]);
                 sNodes.add(nodes[i]);
             }
         }
@@ -64,7 +49,7 @@ public class CBanTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertNotNull(p);
-        Assert.assertEquals(1, p.getSize());
+        Assert.assertEquals(p.getSize(), 1);
     }
 
     /**
@@ -98,7 +83,7 @@ public class CBanTest {
       Assert.assertTrue(c.getMisPlacedVMs(i).isEmpty());
       ns.add(n1);
       Set<VM> bad = c.getMisPlacedVMs(i);
-      Assert.assertEquals(1, bad.size());
-      Assert.assertTrue(bad.contains(vm1));
+        Assert.assertEquals(bad.size(), 1);
+        Assert.assertTrue(bad.contains(vm1));
     }
 }

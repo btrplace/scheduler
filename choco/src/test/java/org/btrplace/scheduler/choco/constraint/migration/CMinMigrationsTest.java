@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -7,16 +7,8 @@
 package org.btrplace.scheduler.choco.constraint.migration;
 
 import org.btrplace.json.JSON;
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Instance;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
-import org.btrplace.model.constraint.MinMigrations;
-import org.btrplace.model.constraint.OptConstraint;
-import org.btrplace.model.constraint.Preserve;
-import org.btrplace.model.constraint.SatConstraint;
-import org.btrplace.model.constraint.Spread;
+import org.btrplace.model.*;
+import org.btrplace.model.constraint.*;
 import org.btrplace.model.view.ShareableResource;
 import org.btrplace.model.view.network.Network;
 import org.btrplace.plan.ReconfigurationPlan;
@@ -48,7 +40,7 @@ public class CMinMigrationsTest {
         System.out.println(s.getStatistics());
         System.out.println(p);
         Assert.assertEquals(p.getActions().stream().filter(x -> x instanceof MigrateVM).count(), 1);
-        Assert.assertEquals(3, p.getDuration());
+        Assert.assertEquals(p.getDuration(), 3);
     }
 
 
@@ -117,8 +109,6 @@ public class CMinMigrationsTest {
         System.out.println();
         for (int idx = 1; idx <= 256; idx += 5) {
             String path = root + "/lazan/lazan-" + idx + ".json.gz";
-            //for (int idx = 3; idx <= 3; idx++) {
-            //    String path = root + "/instance-" + idx + ".json";
 
             if (verbose) {
                 System.out.println("--- " + idx + " --- ");
@@ -143,11 +133,8 @@ public class CMinMigrationsTest {
                 ReconfigurationPlan p = s.solve(i);
                 Assert.assertNotNull(p);
                 res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).mapToLong(x -> x.getEnd() - x.getStart()).sum());
-                //res.add(p.getActions().stream().filter(x -> x instanceof MigrateVM).count());
-                //res.add((long)s.getStatistics().lastSolution().getDuration());
                 if (verbose) {
                     System.out.println(s.getStatistics());
-                    //System.out.println(p);
                 }
             }
             if (!verbose) {

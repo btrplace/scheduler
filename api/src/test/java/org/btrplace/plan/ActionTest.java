@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -14,10 +14,7 @@ import org.btrplace.plan.event.Event;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link org.btrplace.plan.event.Action}.
@@ -29,8 +26,8 @@ public class ActionTest {
     @Test
     public void testBasics() {
         Action a1 = new MockAction(new VM(1), 1, 3);
-        Assert.assertEquals(1, a1.getStart());
-        Assert.assertEquals(3, a1.getEnd());
+        Assert.assertEquals(a1.getStart(), 1);
+        Assert.assertEquals(a1.getEnd(), 3);
         Assert.assertTrue(a1.getEvents(Action.Hook.PRE).isEmpty());
         Assert.assertTrue(a1.getEvents(Action.Hook.POST).isEmpty());
     }
@@ -41,12 +38,12 @@ public class ActionTest {
         Event e = mock(Event.class);
         Assert.assertTrue(a1.addEvent(Action.Hook.PRE, e));
         Assert.assertFalse(a1.addEvent(Action.Hook.PRE, e));
-        Assert.assertEquals(1, a1.getEvents(Action.Hook.PRE).size());
+        Assert.assertEquals(a1.getEvents(Action.Hook.PRE).size(), 1);
         a1.addEvent(Action.Hook.POST, e);
-        Assert.assertEquals(1, a1.getEvents(Action.Hook.POST).size());
+        Assert.assertEquals(a1.getEvents(Action.Hook.POST).size(), 1);
         Event e2 = mock(Event.class);
         a1.addEvent(Action.Hook.POST, e2);
-        Assert.assertEquals(2, a1.getEvents(Action.Hook.POST).size());
+        Assert.assertEquals(a1.getEvents(Action.Hook.POST).size(), 2);
         String str = a1.toString();
         // Check for issue #203. Only one occurrence of the event is reported.
         Assert.assertEquals(str.indexOf(String.valueOf(e2.hashCode())), str.lastIndexOf(String.valueOf(e2.hashCode())));

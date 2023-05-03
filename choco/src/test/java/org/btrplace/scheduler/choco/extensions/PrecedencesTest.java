@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -51,7 +51,7 @@ public class PrecedencesTest {
          */
         Precedences p = new Precedences(host, start, others, ends);
         s.post(p);
-        Assert.assertEquals(6, s.getSolver().findAllSolutions().size());
+        Assert.assertEquals(s.getSolver().findAllSolutions().size(), 6);
     }
 
     /**
@@ -64,11 +64,8 @@ public class PrecedencesTest {
 
         IntVar[] ends = new IntVar[3];
         int[] others = new int[3];
-        others[0] = 0;
         ends[0] = s.intVar("ends[0]", 1, 2, true);
-        others[1] = 0;
         ends[1] = s.intVar("ends[1]", 1, 3, true);
-        others[2] = 0;
         ends[2] = s.intVar("ends[2]", 1, 4, true);
 
         /*

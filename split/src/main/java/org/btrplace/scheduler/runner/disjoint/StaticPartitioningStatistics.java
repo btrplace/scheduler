@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -136,52 +136,6 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
         //Check for the first solution that concatenate all the first solutions.
         return new ArrayList<>();
-/*
-        int firstN = 0;
-        int firstB = 0;
-        int firstOptValue = 0;
-        int lastN = 0;
-        int lastB = 0;
-        int lastOptValue = 0;
-
-        //firstTime  == end of the last first solution
-        //lastTime ==  end of the last computed partition solution
-        long endFirst = start;
-        long endLast = start;
-        boolean multipleSolution = false;
-        if (partResults.isEmpty()) {
-            return solutions;
-        }
-        for (SolvingStatistics st : partResults) {
-            if (st.getSolutions().isEmpty()) {
-                //At least 1 partition does not have a result, so the problem is not totally solved
-                return solutions;
-            }
-
-            SolutionStatistics first = st.getSolutions().get(0);
-            firstN += first.getNbNodes();
-            firstB += first.getNbBacktracks();
-            firstOptValue += first.getOptValue();
-            endFirst = Math.max(endFirst, st.getStart() + first.getTime());
-            if (st.getSolutions().size() > 1) {
-                multipleSolution = true;
-                SolutionStatistics last = st.getSolutions().get(st.getSolutions().size() - 1);
-                lastN += last.getNbNodes();
-                lastB += last.getNbBacktracks();
-                lastOptValue += last.getOptValue();
-                endLast = Math.max(endLast, st.getStart() + last.getTime());
-            } else {
-                lastN += first.getNbNodes();
-                lastB += first.getNbBacktracks();
-                lastOptValue += first.getOptValue();
-                endLast = Math.max(endLast, st.getStart() + first.getTime());
-            }
-        }
-
-        solutions.add(new SolutionStatistics(firstN, firstB, endFirst - start, firstOptValue));
-        if (multipleSolution) {
-            solutions.add(new SolutionStatistics(lastN, lastB, endLast - start, lastOptValue));
-        }*/
     }
 
     /**
@@ -208,14 +162,6 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      * @param stats the partition statistics.
      */
     public void addPartitionStatistics(SolvingStatistics stats) {
-        /*
-        nbBacktracks += stats.getNbBacktracks();
-        nbSearchNodes += stats.getNbSearchNodes();
-        nbManaged += stats.getNbManagedVMs();
-        hitTimeout |= stats.hitTimeout();
-        coreRPDuration = (int) Math.max(coreRPDuration, stats.getCoreBuildDuration());
-        speRPDuration = (int) Math.max(speRPDuration, stats.getSpecializationDuration());
-        */
         partResults.add(stats);
     }
 
@@ -241,43 +187,6 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-/*
-        List<SolutionStatistics> stats = getSolutions();
-
-        buildHeader(b, stats);
-
-        if (!stats.isEmpty()) {
-            if (!partResults.isEmpty()) {
-                b.append(" [");
-                b.append(partResults.get(0).getSolutions().size());
-                for (int i = 1; i < partResults.size(); i++) {
-                    b.append(", ").append(partResults.get(i).getSolutions().size());
-                }
-                b.append(']');
-            }
-            b.append(":\n");
-
-            int i = 1;
-            for (SolutionStatistics st : stats) {
-                b.append("\t").append(i).append(')')
-                        .append(" at ").append(st.getTime()).append("ms: ")
-                        .append(st.getNbNodes()).append(" node(s), ")
-                        .append(st.getNbBacktracks()).append(" backtrack(s)");
-                if (st.hasObjective()) {
-                    b.append(", objective: ").append(st.getOptValue());
-                }
-                b.append('\n');
-                i++;
-            }
-        } else {
-            int nbSolved = 0;
-            for (SolvingStatistics x : partResults) {
-                if (!x.getSolutions().isEmpty()) {
-                    nbSolved++;
-                }
-            }
-            b.append(": ").append(nbSolved).append('/').append(nbPartitions).append(" solved partition(s)");
-        }*/
         return b.toString();
     }
 
@@ -289,34 +198,4 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     public void setSolvingDuration(long solvingDuration) {
         this.solvingDuration = solvingDuration;
     }
-
-    /*private void buildHeader(StringBuilder b, List<SolutionStatistics> stats) {
-        b.append(nbNodes).append(" node(s)")
-                .append("; ").append(nbVMs).append(" VM(s)");
-        if (getNbManagedVMs() != nbVMs) {
-            b.append(" (").append(getNbManagedVMs()).append(" managed)");
-        }
-        b.append("; ").append(nbWorkers).append(" worker(s)").append(", ").append(nbPartitions).append(" partition(s)");
-        b.append("; ").append(nbConstraints).append(" constraint(s)");
-
-        if (params.doOptimize()) {
-            b.append("; optimize");
-        }
-        if (params.getTimeLimit() > 0) {
-            b.append("; timeout: ").append(params.getTimeLimit()).append("s");
-        }
-        b.append("\nmax. building duration: ").append(getCoreBuildDuration()).append("ms (core-RP) + ")
-                .append(getSpecializationDuration()).append("ms (specialization)");
-        b.append("\nAfter ").append(getSolvingDuration()).append("ms of search");
-        if (completed()) {
-            b.append(" (terminated)");
-        } else {
-            b.append(" (timeout)");
-        }
-        b.append(": ")
-                .append(nbSearchNodes).append(" opened search node(s), ")
-                .append(nbBacktracks).append(" backtrack(s), ")
-                .append(stats.size()).append(" solution(s)");
-
-    }*/
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -144,7 +144,7 @@ public class DefaultChocoScheduler implements ChocoScheduler {
             Parameters ps = new DefaultParameters(params);
             if (ps.getTimeLimit() > 0) {
                 //in seconds
-                double timeout = params.getTimeLimit() - runner.getStatistics().getMetrics().timeCount() / 1000;
+                double timeout = params.getTimeLimit() - (runner.getStatistics().getMetrics().timeCount() / 1000.0);
                 ps.setTimeLimit((int) timeout);
             }
 
