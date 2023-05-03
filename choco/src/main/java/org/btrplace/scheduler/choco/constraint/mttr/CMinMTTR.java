@@ -65,6 +65,7 @@ public class CMinMTTR implements CObjective {
      * @param m the user-side objective.
      */
     public CMinMTTR(@SuppressWarnings("unused") MinMTTR m) {
+        // Required: this is used by the reflection API to instantiate this object.
     }
 
     public CMinMTTR() {

@@ -158,7 +158,7 @@ public class ForgeVM implements VMTransition {
          * New builder
          */
         public Builder() {
-            super("forge", VMState.INIT, VMState.READY);
+            super(VAR_PREFIX, VMState.INIT, VMState.READY);
         }
 
         @Override

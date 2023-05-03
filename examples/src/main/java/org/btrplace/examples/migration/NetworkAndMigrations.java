@@ -28,6 +28,8 @@ import java.util.List;
 @SuppressWarnings("squid:S106")
 public class NetworkAndMigrations implements Example {
 
+    private final String MEM_USED_ATTR = "memUsed";
+
     @Override
     public void run() {
 
@@ -55,14 +57,14 @@ public class NetworkAndMigrations implements Example {
 
         // Set VM attributes 'memory used', 'hot dirty page size', 'hot dirty page duration' and 'cold dirty pages rate'
         // vm0 and vm3 are 'idle' VMs (with no special memory activity) but they still consume some memory
-        mo.getAttributes().put(vm0, "memUsed", 2000); // 2 GiB
-        mo.getAttributes().put(vm3, "memUsed", 2200); // 2.2 GiB
+        mo.getAttributes().put(vm0, MEM_USED_ATTR, 2000); // 2 GiB
+        mo.getAttributes().put(vm3, MEM_USED_ATTR, 2200); // 2.2 GiB
         // vm1 and vm2 consume memory and have a memory intensive workload equivalent to "stress --vm 1000 --bytes 50K"
-        mo.getAttributes().put(vm1, "memUsed", 8000); // 8 GiB
+        mo.getAttributes().put(vm1, MEM_USED_ATTR, 8000); // 8 GiB
         mo.getAttributes().put(vm1, "hotDirtySize", 56);
         mo.getAttributes().put(vm1, "hotDirtyDuration", 2);
         mo.getAttributes().put(vm1, "coldDirtyRate", 22.6);
-        mo.getAttributes().put(vm2, "memUsed", 7500); // 7.5 GiB
+        mo.getAttributes().put(vm2, MEM_USED_ATTR, 7500); // 7.5 GiB
         mo.getAttributes().put(vm2, "hotDirtySize", 56);
         mo.getAttributes().put(vm2, "hotDirtyDuration", 2);
         mo.getAttributes().put(vm2, "coldDirtyRate", 22.6);

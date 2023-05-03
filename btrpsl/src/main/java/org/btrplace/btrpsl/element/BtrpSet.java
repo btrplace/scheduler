@@ -22,6 +22,8 @@ import java.util.Set;
  */
 public class BtrpSet extends DefaultBtrpOperand {
 
+    private final static String INTEGER_DIVISION_EXPECTED = "Integer divider expected";
+
   /**
    * The operands in the set.
    */
@@ -119,7 +121,7 @@ public class BtrpSet extends DefaultBtrpOperand {
         if (other instanceof BtrpNumber) {
             BtrpNumber x = (BtrpNumber) other;
             if (!x.isInteger()) {
-                throw new UnsupportedOperationException("Integer divider expected");
+                throw new UnsupportedOperationException(INTEGER_DIVISION_EXPECTED);
             }
             int size = x.getIntValue();
             if (size == 0) {
@@ -140,7 +142,7 @@ public class BtrpSet extends DefaultBtrpOperand {
             }
             return res;
         }
-        throw new UnsupportedOperationException("Integer divider expected");
+        throw new UnsupportedOperationException(INTEGER_DIVISION_EXPECTED);
     }
 
     @Override
@@ -148,7 +150,7 @@ public class BtrpSet extends DefaultBtrpOperand {
         if (nb instanceof BtrpNumber) {
             BtrpNumber x = (BtrpNumber) nb;
             if (!x.isInteger()) {
-                throw new UnsupportedOperationException("Integer divider expected");
+                throw new UnsupportedOperationException(INTEGER_DIVISION_EXPECTED);
             }
             int s = x.getIntValue();
             if (s == 0) {
@@ -170,7 +172,7 @@ public class BtrpSet extends DefaultBtrpOperand {
             }
             return res;
         }
-        throw new UnsupportedOperationException("Integer divider expected");
+        throw new UnsupportedOperationException(INTEGER_DIVISION_EXPECTED);
     }
 
     @Override
@@ -208,7 +210,7 @@ public class BtrpSet extends DefaultBtrpOperand {
         if (nb instanceof BtrpNumber) {
             BtrpNumber x = (BtrpNumber) nb;
             if (!((BtrpNumber) nb).isInteger()) {
-                throw new UnsupportedOperationException("Integer divider expected");
+                throw new UnsupportedOperationException(INTEGER_DIVISION_EXPECTED);
             }
             int val = x.getIntValue();
             if (val != 2) {
@@ -216,7 +218,7 @@ public class BtrpSet extends DefaultBtrpOperand {
             }
             return this.times(this);
         }
-        throw new UnsupportedOperationException("Integer divider expected");
+        throw new UnsupportedOperationException(INTEGER_DIVISION_EXPECTED);
     }
 
     @Override

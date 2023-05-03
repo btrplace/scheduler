@@ -6,7 +6,6 @@
 
 package org.btrplace.btrpsl.constraint;
 
-import org.btrplace.btrpsl.element.BtrpElement;
 import org.btrplace.btrpsl.element.BtrpOperand;
 import org.btrplace.btrpsl.tree.BtrPlaceTree;
 import org.btrplace.model.Node;
@@ -27,7 +26,7 @@ public class BanBuilder extends DefaultSatConstraintBuilder {
      * Make a new builder.
      */
     public BanBuilder() {
-        super("ban", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpElement.Type.VM, false), new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
+        super("ban", new ConstraintParam[]{new ListOfParam("$v", 1, BtrpOperand.Type.VM, false), new ListOfParam("$n", 1, BtrpOperand.Type.NODE, false)});
     }
 
     /**

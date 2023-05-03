@@ -44,6 +44,11 @@ public class NetworkConverter implements ModelViewConverter<Network> {
      */
     public static final String SWITCH_LABEL = "switch";
 
+    public static final String SWITCHES_LABEL = "switches";
+
+    public static final String LINKS_LABEL = "links";
+
+    public static final String ROUTING_LABEL = "routing";
     /**
      * Label stating a node.
      */
@@ -77,16 +82,16 @@ public class NetworkConverter implements ModelViewConverter<Network> {
     public JSONObject toJSON(Network net) throws JSONConverterException {
         JSONObject container = new JSONObject();
         container.put(ModelViewConverter.IDENTIFIER, getJSONId());
-        container.put("switches", switchesToJSON(net.getSwitches()));
-        container.put("links", linksToJSON(net.getLinks()));
-        container.put("routing", routingToJSON(net.getRouting()));
+        container.put(SWITCHES_LABEL, switchesToJSON(net.getSwitches()));
+        container.put(LINKS_LABEL, linksToJSON(net.getLinks()));
+        container.put(ROUTING_LABEL, routingToJSON(net.getRouting()));
 
         return container;
     }
 
     @Override
     public Network fromJSON(Model mo, JSONObject o) throws JSONConverterException {
-        checkKeys(o, IDENTIFIER, "switches", "links", "routing");
+        checkKeys(o, IDENTIFIER, SWITCHES_LABEL, LINKS_LABEL, ROUTING_LABEL);
         String id = requiredString(o, ModelViewConverter.IDENTIFIER);
 
         if (!id.equals(getJSONId())) {
@@ -95,11 +100,11 @@ public class NetworkConverter implements ModelViewConverter<Network> {
 
         Network net = new Network();
 
-        switchesFromJSON(net, (JSONArray) o.get("switches"));
-        linksFromJSON(mo, net, (JSONArray) o.get("links"));
+        switchesFromJSON(net, (JSONArray) o.get(SWITCHES_LABEL));
+        linksFromJSON(mo, net, (JSONArray) o.get(LINKS_LABEL));
 
         mo.attach(net);
-        net.setRouting(routingFromJSON(mo, (JSONObject) o.get("routing")));
+        net.setRouting(routingFromJSON(mo, (JSONObject) o.get(ROUTING_LABEL)));
         mo.detach(net);
         return net;
     }

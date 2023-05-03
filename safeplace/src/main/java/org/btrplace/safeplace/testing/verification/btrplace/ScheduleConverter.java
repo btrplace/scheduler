@@ -20,6 +20,7 @@ import org.btrplace.model.constraint.Spread;
  */
 public class ScheduleConverter implements ConstraintConverter<Schedule> {
 
+    private static final String START_LABEL = "start";
     @Override
     public Class<Schedule> getSupportedConstraint() {
         return Schedule.class;
@@ -34,9 +35,9 @@ public class ScheduleConverter implements ConstraintConverter<Schedule> {
     public Schedule fromJSON(Model mo, JSONObject o) throws JSONConverterException {
         checkId(o);
         if (o.containsKey("node")) {
-            return new Schedule(JSONs.requiredNode(mo, o, "node"), JSONs.requiredInt(o, "start"), JSONs.requiredInt(o, "END"));
+            return new Schedule(JSONs.requiredNode(mo, o, "node"), JSONs.requiredInt(o, START_LABEL), JSONs.requiredInt(o, "END"));
         }
-        return new Schedule(JSONs.requiredVM(mo, o, "vm"), JSONs.requiredInt(o, "start"), JSONs.requiredInt(o, "END"));
+        return new Schedule(JSONs.requiredVM(mo, o, "vm"), JSONs.requiredInt(o, START_LABEL), JSONs.requiredInt(o, "END"));
     }
 
     @Override
@@ -49,7 +50,7 @@ public class ScheduleConverter implements ConstraintConverter<Schedule> {
         } else {
             c.put("vm", JSONs.elementToJSON(o.getVM()));
         }
-        c.put("start",o.getStart());
+        c.put(START_LABEL,o.getStart());
         c.put("END", o.getEnd());
         return c;
     }

@@ -60,6 +60,7 @@ public class CMinMigrations implements CObjective {
      * @param m the user-side objective.
      */
     public CMinMigrations(@SuppressWarnings("unused") MinMigrations m) {
+        // Required: this is used by the reflection API to instantiate this object.
     }
 
     public CMinMigrations() {

@@ -36,6 +36,8 @@ import java.util.List;
 @SuppressWarnings("squid:S106")
 public class AdvancedMigScheduling implements Example {
 
+    private final String MEM_USED_ATTR = "memUsed";
+
     private Node srcNode1;
     private Node srcNode2;
     private Node srcNode3;
@@ -116,16 +118,16 @@ public class AdvancedMigScheduling implements Example {
         int vmHdd = 2;
         double vmCdr = 22.6;
         // vm0 is an 'idle' VM (with no special memory activity) but still consumes 2 GiB of memory
-        mo.getAttributes().put(vm0, "memUsed", 2000);
+        mo.getAttributes().put(vm0, MEM_USED_ATTR, 2000);
         // vm1 is an 'idle' VM (with no special memory activity) but still consumes 4 GiB of memory
-        mo.getAttributes().put(vm1, "memUsed", 3000);
+        mo.getAttributes().put(vm1, MEM_USED_ATTR, 3000);
         // vm2 consumes 4 GiB memory and has a memory intensive workload
-        mo.getAttributes().put(vm2, "memUsed", 4000);
+        mo.getAttributes().put(vm2, MEM_USED_ATTR, 4000);
         mo.getAttributes().put(vm2, "hotDirtySize", vmHds);
         mo.getAttributes().put(vm2, "hotDirtyDuration", vmHdd);
         mo.getAttributes().put(vm2, "coldDirtyRate", vmCdr);
         // vm3 consumes 6 GiB memory and has a memory intensive workload
-        mo.getAttributes().put(vm3, "memUsed", 5000);
+        mo.getAttributes().put(vm3, MEM_USED_ATTR, 5000);
         mo.getAttributes().put(vm3, "hotDirtySize", vmHds);
         mo.getAttributes().put(vm3, "hotDirtyDuration", vmHdd);
         mo.getAttributes().put(vm3, "coldDirtyRate", vmCdr);

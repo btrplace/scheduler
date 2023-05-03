@@ -69,7 +69,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
             nodeValues.put(Integer.toString(id), c);
             return true;
         });
-        o.put("nodes", nodeValues);
+        o.put(NODES_LABEL, nodeValues);
 
         return o;
     }

@@ -98,6 +98,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private final StopButton stopButton;
 
+    private final static String MULTIPLE_DESTINATION_STATES_MSG = "multiple destination state for {}: {} and {}";
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -216,7 +218,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         boolean ok = vms.size() == running.size() + sleeping.size() + ready.size() + killed.size();
 
-
         //It is sure there is no solution as a VM cannot have multiple destination state
         Map<VM, VMState> states = new HashMap<>();
         for (VM v : running) {
@@ -225,19 +226,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (VM v : ready) {
             VMState prev = states.put(v, VMState.READY);
             if (prev != null) {
-                getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.READY);
+                getLogger().debug(MULTIPLE_DESTINATION_STATES_MSG, v, prev, VMState.READY);
             }
         }
         for (VM v : sleeping) {
             VMState prev = states.put(v, VMState.SLEEPING);
             if (prev != null) {
-                getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.SLEEPING);
+                getLogger().debug(MULTIPLE_DESTINATION_STATES_MSG, v, prev, VMState.SLEEPING);
             }
         }
         for (VM v : killed) {
             VMState prev = states.put(v, VMState.KILLED);
             if (prev != null) {
-                getLogger().debug("multiple destination state for {}: {} and {}", v, prev, VMState.KILLED);
+                getLogger().debug(MULTIPLE_DESTINATION_STATES_MSG, v, prev, VMState.KILLED);
             }
         }
         return ok;
