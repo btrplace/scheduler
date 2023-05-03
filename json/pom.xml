@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ Copyright  2020 The BtrPlace Authors. All rights reserved.
+  ~ Copyright  2023 The BtrPlace Authors. All rights reserved.
   ~ Use of this source code is governed by a LGPL-style
   ~ license that can be found in the LICENSE.txt file.
   -->
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
-            <version>2.4.8</version>
+            <version>2.4.10</version>
         </dependency>
     </dependencies>
 
