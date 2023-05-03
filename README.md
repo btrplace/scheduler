@@ -6,7 +6,7 @@ This repository contains the main sources of the flexible VM scheduler BtrPlace 
 
 
 ![Build](https://github.com/btrplace/scheduler/actions/workflows/continuous-integration.yml/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f748d074b9ad4108a7007c9ebb9a969d)](https://www.codacy.com/gh/btrplace/scheduler/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=btrplace/scheduler&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/f748d074b9ad4108a7007c9ebb9a969d)](https://www.codacy.com/gh/btrplace/scheduler/dashboard?utm_source=github.com&utm_medium=referral&utm_content=btrplace/scheduler&utm_campaign=Badge_Coverage) [![Total alerts](https://img.shields.io/lgtm/alerts/g/btrplace/scheduler.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/btrplace/scheduler/alerts/) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/btrplace/scheduler.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/btrplace/scheduler/context:java)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f748d074b9ad4108a7007c9ebb9a969d)](https://www.codacy.com/gh/btrplace/scheduler/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=btrplace/scheduler&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/f748d074b9ad4108a7007c9ebb9a969d)](https://www.codacy.com/gh/btrplace/scheduler/dashboard?utm_source=github.com&utm_medium=referral&utm_content=btrplace/scheduler&utm_campaign=Badge_Coverage) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=btrplace_scheduler&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=btrplace_scheduler)
 
 Contact: fabien.hermenier@nutanix.com
 
