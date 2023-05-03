@@ -19,6 +19,7 @@
     <name>bench</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonar.skip>true</sonar.skip>
     </properties>
     <description>
         Tools to launch benchmarks from BtrPlace instance files.

@@ -18,6 +18,9 @@
     </description>
     <artifactId>scheduler-examples</artifactId>
     <name>scheduler-examples</name>
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.btrplace</groupId>

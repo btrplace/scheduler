@@ -21,6 +21,10 @@
             <email>fabien.hermenier@unice.fr</email>
         </developer>
     </developers>
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
+
     <description>
         The btrplace specification language (btrpsl) allows to express constraints
         related to the placement of virtual machines in a datacenters.

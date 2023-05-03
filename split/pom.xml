@@ -22,7 +22,9 @@
         to solve them in parallel.
     </description>
 
-
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.btrplace</groupId>

@@ -31,7 +31,9 @@
             <version>2.4.10</version>
         </dependency>
     </dependencies>
-
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
     <build>
         <plugins>
             <plugin>

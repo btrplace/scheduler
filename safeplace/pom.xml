@@ -18,7 +18,9 @@
         <artifactId>scheduler</artifactId>
         <version>1.12.9-SNAPSHOT</version>
     </parent>
-
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.lukehutch</groupId>
