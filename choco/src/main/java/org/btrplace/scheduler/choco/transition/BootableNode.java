@@ -123,14 +123,9 @@ public class BootableNode implements NodeTransition {
         /*Task t = */
         TaskMonitor.build(start, effectiveDuration, end);
 
-        /* Hs = Ae */
         hostingStart = end;
         hostingEnd = rp.makeUnboundedDuration(PREFIX, nId, ").hostingEnd");
 
-        /*
-          T = { 0, RP.end}
-          He = T[St]
-         */
         csp.post(csp.element(hostingEnd, new IntVar[]{rp.getStart(), rp.getEnd()}, isOnline, 0));
     }
 

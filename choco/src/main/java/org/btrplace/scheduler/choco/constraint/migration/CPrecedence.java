@@ -50,7 +50,7 @@ public class CPrecedence implements ChocoConstraint {
 
         // Not enough / too much VMs
         if (pr.getInvolvedVMs().size() != 2) {
-            rp.getLogger().debug("Unable to inject the constraint '" + pr + "', the amount of involved VMs must be 2.");
+            rp.getLogger().debug("Unable to inject the constraint '{}', the amount of involved VMs must be 2.", pr);
             return false;
         }
 
@@ -64,7 +64,7 @@ public class CPrecedence implements ChocoConstraint {
 
         // Not enough migrations
         if (migrationList.size() < 2) {
-            rp.getLogger().debug("Unable to inject the constraint '" + pr + "', the involved VMs are not migrating..");
+            rp.getLogger().debug("Unable to inject the constraint '{}', the involved VMs are not migrating..", pr);
             return false;
         }
 

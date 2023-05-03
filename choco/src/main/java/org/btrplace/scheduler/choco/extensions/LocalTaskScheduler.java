@@ -342,23 +342,23 @@ public class LocalTaskScheduler {
 
     private void summary() {
       if (me == DEBUG) {
-            LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
-                    + " init=" + Arrays.toString(capacities[me]) + "; early=" + early.toString() + "; last=" + last.toString());
+            LOGGER.debug("---{}--- startupFree={} init={}; early={}; last={}", me, Arrays.toString(startupFree),
+                    Arrays.toString(capacities[me]), early, last);
             for (int x = 0; x < vInSize.get(); x++) {
                 int i = vIn.quickGet(x);
-                LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages[i]));
+                LOGGER.debug("{} {} {}", dStarts[i].isInstantiated() ? "!" : "?", dStarts[i], Arrays.toString(dUsages[i]));
             }
 
             for (int i : outIdx) {
-                LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages[i]));
+                LOGGER.debug("{} {} {}", cEnds[i].isInstantiated() ? "!" : "?", cEnds[i], Arrays.toString(cUsages[i]));
             }
 
 
             for (int i = 0; i < nbDims; i++) {
-                LOGGER.debug("profileMin dim " + i + "=" + prettyProfile(sortedMinProfile, profilesMin[i]));
-                LOGGER.debug("profileMax dim " + i + "=" + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                LOGGER.debug("profileMin dim {}={}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax dim {}={}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
-            LOGGER.debug("/--- " + me + "---/");
+            LOGGER.debug("/--- {} ---/", me);
         }
     }
     private boolean increase(int ct, int dt) {
@@ -397,8 +397,7 @@ public class LocalTaskScheduler {
             for (int d = 0; d < nbDims; d++) {
                 if (profilesMin[d].get(t) > capacities[me][d]) {
                   if (me == DEBUG) {
-                        LOGGER.debug("(" + me + ") Invalid min profile at " + t + " on dimension " + d
-                                + ": " + profilesMin[d].get(t) + " > " + capacities[me][d]);
+                        LOGGER.debug("({}) Invalid min profile at {} on dimension {}: {} > {}", me, t, d, profilesMin[d].get(t), capacities[me][d]);
                     }
                     aCause.fails();
                 }

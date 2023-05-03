@@ -283,11 +283,11 @@ public class Precedences extends Constraint {
             }
             for (int i = 0; i < horizonUB.length; i++) {
                 if (horizonUB[i].get() != ubs[i]) {
-                    LOGGER.info("/!\\ horizonUB[" + i + "] = " + horizonUB[i].get() + ", expected=" + ubs[i]);
+                    LOGGER.info("/!\\ horizonUB[{}] = {}, expected={}", i, horizonUB[i].get(), ubs[i]);
                     ret = false;
                 }
                 if (horizonLB[i].get() != lbs[i]) {
-                    LOGGER.info("/!\\ horizonLB[" + i + "] = " + horizonLB[i].get() + ", expected=" + lbs[i]);
+                    LOGGER.info("/!\\ horizonLB[{}] = {}, expected={}", i, horizonLB[i].get(), lbs[i]);
                     ret = false;
                 }
             }

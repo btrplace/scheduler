@@ -260,15 +260,14 @@ public class AliasedCumulativesFiltering {
         if (!DEBUG) {
             return;
         }
-        LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
-                + " capacities=(" + Arrays.toString(capacities) + ") ---");
+        LOGGER.debug("--- startup=({}) capacities=({}) ---",  Arrays.toString(startupFree), Arrays.toString(capacities));
         for (int x = 0; x < vInSize.get(); x++) {
             int i = vIn.quickGet(x);
-          LOGGER.debug((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.deepToString(dUsages));
+          LOGGER.debug("{} {} {}", dStarts[i].isInstantiated() ? "!" : "?", dStarts[i], Arrays.deepToString(dUsages));
         }
 
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-          LOGGER.debug((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.deepToString(cUsages));
+          LOGGER.debug("{} {} {}", cEnds[i].isInstantiated() ? "!" : "?", cEnds[i], Arrays.deepToString(cUsages));
         }
         LOGGER.debug("---");
 
@@ -331,8 +330,8 @@ public class AliasedCumulativesFiltering {
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i]) {
                     if (DEBUG) {
-                        LOGGER.debug("Invalid min profile at " + t + " on dimension " + i
-                                + ": " + profilesMin[i].get(t) + " > " + capacities[i]);
+                        LOGGER.debug("Invalid min profile at {} on dimension {}: {} > {}", t, i,
+                                profilesMin[i].get(t), capacities[i]);
                     }
                     return false;
                 }
@@ -410,7 +409,7 @@ public class AliasedCumulativesFiltering {
                 }
                 if (lastT != -1) {
                     if (DEBUG) {
-                        LOGGER.debug(cEnds[i].toString() + " cEndsSup =" + lastT);
+                        LOGGER.debug("{} cEndsSup = {}", cEnds[i], lastT);
                     }
                     cEnds[i].updateUpperBound(lastT, aCause);
                 }

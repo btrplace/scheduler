@@ -49,7 +49,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
      * Make a new partitioning algorithm.
      * The number of workers is set to the number of available cores.
      */
-    public StaticPartitioning() {
+    protected StaticPartitioning() {
         workersCount = Runtime.getRuntime().availableProcessors();
     }
 

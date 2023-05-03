@@ -16,7 +16,7 @@ public abstract class BinaryProp implements Proposition {
     protected Proposition p1;
     protected Proposition p2;
 
-    public BinaryProp(Proposition p1, Proposition p2) {
+    protected BinaryProp(Proposition p1, Proposition p2) {
         this.p1 = p1;
         this.p2 = p2;
     }

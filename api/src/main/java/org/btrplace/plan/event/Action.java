@@ -70,7 +70,7 @@ public abstract class Action implements Event {
      * @param st the moment the action starts
      * @param ed the moment the action ends
      */
-    public Action(int st, int ed) {
+    protected Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
         events = new EnumMap<>(Hook.class);

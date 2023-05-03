@@ -143,11 +143,11 @@ public class ScriptBuilder {
     public Script build(File f) throws ScriptBuilderException {
         int k = f.getAbsolutePath().hashCode();
         if (dates.containsKey(k) && dates.get(k) == f.lastModified() && cache.containsKey(f.getPath())) {
-            LOGGER.debug("get '" + f.getName() + "' from the cache");
+            LOGGER.debug("get '{}' from the cache", f.getName());
             return cache.get(f.getPath());
         }
 
-        LOGGER.debug(f.getName() + " is built from the file");
+        LOGGER.debug("{} is built from the file", f.getName());
         dates.put(k, f.lastModified());
         String name = f.getName();
         try {

@@ -20,7 +20,7 @@ public abstract class SimpleConstraint implements SatConstraint {
      *
      * @param continuous {@code true} to state a continuous constraint. {@code false} for a discrete one
      */
-    public SimpleConstraint(boolean continuous) {
+    protected SimpleConstraint(boolean continuous) {
         this.continuous = continuous;
     }
 

@@ -40,7 +40,7 @@ public abstract class VMTransitionBuilder {
      * @param src the possible initial states of the VM.
      * @param dst the destination state of the VM
      */
-    public VMTransitionBuilder(String lbl, Set<VMState> src, VMState dst) {
+    protected VMTransitionBuilder(String lbl, Set<VMState> src, VMState dst) {
         this.s = src;
         this.d = dst;
         this.id = lbl;
@@ -53,7 +53,7 @@ public abstract class VMTransitionBuilder {
      * @param src the initial state of the VM.
      * @param dst the destination state of the VM
      */
-    public VMTransitionBuilder(String lbl, VMState src, VMState dst) {
+    protected VMTransitionBuilder(String lbl, VMState src, VMState dst) {
         this(lbl, EnumSet.of(src), dst);
     }
 

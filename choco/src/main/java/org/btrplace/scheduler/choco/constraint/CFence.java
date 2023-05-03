@@ -70,7 +70,7 @@ public class CFence implements ChocoConstraint {
         if (hoster.isInstantiated()) {
             final Node n = rp.getNode(hoster.getValue());
             if (!nodes.contains(n)) {
-                rp.getLogger().debug("Unable to prevent VM '" + vm + "' to run on node '" + n + "'");
+                rp.getLogger().debug("Unable to prevent VM '{}'' to run on node '{}'", vm, n);
                 return false;
             }
             return true;

@@ -27,7 +27,7 @@ public abstract class DenyMyVMsActions<C extends SatConstraint> extends AllowAll
      *
      * @param s the constraint associated to the checker.
      */
-    public DenyMyVMsActions(C s) {
+    protected DenyMyVMsActions(C s) {
         super(s);
     }
 

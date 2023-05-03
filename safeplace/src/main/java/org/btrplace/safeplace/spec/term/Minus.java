@@ -16,7 +16,7 @@ public abstract class Minus<T> implements Term<T> {
     protected Term<T> a;
     protected Term<T> b;
 
-    public Minus(Term<T> t1, Term<T> t2) {
+    protected Minus(Term<T> t1, Term<T> t2) {
         this.a = t1;
         this.b = t2;
     }

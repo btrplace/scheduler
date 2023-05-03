@@ -136,10 +136,6 @@ public class ShutdownableNode implements NodeTransition {
         } else {
             hostingEnd = rp.makeUnboundedDuration();
         }
-        /*
-          T = { As, RP.end}
-          He = T[St]
-         */
         csp.post(csp.element(hostingEnd, new IntVar[]{start, rp.getEnd()}, isOnline, 0));
     }
 

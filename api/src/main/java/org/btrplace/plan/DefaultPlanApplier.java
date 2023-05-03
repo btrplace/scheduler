@@ -30,7 +30,7 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier {
     /**
      * Make a new applier.
      */
-    public DefaultPlanApplier() {
+    protected DefaultPlanApplier() {
         listeners = new ArrayList<>();
         notificationDispatcher = new NotificationDispatcher(listeners);
     }

@@ -18,7 +18,7 @@ public abstract class AtomicProp implements Proposition {
 
   private final String op;
 
-    public AtomicProp(Term a, Term b, String op) {
+    protected AtomicProp(Term a, Term b, String op) {
         this.a = a;
         this.b = b;
         this.op = op;

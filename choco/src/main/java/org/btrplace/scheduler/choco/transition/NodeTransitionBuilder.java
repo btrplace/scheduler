@@ -23,15 +23,15 @@ public abstract class NodeTransitionBuilder {
    */
   private final NodeState s;
 
-    private final String id;
+  private final String id;
 
-  /**
+      /**
      * New builder.
      *
      * @param lbl the transition label
      * @param src the initial state of the node.
      */
-    public NodeTransitionBuilder(String lbl, NodeState src) {
+    protected NodeTransitionBuilder(String lbl, NodeState src) {
         this.id = lbl;
         this.s = src;
     }
