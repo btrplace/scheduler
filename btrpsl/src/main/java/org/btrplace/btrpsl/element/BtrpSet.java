@@ -1,17 +1,12 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.btrpsl.element;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Denotes a set of operand.
@@ -22,7 +17,7 @@ import java.util.Set;
  */
 public class BtrpSet extends DefaultBtrpOperand {
 
-    private final static String INTEGER_DIVISION_EXPECTED = "Integer divider expected";
+    private static final String INTEGER_DIVISION_EXPECTED = "Integer divider expected";
 
   /**
    * The operands in the set.

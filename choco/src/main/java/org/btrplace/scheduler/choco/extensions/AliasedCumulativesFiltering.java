@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -260,21 +260,23 @@ public class AliasedCumulativesFiltering {
         if (!DEBUG) {
             return;
         }
-        LOGGER.debug("--- startup=({}) capacities=({}) ---",  Arrays.toString(startupFree), Arrays.toString(capacities));
-        for (int x = 0; x < vInSize.get(); x++) {
-            int i = vIn.quickGet(x);
-          LOGGER.debug("{} {} {}", dStarts[i].isInstantiated() ? "!" : "?", dStarts[i], Arrays.deepToString(dUsages));
-        }
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("--- startup=({}) capacities=({}) ---", Arrays.toString(startupFree), Arrays.toString(capacities));
+            for (int x = 0; x < vInSize.get(); x++) {
+                int i = vIn.quickGet(x);
+                LOGGER.debug("{} {} {}", dStarts[i].isInstantiated() ? "!" : "?", dStarts[i], Arrays.deepToString(dUsages));
+            }
 
-        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-          LOGGER.debug("{} {} {}", cEnds[i].isInstantiated() ? "!" : "?", cEnds[i], Arrays.deepToString(cUsages));
-        }
-        LOGGER.debug("---");
+            for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+                LOGGER.debug("{} {} {}", cEnds[i].isInstantiated() ? "!" : "?", cEnds[i], Arrays.deepToString(cUsages));
+            }
+            LOGGER.debug("---");
 
 
-        for (int i = 0; i < nbDims; i++) {
-            LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
-            LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
+            for (int i = 0; i < nbDims; i++) {
+                LOGGER.debug("profileMin(dim {})= {}", i, prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax(dim {})= {}", i, prettyProfile(sortedMaxProfile, profilesMax[i]));
+            }
         }
     }
 

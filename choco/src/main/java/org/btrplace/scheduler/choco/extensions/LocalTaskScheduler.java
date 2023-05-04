@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -341,7 +341,7 @@ public class LocalTaskScheduler {
     }
 
     private void summary() {
-      if (me == DEBUG) {
+        if (me == DEBUG && LOGGER.isDebugEnabled()) {
             LOGGER.debug("---{}--- startupFree={} init={}; early={}; last={}", me, Arrays.toString(startupFree),
                     Arrays.toString(capacities[me]), early, last);
             for (int x = 0; x < vInSize.get(); x++) {

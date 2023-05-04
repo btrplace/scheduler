@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -7,11 +7,7 @@
 package org.btrplace.examples.migration;
 
 import org.btrplace.examples.Example;
-import org.btrplace.model.DefaultModel;
-import org.btrplace.model.Mapping;
-import org.btrplace.model.Model;
-import org.btrplace.model.Node;
-import org.btrplace.model.VM;
+import org.btrplace.model.*;
 import org.btrplace.model.constraint.Offline;
 import org.btrplace.model.constraint.Online;
 import org.btrplace.model.constraint.SatConstraint;
@@ -36,7 +32,7 @@ import java.util.List;
 @SuppressWarnings("squid:S106")
 public class AdvancedMigScheduling implements Example {
 
-    private final String MEM_USED_ATTR = "memUsed";
+    private static final String MEM_USED_ATTR = "memUsed";
 
     private Node srcNode1;
     private Node srcNode2;

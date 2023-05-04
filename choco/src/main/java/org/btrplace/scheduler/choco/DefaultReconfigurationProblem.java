@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -98,7 +98,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private final StopButton stopButton;
 
-    private final static String MULTIPLE_DESTINATION_STATES_MSG = "multiple destination state for {}: {} and {}";
+    private static final String MULTIPLE_DESTINATION_STATES_MSG = "multiple destination state for {}: {} and {}";
 
     /**
      * Make a new RP where the next state for every VM is indicated.

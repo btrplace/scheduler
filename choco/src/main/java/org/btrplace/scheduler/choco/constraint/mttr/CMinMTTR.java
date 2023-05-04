@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -34,15 +34,7 @@ import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.IntVar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -143,25 +135,33 @@ public class CMinMTTR implements CObjective {
                 migs.add(((RelocatableVM) t).getRelocationMethod());
             }
         }
-        strategies.add(
-                Search.intVarSearch(
-                        new FirstFail(rp.getModel()), new IntDomainMax(), migs.toArray(new IntVar[migs.size()]))
-        );
+        if (!migs.isEmpty()) {
+            strategies.add(
+                    Search.intVarSearch(
+                            new FirstFail(rp.getModel()), new IntDomainMax(), migs.toArray(new IntVar[migs.size()]))
+            );
+        }
 
         if (!p.getNodeActions().isEmpty()) {
             //Boot some nodes if needed
             IntVar[] starts = p.getNodeActions().stream().map(Transition::getStart).toArray(IntVar[]::new);
-            strategies.add(new IntStrategy(starts, new FirstFail(rp.getModel()), new IntDomainMin()));
+            if (starts.length > 0) {
+                strategies.add(new IntStrategy(starts, new FirstFail(rp.getModel()), new IntDomainMin()));
+            }
         }
 
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
         IntVar[] starts = dSlices(rp.getVMActions()).map(Slice::getStart).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
-        strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
+        if (starts.length > 0) {
+            strategies.add(new IntStrategy(starts, new StartOnLeafNodes(rp, gr), new IntDomainMin()));
+        }
         strategies.add(new IntStrategy(schedHeuristic.getScope(), schedHeuristic, new IntDomainMin()));
 
         IntVar[] ends = rp.getVMActions().stream().map(Transition::getEnd).filter(v -> !v.isInstantiated()).toArray(IntVar[]::new);
-        strategies.add(Search.intVarSearch(new MyInputOrder<>(s), new IntDomainMin(), ends));
+        if (ends.length > 0) {
+            strategies.add(Search.intVarSearch(new MyInputOrder<>(s), new IntDomainMin(), ends));
+        }
 
         //At this stage only it matters to plug the cost constraints
         strategies.add(new IntStrategy(new IntVar[]{p.getEnd(), cost}, new MyInputOrder<>(s, this), new IntDomainMin()));
