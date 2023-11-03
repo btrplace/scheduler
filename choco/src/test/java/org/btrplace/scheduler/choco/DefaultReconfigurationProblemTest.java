@@ -1,5 +1,5 @@
 /*
- * Copyright  2021 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -669,7 +669,6 @@ public class DefaultReconfigurationProblemTest {
         Stream<Slice> dSlices = rp.getVMActions().stream().filter(t -> t.getDSlice() != null).map(VMTransition::getDSlice);
         IntVar[] hosters = dSlices.map(Slice::getHoster).toArray(IntVar[]::new);
         rp.getModel().post(rp.getModel().atMostNValues(hosters, nbNodes, true));
-
         rp.setObjective(true, nbNodes);
         ReconfigurationPlan plan = rp.solve(-1, true);
         Assert.assertNotNull(plan);

@@ -1,12 +1,11 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2023 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
 
 package org.btrplace.scheduler.choco.extensions.pack;
 
-import org.btrplace.scheduler.choco.extensions.SparseBitSet;
 import org.chocosolver.memory.IStateBitSet;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.exception.ContradictionException;
@@ -44,7 +43,7 @@ public class KnapsackDecorator {
         this.candidate = new IStateBitSet[p.nbBins];
 
         for (int i = 0; i < p.nbBins; i++) {
-            final IStateBitSet bs = new SparseBitSet(p.getModel().getEnvironment(), 256);
+            final IStateBitSet bs = new org.chocosolver.memory.structure.SparseBitSet(p.getModel().getEnvironment(), 256);
             candidate[i] = bs;
         }
 

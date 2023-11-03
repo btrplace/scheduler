@@ -357,7 +357,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return t == null ? null : t.getFutureState();
     }
 
-
     @Override
     public VMState getSourceState(VM v) {
         VMTransition t = getVMAction(v);
