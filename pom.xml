@@ -11,7 +11,7 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>scheduler</artifactId>
-    <version>1.12.10-SNAPSHOT</version>
+    <version>1.12.9-SNAPSHOT</version>
     <name>scheduler</name>
     <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
@@ -158,7 +158,7 @@
                         <id>attach-sources</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>jar-no-fork</goal>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
