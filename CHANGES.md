@@ -5,6 +5,11 @@ version 1.12.9 - soon come
 ----------------------
 See milestone [1.12.9](https://github.com/btrplace/scheduler/milestones/1.12.9)
 
+This milestone improves performance and memory efficiency thanks to the
+integration of the SparseBitSets into choco and a more compact
+IntervalIntVariableImpl.
+
+
 version 1.12.8 - 15 Dec 2022
 ----------------------
 See milestone [1.12.8](https://github.com/btrplace/scheduler/milestones/1.12.8)

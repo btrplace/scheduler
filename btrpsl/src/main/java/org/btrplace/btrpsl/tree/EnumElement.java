@@ -130,7 +130,7 @@ public class EnumElement extends BtrPlaceTree {
                         return ignoreError(t, "Unknown node '" + id.substring(1) + "'");
                     }
                     res.getValues().add(new BtrpElement(BtrpOperand.Type.NODE, id, namingServiceNodes.resolve(id)));
-                } else if (type == BtrpOperand.Type.VM) {
+                } else {
                     String fqn = script.id() + '.' + id;
                     Element el = namingServiceVMs.resolve(fqn);
                     Token t = getChild(i).getChild(0).getToken();
@@ -138,8 +138,6 @@ public class EnumElement extends BtrPlaceTree {
                         return ignoreError(t, "Unknown VM '" + id + "'");
                     }
                     res.getValues().add(new BtrpElement(BtrpOperand.Type.VM, fqn, namingServiceVMs.resolve(fqn)));
-                } else {
-                    return ignoreError("Unsupported type '" + type + "' in enumeration");
                 }
             }
         }

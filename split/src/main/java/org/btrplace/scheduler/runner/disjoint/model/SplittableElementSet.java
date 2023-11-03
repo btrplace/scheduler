@@ -49,7 +49,6 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
             values.add(e);
         }
         this.index = idx;
-        values.parallelStream().sorted(this);
         Collections.sort(values, this);
     }
 
