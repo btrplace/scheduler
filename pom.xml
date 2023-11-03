@@ -11,7 +11,7 @@
 
     <groupId>org.btrplace</groupId>
     <artifactId>scheduler</artifactId>
-    <version>1.12.10-SNAPSHOT</version>
+    <version>1.12.9-SNAPSHOT</version>
     <name>scheduler</name>
     <description>A flexible VM scheduler for hosting platforms.</description>
     <packaging>pom</packaging>
@@ -153,15 +153,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
