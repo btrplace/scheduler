@@ -1,5 +1,5 @@
 /*
- * Copyright  2023 The BtrPlace Authors. All rights reserved.
+ * Copyright  2024 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -71,6 +71,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Set<VM> manageable;
 
+    private final Set<VM> misplaced;
+
     private List<VM> vms;
     private TObjectIntHashMap<VM> revVMs;
 
@@ -86,7 +88,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private final DurationEvaluators durEval;
 
     private List<IntVar> vmsCountOnNodes;
-
 
     private ResolutionPolicy solvingPolicy;
 
@@ -120,7 +121,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                   Set<VM> running,
                                   Set<VM> sleeping,
                                   Set<VM> killed,
-                                  Set<VM> preRooted) throws SchedulerException {
+                                  Set<VM> preRooted,
+                                  Set<VM> misplaced) throws SchedulerException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
@@ -149,6 +151,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
         manageable = Collections.unmodifiableSet(manageable);
+        this.misplaced = Collections.unmodifiableSet(misplaced);
         coreViews = new HashMap<>();
         for (Class<? extends ChocoView> c : ps.getChocoViews()) {
             try {
@@ -643,6 +646,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public Set<VM> getManageableVMs() {
         return manageable;
+    }
+
+    @Override
+    public Set<VM> getMisplacedVMs() {
+        return this.misplaced;
     }
 
     @Override

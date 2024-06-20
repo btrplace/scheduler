@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2024 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -220,11 +220,12 @@ public class InstanceSolverRunner implements Callable<SolvingStatistics> {
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setParams(params);
 
+        final Set<VM> misplaced = new HashSet<>();
+        cConstraints.forEach(c -> misplaced.addAll(c.getMisPlacedVMs(instance)));
+        views.forEach(v -> misplaced.addAll(v.getMisPlacedVMs(instance)));
+        rpb.setMisplacedVMs(misplaced);
         if (params.doRepair()) {
-            Set<VM> toManage = new HashSet<>();
-            cConstraints.forEach(c -> toManage.addAll(c.getMisPlacedVMs(instance)));
-            views.forEach(v -> toManage.addAll(v.getMisPlacedVMs(instance)));
-            rpb.setManageableVMs(toManage);
+            rpb.setManageableVMs(misplaced);
         }
 
         //The core views have been instantiated and available through rp.getViews()

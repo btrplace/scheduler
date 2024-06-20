@@ -1,5 +1,5 @@
 /*
- * Copyright  2022 The BtrPlace Authors. All rights reserved.
+ * Copyright  2024 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -446,6 +446,15 @@ public interface ReconfigurationProblem {
      * @return a set of VMs identifier
      */
     Set<VM> getManageableVMs();
+
+    /**
+     * Get the VMs that are supposed to be misplaced.
+     * This is the conjunction of all the VMs reported by views and constraints
+     * implementing {@link MisplacedVMsEstimator}.
+     *
+     * @return a set, possibly empty.
+     */
+    Set<VM> getMisplacedVMs();
 
     /**
      * Get the logger.
