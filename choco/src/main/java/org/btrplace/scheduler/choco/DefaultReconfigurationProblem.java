@@ -112,6 +112,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param sleeping  the VMs that must be in the sleeping state
      * @param killed    the VMs that must be killed
      * @param preRooted the VMs that can be managed by the solver when they are already running and they must keep running
+     * @param misplaced the VMs that are misplaced by views and constraints implementing.
      * @throws org.btrplace.scheduler.SchedulerException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */

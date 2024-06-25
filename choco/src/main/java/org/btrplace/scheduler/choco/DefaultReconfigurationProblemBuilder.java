@@ -135,7 +135,7 @@ public class DefaultReconfigurationProblemBuilder {
         }
 
         if (misplaced == null) {
-            misplaced = new HashSet<>();
+            misplaced = Collections.emptySet();
         }
         if (ps == null) {
             ps = new DefaultParameters();
