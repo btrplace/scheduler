@@ -1,5 +1,5 @@
 /*
- * Copyright  2023 The BtrPlace Authors. All rights reserved.
+ * Copyright  2024 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -23,6 +23,7 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.collections.Sets;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -639,12 +640,14 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
                 Collections.emptySet(),
-                map.getAllVMs());
+                map.getAllVMs(),
+                Sets.newHashSet(vm1));
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(vm2));
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm3));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(vm4));
         Assert.assertTrue(rp.getFutureRunningVMs().contains(vm5));
+        Assert.assertEquals(Sets.newHashSet(vm1), rp.getMisplacedVMs());
     }
 
     /**

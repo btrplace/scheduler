@@ -1,5 +1,5 @@
 /*
- * Copyright  2020 The BtrPlace Authors. All rights reserved.
+ * Copyright  2024 The BtrPlace Authors. All rights reserved.
  * Use of this source code is governed by a LGPL-style
  * license that can be found in the LICENSE.txt file.
  */
@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class DefaultReconfigurationProblemBuilder {
 
-  private final Model model;
+    private final Model model;
 
     private Set<VM> runs;
     private Set<VM> waits;
@@ -38,6 +38,8 @@ public class DefaultReconfigurationProblemBuilder {
     private Set<VM> sleep;
 
     private Set<VM> manageable;
+
+    private Set<VM> misplaced;
 
     private Parameters ps;
 
@@ -94,6 +96,17 @@ public class DefaultReconfigurationProblemBuilder {
     }
 
     /**
+     * Set the VMs that are considered to be misplaced.
+     *
+     * @param vms the set of VMs
+     * @return the current builder
+     */
+    public DefaultReconfigurationProblemBuilder setMisplacedVMs(Set<VM> vms) {
+        misplaced = vms;
+        return this;
+    }
+
+    /**
      * Build the problem
      *
      * @return the builder problem
@@ -121,10 +134,13 @@ public class DefaultReconfigurationProblemBuilder {
             manageable.addAll(model.getMapping().getReadyVMs());
         }
 
+        if (misplaced == null) {
+            misplaced = Collections.emptySet();
+        }
         if (ps == null) {
             ps = new DefaultParameters();
         }
-        return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable);
+        return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable, misplaced);
     }
 
 }
