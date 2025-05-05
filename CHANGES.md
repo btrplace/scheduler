@@ -5,9 +5,13 @@ version 1.12.11 - soon come
 ----------------------
 See milestone [1.12.11](https://github.com/btrplace/scheduler/milestones/1.12.11)
 
+This milestone is mostly a dependency update.
+
+
 version 1.12.10 - 27 Jun 2024
 ----------------------
 See milestone [1.12.10](https://github.com/btrplace/scheduler/milestones/1.12.10)
+
 
 version 1.12.9 - 03 Nov 2023
 ----------------------
